@@ -28,16 +28,13 @@ NXDockWidgetTitleBar::NXDockWidgetTitleBar(QWidget *parent)
   connect(_closeButton, &NXIconButton::clicked, this, &NXDockWidgetTitleBar::onCloseButtonClicked);
 
   _setVisibleFromFeatures(_dockWidget->features());
-  connect(_dockWidget, &QDockWidget::featuresChanged, this, [=](QDockWidget::DockWidgetFeatures features)
-  {
+  connect(_dockWidget, &QDockWidget::featuresChanged, this, [=](QDockWidget::DockWidgetFeatures features) {
     _setVisibleFromFeatures(features);
   });
-  connect(_dockWidget, &QDockWidget::windowTitleChanged, this, [=](const QString &title)
-  {
+  connect(_dockWidget, &QDockWidget::windowTitleChanged, this, [=](const QString &title) {
     _titleLabel->setText(title);
   });
-  connect(_dockWidget, &QDockWidget::windowIconChanged, this, [=](const QIcon &icon)
-  {
+  connect(_dockWidget, &QDockWidget::windowIconChanged, this, [=](const QIcon &icon) {
     _iconLabel->setPixmap(icon.pixmap(QSize(18, 18)));
   });
 
@@ -55,8 +52,7 @@ NXDockWidgetTitleBar::NXDockWidgetTitleBar(QWidget *parent)
 
   //主题变更
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -65,20 +61,17 @@ NXDockWidgetTitleBar::~NXDockWidgetTitleBar()
 {
 }
 
-void
-NXDockWidgetTitleBar::onFloatButtonClicked()
+void NXDockWidgetTitleBar::onFloatButtonClicked()
 {
   _dockWidget->setFloating(_dockWidget->isFloating() ? false : true);
 }
 
-void
-NXDockWidgetTitleBar::onCloseButtonClicked()
+void NXDockWidgetTitleBar::onCloseButtonClicked()
 {
   _dockWidget->close();
 }
 
-void
-NXDockWidgetTitleBar::paintEvent(QPaintEvent *event)
+void NXDockWidgetTitleBar::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
   painter.save();
@@ -89,8 +82,7 @@ NXDockWidgetTitleBar::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXDockWidgetTitleBar::_setVisibleFromFeatures(QDockWidget::DockWidgetFeatures features)
+void NXDockWidgetTitleBar::_setVisibleFromFeatures(QDockWidget::DockWidgetFeatures features)
 {
   _floatButton->setVisible(features.testFlag(QDockWidget::DockWidgetFloatable));
   _closeButton->setVisible(features.testFlag(QDockWidget::DockWidgetClosable));

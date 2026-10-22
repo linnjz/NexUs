@@ -18,8 +18,7 @@ Q_PROPERTY_CREATE_CPP(NXTerminalWidget, QS_SET_CREF(QString), Prompt)
 Q_PROPERTY_CREATE_CPP(NXTerminalWidget, int, MaxHistorySize)
 Q_PROPERTY_CREATE_CPP(NXTerminalWidget, int, MaxLineCount)
 
-void
-NXTerminalWidget::setFontPixelSize(int size)
+void NXTerminalWidget::setFontPixelSize(int size)
 {
   Q_D(NXTerminalWidget);
   d->_pFontPixelSize = size;
@@ -27,8 +26,7 @@ NXTerminalWidget::setFontPixelSize(int size)
   Q_EMIT pFontPixelSizeChanged();
 }
 
-int
-NXTerminalWidget::getFontPixelSize() const
+int NXTerminalWidget::getFontPixelSize() const
 {
   return d_ptr->_pFontPixelSize;
 }
@@ -71,8 +69,7 @@ NXTerminalWidget::NXTerminalWidget(QWidget *parent)
   mainLayout->addWidget(d->_outputArea, 1);
   mainLayout->addLayout(inputLayout);
 
-  auto applyTheme = [=](NXThemeType::ThemeMode mode)
-  {
+  auto applyTheme = [=](NXThemeType::ThemeMode mode) {
     d->_themeMode      = mode;
     QColor bgColor     = (mode == NXThemeType::Dark) ? QColor(0x1E, 0x1E, 0x2E) : QColor(0xF8, 0xF8, 0xF8);
     QColor textColor   = (mode == NXThemeType::Dark) ? QColor(0xCD, 0xD6, 0xF4) : QColor(0x2C, 0x2C, 0x2C);
@@ -100,8 +97,7 @@ NXTerminalWidget::NXTerminalWidget(QWidget *parent)
 
   d->updateFont();
 
-  connect(this, &NXTerminalWidget::pPromptChanged, this, [=]()
-  {
+  connect(this, &NXTerminalWidget::pPromptChanged, this, [=]() {
     d->_promptLabel->setText(d->_pPrompt);
   });
 
@@ -114,26 +110,21 @@ NXTerminalWidget::~NXTerminalWidget()
 {
 }
 
-void
-NXTerminalWidget::appendOutput(const QString &text, const QColor &color)
+void NXTerminalWidget::appendOutput(const QString &text, const QColor &color)
 {
   Q_D(NXTerminalWidget);
-  if (color.isValid())
-  {
+  if (color.isValid()) {
     d->_outputArea->appendHtml(
         QString(QStringLiteral("<span style=\"color:%1;\">%2</span>"))
             .arg(color.name(), text.toHtmlEscaped().replace(QStringLiteral("\n"), QStringLiteral("<br>"))));
-  }
-  else
-  {
+  } else {
     d->_outputArea->appendPlainText(text);
   }
   d->trimOutput();
   d->_outputArea->verticalScrollBar()->setValue(d->_outputArea->verticalScrollBar()->maximum());
 }
 
-void
-NXTerminalWidget::appendHtml(const QString &html)
+void NXTerminalWidget::appendHtml(const QString &html)
 {
   Q_D(NXTerminalWidget);
   d->_outputArea->appendHtml(html);
@@ -141,51 +132,40 @@ NXTerminalWidget::appendHtml(const QString &html)
   d->_outputArea->verticalScrollBar()->setValue(d->_outputArea->verticalScrollBar()->maximum());
 }
 
-void
-NXTerminalWidget::appendError(const QString &text)
+void NXTerminalWidget::appendError(const QString &text)
 {
   appendOutput(text, NXThemeColor(d_ptr->_themeMode, StatusDanger));
 }
 
-void
-NXTerminalWidget::appendSuccess(const QString &text)
+void NXTerminalWidget::appendSuccess(const QString &text)
 {
   QColor green = (d_ptr->_themeMode == NXThemeType::Dark) ? QColor(0xA6, 0xE3, 0xA1) : QColor(0x0F, 0x7B, 0x0F);
   appendOutput(text, green);
 }
 
-void
-NXTerminalWidget::clear()
+void NXTerminalWidget::clear()
 {
   Q_D(NXTerminalWidget);
   d->_outputArea->clear();
 }
 
-QStringList
-NXTerminalWidget::getCommandHistory() const
+QStringList NXTerminalWidget::getCommandHistory() const
 {
   return d_ptr->_commandHistory;
 }
 
-bool
-NXTerminalWidget::eventFilter(QObject *watched, QEvent *event)
+bool NXTerminalWidget::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXTerminalWidget);
-  if (watched == d->_inputLine && event->type() == QEvent::KeyPress)
-  {
+  if (watched == d->_inputLine && event->type() == QEvent::KeyPress) {
     QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-    if (keyEvent->key() == Qt::Key_Up)
-    {
+    if (keyEvent->key() == Qt::Key_Up) {
       d->navigateHistory(-1);
       return true;
-    }
-    else if (keyEvent->key() == Qt::Key_Down)
-    {
+    } else if (keyEvent->key() == Qt::Key_Down) {
       d->navigateHistory(1);
       return true;
-    }
-    else if (keyEvent->key() == Qt::Key_Tab)
-    {
+    } else if (keyEvent->key() == Qt::Key_Tab) {
       Q_EMIT tabPressed(d->_inputLine->text());
       return true;
     }
@@ -202,13 +182,11 @@ NXTerminalWidgetPrivate::~NXTerminalWidgetPrivate()
 {
 }
 
-void
-NXTerminalWidgetPrivate::submitCommand()
+void NXTerminalWidgetPrivate::submitCommand()
 {
   Q_Q(NXTerminalWidget);
   QString command = _inputLine->text().trimmed();
-  if (command.isEmpty())
-  {
+  if (command.isEmpty()) {
     return;
   }
 
@@ -216,11 +194,9 @@ NXTerminalWidgetPrivate::submitCommand()
   _outputArea->appendHtml(QString(QStringLiteral("<span style=\"color:%1;\">%2</span>%3"))
                               .arg(promptColor.name(), _pPrompt.toHtmlEscaped(), command.toHtmlEscaped()));
 
-  if (_commandHistory.isEmpty() || _commandHistory.last() != command)
-  {
+  if (_commandHistory.isEmpty() || _commandHistory.last() != command) {
     _commandHistory.append(command);
-    if (_commandHistory.size() > _pMaxHistorySize)
-    {
+    if (_commandHistory.size() > _pMaxHistorySize) {
       _commandHistory.removeFirst();
     }
   }
@@ -234,52 +210,38 @@ NXTerminalWidgetPrivate::submitCommand()
   Q_EMIT q->commandSubmitted(command);
 }
 
-void
-NXTerminalWidgetPrivate::navigateHistory(int direction)
+void NXTerminalWidgetPrivate::navigateHistory(int direction)
 {
-  if (_commandHistory.isEmpty())
-  {
+  if (_commandHistory.isEmpty()) {
     return;
   }
 
-  if (_historyIndex == -1)
-  {
+  if (_historyIndex == -1) {
     _savedInput = _inputLine->text();
   }
 
-  if (direction < 0)
-  {
-    if (_historyIndex == -1)
-    {
+  if (direction < 0) {
+    if (_historyIndex == -1) {
       _historyIndex = _commandHistory.size() - 1;
-    }
-    else if (_historyIndex > 0)
-    {
+    } else if (_historyIndex > 0) {
       _historyIndex--;
     }
     _inputLine->setText(_commandHistory.at(_historyIndex));
-  }
-  else
-  {
-    if (_historyIndex == -1)
-    {
+  } else {
+    if (_historyIndex == -1) {
       return;
     }
-    if (_historyIndex < _commandHistory.size() - 1)
-    {
+    if (_historyIndex < _commandHistory.size() - 1) {
       _historyIndex++;
       _inputLine->setText(_commandHistory.at(_historyIndex));
-    }
-    else
-    {
+    } else {
       _historyIndex = -1;
       _inputLine->setText(_savedInput);
     }
   }
 }
 
-void
-NXTerminalWidgetPrivate::updateFont()
+void NXTerminalWidgetPrivate::updateFont()
 {
 #ifdef Q_OS_MAC
   QFont monoFont(QStringLiteral("Menlo"));
@@ -294,12 +256,10 @@ NXTerminalWidgetPrivate::updateFont()
   _promptLabel->setFont(monoFont);
 }
 
-void
-NXTerminalWidgetPrivate::trimOutput()
+void NXTerminalWidgetPrivate::trimOutput()
 {
   QTextDocument *doc = _outputArea->document();
-  while (doc->blockCount() > _pMaxLineCount)
-  {
+  while (doc->blockCount() > _pMaxLineCount) {
     QTextCursor cursor(doc->begin());
     cursor.select(QTextCursor::BlockUnderCursor);
     cursor.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);

@@ -34,107 +34,89 @@ NXRadioButton::~NXRadioButton()
   delete this->style();
 }
 
-void
-NXRadioButton::setTextPixelSize(int size)
+void NXRadioButton::setTextPixelSize(int size)
 {
   QFont font = this->font();
   font.setPixelSize(size);
   setFont(font);
 }
 
-int
-NXRadioButton::getTextPixelSize() const
+int NXRadioButton::getTextPixelSize() const
 {
   return this->font().pixelSize();
 }
 
-void
-NXRadioButton::setTextPointSize(int size)
+void NXRadioButton::setTextPointSize(int size)
 {
   QFont font = this->font();
   font.setPointSize(size);
   setFont(font);
 }
 
-int
-NXRadioButton::getTextPointSize() const
+int NXRadioButton::getTextPointSize() const
 {
   return this->font().pointSize();
 }
 
-void
-NXRadioButton::setTextStyle(NXTextType::TextStyle textStyle)
+void NXRadioButton::setTextStyle(NXTextType::TextStyle textStyle)
 {
   Q_D(NXRadioButton);
   QFont textFont = font();
   d->_textStyle  = textStyle;
-  switch (textStyle)
-  {
-  case NXTextType::NoStyle :
-  {
+  switch (textStyle) {
+  case NXTextType::NoStyle : {
     break;
   }
-  case NXTextType::Caption :
-  {
+  case NXTextType::Caption : {
     textFont.setPixelSize(12);
     break;
   }
-  case NXTextType::Body :
-  {
+  case NXTextType::Body : {
     textFont.setPixelSize(13);
     break;
   }
-  case NXTextType::BodyStrong :
-  {
+  case NXTextType::BodyStrong : {
     textFont.setPixelSize(13);
     textFont.setWeight(QFont::DemiBold);
     break;
   }
-  case NXTextType::Subtitle :
-  {
+  case NXTextType::Subtitle : {
     textFont.setPixelSize(20);
     textFont.setWeight(QFont::DemiBold);
     break;
   }
-  case NXTextType::Title :
-  {
+  case NXTextType::Title : {
     textFont.setPixelSize(28);
     textFont.setWeight(QFont::DemiBold);
     break;
   }
-  case NXTextType::TitleLarge :
-  {
+  case NXTextType::TitleLarge : {
     textFont.setPixelSize(40);
     textFont.setWeight(QFont::DemiBold);
     break;
   }
-  case NXTextType::Display :
-  {
+  case NXTextType::Display : {
     textFont.setPixelSize(48);
     textFont.setWeight(QFont::DemiBold);
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   setFont(textFont);
 }
 
-NXTextType::TextStyle
-NXRadioButton::getTextStyle() const
+NXTextType::TextStyle NXRadioButton::getTextStyle() const
 {
   Q_D(const NXRadioButton);
   return d->_textStyle;
 }
 
-void
-NXRadioButton::paintEvent(QPaintEvent *event)
+void NXRadioButton::paintEvent(QPaintEvent *event)
 {
   Q_D(NXRadioButton);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QRadioButton::paintEvent(event);

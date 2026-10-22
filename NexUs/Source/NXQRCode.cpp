@@ -23,8 +23,7 @@ NXQRCode::NXQRCode(QWidget *parent)
   d->_pBackgroundColor = Qt::white;
   d->_themeMode        = nxTheme->getThemeMode();
   setFixedSize(200, 200);
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -40,8 +39,7 @@ NXQRCode::~NXQRCode()
 {
 }
 
-void
-NXQRCode::setText(const QString &text)
+void NXQRCode::setText(const QString &text)
 {
   Q_D(NXQRCode);
   d->_text = text;
@@ -49,38 +47,32 @@ NXQRCode::setText(const QString &text)
   update();
 }
 
-QString
-NXQRCode::getText() const
+QString NXQRCode::getText() const
 {
   return d_ptr->_text;
 }
 
-void
-NXQRCode::setErrorCorrectionLevel(ErrorCorrectionLevel level)
+void NXQRCode::setErrorCorrectionLevel(ErrorCorrectionLevel level)
 {
   Q_D(NXQRCode);
   d->_ecLevel = (int) level;
-  if (!d->_text.isEmpty())
-  {
+  if (!d->_text.isEmpty()) {
     d->encode(d->_text);
     update();
   }
 }
 
-NXQRCode::ErrorCorrectionLevel
-NXQRCode::getErrorCorrectionLevel() const
+NXQRCode::ErrorCorrectionLevel NXQRCode::getErrorCorrectionLevel() const
 {
   return (ErrorCorrectionLevel) d_ptr->_ecLevel;
 }
 
-QPixmap
-NXQRCode::toPixmap(int size) const
+QPixmap NXQRCode::toPixmap(int size) const
 {
   Q_D(const NXQRCode);
   QPixmap pixmap(size, size);
   pixmap.fill(d->_pBackgroundColor);
-  if (d->_moduleCount == 0)
-  {
+  if (d->_moduleCount == 0) {
     return pixmap;
   }
   QPainter painter(&pixmap);
@@ -88,12 +80,9 @@ NXQRCode::toPixmap(int size) const
   qreal moduleSize = (qreal) size / totalModules;
   painter.setPen(Qt::NoPen);
   painter.setBrush(d->_pForegroundColor);
-  for (int row = 0; row < d->_moduleCount; row++)
-  {
-    for (int col = 0; col < d->_moduleCount; col++)
-    {
-      if (d->_modules[row][col])
-      {
+  for (int row = 0; row < d->_moduleCount; row++) {
+    for (int col = 0; col < d->_moduleCount; col++) {
+      if (d->_modules[row][col]) {
         qreal x = (col + d->_pQuietZone) * moduleSize;
         qreal y = (row + d->_pQuietZone) * moduleSize;
         painter.drawRect(QRectF(x, y, moduleSize + 0.5, moduleSize + 0.5));
@@ -103,8 +92,7 @@ NXQRCode::toPixmap(int size) const
   return pixmap;
 }
 
-void
-NXQRCode::paintEvent(QPaintEvent *event)
+void NXQRCode::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXQRCode);
@@ -115,8 +103,7 @@ NXQRCode::paintEvent(QPaintEvent *event)
   painter.setBrush(d->_pBackgroundColor);
   painter.drawRoundedRect(rect(), d->_pBorderRadius, d->_pBorderRadius);
 
-  if (d->_moduleCount == 0)
-  {
+  if (d->_moduleCount == 0) {
     painter.setPen(NXThemeColor(d->_themeMode, BasicText));
     painter.drawText(rect(), Qt::AlignCenter, QStringLiteral("无数据"));
     return;
@@ -130,12 +117,9 @@ NXQRCode::paintEvent(QPaintEvent *event)
 
   painter.setPen(Qt::NoPen);
   painter.setBrush(d->_pForegroundColor);
-  for (int row = 0; row < d->_moduleCount; row++)
-  {
-    for (int col = 0; col < d->_moduleCount; col++)
-    {
-      if (d->_modules[row][col])
-      {
+  for (int row = 0; row < d->_moduleCount; row++) {
+    for (int col = 0; col < d->_moduleCount; col++) {
+      if (d->_modules[row][col]) {
         qreal x = offsetX + (col + d->_pQuietZone) * moduleSize;
         qreal y = offsetY + (row + d->_pQuietZone) * moduleSize;
         painter.drawRect(QRectF(x, y, moduleSize + 0.5, moduleSize + 0.5));
@@ -150,27 +134,22 @@ static uint8_t gfExp[512];
 static uint8_t gfLog[256];
 static bool gfInitDone = false;
 
-void
-gfInit()
+void gfInit()
 {
-  if (gfInitDone)
-  {
+  if (gfInitDone) {
     return;
   }
   gfInitDone = true;
   int x      = 1;
-  for (int i = 0; i < 255; i++)
-  {
+  for (int i = 0; i < 255; i++) {
     gfExp[i] = (uint8_t) x;
     gfLog[x] = (uint8_t) i;
     x <<= 1;
-    if (x & 0x1'00)
-    {
+    if (x & 0x1'00) {
       x ^= 0x1'1D;
     }
   }
-  for (int i = 255; i < 512; i++)
-  {
+  for (int i = 255; i < 512; i++) {
     gfExp[i] = gfExp[i - 255];
   }
 }
@@ -178,8 +157,7 @@ gfInit()
 uint8_t
 gfMul(uint8_t a, uint8_t b)
 {
-  if (a == 0 || b == 0)
-  {
+  if (a == 0 || b == 0) {
     return 0;
   }
   return gfExp[gfLog[a] + gfLog[b]];
@@ -190,10 +168,8 @@ rsGeneratorPoly(int eccLen)
 {
   QVector<uint8_t> g(eccLen + 1, 0);
   g[0] = 1;
-  for (int i = 0; i < eccLen; i++)
-  {
-    for (int j = eccLen; j >= 1; j--)
-    {
+  for (int i = 0; i < eccLen; i++) {
+    for (int j = eccLen; j >= 1; j--) {
       g[j] = g[j - 1] ^ gfMul(g[j], gfExp[i]);
     }
     g[0] = gfMul(g[0], gfExp[i]);
@@ -206,11 +182,9 @@ rsEncode(const QVector<uint8_t> &data, int eccLen)
 {
   QVector<uint8_t> gen = rsGeneratorPoly(eccLen);
   QVector<uint8_t> ecc(eccLen, 0);
-  for (int i = 0; i < data.size(); i++)
-  {
+  for (int i = 0; i < data.size(); i++) {
     uint8_t coef = data[i] ^ ecc[0];
-    for (int j = 0; j < eccLen - 1; j++)
-    {
+    for (int j = 0; j < eccLen - 1; j++) {
       ecc[j] = ecc[j + 1] ^ gfMul(coef, gen[eccLen - 1 - j]);
     }
     ecc[eccLen - 1] = gfMul(coef, gen[0]);
@@ -281,18 +255,15 @@ static const VersionInfo VERSION_INFO[4][11] = {
    },
 };
 
-int
-selectVersion(int dataBytes, int ecLevel)
+int selectVersion(int dataBytes, int ecLevel)
 {
-  for (int v = 1; v <= 10; v++)
-  {
+  for (int v = 1; v <= 10; v++) {
     int countBits  = (v <= 9) ? 8 : 16;
     int headerBits = 4 + countBits;
     int dataBits   = dataBytes * 8;
     int totalBits  = headerBits + dataBits;
     int totalBytes = (totalBits + 7) / 8;
-    if (totalBytes <= VERSION_INFO[ecLevel][v].dataCodewords)
-    {
+    if (totalBytes <= VERSION_INFO[ecLevel][v].dataCodewords) {
       return v;
     }
   }
@@ -309,45 +280,37 @@ encodeDataCodewords(const QByteArray &utf8, int version, int ecLevel)
 
   bits << false << true << false << false;
 
-  for (int i = countBits - 1; i >= 0; i--)
-  {
+  for (int i = countBits - 1; i >= 0; i--) {
     bits << ((utf8.size() >> i) & 1);
   }
 
-  for (int i = 0; i < utf8.size(); i++)
-  {
+  for (int i = 0; i < utf8.size(); i++) {
     uint8_t b = (uint8_t) utf8[i];
-    for (int j = 7; j >= 0; j--)
-    {
+    for (int j = 7; j >= 0; j--) {
       bits << ((b >> j) & 1);
     }
   }
 
   int maxBits = dataCodewords * 8;
-  for (int i = 0; i < 4 && bits.size() < maxBits; i++)
-  {
+  for (int i = 0; i < 4 && bits.size() < maxBits; i++) {
     bits << false;
   }
 
-  while (bits.size() % 8 != 0 && bits.size() < maxBits)
-  {
+  while (bits.size() % 8 != 0 && bits.size() < maxBits) {
     bits << false;
   }
 
   QVector<uint8_t> codewords;
-  for (int i = 0; i < bits.size(); i += 8)
-  {
+  for (int i = 0; i < bits.size(); i += 8) {
     uint8_t byte = 0;
-    for (int j = 0; j < 8 && i + j < bits.size(); j++)
-    {
+    for (int j = 0; j < 8 && i + j < bits.size(); j++) {
       byte = (byte << 1) | (bits[i + j] ? 1 : 0);
     }
     codewords.append(byte);
   }
 
   bool toggle = true;
-  while (codewords.size() < dataCodewords)
-  {
+  while (codewords.size() < dataCodewords) {
     codewords.append(toggle ? 0xEC : 0x11);
     toggle = !toggle;
   }
@@ -369,24 +332,19 @@ static const int ALIGN_POS[][7] = {
 };
 static const int ALIGN_COUNT[] = { 0, 0, 2, 2, 2, 2, 2, 3, 3, 3, 3 };
 
-void
-setMod(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c, bool val)
+void setMod(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c, bool val)
 {
   int n = mat.size();
-  if (r >= 0 && r < n && c >= 0 && c < n)
-  {
+  if (r >= 0 && r < n && c >= 0 && c < n) {
     mat[r][c]  = val;
     func[r][c] = true;
   }
 }
 
-void
-drawFinderPattern(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c)
+void drawFinderPattern(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c)
 {
-  for (int dr = -1; dr <= 7; dr++)
-  {
-    for (int dc = -1; dc <= 7; dc++)
-    {
+  for (int dr = -1; dr <= 7; dr++) {
+    for (int dc = -1; dc <= 7; dc++) {
       bool black = (dr >= 0 && dr <= 6 && (dc == 0 || dc == 6)) || (dc >= 0 && dc <= 6 && (dr == 0 || dr == 6)) ||
                    (dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4);
       setMod(mat, func, r + dr, c + dc, black);
@@ -394,21 +352,17 @@ drawFinderPattern(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int
   }
 }
 
-void
-drawAlignmentPattern(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c)
+void drawAlignmentPattern(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int r, int c)
 {
-  for (int dr = -2; dr <= 2; dr++)
-  {
-    for (int dc = -2; dc <= 2; dc++)
-    {
+  for (int dr = -2; dr <= 2; dr++) {
+    for (int dc = -2; dc <= 2; dc++) {
       bool black = qAbs(dr) == 2 || qAbs(dc) == 2 || (dr == 0 && dc == 0);
       setMod(mat, func, r + dr, c + dc, black);
     }
   }
 }
 
-void
-drawFunctionPatterns(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int version)
+void drawFunctionPatterns(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, int version)
 {
   int n = mat.size();
 
@@ -416,23 +370,18 @@ drawFunctionPatterns(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, 
   drawFinderPattern(mat, func, 0, n - 7);
   drawFinderPattern(mat, func, n - 7, 0);
 
-  for (int i = 8; i < n - 8; i++)
-  {
+  for (int i = 8; i < n - 8; i++) {
     setMod(mat, func, 6, i, i % 2 == 0);
     setMod(mat, func, i, 6, i % 2 == 0);
   }
 
   int cnt = ALIGN_COUNT[version];
-  if (cnt > 0)
-  {
-    for (int i = 0; i < cnt; i++)
-    {
-      for (int j = 0; j < cnt; j++)
-      {
+  if (cnt > 0) {
+    for (int i = 0; i < cnt; i++) {
+      for (int j = 0; j < cnt; j++) {
         int r = ALIGN_POS[version][i];
         int c = ALIGN_POS[version][j];
-        if (func[r][c])
-        {
+        if (func[r][c]) {
           continue;
         }
         drawAlignmentPattern(mat, func, r, c);
@@ -440,8 +389,7 @@ drawFunctionPatterns(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, 
     }
   }
 
-  for (int i = 0; i < 8; i++)
-  {
+  for (int i = 0; i < 8; i++) {
     setMod(mat, func, 8, i, false);
     setMod(mat, func, i, 8, false);
     setMod(mat, func, 8, n - 1 - i, false);
@@ -452,30 +400,23 @@ drawFunctionPatterns(QVector<QVector<bool>> &mat, QVector<QVector<bool>> &func, 
   setMod(mat, func, n - 8, 8, true);
 }
 
-void
-placeData(QVector<QVector<bool>> &mat, const QVector<QVector<bool>> &func, const QVector<uint8_t> &data)
+void placeData(QVector<QVector<bool>> &mat, const QVector<QVector<bool>> &func, const QVector<uint8_t> &data)
 {
   int n         = mat.size();
   int bitIdx    = 0;
   int totalBits = data.size() * 8;
-  for (int right = n - 1; right >= 1; right -= 2)
-  {
-    if (right == 6)
-    {
+  for (int right = n - 1; right >= 1; right -= 2) {
+    if (right == 6) {
       right = 5;
     }
-    for (int vert = 0; vert < n; vert++)
-    {
-      for (int j = 0; j < 2; j++)
-      {
+    for (int vert = 0; vert < n; vert++) {
+      for (int j = 0; j < 2; j++) {
         int col     = right - j;
         bool upward = ((right + 1) & 2) == 0;
         int row     = upward ? n - 1 - vert : vert;
-        if (!func[row][col])
-        {
+        if (!func[row][col]) {
           bool bit = false;
-          if (bitIdx < totalBits)
-          {
+          if (bitIdx < totalBits) {
             bit = ((data[bitIdx / 8] >> (7 - (bitIdx % 8))) & 1) != 0;
             bitIdx++;
           }
@@ -486,12 +427,10 @@ placeData(QVector<QVector<bool>> &mat, const QVector<QVector<bool>> &func, const
   }
 }
 
-bool
-getMaskedBit(bool val, int r, int c, int maskPattern)
+bool getMaskedBit(bool val, int r, int c, int maskPattern)
 {
   bool mask = false;
-  switch (maskPattern)
-  {
+  switch (maskPattern) {
   case 0 : mask = (r + c) % 2 == 0; break;
   case 1 : mask = r % 2 == 0; break;
   case 2 : mask = c % 3 == 0; break;
@@ -504,39 +443,29 @@ getMaskedBit(bool val, int r, int c, int maskPattern)
   return mask ? !val : val;
 }
 
-void
-applyMask(QVector<QVector<bool>> &mat, const QVector<QVector<bool>> &func, int maskPattern)
+void applyMask(QVector<QVector<bool>> &mat, const QVector<QVector<bool>> &func, int maskPattern)
 {
   int n = mat.size();
-  for (int r = 0; r < n; r++)
-  {
-    for (int c = 0; c < n; c++)
-    {
-      if (!func[r][c])
-      {
+  for (int r = 0; r < n; r++) {
+    for (int c = 0; c < n; c++) {
+      if (!func[r][c]) {
         mat[r][c] = getMaskedBit(mat[r][c], r, c, maskPattern);
       }
     }
   }
 }
 
-int
-scoreMask(const QVector<QVector<bool>> &mat)
+int scoreMask(const QVector<QVector<bool>> &mat)
 {
   int n       = mat.size();
   int penalty = 0;
 
-  for (int r = 0; r < n; r++)
-  {
+  for (int r = 0; r < n; r++) {
     int run = 1;
-    for (int c = 1; c < n; c++)
-    {
-      if (mat[r][c] == mat[r][c - 1])
-      {
+    for (int c = 1; c < n; c++) {
+      if (mat[r][c] == mat[r][c - 1]) {
         run++;
-      }
-      else
-      {
+      } else {
         if (run >= 5)
           penalty += run - 2;
         run = 1;
@@ -545,17 +474,12 @@ scoreMask(const QVector<QVector<bool>> &mat)
     if (run >= 5)
       penalty += run - 2;
   }
-  for (int c = 0; c < n; c++)
-  {
+  for (int c = 0; c < n; c++) {
     int run = 1;
-    for (int r = 1; r < n; r++)
-    {
-      if (mat[r][c] == mat[r - 1][c])
-      {
+    for (int r = 1; r < n; r++) {
+      if (mat[r][c] == mat[r - 1][c]) {
         run++;
-      }
-      else
-      {
+      } else {
         if (run >= 5)
           penalty += run - 2;
         run = 1;
@@ -565,13 +489,10 @@ scoreMask(const QVector<QVector<bool>> &mat)
       penalty += run - 2;
   }
 
-  for (int r = 0; r < n - 1; r++)
-  {
-    for (int c = 0; c < n - 1; c++)
-    {
+  for (int r = 0; r < n - 1; r++) {
+    for (int c = 0; c < n - 1; c++) {
       bool v = mat[r][c];
-      if (v == mat[r][c + 1] && v == mat[r + 1][c] && v == mat[r + 1][c + 1])
-      {
+      if (v == mat[r][c + 1] && v == mat[r + 1][c] && v == mat[r + 1][c + 1]) {
         penalty += 3;
       }
     }
@@ -586,30 +507,25 @@ static const uint16_t FORMAT_INFO[4][8] = {
   { 0x16'89, 0x13'BE, 0x1C'E7, 0x19'D0, 0x07'62, 0x02'55, 0x0D'0C, 0x08'3B },
 };
 
-void
-drawFormatInfo(QVector<QVector<bool>> &mat, int maskPattern, int ecLevel)
+void drawFormatInfo(QVector<QVector<bool>> &mat, int maskPattern, int ecLevel)
 {
   int n         = mat.size();
   uint16_t bits = FORMAT_INFO[ecLevel][maskPattern];
 
-  for (int i = 0; i <= 5; i++)
-  {
+  for (int i = 0; i <= 5; i++) {
     mat[8][i] = ((bits >> (14 - i)) & 1) != 0;
   }
   mat[8][7] = ((bits >> 8) & 1) != 0;
   mat[8][8] = ((bits >> 7) & 1) != 0;
   mat[7][8] = ((bits >> 6) & 1) != 0;
-  for (int i = 0; i <= 5; i++)
-  {
+  for (int i = 0; i <= 5; i++) {
     mat[5 - i][8] = ((bits >> i) & 1) != 0;
   }
 
-  for (int i = 0; i <= 7; i++)
-  {
+  for (int i = 0; i <= 7; i++) {
     mat[n - 1 - i][8] = ((bits >> (14 - i)) & 1) != 0;
   }
-  for (int i = 8; i <= 14; i++)
-  {
+  for (int i = 8; i <= 14; i++) {
     mat[8][n - 15 + i] = ((bits >> (14 - i)) & 1) != 0;
   }
 }
@@ -624,11 +540,9 @@ NXQRCodePrivate::~NXQRCodePrivate()
 {
 }
 
-void
-NXQRCodePrivate::encode(const QString &text)
+void NXQRCodePrivate::encode(const QString &text)
 {
-  if (text.isEmpty())
-  {
+  if (text.isEmpty()) {
     _modules.clear();
     _moduleCount = 0;
     return;
@@ -649,8 +563,7 @@ NXQRCodePrivate::encode(const QString &text)
   QVector<QVector<uint8_t>> dataBlocks;
   QVector<QVector<uint8_t>> eccBlocks;
   int offset = 0;
-  for (int b = 0; b < vi.numBlocks; b++)
-  {
+  for (int b = 0; b < vi.numBlocks; b++) {
     int thisBlockSize = blockSize + (b >= vi.numBlocks - remainder ? 1 : 0);
     QVector<uint8_t> block(dataCodewords.mid(offset, thisBlockSize));
     dataBlocks.append(block);
@@ -660,34 +573,27 @@ NXQRCodePrivate::encode(const QString &text)
 
   QVector<uint8_t> allCodewords;
   int maxDataLen = blockSize + (remainder > 0 ? 1 : 0);
-  for (int i = 0; i < maxDataLen; i++)
-  {
-    for (int b = 0; b < vi.numBlocks; b++)
-    {
-      if (i < dataBlocks[b].size())
-      {
+  for (int i = 0; i < maxDataLen; i++) {
+    for (int b = 0; b < vi.numBlocks; b++) {
+      if (i < dataBlocks[b].size()) {
         allCodewords.append(dataBlocks[b][i]);
       }
     }
   }
-  for (int i = 0; i < vi.eccPerBlock; i++)
-  {
-    for (int b = 0; b < vi.numBlocks; b++)
-    {
+  for (int i = 0; i < vi.eccPerBlock; i++) {
+    for (int b = 0; b < vi.numBlocks; b++) {
       allCodewords.append(eccBlocks[b][i]);
     }
   }
 
   _modules.resize(_moduleCount);
-  for (int i = 0; i < _moduleCount; i++)
-  {
+  for (int i = 0; i < _moduleCount; i++) {
     _modules[i].resize(_moduleCount);
     _modules[i].fill(false);
   }
 
   QVector<QVector<bool>> func(_moduleCount);
-  for (int i = 0; i < _moduleCount; i++)
-  {
+  for (int i = 0; i < _moduleCount; i++) {
     func[i].resize(_moduleCount);
     func[i].fill(false);
   }
@@ -699,14 +605,12 @@ NXQRCodePrivate::encode(const QString &text)
   int bestScore                      = INT_MAX;
   QVector<QVector<bool>> bestModules = _modules;
 
-  for (int mask = 0; mask < 8; mask++)
-  {
+  for (int mask = 0; mask < 8; mask++) {
     QVector<QVector<bool>> trial = _modules;
     applyMask(trial, func, mask);
     drawFormatInfo(trial, mask, _ecLevel);
     int score = scoreMask(trial);
-    if (score < bestScore)
-    {
+    if (score < bestScore) {
       bestScore   = score;
       bestMask    = mask;
       bestModules = trial;

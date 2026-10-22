@@ -10,11 +10,10 @@
 NXLineEditStyle::NXLineEditStyle(QStyle *style)
 {
   _pContentsMargins = { 10, 0, 0, 0 };
-  _pIconMargin   = 10;
-  _pBorderRadius = 6;
-  _themeMode     = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  _pIconMargin      = 10;
+  _pBorderRadius    = 6;
+  _themeMode        = nxTheme->getThemeMode();
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -23,18 +22,11 @@ NXLineEditStyle::~NXLineEditStyle()
 {
 }
 
-void
-NXLineEditStyle::drawPrimitive(PrimitiveElement element,
-                               const QStyleOption *option,
-                               QPainter *painter,
-                               const QWidget *widget) const
+void NXLineEditStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case PE_PanelLineEdit :
-  {
-    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option))
-    {
+  switch (element) {
+  case PE_PanelLineEdit : {
+    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
       QRect lineEditRect = fopt->rect;
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing);
@@ -44,16 +36,11 @@ NXLineEditStyle::drawPrimitive(PrimitiveElement element,
       painter->drawRoundedRect(lineEditRect, _pBorderRadius, _pBorderRadius);
       painter->setPen(Qt::NoPen);
       //  背景绘制
-      if (fopt->state & QStyle::State_HasFocus)
-      {
+      if (fopt->state & QStyle::State_HasFocus) {
         painter->setBrush(NXThemeColor(_themeMode, DialogBase));
-      }
-      else if (fopt->state & QStyle::State_MouseOver)
-      {
+      } else if (fopt->state & QStyle::State_MouseOver) {
         painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
-      }
-      else
-      {
+      } else {
         painter->setBrush(NXThemeColor(_themeMode, BasicBaseAlpha));
       }
       painter->drawRoundedRect(
@@ -74,19 +61,16 @@ NXLineEditStyle::drawPrimitive(PrimitiveElement element,
     }
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-QRect
-NXLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+QRect NXLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
-  if (element == SE_LineEditContents)
-  {
+  if (element == SE_LineEditContents) {
     QRect r = QProxyStyle::subElementRect(element, option, widget);
     r.adjust(_pContentsMargins.left(), _pContentsMargins.top(), -_pContentsMargins.right(), -_pContentsMargins.bottom());
     return r;
@@ -94,13 +78,9 @@ NXLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, 
   return QProxyStyle::subElementRect(element, option, widget);
 }
 
-int
-NXLineEditStyle::pixelMetric(PixelMetric metric,
-                             const QStyleOption *option /*= nullptr*/,
-                             const QWidget *widget /*= nullptr*/) const
+int NXLineEditStyle::pixelMetric(PixelMetric metric, const QStyleOption *option /*= nullptr*/, const QWidget *widget /*= nullptr*/) const
 {
-  switch (metric)
-  {
+  switch (metric) {
   case PM_LineEditIconMargin : return _pIconMargin;
   default                    : return QProxyStyle::pixelMetric(metric, option, widget);
   }

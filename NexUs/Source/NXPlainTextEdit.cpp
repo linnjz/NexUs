@@ -47,15 +47,12 @@ NXPlainTextEdit::~NXPlainTextEdit()
   delete d->_style;
 }
 
-void
-NXPlainTextEdit::focusInEvent(QFocusEvent *event)
+void NXPlainTextEdit::focusInEvent(QFocusEvent *event)
 {
   Q_D(NXPlainTextEdit);
-  if (event->reason() == Qt::MouseFocusReason)
-  {
+  if (event->reason() == Qt::MouseFocusReason) {
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d->_style, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -67,15 +64,12 @@ NXPlainTextEdit::focusInEvent(QFocusEvent *event)
   QPlainTextEdit::focusInEvent(event);
 }
 
-void
-NXPlainTextEdit::focusOutEvent(QFocusEvent *event)
+void NXPlainTextEdit::focusOutEvent(QFocusEvent *event)
 {
   Q_D(NXPlainTextEdit);
-  if (event->reason() != Qt::PopupFocusReason)
-  {
+  if (event->reason() != Qt::PopupFocusReason) {
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d->_style, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -87,15 +81,13 @@ NXPlainTextEdit::focusOutEvent(QFocusEvent *event)
   QPlainTextEdit::focusOutEvent(event);
 }
 
-void
-NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
+void NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
 {
   NXMenu *menu = new NXMenu(this);
   menu->setMenuItemHeight(27);
   menu->setAttribute(Qt::WA_DeleteOnClose);
   QAction *action = nullptr;
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::ArrowRotateLeft, QStringLiteral("撤销"), QKeySequence::Undo);
     action->setEnabled(isUndoRedoEnabled() ? document()->isUndoAvailable() : false);
     connect(action, &QAction::triggered, this, &NXPlainTextEdit::undo);
@@ -106,8 +98,7 @@ NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
     menu->addSeparator();
   }
 #ifndef QT_NO_CLIPBOARD
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::KnifeKitchen, QStringLiteral("剪切"), QKeySequence::Cut);
     action->setEnabled(!isReadOnly() && !textCursor().selectedText().isEmpty());
     connect(action, &QAction::triggered, this, &NXPlainTextEdit::cut);
@@ -117,27 +108,22 @@ NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
   action->setEnabled(!textCursor().selectedText().isEmpty());
   connect(action, &QAction::triggered, this, &NXPlainTextEdit::copy);
 
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::Paste, QStringLiteral("粘贴"), QKeySequence::Paste);
     action->setEnabled(!isReadOnly() && !QGuiApplication::clipboard()->text().isEmpty());
     connect(action, &QAction::triggered, this, &NXPlainTextEdit::paste);
   }
 #endif
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::DeleteLeft, QStringLiteral("删除"));
     action->setEnabled(!isReadOnly() && !toPlainText().isEmpty() && !textCursor().selectedText().isEmpty());
-    connect(action, &QAction::triggered, this, [=](bool checked)
-    {
-      if (!textCursor().selectedText().isEmpty())
-      {
+    connect(action, &QAction::triggered, this, [=](bool checked) {
+      if (!textCursor().selectedText().isEmpty()) {
         textCursor().deleteChar();
       }
     });
   }
-  if (!menu->isEmpty())
-  {
+  if (!menu->isEmpty()) {
     menu->addSeparator();
   }
   action = menu->addAction(QStringLiteral("全选"));
@@ -148,24 +134,20 @@ NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
   this->setFocus();
 }
 
-void
-NXPlainTextEdit::paintEvent(QPaintEvent *event)
+void NXPlainTextEdit::paintEvent(QPaintEvent *event)
 {
   Q_D(NXPlainTextEdit);
-  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QPlainTextEdit::paintEvent(event);
 }
 
-void
-NXPlainTextEdit::resizeEvent(QResizeEvent *event)
+void NXPlainTextEdit::resizeEvent(QResizeEvent *event)
 {
   Q_D(NXPlainTextEdit);
   QPlainTextEdit::resizeEvent(event);
-  if (d->_style->getExpandMarkWidth() > 0)
-  {
+  if (d->_style->getExpandMarkWidth() > 0) {
     d->_style->setExpandMarkWidth(width() / 2 - 3);
     update();
   }

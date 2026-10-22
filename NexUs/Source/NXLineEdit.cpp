@@ -52,8 +52,7 @@ NXLineEdit::~NXLineEdit()
   delete this->style();
 }
 
-void
-NXLineEdit::setContentsMargins(QMargins margins)
+void NXLineEdit::setContentsMargins(QMargins margins)
 {
   Q_D(NXLineEdit);
   d->_lineEditStyle->setContentsMargins(margins);
@@ -61,16 +60,13 @@ NXLineEdit::setContentsMargins(QMargins margins)
   Q_EMIT pContentsMarginsChanged();
 }
 
-QMargins
-NXLineEdit::getContentsMargins() const
+QMargins NXLineEdit::getContentsMargins() const
 {
   Q_D(const NXLineEdit);
   return d->_lineEditStyle->getContentsMargins();
 }
 
-
-void
-NXLineEdit::setIsClearButtonEnable(bool isClearButtonEnable)
+void NXLineEdit::setIsClearButtonEnable(bool isClearButtonEnable)
 {
   Q_D(NXLineEdit);
   d->_pIsClearButtonEnable = isClearButtonEnable;
@@ -78,55 +74,46 @@ NXLineEdit::setIsClearButtonEnable(bool isClearButtonEnable)
   Q_EMIT pIsClearButtonEnableChanged();
 }
 
-bool
-NXLineEdit::getIsClearButtonEnable() const
+bool NXLineEdit::getIsClearButtonEnable() const
 {
   Q_D(const NXLineEdit);
   return d->_pIsClearButtonEnable;
 }
 
-void
-NXLineEdit::setBorderRadius(int borderRadius)
+void NXLineEdit::setBorderRadius(int borderRadius)
 {
   Q_D(const NXLineEdit);
   d->_lineEditStyle->setBorderRadius(borderRadius);
 }
 
-int
-NXLineEdit::getBorderRadius() const
+int NXLineEdit::getBorderRadius() const
 {
   Q_D(const NXLineEdit);
   return d->_lineEditStyle->getBorderRadius();
 }
 
-void
-NXLineEdit::setIconMargin(int margin)
+void NXLineEdit::setIconMargin(int margin)
 {
   Q_D(NXLineEdit);
   d->_lineEditStyle->setIconMargin(margin);
 }
 
-int
-NXLineEdit::getIconMargin() const
+int NXLineEdit::getIconMargin() const
 {
   Q_D(const NXLineEdit);
   return d->_lineEditStyle->getIconMargin();
 }
 
-void
-NXLineEdit::focusInEvent(QFocusEvent *event)
+void NXLineEdit::focusInEvent(QFocusEvent *event)
 {
   Q_D(NXLineEdit);
   Q_EMIT focusIn(this->text());
-  if (event->reason() != Qt::PopupFocusReason)
-  {
-    if (d->_pIsClearButtonEnable)
-    {
+  if (event->reason() != Qt::PopupFocusReason) {
+    if (d->_pIsClearButtonEnable) {
       setClearButtonEnabled(true);
     }
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -138,20 +125,16 @@ NXLineEdit::focusInEvent(QFocusEvent *event)
   QLineEdit::focusInEvent(event);
 }
 
-void
-NXLineEdit::focusOutEvent(QFocusEvent *event)
+void NXLineEdit::focusOutEvent(QFocusEvent *event)
 {
   Q_D(NXLineEdit);
   Q_EMIT focusOut(this->text());
-  if (event->reason() != Qt::PopupFocusReason)
-  {
-    if (d->_pIsClearButtonEnable)
-    {
+  if (event->reason() != Qt::PopupFocusReason) {
+    if (d->_pIsClearButtonEnable) {
       setClearButtonEnabled(false);
     }
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -164,12 +147,10 @@ NXLineEdit::focusOutEvent(QFocusEvent *event)
   QLineEdit::focusOutEvent(event);
 }
 
-void
-NXLineEdit::paintEvent(QPaintEvent *event)
+void NXLineEdit::paintEvent(QPaintEvent *event)
 {
   Q_D(NXLineEdit);
-  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QLineEdit::paintEvent(event);
@@ -178,20 +159,17 @@ NXLineEdit::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
   painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2,
-                          2);
+  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2, 2);
   painter.restore();
 }
 
-void
-NXLineEdit::contextMenuEvent(QContextMenuEvent *event)
+void NXLineEdit::contextMenuEvent(QContextMenuEvent *event)
 {
   NXMenu *menu = new NXMenu(this);
   menu->setMenuItemHeight(27);
   menu->setAttribute(Qt::WA_DeleteOnClose);
   QAction *action = nullptr;
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::ArrowRotateLeft, tr("撤销"), QKeySequence::Undo);
     action->setEnabled(isUndoAvailable());
     connect(action, &QAction::triggered, this, &NXLineEdit::undo);
@@ -202,8 +180,7 @@ NXLineEdit::contextMenuEvent(QContextMenuEvent *event)
     menu->addSeparator();
   }
 #ifndef QT_NO_CLIPBOARD
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::KnifeKitchen, tr("剪切"), QKeySequence::Cut);
     action->setEnabled(!isReadOnly() && hasSelectedText() && echoMode() == QLineEdit::Normal);
     connect(action, &QAction::triggered, this, &NXLineEdit::cut);
@@ -213,29 +190,24 @@ NXLineEdit::contextMenuEvent(QContextMenuEvent *event)
   action->setEnabled(hasSelectedText() && echoMode() == QLineEdit::Normal);
   connect(action, &QAction::triggered, this, &NXLineEdit::copy);
 
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::Paste, tr("粘贴"), QKeySequence::Paste);
     action->setEnabled(!isReadOnly() && !QGuiApplication::clipboard()->text().isEmpty());
     connect(action, &QAction::triggered, this, &NXLineEdit::paste);
   }
 #endif
-  if (!isReadOnly())
-  {
+  if (!isReadOnly()) {
     action = menu->addNXIconAction(NXIconType::DeleteLeft, tr("删除"));
     action->setEnabled(!isReadOnly() && !text().isEmpty() && hasSelectedText());
-    connect(action, &QAction::triggered, this, [=](bool checked)
-    {
-      if (hasSelectedText())
-      {
+    connect(action, &QAction::triggered, this, [=](bool checked) {
+      if (hasSelectedText()) {
         int startIndex = selectionStart();
         int endIndex   = selectionEnd();
         setText(text().remove(startIndex, endIndex - startIndex));
       }
     });
   }
-  if (!menu->isEmpty())
-  {
+  if (!menu->isEmpty()) {
     menu->addSeparator();
   }
   action = menu->addAction(tr("全选"));

@@ -27,42 +27,34 @@ NXAutoCompletePrivate::~NXAutoCompletePrivate()
 {
 }
 
-void
-NXAutoCompletePrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
+void NXAutoCompletePrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
   _themeMode = themeMode;
 }
 
-void
-NXAutoCompletePrivate::onTextEdited(const QString &text)
+void NXAutoCompletePrivate::onTextEdited(const QString &text)
 {
   Q_Q(NXAutoComplete);
   Q_EMIT q->textEdited(text);
 
-  if (text.isEmpty())
-  {
+  if (text.isEmpty()) {
     _hidePopup();
     return;
   }
 
   _updateFilter(text);
 
-  if (_filterModel->rowCount() > 0)
-  {
+  if (_filterModel->rowCount() > 0) {
     _showPopup();
-  }
-  else
-  {
+  } else {
     _hidePopup();
   }
 }
 
-void
-NXAutoCompletePrivate::onItemClicked(const QModelIndex &index)
+void NXAutoCompletePrivate::onItemClicked(const QModelIndex &index)
 {
   Q_Q(NXAutoComplete);
-  if (!index.isValid())
-  {
+  if (!index.isValid()) {
     return;
   }
   QString text = _filterModel->data(index, Qt::DisplayRole).toString();
@@ -71,11 +63,9 @@ NXAutoCompletePrivate::onItemClicked(const QModelIndex &index)
   Q_EMIT q->completionSelected(text);
 }
 
-void
-NXAutoCompletePrivate::_showPopup()
+void NXAutoCompletePrivate::_showPopup()
 {
-  if (!_popup)
-  {
+  if (!_popup) {
     return;
   }
 
@@ -91,17 +81,13 @@ NXAutoCompletePrivate::_showPopup()
                    (lineEditGlobal.y() - popupHeight >= screenGeometry.top());
 
   QPoint popupPos;
-  if (showAbove)
-  {
+  if (showAbove) {
     popupPos = QPoint(lineEditGlobal.x(), lineEditGlobal.y() - popupHeight - 3);
-  }
-  else
-  {
+  } else {
     popupPos = QPoint(lineEditGlobal.x(), lineEditGlobal.y() + _lineEdit->height() + 3);
   }
 
-  if (_isPopupVisible)
-  {
+  if (_isPopupVisible) {
     _popup->setFixedSize(popupWidth, popupHeight);
     _popup->move(popupPos);
     _popup->update();
@@ -116,14 +102,12 @@ NXAutoCompletePrivate::_showPopup()
   _listView->resize(popupWidth - 8, popupHeight - 8);
 
   QLayout *layout = _popup->layout();
-  while (layout->count())
-  {
+  while (layout->count()) {
     layout->takeAt(0);
   }
 
   QPropertyAnimation *heightAnimation = new QPropertyAnimation(_popup, "maximumHeight");
-  connect(heightAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(heightAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     _popup->setFixedHeight(value.toUInt());
   });
   heightAnimation->setStartValue(1);
@@ -133,8 +117,7 @@ NXAutoCompletePrivate::_showPopup()
   heightAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   QPropertyAnimation *viewAnimation = new QPropertyAnimation(_listView, "pos");
-  connect(viewAnimation, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(viewAnimation, &QPropertyAnimation::finished, this, [=]() {
     _isAllowHidePopup = true;
     layout->addWidget(_listView);
   });
@@ -146,15 +129,12 @@ NXAutoCompletePrivate::_showPopup()
   viewAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void
-NXAutoCompletePrivate::_hidePopup()
+void NXAutoCompletePrivate::_hidePopup()
 {
-  if (!_popup || !_isPopupVisible)
-  {
+  if (!_popup || !_isPopupVisible) {
     return;
   }
-  if (!_isAllowHidePopup)
-  {
+  if (!_isAllowHidePopup) {
     return;
   }
 
@@ -162,15 +142,13 @@ NXAutoCompletePrivate::_hidePopup()
   int containerHeight = _popup->height();
 
   QLayout *layout = _popup->layout();
-  while (layout->count())
-  {
+  while (layout->count()) {
     layout->takeAt(0);
   }
 
   QPropertyAnimation *viewAnimation = new QPropertyAnimation(_listView, "pos");
   QPoint viewPos                    = _listView->pos();
-  connect(viewAnimation, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(viewAnimation, &QPropertyAnimation::finished, this, [=]() {
     layout->addWidget(_listView);
     _popup->hide();
     _popup->setFixedHeight(containerHeight);
@@ -184,8 +162,7 @@ NXAutoCompletePrivate::_hidePopup()
   viewAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   QPropertyAnimation *heightAnimation = new QPropertyAnimation(_popup, "maximumHeight");
-  connect(heightAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(heightAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     _popup->setFixedHeight(value.toInt());
   });
   heightAnimation->setStartValue(_popup->height());
@@ -195,14 +172,11 @@ NXAutoCompletePrivate::_hidePopup()
   heightAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void
-NXAutoCompletePrivate::_updateFilter(const QString &text)
+void NXAutoCompletePrivate::_updateFilter(const QString &text)
 {
   Qt::CaseSensitivity cs = _pCaseSensitivity;
-  switch (_matchMode)
-  {
-  case NXAutoComplete::StartsWith :
-  {
+  switch (_matchMode) {
+  case NXAutoComplete::StartsWith : {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QRegularExpression::PatternOption caseOption =
         cs == Qt::CaseInsensitive ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
@@ -214,8 +188,7 @@ NXAutoCompletePrivate::_updateFilter(const QString &text)
 #endif
     break;
   }
-  case NXAutoComplete::EndsWith :
-  {
+  case NXAutoComplete::EndsWith : {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QRegularExpression::PatternOption caseOption =
         cs == Qt::CaseInsensitive ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
@@ -227,20 +200,17 @@ NXAutoCompletePrivate::_updateFilter(const QString &text)
 #endif
     break;
   }
-  case NXAutoComplete::RegExp :
-  {
+  case NXAutoComplete::RegExp : {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QRegularExpression::PatternOption caseOption =
         cs == Qt::CaseInsensitive ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption;
     QRegularExpression re(text, caseOption);
-    if (re.isValid())
-    {
+    if (re.isValid()) {
       _filterModel->setFilterRegularExpression(re);
     }
 #else
     QRegExp re(text, cs);
-    if (re.isValid())
-    {
+    if (re.isValid()) {
       _filterModel->setFilterRegExp(re);
     }
 #endif
@@ -254,8 +224,7 @@ NXAutoCompletePrivate::_updateFilter(const QString &text)
   }
 
   NXAutoCompleteDelegate *delegate = qobject_cast<NXAutoCompleteDelegate *>(_listView->itemDelegate());
-  if (delegate)
-  {
+  if (delegate) {
     delegate->setHighlightText(text);
     delegate->setMatchMode(_matchMode);
   }

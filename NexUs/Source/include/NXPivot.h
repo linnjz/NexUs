@@ -36,21 +36,21 @@ public:
   explicit NXPivot(QWidget *parent = nullptr);
   ~NXPivot();
 
-  void appendPivot(QPixmap const &pixmap);
-  void appendPivot(QString const &pivotTitle, QPixmap const &pixmap = {});
+  void appendPivot(const QPixmap &pixmap);
+  void appendPivot(const QString &pivotTitle, const QPixmap &pixmap = {});
 
-  void insertPivot(int index, QPixmap const &pixmap);
-  void insertPivot(int index, QString const &pivotTitle, QPixmap const &pixmap = {});
+  void insertPivot(int index, const QPixmap &pixmap);
+  void insertPivot(int index, const QString &pivotTitle, const QPixmap &pixmap = {});
 
   void removePivot(int index);
-  void removePivot(QString const &pivotTitle);
+  void removePivot(const QString &pivotTitle);
 
-  void setPivot(int index, QPixmap const &pixmap);
-  void setPivot(int index, QString const &pivotTitle, QPixmap const &pixmap = {});
+  void setPivot(int index, const QPixmap &pixmap);
+  void setPivot(int index, const QString &pivotTitle, const QPixmap &pixmap = {});
 
   void clearPivot();
   QStringList getPivotTitle() const;
-  void setCurrentTitle(QString const &pivotTitle);
+  void setCurrentTitle(const QString &pivotTitle);
 
   Q_SIGNAL void pivotChanged(int index);
   Q_SIGNAL void pivotInserted(int index);

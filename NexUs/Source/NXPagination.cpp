@@ -24,23 +24,19 @@ NXPaginationPrivate::~NXPaginationPrivate()
 {
 }
 
-void
-NXPaginationPrivate::_updateJumperPosition()
+void NXPaginationPrivate::_updateJumperPosition()
 {
   Q_Q(NXPagination);
-  if (!_jumperEdit)
-  {
+  if (!_jumperEdit) {
     return;
   }
   _jumperEdit->setVisible(_pJumperVisible);
-  if (!_pJumperVisible)
-  {
+  if (!_pJumperVisible) {
     return;
   }
   QList<QPair<QRect, int>> buttonRects = _getButtonRects();
   int jumperX                          = 0;
-  if (!buttonRects.isEmpty())
-  {
+  if (!buttonRects.isEmpty()) {
     QRect lastRect = buttonRects.last().first;
     jumperX        = lastRect.x() + lastRect.width() + 12;
   }
@@ -50,23 +46,19 @@ NXPaginationPrivate::_updateJumperPosition()
   _jumperEdit->setGeometry(jumperX, y, editWidth, editHeight);
 }
 
-QList<int>
-NXPaginationPrivate::_getVisiblePages() const
+QList<int> NXPaginationPrivate::_getVisiblePages() const
 {
   QList<int> pages;
   int total      = _pTotalPages;
   int current    = _pCurrentPage;
   int pagerCount = _pPagerCount;
 
-  if (total <= 0)
-  {
+  if (total <= 0) {
     return pages;
   }
 
-  if (total <= pagerCount)
-  {
-    for (int i = 1; i <= total; i++)
-    {
+  if (total <= pagerCount) {
+    for (int i = 1; i <= total; i++) {
       pages.append(i);
     }
     return pages;
@@ -76,31 +68,23 @@ NXPaginationPrivate::_getVisiblePages() const
   bool showLeftEllipsis  = current > halfPager + 2;
   bool showRightEllipsis = current < total - halfPager - 1;
 
-  if (!showLeftEllipsis && showRightEllipsis)
-  {
-    for (int i = 1; i <= pagerCount - 2; i++)
-    {
+  if (!showLeftEllipsis && showRightEllipsis) {
+    for (int i = 1; i <= pagerCount - 2; i++) {
       pages.append(i);
     }
     pages.append(-1);
     pages.append(total);
-  }
-  else if (showLeftEllipsis && !showRightEllipsis)
-  {
+  } else if (showLeftEllipsis && !showRightEllipsis) {
     pages.append(1);
     pages.append(-3);
-    for (int i = total - (pagerCount - 3); i <= total; i++)
-    {
+    for (int i = total - (pagerCount - 3); i <= total; i++) {
       pages.append(i);
     }
-  }
-  else
-  {
+  } else {
     pages.append(1);
     pages.append(-3);
     int sideCount = (pagerCount - 4) / 2;
-    for (int i = current - sideCount; i <= current + sideCount; i++)
-    {
+    for (int i = current - sideCount; i <= current + sideCount; i++) {
       pages.append(i);
     }
     pages.append(-1);
@@ -110,8 +94,7 @@ NXPaginationPrivate::_getVisiblePages() const
   return pages;
 }
 
-QList<QPair<QRect, int>>
-NXPaginationPrivate::_getButtonRects() const
+QList<QPair<QRect, int>> NXPaginationPrivate::_getButtonRects() const
 {
   QList<QPair<QRect, int>> rects;
   int size    = _pButtonSize;
@@ -123,18 +106,12 @@ NXPaginationPrivate::_getButtonRects() const
   x += size + spacing;
 
   QList<int> pages = _getVisiblePages();
-  for (int page : pages)
-  {
-    if (page == -1)
-    {
+  for (int page : pages) {
+    if (page == -1) {
       rects.append(qMakePair(QRect(x, y, size, size), -1));
-    }
-    else if (page == -3)
-    {
+    } else if (page == -3) {
       rects.append(qMakePair(QRect(x, y, size, size), -3));
-    }
-    else
-    {
+    } else {
       rects.append(qMakePair(QRect(x, y, size, size), page));
     }
     x += size + spacing;
@@ -169,13 +146,11 @@ NXPagination::NXPagination(QWidget *parent)
       QStringLiteral("#NXLineEdit{background-color:transparent;padding-left:0px;padding-right:0px;}"));
   d->_jumperEdit->setValidator(new QIntValidator(1, 9999, d->_jumperEdit));
   d->_jumperEdit->setVisible(false);
-  connect(d->_jumperEdit, &NXLineEdit::returnPressed, this, [=]()
-  {
+  connect(d->_jumperEdit, &NXLineEdit::returnPressed, this, [=]() {
     QString text = d->_jumperEdit->text().trimmed();
     bool ok      = false;
     int page     = text.toInt(&ok);
-    if (ok && page >= 1 && page <= d->_pTotalPages && page != d->_pCurrentPage)
-    {
+    if (ok && page >= 1 && page <= d->_pTotalPages && page != d->_pCurrentPage) {
       d->_pCurrentPage = page;
       Q_EMIT pCurrentPageChanged();
       Q_EMIT currentPageChanged(page);
@@ -184,8 +159,7 @@ NXPagination::NXPagination(QWidget *parent)
     d->_jumperEdit->clear();
   });
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -195,8 +169,7 @@ NXPagination::~NXPagination()
 {
 }
 
-void
-NXPagination::paintEvent(QPaintEvent *event)
+void NXPagination::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXPagination);
@@ -211,8 +184,7 @@ NXPagination::paintEvent(QPaintEvent *event)
   QFont iconFont(QStringLiteral("NXAwesome"));
   iconFont.setPixelSize(16);
 
-  for (int i = 0; i < buttonRects.size(); i++)
-  {
+  for (int i = 0; i < buttonRects.size(); i++) {
     QRect rect    = buttonRects[i].first;
     int pageValue = buttonRects[i].second;
 
@@ -220,30 +192,21 @@ NXPagination::paintEvent(QPaintEvent *event)
     bool isCurrentPage = (pageValue > 0 && pageValue == d->_pCurrentPage);
     bool isDisabled    = false;
 
-    if (pageValue == 0 && d->_pCurrentPage <= 1)
-    {
+    if (pageValue == 0 && d->_pCurrentPage <= 1) {
       isDisabled = true;
     }
-    if (pageValue == -2 && d->_pCurrentPage >= d->_pTotalPages)
-    {
+    if (pageValue == -2 && d->_pCurrentPage >= d->_pTotalPages) {
       isDisabled = true;
     }
 
     painter.setPen(Qt::NoPen);
-    if (isCurrentPage)
-    {
+    if (isCurrentPage) {
       painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-    }
-    else if (isDisabled)
-    {
+    } else if (isDisabled) {
       painter.setBrush(NXThemeColor(d->_themeMode, BasicDisable));
-    }
-    else if (isHovered)
-    {
+    } else if (isHovered) {
       painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
-    }
-    else
-    {
+    } else {
       painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
     }
 
@@ -251,111 +214,79 @@ NXPagination::paintEvent(QPaintEvent *event)
     path.addRoundedRect(rect, 6, 6);
     painter.drawPath(path);
 
-    if (isCurrentPage)
-    {
+    if (isCurrentPage) {
       painter.setPen(Qt::white);
-    }
-    else if (isDisabled)
-    {
+    } else if (isDisabled) {
       painter.setPen(NXThemeColor(d->_themeMode, BasicTextDisable));
-    }
-    else
-    {
+    } else {
       painter.setPen(NXThemeColor(d->_themeMode, BasicText));
     }
 
-    if (pageValue == 0)
-    {
+    if (pageValue == 0) {
       painter.setFont(iconFont);
       painter.drawText(rect, Qt::AlignCenter, QChar((unsigned short) 0xea'84));
-    }
-    else if (pageValue == -2)
-    {
+    } else if (pageValue == -2) {
       painter.setFont(iconFont);
       painter.drawText(rect, Qt::AlignCenter, QChar((unsigned short) 0xea'85));
-    }
-    else if (pageValue == -1 || pageValue == -3)
-    {
+    } else if (pageValue == -1 || pageValue == -3) {
       painter.setFont(iconFont);
       painter.drawText(rect, Qt::AlignCenter, QChar((unsigned short) 0xec'4d));
-    }
-    else
-    {
+    } else {
       painter.setFont(textFont);
       painter.drawText(rect, Qt::AlignCenter, QString::number(pageValue));
     }
   }
 }
 
-void
-NXPagination::mouseMoveEvent(QMouseEvent *event)
+void NXPagination::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXPagination);
   QList<QPair<QRect, int>> buttonRects = d->_getButtonRects();
   int oldHover                         = d->_hoverIndex;
   d->_hoverIndex                       = -1;
-  for (int i = 0; i < buttonRects.size(); i++)
-  {
-    if (buttonRects[i].first.contains(event->pos()))
-    {
+  for (int i = 0; i < buttonRects.size(); i++) {
+    if (buttonRects[i].first.contains(event->pos())) {
       d->_hoverIndex = i;
       break;
     }
   }
-  if (oldHover != d->_hoverIndex)
-  {
+  if (oldHover != d->_hoverIndex) {
     update();
   }
   QWidget::mouseMoveEvent(event);
 }
 
-void
-NXPagination::mousePressEvent(QMouseEvent *event)
+void NXPagination::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXPagination);
-  if (event->button() != Qt::LeftButton)
-  {
+  if (event->button() != Qt::LeftButton) {
     QWidget::mousePressEvent(event);
     return;
   }
 
   QList<QPair<QRect, int>> buttonRects = d->_getButtonRects();
-  for (int i = 0; i < buttonRects.size(); i++)
-  {
-    if (buttonRects[i].first.contains(event->pos()))
-    {
+  for (int i = 0; i < buttonRects.size(); i++) {
+    if (buttonRects[i].first.contains(event->pos())) {
       int pageValue = buttonRects[i].second;
       int newPage   = d->_pCurrentPage;
 
-      if (pageValue == 0)
-      {
-        if (d->_pCurrentPage > 1)
-        {
+      if (pageValue == 0) {
+        if (d->_pCurrentPage > 1) {
           newPage = d->_pCurrentPage - 1;
         }
-      }
-      else if (pageValue == -2)
-      {
-        if (d->_pCurrentPage < d->_pTotalPages)
-        {
+      } else if (pageValue == -2) {
+        if (d->_pCurrentPage < d->_pTotalPages) {
           newPage = d->_pCurrentPage + 1;
         }
-      }
-      else if (pageValue == -1)
-      {
+      } else if (pageValue == -1) {
         newPage = qMin(d->_pCurrentPage + d->_pPagerCount - 2, d->_pTotalPages);
-      }
-      else if (pageValue == -3)
-      {
+      } else if (pageValue == -3) {
         newPage = qMax(d->_pCurrentPage - (d->_pPagerCount - 2), 1);
-      }
-      else if (pageValue > 0)
-      {
+      } else if (pageValue > 0) {
         newPage = pageValue;
       }
 
-      if (newPage != d->_pCurrentPage)
-      {
+      if (newPage != d->_pCurrentPage) {
         d->_pCurrentPage = newPage;
         Q_EMIT pCurrentPageChanged();
         Q_EMIT currentPageChanged(newPage);
@@ -367,19 +298,16 @@ NXPagination::mousePressEvent(QMouseEvent *event)
   QWidget::mousePressEvent(event);
 }
 
-QSize
-NXPagination::sizeHint() const
+QSize NXPagination::sizeHint() const
 {
   Q_D(const NXPagination);
   QList<QPair<QRect, int>> buttonRects = d->_getButtonRects();
   int totalWidth                       = 0;
-  if (!buttonRects.isEmpty())
-  {
+  if (!buttonRects.isEmpty()) {
     QRect lastRect = buttonRects.last().first;
     totalWidth     = lastRect.x() + lastRect.width();
   }
-  if (d->_pJumperVisible)
-  {
+  if (d->_pJumperVisible) {
     totalWidth += 12 + 55;
   }
   return QSize(totalWidth, d->_pButtonSize + 8);

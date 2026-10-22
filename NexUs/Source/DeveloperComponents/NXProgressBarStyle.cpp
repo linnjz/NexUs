@@ -11,8 +11,7 @@ NXProgressBarStyle::NXProgressBarStyle(QStyle *style)
   setProperty("busyStartValue", 0);
   setProperty("busyEndValue", 0);
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -21,18 +20,11 @@ NXProgressBarStyle::~NXProgressBarStyle()
 {
 }
 
-void
-NXProgressBarStyle::drawControl(ControlElement element,
-                                const QStyleOption *option,
-                                QPainter *painter,
-                                const QWidget *widget) const
+void NXProgressBarStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::CE_ProgressBarLabel :
-  {
-    if (const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option))
-    {
+  switch (element) {
+  case QStyle::CE_ProgressBarLabel : {
+    if (const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
       painter->setPen(NXThemeColor(_themeMode, BasicText));
@@ -41,8 +33,7 @@ NXProgressBarStyle::drawControl(ControlElement element,
     }
     return;
   }
-  case QStyle::CE_ProgressBarGroove :
-  {
+  case QStyle::CE_ProgressBarGroove : {
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setPen(Qt::NoPen);
@@ -51,11 +42,9 @@ NXProgressBarStyle::drawControl(ControlElement element,
     painter->restore();
     return;
   }
-  case QStyle::CE_ProgressBarContents :
-  {
+  case QStyle::CE_ProgressBarContents : {
     const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-    if (!popt)
-    {
+    if (!popt) {
       break;
     }
     QRect contentRect = popt->rect;
@@ -65,132 +54,99 @@ NXProgressBarStyle::drawControl(ControlElement element,
     painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
     const bool inverted = popt->invertedAppearance;
     bool reverse        = popt->direction == Qt::RightToLeft;
-    if (inverted)
-    {
+    if (inverted) {
       reverse = !reverse;
     }
-    if (popt->minimum == 0 && popt->maximum == 0)
-    {
+    if (popt->minimum == 0 && popt->maximum == 0) {
       int startValue = this->property("busyStartValue").toInt();
-      if (startValue < 0)
-      {
+      if (startValue < 0) {
         startValue = 0;
       }
       int endValue = this->property("busyEndValue").toInt();
-      if (popt->state & QStyle::State_Horizontal)
-      {
-        if (endValue > contentRect.width())
-        {
+      if (popt->state & QStyle::State_Horizontal) {
+        if (endValue > contentRect.width()) {
           endValue = contentRect.width();
         }
         int busyWidth = endValue - startValue;
-        if (reverse)
-        {
+        if (reverse) {
           painter->translate((contentRect.x() + contentRect.width()) / 2, contentRect.y());
           painter->rotate(180);
-          painter->translate(-(contentRect.x() + contentRect.width()) / 2,
-                             -contentRect.y() - contentRect.height() * 0.90);
+          painter->translate(-(contentRect.x() + contentRect.width()) / 2, -contentRect.y() - contentRect.height() * 0.90);
         }
         painter->drawRoundedRect(QRectF(startValue, contentRect.y(), busyWidth, contentRect.height()), 3, 3);
-      }
-      else
-      {
-        if (endValue > contentRect.height())
-        {
+      } else {
+        if (endValue > contentRect.height()) {
           endValue = contentRect.height();
         }
         int busyHeight = endValue - startValue;
         painter->drawRoundedRect(
             QRectF(contentRect.x(), contentRect.height() - endValue, contentRect.width(), busyHeight), 3, 3);
       }
-    }
-    else
-    {
+    } else {
       qreal ratio = popt->progress / (qreal) (popt->maximum - popt->minimum);
-      if (popt->state & QStyle::State_Horizontal)
-      {
-        if (reverse)
-        {
+      if (popt->state & QStyle::State_Horizontal) {
+        if (reverse) {
           painter->translate((contentRect.x() + contentRect.width()) / 2, contentRect.y());
           painter->rotate(180);
-          painter->translate(-(contentRect.x() + contentRect.width()) / 2,
-                             -contentRect.y() - contentRect.height() * 0.90);
+          painter->translate(-(contentRect.x() + contentRect.width()) / 2, -contentRect.y() - contentRect.height() * 0.90);
         }
         painter->drawRoundedRect(
             QRectF(contentRect.x(), contentRect.y(), contentRect.width() * ratio, contentRect.height()), 3, 3);
-      }
-      else
-      {
-        painter->drawRoundedRect(QRectF(contentRect.x(), contentRect.y() + contentRect.height() * (1 - ratio),
-                                        contentRect.width(), contentRect.height() * ratio),
-                                 3, 3);
+      } else {
+        painter->drawRoundedRect(QRectF(contentRect.x(), contentRect.y() + contentRect.height() * (1 - ratio), contentRect.width(), contentRect.height() * ratio), 3, 3);
       }
     }
     painter->restore();
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-QRect
-NXProgressBarStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+QRect NXProgressBarStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::SE_ProgressBarLabel :
-  {
+  switch (element) {
+  case QStyle::SE_ProgressBarLabel : {
     const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-    if (!popt)
-    {
+    if (!popt) {
       break;
     }
-    if (popt->minimum == 0 && popt->maximum == 0)
-    {
+    if (popt->minimum == 0 && popt->maximum == 0) {
       return QRect();
     }
     QRect contentRect = popt->rect;
-    if (popt->state & QStyle::State_Horizontal)
-    {
+    if (popt->state & QStyle::State_Horizontal) {
       int textWidth = popt->fontMetrics.horizontalAdvance(QStringLiteral(" 100% "));
       return QRect(contentRect.right() - textWidth + 1, contentRect.top(), textWidth, contentRect.height());
     }
     return contentRect;
   }
   case QStyle::SE_ProgressBarGroove :
-  case QStyle::SE_ProgressBarContents :
-  {
+  case QStyle::SE_ProgressBarContents : {
     QRect textRect                      = subElementRect(SE_ProgressBarLabel, option, widget);
     const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-    if (!popt)
-    {
+    if (!popt) {
       break;
     }
     QRect contentRect = popt->rect;
     int width         = contentRect.width();
     int height        = contentRect.height();
-    if (popt->state & QStyle::State_Horizontal)
-    {
+    if (popt->state & QStyle::State_Horizontal) {
       contentRect.setTop(contentRect.top() + height * 0.45);
       contentRect.setBottom(contentRect.bottom() - height * 0.30);
-      if (!(popt->minimum == 0 && popt->maximum == 0))
-      {
+      if (!(popt->minimum == 0 && popt->maximum == 0)) {
         contentRect.setWidth(contentRect.width() - textRect.width());
       }
-    }
-    else
-    {
+    } else {
       contentRect.setLeft(contentRect.left() + width * 0.375);
       contentRect.setRight(contentRect.right() - width * 0.375);
     }
     return contentRect;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

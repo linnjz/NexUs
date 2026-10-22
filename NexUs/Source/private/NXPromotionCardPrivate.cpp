@@ -15,8 +15,7 @@ NXPromotionCardPrivate::~NXPromotionCardPrivate()
 {
 }
 
-qreal
-NXPromotionCardPrivate::_getLongestDistance(QPoint point)
+qreal NXPromotionCardPrivate::_getLongestDistance(QPoint point)
 {
   Q_Q(NXPromotionCard);
   qreal topLeftDis     = _distance(point, QPoint(0, 0));
@@ -28,20 +27,16 @@ NXPromotionCardPrivate::_getLongestDistance(QPoint point)
   return disList[3];
 }
 
-qreal
-NXPromotionCardPrivate::_distance(QPoint point1, QPoint point2)
+qreal NXPromotionCardPrivate::_distance(QPoint point1, QPoint point2)
 {
-  return std::sqrt((point1.x() - point2.x()) * (point1.x() - point2.x()) +
-                   (point1.y() - point2.y()) * (point1.y() - point2.y()));
+  return std::sqrt((point1.x() - point2.x()) * (point1.x() - point2.x()) + (point1.y() - point2.y()) * (point1.y() - point2.y()));
 }
 
-void
-NXPromotionCardPrivate::_startHoverOpacityAnimation(bool isVisible)
+void NXPromotionCardPrivate::_startHoverOpacityAnimation(bool isVisible)
 {
   Q_Q(NXPromotionCard);
   QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pHoverOpacity");
-  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     q->update();
   });
   opacityAnimation->setDuration(250);

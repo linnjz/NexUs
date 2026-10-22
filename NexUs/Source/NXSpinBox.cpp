@@ -43,19 +43,15 @@ NXSpinBox::~NXSpinBox()
   delete d->_style;
 }
 
-void
-NXSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
+void NXSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
 {
   Q_D(NXSpinBox);
-  if (minimumWidth() < 90)
-  {
+  if (minimumWidth() < 90) {
     setMinimumWidth(90);
   }
   d->_style->setButtonMode(buttonMode);
-  switch (buttonMode)
-  {
-  case NXSpinBoxType::Inline :
-  {
+  switch (buttonMode) {
+  case NXSpinBoxType::Inline : {
     lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 #ifdef Q_OS_MACOS
     lineEdit()->setStyleSheet(
@@ -67,8 +63,7 @@ NXSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
   }
   case NXSpinBoxType::Compact :
   case NXSpinBoxType::Side :
-  case NXSpinBoxType::PMSide :
-  {
+  case NXSpinBoxType::PMSide  : {
     lineEdit()->setAlignment(Qt::AlignCenter);
 #ifdef Q_OS_MACOS
     lineEdit()->setStyleSheet(
@@ -84,22 +79,18 @@ NXSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
   Q_EMIT pButtonModeChanged();
 }
 
-NXSpinBoxType::ButtonMode
-NXSpinBox::getButtonMode() const
+NXSpinBoxType::ButtonMode NXSpinBox::getButtonMode() const
 {
   Q_D(const NXSpinBox);
   return d->_style->getButtonMode();
 }
 
-void
-NXSpinBox::focusInEvent(QFocusEvent *event)
+void NXSpinBox::focusInEvent(QFocusEvent *event)
 {
   Q_D(NXSpinBox);
-  if (event->reason() == Qt::MouseFocusReason)
-  {
+  if (event->reason() == Qt::MouseFocusReason) {
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -111,15 +102,12 @@ NXSpinBox::focusInEvent(QFocusEvent *event)
   QSpinBox::focusInEvent(event);
 }
 
-void
-NXSpinBox::focusOutEvent(QFocusEvent *event)
+void NXSpinBox::focusOutEvent(QFocusEvent *event)
 {
   Q_D(NXSpinBox);
-  if (event->reason() != Qt::PopupFocusReason)
-  {
+  if (event->reason() != Qt::PopupFocusReason) {
     QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     markAnimation->setDuration(300);
@@ -131,12 +119,10 @@ NXSpinBox::focusOutEvent(QFocusEvent *event)
   QSpinBox::focusOutEvent(event);
 }
 
-void
-NXSpinBox::paintEvent(QPaintEvent *event)
+void NXSpinBox::paintEvent(QPaintEvent *event)
 {
   Q_D(NXSpinBox);
-  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QSpinBox::paintEvent(event);
@@ -145,18 +131,15 @@ NXSpinBox::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
   painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2,
-                          2);
+  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2, 2);
   painter.restore();
 }
 
-void
-NXSpinBox::contextMenuEvent(QContextMenuEvent *event)
+void NXSpinBox::contextMenuEvent(QContextMenuEvent *event)
 {
   Q_D(NXSpinBox);
   NXMenu *menu = d->_createStandardContextMenu();
-  if (!menu)
-  {
+  if (!menu) {
     return;
   }
   menu->addSeparator();
@@ -173,14 +156,10 @@ NXSpinBox::contextMenuEvent(QContextMenuEvent *event)
                                    : mapToGlobal(QPoint(event->pos().x(), 0)) + QPoint(width() / 2, height() / 2);
   const QAction *action        = menu->exec(pos);
   delete menu;
-  if (that && action)
-  {
-    if (action == up)
-    {
+  if (that && action) {
+    if (action == up) {
       stepBy(1);
-    }
-    else if (action == down)
-    {
+    } else if (action == down) {
       stepBy(-1);
     }
   }

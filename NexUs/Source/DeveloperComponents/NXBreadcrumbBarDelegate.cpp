@@ -8,8 +8,7 @@ NXBreadcrumbBarDelegate::NXBreadcrumbBarDelegate(QObject *parent)
     : QStyledItemDelegate { parent }
 {
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -18,8 +17,7 @@ NXBreadcrumbBarDelegate::~NXBreadcrumbBarDelegate()
 {
 }
 
-void
-NXBreadcrumbBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXBreadcrumbBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
@@ -27,28 +25,20 @@ NXBreadcrumbBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
   QRect itemRect                = option.rect;
   QString breadcrumbDisplayData = index.data(Qt::DisplayRole).toString();
   QString breadcrumbUserData    = index.data(Qt::UserRole).toString();
-  if (breadcrumbUserData != QStringLiteral("LastBreadcrumb"))
-  {
-    if (_pPressIndex == index)
-    {
+  if (breadcrumbUserData != QStringLiteral("LastBreadcrumb")) {
+    if (_pPressIndex == index) {
       //鼠标按下
       painter->setPen(NXThemeColor(_themeMode, BasicTextPress));
-    }
-    else
-    {
+    } else {
       //不为最后一个 且没有被鼠标覆盖
-      if (!(option.state & QStyle::State_MouseOver))
-      {
+      if (!(option.state & QStyle::State_MouseOver)) {
         painter->setPen(NXThemeColor(_themeMode, BasicTextNoFocus));
       }
     }
   }
-  if (breadcrumbDisplayData != QStringLiteral(">"))
-  {
+  if (breadcrumbDisplayData != QStringLiteral(">")) {
     painter->drawText(itemRect, Qt::AlignVCenter | Qt::AlignLeft, breadcrumbDisplayData);
-  }
-  else
-  {
+  } else {
     //分隔符
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(painter->font().pixelSize() * 0.785);

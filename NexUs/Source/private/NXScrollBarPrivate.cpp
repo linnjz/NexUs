@@ -15,19 +15,15 @@ NXScrollBarPrivate::~NXScrollBarPrivate()
 {
 }
 
-void
-NXScrollBarPrivate::onRangeChanged(int min, int max)
+void NXScrollBarPrivate::onRangeChanged(int min, int max)
 {
   Q_Q(NXScrollBar);
-  if (q->isVisible() && _pIsAnimation && max != 0)
-  {
+  if (q->isVisible() && _pIsAnimation && max != 0) {
     QPropertyAnimation *rangeSmoothAnimation = new QPropertyAnimation(this, "pTargetMaximum");
-    connect(rangeSmoothAnimation, &QPropertyAnimation::finished, this, [=]()
-    {
+    connect(rangeSmoothAnimation, &QPropertyAnimation::finished, this, [=]() {
       Q_EMIT q->rangeAnimationFinished();
     });
-    connect(rangeSmoothAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(rangeSmoothAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       q->blockSignals(true);
       q->setMaximum(value.toUInt());
       q->blockSignals(false);
@@ -38,35 +34,27 @@ NXScrollBarPrivate::onRangeChanged(int min, int max)
     rangeSmoothAnimation->setStartValue(_pTargetMaximum);
     rangeSmoothAnimation->setEndValue(max);
     rangeSmoothAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  }
-  else
-  {
-    if (max == 0)
-    {
+  } else {
+    if (max == 0) {
       _scrollValue = -1;
     }
     _pTargetMaximum = max;
   }
 }
 
-void
-NXScrollBarPrivate::_scroll(Qt::KeyboardModifiers modifiers, int delta)
+void NXScrollBarPrivate::_scroll(Qt::KeyboardModifiers modifiers, int delta)
 {
   Q_Q(NXScrollBar);
   int stepsToScroll = 0;
   qreal offset      = qreal(delta) / 120;
   int pageStep      = 10;
   int singleStep    = q->singleStep();
-  if ((modifiers & Qt::ControlModifier) || (modifiers & Qt::ShiftModifier))
-  {
+  if ((modifiers & Qt::ControlModifier) || (modifiers & Qt::ShiftModifier)) {
     stepsToScroll = qBound(-pageStep, int(offset * pageStep), pageStep);
-  }
-  else
-  {
+  } else {
     stepsToScroll = QApplication::wheelScrollLines() * offset * singleStep;
   }
-  if (abs(_scrollValue - q->value()) > abs(stepsToScroll * _pSpeedLimit))
-  {
+  if (abs(_scrollValue - q->value()) > abs(stepsToScroll * _pSpeedLimit)) {
     _scrollValue = q->value();
   }
   _scrollValue -= stepsToScroll;
@@ -76,8 +64,7 @@ NXScrollBarPrivate::_scroll(Qt::KeyboardModifiers modifiers, int delta)
   _slideSmoothAnimation->start();
 }
 
-int
-NXScrollBarPrivate::_pixelPosToRangeValue(int pos) const
+int NXScrollBarPrivate::_pixelPosToRangeValue(int pos) const
 {
   Q_Q(const NXScrollBar);
   QStyleOptionSlider opt;
@@ -85,28 +72,22 @@ NXScrollBarPrivate::_pixelPosToRangeValue(int pos) const
   QRect gr = q->style()->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, q);
   QRect sr = q->style()->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarSlider, q);
   int sliderMin, sliderMax, sliderLength;
-  if (q->orientation() == Qt::Horizontal)
-  {
+  if (q->orientation() == Qt::Horizontal) {
     sliderLength = sr.width();
     sliderMin    = gr.x();
     sliderMax    = gr.right() - sliderLength + 1;
-    if (q->layoutDirection() == Qt::RightToLeft)
-    {
+    if (q->layoutDirection() == Qt::RightToLeft) {
       opt.upsideDown = !opt.upsideDown;
     }
-  }
-  else
-  {
+  } else {
     sliderLength = sr.height();
     sliderMin    = gr.y();
     sliderMax    = gr.bottom() - sliderLength + 1;
   }
-  return QStyle::sliderValueFromPosition(q->minimum(), q->maximum(), pos - sliderMin, sliderMax - sliderMin,
-                                         opt.upsideDown);
+  return QStyle::sliderValueFromPosition(q->minimum(), q->maximum(), pos - sliderMin, sliderMax - sliderMin, opt.upsideDown);
 }
 
-void
-NXScrollBarPrivate::_initAllConfig()
+void NXScrollBarPrivate::_initAllConfig()
 {
   Q_Q(NXScrollBar);
   _handleScrollBarRangeChanged(_originScrollBar->minimum(), _originScrollBar->maximum());
@@ -114,29 +95,23 @@ NXScrollBarPrivate::_initAllConfig()
   q->setPageStep(_originScrollBar->pageStep());
 }
 
-void
-NXScrollBarPrivate::_handleScrollBarValueChanged(QScrollBar *scrollBar, int value)
+void NXScrollBarPrivate::_handleScrollBarValueChanged(QScrollBar *scrollBar, int value)
 {
   scrollBar->setValue(value);
 }
 
-void
-NXScrollBarPrivate::_handleScrollBarRangeChanged(int min, int max)
+void NXScrollBarPrivate::_handleScrollBarRangeChanged(int min, int max)
 {
   Q_Q(NXScrollBar);
   q->setRange(min, max);
-  if (max <= 0)
-  {
+  if (max <= 0) {
     q->setVisible(false);
-  }
-  else
-  {
+  } else {
     q->setVisible(true);
   }
 }
 
-void
-NXScrollBarPrivate::_handleScrollBarGeometry()
+void NXScrollBarPrivate::_handleScrollBarGeometry()
 {
   Q_Q(NXScrollBar);
   q->raise();
@@ -146,12 +121,9 @@ NXScrollBarPrivate::_handleScrollBarGeometry()
   // 从样式中获取滚动条宽度，而不是硬编码
   int scrollBarExtent = q->style()->pixelMetric(QStyle::PM_ScrollBarExtent, nullptr, q);
 
-  if (q->orientation() == Qt::Horizontal)
-  {
+  if (q->orientation() == Qt::Horizontal) {
     q->setGeometry(0, _originScrollArea->height() - scrollBarExtent, _originScrollArea->width(), scrollBarExtent);
-  }
-  else
-  {
+  } else {
     q->setGeometry(_originScrollArea->width() - scrollBarExtent, 0, scrollBarExtent, _originScrollArea->height());
   }
 }

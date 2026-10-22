@@ -52,16 +52,14 @@ NXMultiSelectComboBox::NXMultiSelectComboBox(QWidget *parent)
   comboBoxView->setStyleSheet(QStringLiteral("#NXComboBoxView{background-color:transparent;}"));
   comboBoxView->setStyle(d->_comboBoxStyle);
   QWidget *container = this->findChild<QFrame *>();
-  if (container)
-  {
+  if (container) {
     container->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     container->setAttribute(Qt::WA_TranslucentBackground);
     container->setObjectName("NXComboBoxContainer");
     container->setStyle(d->_comboBoxStyle);
     container->installEventFilter(d);
     QLayout *layout = container->layout();
-    while (layout->count())
-    {
+    while (layout->count()) {
       layout->takeAt(0);
     }
     layout->addWidget(view());
@@ -76,34 +74,26 @@ NXMultiSelectComboBox::NXMultiSelectComboBox(QWidget *parent)
   }
   QComboBox::setMaxVisibleItems(5);
   connect(d->_comboView, &NXComboBoxView::itemPressed, d, &NXMultiSelectComboBoxPrivate::onItemPressed);
-  connect(this, QOverload<int>::of(&NXMultiSelectComboBox::currentIndexChanged), d,
-          &NXMultiSelectComboBoxPrivate::_refreshCurrentIndexs);
+  connect(this, QOverload<int>::of(&NXMultiSelectComboBox::currentIndexChanged), d, &NXMultiSelectComboBoxPrivate::_refreshCurrentIndexs);
   d->_itemSelection.resize(32);
   d->_itemSelection.fill(false);
   d->_itemSelection[0] = true;
   QComboBox::setMaxVisibleItems(5);
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 
-  connect(this, &NXMultiSelectComboBox::pShowCheckBoxChanged, this, [=]()
-  {
+  connect(this, &NXMultiSelectComboBox::pShowCheckBoxChanged, this, [=]() {
     Q_D(NXMultiSelectComboBox);
     QAbstractItemView *comboBoxView = this->view();
-    if (d->_pShowCheckBox)
-    {
-      if (!d->_delegate)
-      {
+    if (d->_pShowCheckBox) {
+      if (!d->_delegate) {
         d->_delegate = new NXMultiSelectComboBoxDelegate(this);
-        connect(this, &NXMultiSelectComboBox::itemSelectionChanged, d->_delegate,
-                &NXMultiSelectComboBoxDelegate::setItemSelection);
+        connect(this, &NXMultiSelectComboBox::itemSelectionChanged, d->_delegate, &NXMultiSelectComboBoxDelegate::setItemSelection);
         d->_delegate->setItemSelection(d->_itemSelection);
       }
       comboBoxView->setItemDelegate(d->_delegate);
-    }
-    else
-    {
+    } else {
       comboBoxView->setItemDelegate(nullptr);
     }
     comboBoxView->viewport()->update();
@@ -116,16 +106,13 @@ NXMultiSelectComboBox::~NXMultiSelectComboBox()
   delete d->_comboBoxStyle;
 }
 
-void
-NXMultiSelectComboBox::setCurrentSelection(const QString &selection)
+void NXMultiSelectComboBox::setCurrentSelection(const QString &selection)
 {
   Q_D(NXMultiSelectComboBox);
   d->_itemSelection.fill(false);
   d->_comboView->selectionModel()->clearSelection();
-  for (int i = 0; i < this->count(); i++)
-  {
-    if (selection == itemText(i))
-    {
+  for (int i = 0; i < this->count(); i++) {
+    if (selection == itemText(i)) {
       QModelIndex index = model()->index(i, 0);
       d->_comboView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
       d->_itemSelection[index.row()] = true;
@@ -134,16 +121,13 @@ NXMultiSelectComboBox::setCurrentSelection(const QString &selection)
   d->_refreshCurrentIndexs();
 }
 
-void
-NXMultiSelectComboBox::setCurrentSelection(const QStringList &selection)
+void NXMultiSelectComboBox::setCurrentSelection(const QStringList &selection)
 {
   Q_D(NXMultiSelectComboBox);
   d->_comboView->selectionModel()->clearSelection();
   d->_itemSelection.fill(false);
-  for (int i = 0; i < this->count(); i++)
-  {
-    if (selection.contains(itemText(i)))
-    {
+  for (int i = 0; i < this->count(); i++) {
+    if (selection.contains(itemText(i))) {
       QModelIndex index = model()->index(i, 0);
       d->_comboView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
       d->_itemSelection[index.row()] = true;
@@ -152,12 +136,10 @@ NXMultiSelectComboBox::setCurrentSelection(const QStringList &selection)
   d->_refreshCurrentIndexs();
 }
 
-void
-NXMultiSelectComboBox::setCurrentSelection(int index)
+void NXMultiSelectComboBox::setCurrentSelection(int index)
 {
   Q_D(NXMultiSelectComboBox);
-  if (index >= this->count() || index < 0)
-  {
+  if (index >= this->count() || index < 0) {
     return;
   }
   d->_comboView->selectionModel()->clearSelection();
@@ -168,16 +150,13 @@ NXMultiSelectComboBox::setCurrentSelection(int index)
   d->_refreshCurrentIndexs();
 }
 
-void
-NXMultiSelectComboBox::setCurrentSelection(const QList<int> &selectionIndex)
+void NXMultiSelectComboBox::setCurrentSelection(const QList<int> &selectionIndex)
 {
   Q_D(NXMultiSelectComboBox);
   d->_itemSelection.fill(false);
   d->_comboView->selectionModel()->clearSelection();
-  for (auto index : selectionIndex)
-  {
-    if (index >= this->count() || index < 0)
-    {
+  for (auto index : selectionIndex) {
+    if (index >= this->count() || index < 0) {
       continue;
     }
     QModelIndex currentIndex = model()->index(index, 0);
@@ -187,45 +166,36 @@ NXMultiSelectComboBox::setCurrentSelection(const QList<int> &selectionIndex)
   d->_refreshCurrentIndexs();
 }
 
-QStringList
-NXMultiSelectComboBox::getCurrentSelection() const
+QStringList NXMultiSelectComboBox::getCurrentSelection() const
 {
   return d_ptr->_selectedTextList;
 }
 
-QList<int>
-NXMultiSelectComboBox::getCurrentSelectionIndex() const
+QList<int> NXMultiSelectComboBox::getCurrentSelectionIndex() const
 {
   QList<int> indexList;
-  for (int i = 0; i < d_ptr->_itemSelection.count(); i++)
-  {
-    if (d_ptr->_itemSelection[i])
-    {
+  for (int i = 0; i < d_ptr->_itemSelection.count(); i++) {
+    if (d_ptr->_itemSelection[i]) {
       indexList.append(i);
     }
   }
   return indexList;
 }
 
-void
-NXMultiSelectComboBox::paintEvent(QPaintEvent *e)
+void NXMultiSelectComboBox::paintEvent(QPaintEvent *e)
 {
   Q_D(NXMultiSelectComboBox);
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-  painter.setBrush(isEnabled()
-                       ? underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase)
-                       : Qt::transparent);
+  painter.setBrush(isEnabled() ? underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase) : Qt::transparent);
   QRect foregroundRect = rect();
   foregroundRect.adjust(1, 1, -1, -1);
   painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
   // 底边线绘制
   painter.setPen(NXThemeColor(d->_themeMode, BasicBaseLine));
-  painter.drawLine(foregroundRect.x() + d->_pBorderRadius, foregroundRect.y() + foregroundRect.height(),
-                   foregroundRect.x() + foregroundRect.width() - d->_pBorderRadius,
-                   foregroundRect.y() + foregroundRect.height());
+  painter.drawLine(foregroundRect.x() + d->_pBorderRadius, foregroundRect.y() + foregroundRect.height(), foregroundRect.x() + foregroundRect.width() - d->_pBorderRadius, foregroundRect.y() + foregroundRect.height());
 
   //文字绘制
   painter.setPen(isEnabled() ? NXThemeColor(d->_themeMode, BasicText) : NXThemeColor(d->_themeMode, BasicTextDisable));
@@ -237,26 +207,21 @@ NXMultiSelectComboBox::paintEvent(QPaintEvent *e)
   painter.setBrush(d->_themeMode == NXThemeType::Light ? QColor(0x0E, 0x6F, 0xC3) : QColor(0x4C, 0xA0, 0xE0));
   painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 3, d->_pExpandMarkWidth * 2, 3), 2, 2);
   // 展开图标绘制
-  if (count() > 0)
-  {
+  if (count() > 0) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(nxApp->getFontPixelSize() + 4);
     painter.setFont(iconFont);
-    painter.setPen(isEnabled() ? NXThemeColor(d->_themeMode, BasicText)
-                               : NXThemeColor(d->_themeMode, BasicTextDisable));
+    painter.setPen(isEnabled() ? NXThemeColor(d->_themeMode, BasicText) : NXThemeColor(d->_themeMode, BasicTextDisable));
     QRectF expandIconRect(width() - 25, 0, 20, height());
-    painter.translate(expandIconRect.x() + (qreal) expandIconRect.width() / 2 - 2,
-                      expandIconRect.y() + (qreal) expandIconRect.height() / 2);
+    painter.translate(expandIconRect.x() + (qreal) expandIconRect.width() / 2 - 2, expandIconRect.y() + (qreal) expandIconRect.height() / 2);
     painter.rotate(d->_pExpandIconRotate);
-    painter.translate(-expandIconRect.x() - (qreal) expandIconRect.width() / 2 + 2,
-                      -expandIconRect.y() - (qreal) expandIconRect.height() / 2);
+    painter.translate(-expandIconRect.x() - (qreal) expandIconRect.width() / 2 + 2, -expandIconRect.y() - (qreal) expandIconRect.height() / 2);
     painter.drawText(expandIconRect, Qt::AlignVCenter, QChar((unsigned short) NXIconType::AngleDown));
     painter.restore();
   }
 }
 
-void
-NXMultiSelectComboBox::showPopup()
+void NXMultiSelectComboBox::showPopup()
 {
   Q_D(NXMultiSelectComboBox);
   bool oldAnimationEffects = qApp->isEffectEnabled(Qt::UI_AnimateCombo);
@@ -264,18 +229,13 @@ NXMultiSelectComboBox::showPopup()
   QComboBox::showPopup();
   qApp->setEffectEnabled(Qt::UI_AnimateCombo, oldAnimationEffects);
 
-  if (count() > 0)
-  {
+  if (count() > 0) {
     QWidget *container = this->findChild<QFrame *>();
-    if (container)
-    {
+    if (container) {
       int containerHeight = 0;
-      if (count() >= maxVisibleItems())
-      {
+      if (count() >= maxVisibleItems()) {
         containerHeight = maxVisibleItems() * 35 + 8;
-      }
-      else
-      {
+      } else {
         containerHeight = count() * 35 + 8;
       }
       // 容器实际宽度在组合框宽度基础上两侧各扩展阴影宽度
@@ -285,13 +245,11 @@ NXMultiSelectComboBox::showPopup()
       container->move(container->x() - shadowBorderWidth, container->y() + 3);
       view()->resize(width(), containerHeight - 8);
       QLayout *layout = container->layout();
-      while (layout->count())
-      {
+      while (layout->count()) {
         layout->takeAt(0);
       }
       QPropertyAnimation *fixedSizeAnimation = new QPropertyAnimation(container, "maximumHeight");
-      connect(fixedSizeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-      {
+      connect(fixedSizeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
         container->setFixedHeight(value.toUInt());
       });
       fixedSizeAnimation->setStartValue(1);
@@ -301,8 +259,7 @@ NXMultiSelectComboBox::showPopup()
       fixedSizeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
       QPropertyAnimation *viewPosAnimation = new QPropertyAnimation(view(), "pos");
-      connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]()
-      {
+      connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {
         d->_isAllowHidePopup = true;
         layout->addWidget(view());
       });
@@ -315,8 +272,7 @@ NXMultiSelectComboBox::showPopup()
     }
     //指示器动画
     QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d, "pExpandIconRotate");
-    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-    {
+    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
       update();
     });
     rotateAnimation->setDuration(300);
@@ -335,17 +291,14 @@ NXMultiSelectComboBox::showPopup()
   d->_refreshCurrentIndexs();
 }
 
-void
-NXMultiSelectComboBox::_resetIndicatorAnimations()
+void NXMultiSelectComboBox::_resetIndicatorAnimations()
 {
   Q_D(NXMultiSelectComboBox);
-  if (qFuzzyIsNull(d->_pExpandIconRotate) && d->_pExpandMarkWidth == 0)
-  {
+  if (qFuzzyIsNull(d->_pExpandIconRotate) && d->_pExpandMarkWidth == 0) {
     return;
   }
   QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d, "pExpandIconRotate");
-  connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     update();
   });
   rotateAnimation->setDuration(300);
@@ -361,45 +314,34 @@ NXMultiSelectComboBox::_resetIndicatorAnimations()
   markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void
-NXMultiSelectComboBox::hidePopup()
+void NXMultiSelectComboBox::hidePopup()
 {
   Q_D(NXMultiSelectComboBox);
-  if (d->_isFirstPopup && !this->view()->underMouse())
-  {
+  if (d->_isFirstPopup && !this->view()->underMouse()) {
     d->_isFirstPopup = false;
     return;
   }
-  if (nxApp->containsCursorToItem(d->_comboView))
-  {
+  if (nxApp->containsCursorToItem(d->_comboView)) {
     return;
-  }
-  else
-  {
-    if (d->_isAllowHidePopup)
-    {
+  } else {
+    if (d->_isAllowHidePopup) {
       QWidget *container  = this->findChild<QFrame *>();
       int containerHeight = container->height();
-      if (container)
-      {
+      if (container) {
         QLayout *layout = container->layout();
-        while (layout->count())
-        {
+        while (layout->count()) {
           layout->takeAt(0);
         }
         QPropertyAnimation *viewPosAnimation = new QPropertyAnimation(view(), "pos");
-        connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]()
-        {
+        connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {
           layout->addWidget(view());
-          QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton,
-                                 Qt::NoModifier);
+          QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
           QApplication::sendEvent(parentWidget(), &focusEvent);
           QComboBox::hidePopup();
           container->setFixedHeight(containerHeight);
         });
         QPoint viewPos = view()->pos();
-        connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]()
-        {
+        connect(viewPosAnimation, &QPropertyAnimation::finished, this, [=]() {
           view()->move(viewPos);
         });
         viewPosAnimation->setStartValue(viewPos);
@@ -408,8 +350,7 @@ NXMultiSelectComboBox::hidePopup()
         viewPosAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
         QPropertyAnimation *fixedSizeAnimation = new QPropertyAnimation(container, "maximumHeight");
-        connect(fixedSizeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-        {
+        connect(fixedSizeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
           container->setFixedHeight(value.toUInt());
         });
         fixedSizeAnimation->setStartValue(container->height());

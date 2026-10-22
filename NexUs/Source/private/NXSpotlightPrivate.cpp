@@ -16,12 +16,10 @@ NXSpotlightPrivate::~NXSpotlightPrivate()
 {
 }
 
-void
-NXSpotlightPrivate::_showStep(int index, bool animate)
+void NXSpotlightPrivate::_showStep(int index, bool animate)
 {
   Q_Q(NXSpotlight);
-  if (index < 0 || index >= _steps.size())
-  {
+  if (index < 0 || index >= _steps.size()) {
     return;
   }
   _currentStep                           = index;
@@ -34,8 +32,7 @@ NXSpotlightPrivate::_showStep(int index, bool animate)
   _tipTitle->setVisible(!step.title.isEmpty());
   _tipContent->setVisible(!step.content.isEmpty());
 
-  if (_steps.size() > 1)
-  {
+  if (_steps.size() > 1) {
     _prevButton->setVisible(_currentStep > 0);
     _nextButton->setText(_currentStep >= _steps.size() - 1 ? QStringLiteral("完成") : QStringLiteral("下一步"));
     _stepIndicator->setVisible(true);
@@ -44,11 +41,9 @@ NXSpotlightPrivate::_showStep(int index, bool animate)
 
   QRectF targetRect = _getTargetRect(_currentTarget);
 
-  if (animate && _pSpotlightRect.isValid())
-  {
+  if (animate && _pSpotlightRect.isValid()) {
     QPropertyAnimation *moveAnimation = new QPropertyAnimation(this, "pSpotlightRect");
-    connect(moveAnimation, &QPropertyAnimation::valueChanged, q, [=]()
-    {
+    connect(moveAnimation, &QPropertyAnimation::valueChanged, q, [=]() {
       q->update();
       _updateTipPosition();
     });
@@ -57,9 +52,7 @@ NXSpotlightPrivate::_showStep(int index, bool animate)
     moveAnimation->setStartValue(_pSpotlightRect);
     moveAnimation->setEndValue(targetRect);
     moveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  }
-  else
-  {
+  } else {
     _pSpotlightRect = targetRect;
     q->update();
   }
@@ -71,23 +64,19 @@ NXSpotlightPrivate::_showStep(int index, bool animate)
   Q_EMIT q->stepChanged(_currentStep);
 }
 
-void
-NXSpotlightPrivate::_updateOverlay()
+void NXSpotlightPrivate::_updateOverlay()
 {
   Q_Q(NXSpotlight);
-  if (_currentTarget)
-  {
+  if (_currentTarget) {
     _pSpotlightRect = _getTargetRect(_currentTarget);
     q->update();
   }
 }
 
-void
-NXSpotlightPrivate::_updateTipPosition()
+void NXSpotlightPrivate::_updateTipPosition()
 {
   Q_Q(NXSpotlight);
-  if (!_currentTarget)
-  {
+  if (!_currentTarget) {
     return;
   }
   _tipWidget->adjustSize();
@@ -102,8 +91,7 @@ NXSpotlightPrivate::_updateTipPosition()
   int tipX = static_cast<int>(spotRect.center().x() - tipWidth / 2);
   int tipY = static_cast<int>(spotRect.bottom() + margin);
 
-  if (tipY + tipHeight > q->height() - 10)
-  {
+  if (tipY + tipHeight > q->height() - 10) {
     tipY = static_cast<int>(spotRect.top() - tipHeight - margin);
   }
 
@@ -117,12 +105,10 @@ NXSpotlightPrivate::_updateTipPosition()
                                 .arg(NXThemeColor(_themeMode, PopupBorder).name()));
 }
 
-QRectF
-NXSpotlightPrivate::_getTargetRect(QWidget *target) const
+QRectF NXSpotlightPrivate::_getTargetRect(QWidget *target) const
 {
   Q_Q(const NXSpotlight);
-  if (!target || !q->parentWidget())
-  {
+  if (!target || !q->parentWidget()) {
     return QRectF();
   }
   QPoint topLeft = target->mapTo(q->parentWidget(), QPoint(0, 0));

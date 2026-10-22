@@ -26,29 +26,25 @@ NXBaseListView::~NXBaseListView()
 {
 }
 
-void
-NXBaseListView::wheelEvent(QWheelEvent *event)
+void NXBaseListView::wheelEvent(QWheelEvent *event)
 {
   QListView::wheelEvent(event);
   event->accept();
 }
 
-void
-NXBaseListView::mousePressEvent(QMouseEvent *event)
+void NXBaseListView::mousePressEvent(QMouseEvent *event)
 {
   Q_EMIT mousePress(indexAt(event->pos()));
   QListView::mousePressEvent(event);
 }
 
-void
-NXBaseListView::mouseReleaseEvent(QMouseEvent *event)
+void NXBaseListView::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_EMIT mouseRelease(indexAt(event->pos()));
   QListView::mouseReleaseEvent(event);
 }
 
-void
-NXBaseListView::mouseDoubleClickEvent(QMouseEvent *event)
+void NXBaseListView::mouseDoubleClickEvent(QMouseEvent *event)
 {
   Q_EMIT mouseDoubleClick(indexAt(event->pos()));
   QListView::mouseDoubleClickEvent(event);

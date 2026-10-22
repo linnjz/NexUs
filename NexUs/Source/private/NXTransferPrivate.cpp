@@ -19,27 +19,22 @@ NXTransferPrivate::~NXTransferPrivate()
 {
 }
 
-void
-NXTransferPrivate::onMoveToTarget()
+void NXTransferPrivate::onMoveToTarget()
 {
   Q_Q(NXTransfer);
   QModelIndexList selectedIndexes = _sourceListView->selectionModel()->selectedIndexes();
-  if (selectedIndexes.isEmpty())
-  {
+  if (selectedIndexes.isEmpty()) {
     return;
   }
   QList<int> rows;
-  for (const auto &index : selectedIndexes)
-  {
+  for (const auto &index : selectedIndexes) {
     rows.append(index.row());
   }
   std::sort(rows.begin(), rows.end(), std::greater<int>());
 
-  for (int row : rows)
-  {
+  for (int row : rows) {
     QStandardItem *item = _sourceModel->takeItem(row);
-    if (item)
-    {
+    if (item) {
       QStandardItem *newItem = new QStandardItem(item->text());
       newItem->setForeground(NXThemeColor(_themeMode, BasicText));
       _targetModel->appendRow(newItem);
@@ -52,27 +47,22 @@ NXTransferPrivate::onMoveToTarget()
   Q_EMIT q->transferChanged(q->getSourceItems(), q->getTargetItems());
 }
 
-void
-NXTransferPrivate::onMoveToSource()
+void NXTransferPrivate::onMoveToSource()
 {
   Q_Q(NXTransfer);
   QModelIndexList selectedIndexes = _targetListView->selectionModel()->selectedIndexes();
-  if (selectedIndexes.isEmpty())
-  {
+  if (selectedIndexes.isEmpty()) {
     return;
   }
   QList<int> rows;
-  for (const auto &index : selectedIndexes)
-  {
+  for (const auto &index : selectedIndexes) {
     rows.append(index.row());
   }
   std::sort(rows.begin(), rows.end(), std::greater<int>());
 
-  for (int row : rows)
-  {
+  for (int row : rows) {
     QStandardItem *item = _targetModel->takeItem(row);
-    if (item)
-    {
+    if (item) {
       QStandardItem *newItem = new QStandardItem(item->text());
       newItem->setForeground(NXThemeColor(_themeMode, BasicText));
       _sourceModel->appendRow(newItem);
@@ -85,62 +75,47 @@ NXTransferPrivate::onMoveToSource()
   Q_EMIT q->transferChanged(q->getSourceItems(), q->getTargetItems());
 }
 
-void
-NXTransferPrivate::onSourceSearchTextChanged(const QString &text)
+void NXTransferPrivate::onSourceSearchTextChanged(const QString &text)
 {
-  for (int i = 0; i < _sourceModel->rowCount(); ++i)
-  {
+  for (int i = 0; i < _sourceModel->rowCount(); ++i) {
     QStandardItem *item = _sourceModel->item(i);
-    if (item)
-    {
+    if (item) {
       bool match = text.isEmpty() || item->text().contains(text, Qt::CaseInsensitive);
       _sourceListView->setRowHidden(i, !match);
     }
   }
 }
 
-void
-NXTransferPrivate::onTargetSearchTextChanged(const QString &text)
+void NXTransferPrivate::onTargetSearchTextChanged(const QString &text)
 {
-  for (int i = 0; i < _targetModel->rowCount(); ++i)
-  {
+  for (int i = 0; i < _targetModel->rowCount(); ++i) {
     QStandardItem *item = _targetModel->item(i);
-    if (item)
-    {
+    if (item) {
       bool match = text.isEmpty() || item->text().contains(text, Qt::CaseInsensitive);
       _targetListView->setRowHidden(i, !match);
     }
   }
 }
 
-void
-NXTransferPrivate::onSourceSelectAllChanged(int state)
+void NXTransferPrivate::onSourceSelectAllChanged(int state)
 {
-  if (state == Qt::Checked)
-  {
+  if (state == Qt::Checked) {
     _sourceListView->selectAll();
-  }
-  else
-  {
+  } else {
     _sourceListView->clearSelection();
   }
 }
 
-void
-NXTransferPrivate::onTargetSelectAllChanged(int state)
+void NXTransferPrivate::onTargetSelectAllChanged(int state)
 {
-  if (state == Qt::Checked)
-  {
+  if (state == Qt::Checked) {
     _targetListView->selectAll();
-  }
-  else
-  {
+  } else {
     _targetListView->clearSelection();
   }
 }
 
-void
-NXTransferPrivate::_refreshCountText()
+void NXTransferPrivate::_refreshCountText()
 {
   int sourceSelected = _sourceListView->selectionModel()->selectedIndexes().size();
   int sourceTotal    = _sourceModel->rowCount();

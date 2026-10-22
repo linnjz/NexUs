@@ -17,25 +17,24 @@ NXActionCommanderNode::NXActionCommanderNode(NXActionCommanderNode *parent)
 NXActionCommanderNode::~NXActionCommanderNode()
 {
   // 不使用QT的继承链删除 手动释放 一般情况下此时_pChildNodes已经为空
-  for (const auto childNode : _pChildNodes)
-  {
+  for (const auto childNode : _pChildNodes) {
     delete childNode;
   }
 }
 
-void
-NXActionCommanderNode::appendChildNode(NXActionCommanderNode *childNode)
-{ _pChildNodes.append(childNode); }
-
-void
-NXActionCommanderNode::removeChildNode(NXActionCommanderNode *childNode)
-{ _pChildNodes.removeOne(childNode); }
-
-int
-NXActionCommanderNode::getRow() const
+void NXActionCommanderNode::appendChildNode(NXActionCommanderNode *childNode)
 {
-  if (_pParentNode)
-  {
+  _pChildNodes.append(childNode);
+}
+
+void NXActionCommanderNode::removeChildNode(NXActionCommanderNode *childNode)
+{
+  _pChildNodes.removeOne(childNode);
+}
+
+int NXActionCommanderNode::getRow() const
+{
+  if (_pParentNode) {
     return _pParentNode->getChildNodes().indexOf(const_cast<NXActionCommanderNode *>(this));
   }
   return 0;

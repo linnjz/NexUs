@@ -11,20 +11,16 @@ NXRollerPrivate::~NXRollerPrivate()
 {
 }
 
-void
-NXRollerPrivate::_scroll(int delta)
+void NXRollerPrivate::_scroll(int delta)
 {
   int steps = delta / 120;
   _targetScrollOffset -= steps * _pItemHeight;
   _targetScrollOffset = qRound(_targetScrollOffset / _pItemHeight) * _pItemHeight;
-  if (!_pIsEnableLoop)
-  {
-    if (_targetScrollOffset < 0)
-    {
+  if (!_pIsEnableLoop) {
+    if (_targetScrollOffset < 0) {
       _targetScrollOffset = 0;
     }
-    if (_targetScrollOffset > (_pItemList.size() - 1) * _pItemHeight)
-    {
+    if (_targetScrollOffset > (_pItemList.size() - 1) * _pItemHeight) {
       _targetScrollOffset = (_pItemList.size() - 1) * _pItemHeight;
     }
   }

@@ -32,25 +32,20 @@ NXCustomTabWidget::NXCustomTabWidget(QWidget *parent)
   setAcceptDrops(true);
   _customTabBar = new NXTabBar(this);
   _customTabBar->setObjectName("NXCustomTabBar");
-  connect(_customTabBar, &NXTabBar::tabMoved, this, [=](int from, int to)
-  {
+  connect(_customTabBar, &NXTabBar::tabMoved, this, [=](int from, int to) {
     _customTabWidget->tabBar()->moveTab(from, to);
   });
-  connect(_customTabBar, &NXTabBar::currentChanged, this, [=](int index)
-  {
+  connect(_customTabBar, &NXTabBar::currentChanged, this, [=](int index) {
     _customTabWidget->setCurrentIndex(index);
   });
-  connect(_customTabWidget, &NXTabWidget::currentChanged, this, [=](int index)
-  {
-    if (index == -1)
-    {
+  connect(_customTabWidget, &NXTabWidget::currentChanged, this, [=](int index) {
+    if (index == -1) {
       _pIsFinished = true;
       hide();
     }
   });
   connect(_customTabBar, &NXTabBar::tabCloseRequested, originTabBar, &QTabBar::tabCloseRequested);
-  connect(_customTabBar, &NXTabBar::tabBarTextChanged, originTabBar, [=](int tabIndex, const QString &tabText)
-  {
+  connect(_customTabBar, &NXTabBar::tabBarTextChanged, originTabBar, [=](int tabIndex, const QString &tabText) {
     originTabBar->setTabText(tabIndex, tabText);
   });
   _customTabWidget->d_ptr->_customTabBar = _customTabBar;
@@ -69,44 +64,36 @@ NXCustomTabWidget::NXCustomTabWidget(QWidget *parent)
 
 NXCustomTabWidget::~NXCustomTabWidget()
 {
-  while (_customTabWidget->count() > 0)
-  {
+  while (_customTabWidget->count() > 0) {
     QWidget *closeWidget         = _customTabWidget->widget(0);
     NXTabWidget *originTabWidget = closeWidget->property("NXOriginTabWidget").value<NXTabWidget *>();
     closeWidget->setProperty("CurrentCustomBar", QVariant::fromValue<NXTabBar *>(nullptr));
-    if (originTabWidget && originTabWidget != _customTabWidget)
-    {
+    if (originTabWidget && originTabWidget != _customTabWidget) {
       originTabWidget->addTab(closeWidget, _customTabWidget->tabIcon(0), _customTabWidget->tabText(0));
       originTabWidget->setCurrentWidget(closeWidget);
-    }
-    else
-    {
+    } else {
       _customTabWidget->removeTab(0);
     }
   }
 }
 
-void
-NXCustomTabWidget::addTab(QWidget *widget, const QIcon &tabIcon, const QString &tabTitle)
+void NXCustomTabWidget::addTab(QWidget *widget, const QIcon &tabIcon, const QString &tabTitle)
 {
   _customTabBar->addTab(tabIcon, tabTitle);
   _customTabWidget->addTab(widget, tabIcon, tabTitle);
 }
 
-NXTabBar *
-NXCustomTabWidget::getCustomTabBar() const
+NXTabBar *NXCustomTabWidget::getCustomTabBar() const
 {
   return _customTabBar;
 }
 
-NXTabWidget *
-NXCustomTabWidget::getCustomTabWidget() const
+NXTabWidget *NXCustomTabWidget::getCustomTabWidget() const
 {
   return _customTabWidget;
 }
 
-bool
-NXCustomTabWidget::processHitTest()
+bool NXCustomTabWidget::processHitTest()
 {
   auto point = _customTabBar->mapFromGlobal(QCursor::pos());
   return _customTabBar->tabAt(point) < 0;

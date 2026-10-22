@@ -49,8 +49,7 @@ NXContentDialog::NXContentDialog(QWidget *parent)
   d->_mainLayout->addWidget(d->_buttonWidget);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 }
@@ -61,13 +60,11 @@ NXContentDialog::~NXContentDialog()
   d->_maskWidget->deleteLater();
 }
 
-void
-NXContentDialog::setCentralWidget(QWidget *widget)
+void NXContentDialog::setCentralWidget(QWidget *widget)
 {
   Q_D(NXContentDialog);
   int idx = d->_mainLayout->indexOf(d->_centralWidget);
-  if (idx >= 0)
-  {
+  if (idx >= 0) {
     d->_mainLayout->takeAt(idx);
   }
   delete d->_centralWidget;
@@ -75,8 +72,7 @@ NXContentDialog::setCentralWidget(QWidget *widget)
   d->_mainLayout->insertWidget(idx < 0 ? 0 : idx, widget);
 }
 
-NXPushButton *
-NXContentDialog::addButton(const QString &text)
+NXPushButton * NXContentDialog::addButton(const QString &text)
 {
   Q_D(NXContentDialog);
   auto *btn = new NXPushButton(text, this);
@@ -85,8 +81,7 @@ NXContentDialog::addButton(const QString &text)
   btn->setFixedHeight(38);
   btn->setBorderRadius(6);
 
-  connect(btn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(btn, &NXPushButton::clicked, this, [=]() {
     d->startCloseAnimation(btn);
   });
 
@@ -95,40 +90,34 @@ NXContentDialog::addButton(const QString &text)
   return btn;
 }
 
-void
-NXContentDialog::removeButton(NXPushButton *button)
+void NXContentDialog::removeButton(NXPushButton *button)
 {
   Q_D(NXContentDialog);
-  if (d->_buttons.removeOne(button))
-  {
+  if (d->_buttons.removeOne(button)) {
     d->_buttonLayout->removeWidget(button);
     button->deleteLater();
   }
 }
 
-QList<NXPushButton *>
-NXContentDialog::buttons() const
+QList<NXPushButton *> NXContentDialog::buttons() const
 {
   Q_D(const NXContentDialog);
   return d->_buttons;
 }
 
-void
-NXContentDialog::close()
+void NXContentDialog::close()
 {
   Q_D(NXContentDialog);
   d->startCloseAnimation(nullptr);
 }
 
-NXAppBar *
-NXContentDialog::appBar() const
+NXAppBar * NXContentDialog::appBar() const
 {
   Q_D(const NXContentDialog);
   return d->_appBar;
 }
 
-void
-NXContentDialog::showEvent(QShowEvent *event)
+void NXContentDialog::showEvent(QShowEvent *event)
 {
   Q_D(NXContentDialog);
   d->_maskWidget->setVisible(true);
@@ -139,8 +128,7 @@ NXContentDialog::showEvent(QShowEvent *event)
   QDialog::showEvent(event);
 }
 
-void
-NXContentDialog::paintEvent(QPaintEvent *event)
+void NXContentDialog::paintEvent(QPaintEvent *event)
 {
   Q_D(NXContentDialog);
   QPainter painter(this);
@@ -156,19 +144,15 @@ NXContentDialog::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXContentDialog::keyPressEvent(QKeyEvent *event)
+void NXContentDialog::keyPressEvent(QKeyEvent *event)
 {
   Q_D(NXContentDialog);
-  switch (event->key())
-  {
-  case Qt::Key_Escape :
-  {
+  switch (event->key()) {
+  case Qt::Key_Escape : {
     d->startCloseAnimation(nullptr);
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

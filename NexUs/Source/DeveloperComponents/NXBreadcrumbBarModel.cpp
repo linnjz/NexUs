@@ -1,4 +1,4 @@
-#include "NXBreadcrumbBarModel.h"
+﻿#include "NXBreadcrumbBarModel.h"
 
 NXBreadcrumbBarModel::NXBreadcrumbBarModel(QObject *parent)
     : QAbstractListModel { parent }
@@ -9,51 +9,37 @@ NXBreadcrumbBarModel::~NXBreadcrumbBarModel()
 {
 }
 
-int
-NXBreadcrumbBarModel::rowCount(const QModelIndex &parent) const
+int NXBreadcrumbBarModel::rowCount(const QModelIndex &parent) const
 {
-  if (!_breadcrumbList.isEmpty())
-  {
+  if (!_breadcrumbList.isEmpty()) {
     return _breadcrumbList.count() * 2 - 1;
   }
   return 0;
 }
 
-QVariant
-NXBreadcrumbBarModel::data(const QModelIndex &index, int role) const
+QVariant NXBreadcrumbBarModel::data(const QModelIndex &index, int role) const
 {
-  if (role == Qt::DisplayRole)
-  {
-    if (index.row() % 2 == 0)
-    {
+  if (role == Qt::DisplayRole) {
+    if (index.row() % 2 == 0) {
       return _breadcrumbList[index.row() / 2];
-    }
-    else
-    {
+    } else {
       return QStringLiteral(">");
     }
-  }
-  else if (role == Qt::UserRole)
-  {
-    if (index.row() == _breadcrumbList.count() * 2 - 2 || index.row() == _breadcrumbList.count() * 2 - 3)
-    {
+  } else if (role == Qt::UserRole) {
+    if (index.row() == _breadcrumbList.count() * 2 - 2 || index.row() == _breadcrumbList.count() * 2 - 3) {
       return QString(QStringLiteral("LastBreadcrumb"));
     }
   }
   return QVariant();
 }
 
-void
-NXBreadcrumbBarModel::appendBreadcrumb(const QString &breadcrumb)
+void NXBreadcrumbBarModel::appendBreadcrumb(const QString &breadcrumb)
 {
-  if (!breadcrumb.isEmpty())
-  {
-    if (_breadcrumbList.count() && _breadcrumbList.last() == breadcrumb)
-    {
+  if (!breadcrumb.isEmpty()) {
+    if (_breadcrumbList.count() && _breadcrumbList.last() == breadcrumb) {
       return;
     }
-    if (_breadcrumbList.count() >= 2 && _breadcrumbList[_breadcrumbList.count() - 2] == breadcrumb)
-    {
+    if (_breadcrumbList.count() >= 2 && _breadcrumbList[_breadcrumbList.count() - 2] == breadcrumb) {
       beginResetModel();
       _breadcrumbList.removeLast();
       endResetModel();
@@ -65,32 +51,26 @@ NXBreadcrumbBarModel::appendBreadcrumb(const QString &breadcrumb)
   }
 }
 
-void
-NXBreadcrumbBarModel::removeBreadcrumb(const QString &breadcrumb)
+void NXBreadcrumbBarModel::removeBreadcrumb(const QString &breadcrumb)
 {
-  if (_breadcrumbList.contains(breadcrumb))
-  {
+  if (_breadcrumbList.contains(breadcrumb)) {
     beginResetModel();
     _breadcrumbList.removeAt(_breadcrumbList.lastIndexOf(breadcrumb));
     endResetModel();
   }
 }
 
-void
-NXBreadcrumbBarModel::removeBreadcrumb(int index)
+void NXBreadcrumbBarModel::removeBreadcrumb(int index)
 {
-  if (index >= _breadcrumbList.count())
-  {
+  if (index >= _breadcrumbList.count()) {
     return;
   }
   beginResetModel();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   _breadcrumbList.remove(index, _breadcrumbList.count() - index);
 #else
-  for (int i = _breadcrumbList.count() - 1; i >= 0; i--)
-  {
-    if (i < index)
-    {
+  for (int i = _breadcrumbList.count() - 1; i >= 0; i--) {
+    if (i < index) {
       break;
     }
     _breadcrumbList.removeAt(i);
@@ -99,22 +79,19 @@ NXBreadcrumbBarModel::removeBreadcrumb(int index)
   endResetModel();
 }
 
-void
-NXBreadcrumbBarModel::setBreadcrumbList(const QStringList &breadcrumbList)
+void NXBreadcrumbBarModel::setBreadcrumbList(const QStringList &breadcrumbList)
 {
   beginResetModel();
   this->_breadcrumbList = breadcrumbList;
   endResetModel();
 }
 
-int
-NXBreadcrumbBarModel::getBreadcrumbListCount()
+int NXBreadcrumbBarModel::getBreadcrumbListCount() const
 {
   return _breadcrumbList.count();
 }
 
-QStringList
-NXBreadcrumbBarModel::getBreadcrumbList()
+QStringList NXBreadcrumbBarModel::getBreadcrumbList() const
 {
   return _breadcrumbList;
 }

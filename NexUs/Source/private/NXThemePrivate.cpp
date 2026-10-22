@@ -17,27 +17,22 @@ NXThemePrivate::~NXThemePrivate()
 {
 }
 
-bool
-NXThemePrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXThemePrivate::eventFilter(QObject *watched, QEvent *event)
 {
-  if (_pIsFollowSystemTheme && event->type() == QEvent::ApplicationPaletteChange)
-  {
+  if (_pIsFollowSystemTheme && event->type() == QEvent::ApplicationPaletteChange) {
     _applySystemTheme();
   }
   return QObject::eventFilter(watched, event);
 }
 
-NXThemeType::ThemeMode
-NXThemePrivate::_detectSystemThemeMode() const
+NXThemeType::ThemeMode NXThemePrivate::_detectSystemThemeMode() const
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   const Qt::ColorScheme scheme = QGuiApplication::styleHints()->colorScheme();
-  if (scheme == Qt::ColorScheme::Dark)
-  {
+  if (scheme == Qt::ColorScheme::Dark) {
     return NXThemeType::Dark;
   }
-  if (scheme == Qt::ColorScheme::Light)
-  {
+  if (scheme == Qt::ColorScheme::Light) {
     return NXThemeType::Light;
   }
 #endif
@@ -45,19 +40,16 @@ NXThemePrivate::_detectSystemThemeMode() const
   return windowColor.lightness() < 128 ? NXThemeType::Dark : NXThemeType::Light;
 }
 
-void
-NXThemePrivate::_applySystemTheme()
+void NXThemePrivate::_applySystemTheme()
 {
   Q_Q(NXTheme);
   const NXThemeType::ThemeMode mode = _detectSystemThemeMode();
-  if (_themeMode != mode)
-  {
+  if (_themeMode != mode) {
     q->setThemeMode(mode);
   }
 }
 
-void
-NXThemePrivate::_initThemeColor()
+void NXThemePrivate::_initThemeColor()
 {
   // NXTabBar
   _lightThemeColorList[NXThemeType::TabBarBase] = QColor(0xEA, 0xEA, 0xED);

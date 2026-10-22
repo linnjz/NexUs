@@ -56,14 +56,12 @@ NXSheetPanel::NXSheetPanel(QWidget *parent)
   d->_panelLayout->addWidget(d->_dragHandle, 0, Qt::AlignHCenter);
   d->_panelLayout->addSpacing(8);
 
-  if (parent)
-  {
+  if (parent) {
     parent->installEventFilter(this);
     d->_maskWidget->setFixedSize(parent->size());
   }
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     d->_panelWidget->update();
   });
@@ -72,45 +70,37 @@ NXSheetPanel::NXSheetPanel(QWidget *parent)
 NXSheetPanel::~NXSheetPanel()
 {
   Q_D(NXSheetPanel);
-  if (d->_maskWidget)
-  {
+  if (d->_maskWidget) {
     d->_maskWidget->deleteLater();
   }
-  if (d->_panelWidget)
-  {
+  if (d->_panelWidget) {
     d->_panelWidget->deleteLater();
   }
 }
 
-void
-NXSheetPanel::setCentralWidget(QWidget *widget)
+void NXSheetPanel::setCentralWidget(QWidget *widget)
 {
   Q_D(NXSheetPanel);
-  if (d->_centralWidget)
-  {
+  if (d->_centralWidget) {
     d->_panelLayout->removeWidget(d->_centralWidget);
     d->_centralWidget->deleteLater();
   }
   d->_centralWidget = widget;
-  if (widget)
-  {
+  if (widget) {
     d->_panelLayout->addWidget(widget);
   }
 }
 
-void
-NXSheetPanel::open(NXSheetPanelType::DetentLevel level)
+void NXSheetPanel::open(NXSheetPanelType::DetentLevel level)
 {
   Q_D(NXSheetPanel);
-  if (d->_isOpened && d->_currentDetent == level)
-  {
+  if (d->_isOpened && d->_currentDetent == level) {
     return;
   }
   d->_isOpened      = true;
   d->_currentDetent = level;
 
-  if (parentWidget())
-  {
+  if (parentWidget()) {
     d->_maskWidget->setFixedSize(parentWidget()->size());
     d->_maskWidget->move(0, 0);
   }
@@ -126,79 +116,59 @@ NXSheetPanel::open(NXSheetPanelType::DetentLevel level)
   Q_EMIT detentChanged(level);
 }
 
-void
-NXSheetPanel::close()
+void NXSheetPanel::close()
 {
   Q_D(NXSheetPanel);
-  if (!d->_isOpened)
-  {
+  if (!d->_isOpened) {
     return;
   }
   d->_doCloseAnimation();
 }
 
-NXSheetPanelType::DetentLevel
-NXSheetPanel::currentDetent() const
+NXSheetPanelType::DetentLevel NXSheetPanel::currentDetent() const
 {
   return d_ptr->_currentDetent;
 }
 
-bool
-NXSheetPanel::isOpened() const
+bool NXSheetPanel::isOpened() const
 {
   return d_ptr->_isOpened;
 }
 
-bool
-NXSheetPanel::eventFilter(QObject *watched, QEvent *event)
+bool NXSheetPanel::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXSheetPanel);
-  if (watched == parentWidget())
-  {
-    if (event->type() == QEvent::Resize)
-    {
-      if (d->_isOpened && parentWidget())
-      {
+  if (watched == parentWidget()) {
+    if (event->type() == QEvent::Resize) {
+      if (d->_isOpened && parentWidget()) {
         d->_maskWidget->setFixedSize(parentWidget()->size());
         int targetSize = d->_getTargetSize(d->_currentDetent);
         d->_updatePanelGeometry(targetSize, false);
       }
     }
-  }
-  else if (watched == d->_maskWidget)
-  {
-    if (event->type() == QEvent::MouseButtonPress && d->_pCloseOnOverlayClick)
-    {
+  } else if (watched == d->_maskWidget) {
+    if (event->type() == QEvent::MouseButtonPress && d->_pCloseOnOverlayClick) {
       close();
       return true;
     }
-  }
-  else if (watched == d->_dragHandle || watched == d->_panelWidget)
-  {
-    if (event->type() == QEvent::MouseButtonPress)
-    {
+  } else if (watched == d->_dragHandle || watched == d->_panelWidget) {
+    if (event->type() == QEvent::MouseButtonPress) {
       QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-      if (mouseEvent->button() == Qt::LeftButton && watched == d->_dragHandle)
-      {
+      if (mouseEvent->button() == Qt::LeftButton && watched == d->_dragHandle) {
         d->_isDragging = true;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         d->_dragStartPos = mouseEvent->globalPosition().toPoint();
 #else
         d->_dragStartPos = mouseEvent->globalPos();
 #endif
-        if (d->_pDirection == NXSheetPanelType::Bottom)
-        {
+        if (d->_pDirection == NXSheetPanelType::Bottom) {
           d->_dragStartSize = d->_panelWidget->height();
-        }
-        else
-        {
+        } else {
           d->_dragStartSize = d->_panelWidget->width();
         }
         return true;
       }
-    }
-    else if (event->type() == QEvent::MouseMove && d->_isDragging)
-    {
+    } else if (event->type() == QEvent::MouseMove && d->_isDragging) {
       QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
       QPoint delta = mouseEvent->globalPosition().toPoint() - d->_dragStartPos;
@@ -206,41 +176,28 @@ NXSheetPanel::eventFilter(QObject *watched, QEvent *event)
       QPoint delta = mouseEvent->globalPos() - d->_dragStartPos;
 #endif
       int newSize = d->_dragStartSize;
-      if (d->_pDirection == NXSheetPanelType::Bottom)
-      {
+      if (d->_pDirection == NXSheetPanelType::Bottom) {
         newSize = d->_dragStartSize - delta.y();
-      }
-      else if (d->_pDirection == NXSheetPanelType::Right)
-      {
+      } else if (d->_pDirection == NXSheetPanelType::Right) {
         newSize = d->_dragStartSize - delta.x();
-      }
-      else
-      {
+      } else {
         newSize = d->_dragStartSize + delta.x();
       }
       newSize = qMax(20, newSize);
       d->_updatePanelGeometry(newSize, false);
       return true;
-    }
-    else if (event->type() == QEvent::MouseButtonRelease && d->_isDragging)
-    {
+    } else if (event->type() == QEvent::MouseButtonRelease && d->_isDragging) {
       d->_isDragging = false;
       int currentSize;
-      if (d->_pDirection == NXSheetPanelType::Bottom)
-      {
+      if (d->_pDirection == NXSheetPanelType::Bottom) {
         currentSize = d->_panelWidget->height();
-      }
-      else
-      {
+      } else {
         currentSize = d->_panelWidget->width();
       }
       int peekSize = d->_getTargetSize(NXSheetPanelType::Peek);
-      if (currentSize < peekSize / 2)
-      {
+      if (currentSize < peekSize / 2) {
         close();
-      }
-      else
-      {
+      } else {
         NXSheetPanelType::DetentLevel nearestLevel = d->_getNearestDetent(currentSize);
         d->_currentDetent                          = nearestLevel;
         d->_updatePanelGeometry(d->_getTargetSize(nearestLevel), true);

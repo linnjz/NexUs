@@ -32,20 +32,15 @@ NXBreadcrumbBar::NXBreadcrumbBar(QWidget *parent)
   d->_listView->setModel(d->_listModel);
   d->_listDelegate = new NXBreadcrumbBarDelegate(this);
   d->_listView->setItemDelegate(d->_listDelegate);
-  connect(d->_listView, &QListView::clicked, this, [=](const QModelIndex &index)
-  {
-    if (d->_pIsAutoRemove)
-    {
+  connect(d->_listView, &QListView::clicked, this, [=](const QModelIndex &index) {
+    if (d->_pIsAutoRemove) {
       if (d->_listModel->getBreadcrumbListCount() != 1 &&
           index.row() != d->_listModel->getBreadcrumbListCount() * 2 - 2 &&
-          index.data(Qt::DisplayRole).toString() != QStringLiteral(">"))
-      {
+          index.data(Qt::DisplayRole).toString() != QStringLiteral(">")) {
         Q_EMIT breadcrumbClicked(index.data(Qt::DisplayRole).toString(), d->_listModel->getBreadcrumbList());
         d->_listModel->removeBreadcrumb(index.row() / 2 + 1);
       }
-    }
-    else
-    {
+    } else {
       Q_EMIT breadcrumbClicked(index.data(Qt::DisplayRole).toString(), d->_listModel->getBreadcrumbList());
     }
   });
@@ -64,15 +59,11 @@ NXBreadcrumbBar::NXBreadcrumbBar(QWidget *parent)
   properties.setScrollMetric(QScrollerProperties::FrameRate, QScrollerProperties::Fps60);
   scroller->setScrollerProperties(properties);
 
-  connect(scroller, &QScroller::stateChanged, this, [=](QScroller::State newstate)
-  {
-    if (newstate == QScroller::Pressed)
-    {
+  connect(scroller, &QScroller::stateChanged, this, [=](QScroller::State newstate) {
+    if (newstate == QScroller::Pressed) {
       d->_listDelegate->setPressIndex(d->_listView->indexAt(d->_listView->mapFromGlobal(QCursor::pos())));
       d->_listView->viewport()->update();
-    }
-    else if (newstate == QScroller::Scrolling || newstate == QScroller::Inactive)
-    {
+    } else if (newstate == QScroller::Scrolling || newstate == QScroller::Inactive) {
       d->_listDelegate->setPressIndex(QModelIndex());
     }
   });
@@ -86,12 +77,10 @@ NXBreadcrumbBar::~NXBreadcrumbBar()
 {
 }
 
-void
-NXBreadcrumbBar::setTextPixelSize(int textPixelSize)
+void NXBreadcrumbBar::setTextPixelSize(int textPixelSize)
 {
   Q_D(NXBreadcrumbBar);
-  if (textPixelSize > 0)
-  {
+  if (textPixelSize > 0) {
     d->_pTextPixelSize = textPixelSize;
     QFont textFont     = this->font();
     textFont.setLetterSpacing(QFont::AbsoluteSpacing, 0.5);
@@ -101,45 +90,39 @@ NXBreadcrumbBar::setTextPixelSize(int textPixelSize)
   }
 }
 
-int
-NXBreadcrumbBar::getTextPixelSize() const
+int NXBreadcrumbBar::getTextPixelSize() const
 {
   Q_D(const NXBreadcrumbBar);
   return d->_pTextPixelSize;
 }
 
-void
-NXBreadcrumbBar::setBreadcrumbList(const QStringList &breadcrumbList)
+void NXBreadcrumbBar::setBreadcrumbList(const QStringList &breadcrumbList)
 {
   Q_D(NXBreadcrumbBar);
   d->_listModel->setBreadcrumbList(breadcrumbList);
 }
 
-QStringList
-NXBreadcrumbBar::appendBreadcrumb(const QString &breadcrumb)
+QStringList NXBreadcrumbBar::appendBreadcrumb(const QString &breadcrumb)
 {
   Q_D(NXBreadcrumbBar);
   d->_listModel->appendBreadcrumb(breadcrumb);
   return d->_listModel->getBreadcrumbList();
 }
 
-QStringList
-NXBreadcrumbBar::removeBreadcrumb(const QString &breadcrumb)
+QStringList NXBreadcrumbBar::removeBreadcrumb(const QString &breadcrumb)
 {
   Q_D(NXBreadcrumbBar);
   d->_listModel->removeBreadcrumb(breadcrumb);
   return d->_listModel->getBreadcrumbList();
 }
 
-int
-NXBreadcrumbBar::getBreadcrumbListCount() const
+int NXBreadcrumbBar::getBreadcrumbListCount() const
 {
   Q_D(const NXBreadcrumbBar);
   return d->_listModel->getBreadcrumbListCount();
 }
 
-QStringList
-NXBreadcrumbBar::getBreadcrumbList() const
+QStringList NXBreadcrumbBar::getBreadcrumbList() const
 {
   Q_D(const NXBreadcrumbBar);
   return d->_listModel->getBreadcrumbList();

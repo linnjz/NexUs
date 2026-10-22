@@ -34,14 +34,12 @@ NXShadowGraphicsEffect::~NXShadowGraphicsEffect()
 {
 }
 
-QRectF
-NXShadowGraphicsEffect::boundingRectFor(const QRectF &rect) const
+QRectF NXShadowGraphicsEffect::boundingRectFor(const QRectF &rect) const
 {
   Q_D(const NXShadowGraphicsEffect);
 
   // 对于内阴影，不需要扩展边界
-  if (d->_pProjectionMode == NXShadowGraphicsEffectType::ProjectionMode::Inset)
-  {
+  if (d->_pProjectionMode == NXShadowGraphicsEffectType::ProjectionMode::Inset) {
     return rect.united(rect.translated(0, 0));
   }
 
@@ -52,8 +50,7 @@ NXShadowGraphicsEffect::boundingRectFor(const QRectF &rect) const
   return rect.united(rect.translated(0, 0).adjusted(-boundary, -boundary, boundary, boundary));
 }
 
-void
-NXShadowGraphicsEffect::draw(QPainter *painter)
+void NXShadowGraphicsEffect::draw(QPainter *painter)
 {
   Q_D(NXShadowGraphicsEffect);
   QPoint pos;
@@ -67,12 +64,9 @@ NXShadowGraphicsEffect::draw(QPainter *painter)
   painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
   painter->setPen(Qt::NoPen);
 
-  if (d->_pProjectionMode == NXShadowGraphicsEffectType::ProjectionMode::Inset)
-  {
+  if (d->_pProjectionMode == NXShadowGraphicsEffectType::ProjectionMode::Inset) {
     d->_drawInsetShadow(painter, pixmap, pos);
-  }
-  else
-  {
+  } else {
     d->_drawOutsetShadow(painter, pixmap, pos);
   }
 

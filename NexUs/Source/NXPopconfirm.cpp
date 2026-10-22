@@ -44,8 +44,7 @@ NXPopconfirm::NXPopconfirm(QWidget *parent)
   d->_cancelButton = new NXPushButton(d->_pCancelButtonText, this);
   d->_cancelButton->setFixedHeight(30);
   d->_cancelButton->setBorderRadius(4);
-  connect(d->_cancelButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(d->_cancelButton, &NXPushButton::clicked, this, [=]() {
     Q_EMIT cancelled();
     closePopconfirm();
   });
@@ -61,8 +60,7 @@ NXPopconfirm::NXPopconfirm(QWidget *parent)
   d->_confirmButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
   d->_confirmButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
   d->_confirmButton->setDarkTextColor(Qt::black);
-  connect(d->_confirmButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(d->_confirmButton, &NXPushButton::clicked, this, [=]() {
     Q_EMIT confirmed();
     closePopconfirm();
   });
@@ -83,8 +81,7 @@ NXPopconfirm::NXPopconfirm(QWidget *parent)
   d->_mainLayout->addStretch();
   d->_mainLayout->addLayout(buttonLayout);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -95,12 +92,10 @@ NXPopconfirm::~NXPopconfirm()
 {
 }
 
-void
-NXPopconfirm::showPopconfirm(QWidget *target)
+void NXPopconfirm::showPopconfirm(QWidget *target)
 {
   Q_D(NXPopconfirm);
-  if (!target)
-  {
+  if (!target) {
     return;
   }
   d->_cancelButton->setText(d->_pCancelButtonText);
@@ -111,20 +106,17 @@ NXPopconfirm::showPopconfirm(QWidget *target)
   int contentHeight = sw * 2 + 16;
   int textWidth     = popupWidth - sw * 4 - 40;
 
-  if (d->_pIcon != NXIconType::None)
-  {
+  if (d->_pIcon != NXIconType::None) {
     contentHeight += 0;
   }
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(14);
     titleFont.setBold(true);
     QFontMetrics tfm(titleFont);
     contentHeight += tfm.height() + 6;
   }
-  if (!d->_pContent.isEmpty())
-  {
+  if (!d->_pContent.isEmpty()) {
     QFont contentFont = font();
     contentFont.setPixelSize(13);
     QFontMetrics cfm(contentFont);
@@ -139,38 +131,31 @@ NXPopconfirm::showPopconfirm(QWidget *target)
   int y               = targetGlobal.y() + 5;
 
   QScreen *screen = QApplication::screenAt(targetGlobal);
-  if (screen)
-  {
+  if (screen) {
     QRect screenRect = screen->availableGeometry();
-    if (x < screenRect.left())
-    {
+    if (x < screenRect.left()) {
       x = screenRect.left();
     }
-    if (x + width() > screenRect.right())
-    {
+    if (x + width() > screenRect.right()) {
       x = screenRect.right() - width();
     }
-    if (y + height() > screenRect.bottom())
-    {
+    if (y + height() > screenRect.bottom()) {
       y = targetGlobal.y() - target->height() - height() - 5;
     }
-    if (y < screenRect.top())
-    {
+    if (y < screenRect.top()) {
       y = screenRect.top();
     }
   }
   move(x, y);
   show();
   raise();
-  if (d->_pIsLightDismiss)
-  {
+  if (d->_pIsLightDismiss) {
     qApp->installEventFilter(d);
   }
   d->_doShowAnimation();
 }
 
-void
-NXPopconfirm::closePopconfirm()
+void NXPopconfirm::closePopconfirm()
 {
   Q_D(NXPopconfirm);
   qApp->removeEventFilter(d);
@@ -178,8 +163,7 @@ NXPopconfirm::closePopconfirm()
   Q_EMIT closed();
 }
 
-void
-NXPopconfirm::paintEvent(QPaintEvent *event)
+void NXPopconfirm::paintEvent(QPaintEvent *event)
 {
   Q_D(NXPopconfirm);
   QPainter painter(this);
@@ -202,8 +186,7 @@ NXPopconfirm::paintEvent(QPaintEvent *event)
   int textWidth  = fg.width() - 28;
   int iconOffset = 0;
 
-  if (d->_pIcon != NXIconType::None)
-  {
+  if (d->_pIcon != NXIconType::None) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(18);
     painter.setFont(iconFont);
@@ -212,8 +195,7 @@ NXPopconfirm::paintEvent(QPaintEvent *event)
     iconOffset = 26;
   }
 
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     QFont titleFont = painter.font();
     titleFont.setFamily(font().family());
     titleFont.setPixelSize(14);
@@ -225,8 +207,7 @@ NXPopconfirm::paintEvent(QPaintEvent *event)
     textY += titleRect.height() + 6;
   }
 
-  if (!d->_pContent.isEmpty())
-  {
+  if (!d->_pContent.isEmpty()) {
     QFont contentFont = painter.font();
     contentFont.setPixelSize(13);
     contentFont.setBold(false);
@@ -248,15 +229,12 @@ NXPopconfirmPrivate::~NXPopconfirmPrivate()
 {
 }
 
-bool
-NXPopconfirmPrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXPopconfirmPrivate::eventFilter(QObject *watched, QEvent *event)
 {
   Q_Q(NXPopconfirm);
-  if (event->type() == QEvent::MouseButtonPress)
-  {
+  if (event->type() == QEvent::MouseButtonPress) {
     QWidget *clickedWidget = qobject_cast<QWidget *>(watched);
-    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q)
-    {
+    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q) {
       Q_EMIT q->cancelled();
       q->closePopconfirm();
       return false;
@@ -265,8 +243,7 @@ NXPopconfirmPrivate::eventFilter(QObject *watched, QEvent *event)
   return QObject::eventFilter(watched, event);
 }
 
-void
-NXPopconfirmPrivate::_doShowAnimation()
+void NXPopconfirmPrivate::_doShowAnimation()
 {
   QPropertyAnimation *animation = new QPropertyAnimation(_opacityEffect, "opacity");
   animation->setDuration(250);

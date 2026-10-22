@@ -40,8 +40,7 @@ public:
   {
     int digits   = 1;
     int maxBlock = qMax(1, _editor->blockCount());
-    while (maxBlock >= 10)
-    {
+    while (maxBlock >= 10) {
       maxBlock /= 10;
       ++digits;
     }
@@ -63,22 +62,16 @@ protected:
 
     int currentBlockNumber = _editor->textCursor().blockNumber();
 
-    while (block.isValid() && top <= event->rect().bottom())
-    {
-      if (block.isVisible() && bottom >= event->rect().top())
-      {
+    while (block.isValid() && top <= event->rect().bottom()) {
+      if (block.isVisible() && bottom >= event->rect().top()) {
         QString number = QString::number(blockNumber + 1);
-        if (blockNumber == currentBlockNumber)
-        {
+        if (blockNumber == currentBlockNumber) {
           painter.setPen(NXThemeColor(themeMode, PrimaryNormal));
-        }
-        else
-        {
+        } else {
           painter.setPen(NXThemeColor(themeMode, BasicDetailsText));
         }
         painter.setFont(_editor->font());
-        painter.drawText(0, top, width() - 8, _editor->fontMetrics().height(), Qt::AlignRight | Qt::AlignVCenter,
-                         number);
+        painter.drawText(0, top, width() - 8, _editor->fontMetrics().height(), Qt::AlignRight | Qt::AlignVCenter, number);
       }
       block  = block.next();
       top    = bottom;

@@ -50,27 +50,20 @@ NXPivot::NXPivot(QWidget *parent)
   properties.setScrollMetric(QScrollerProperties::FrameRate, QScrollerProperties::Fps60);
   scroller->setScrollerProperties(properties);
 
-  connect(scroller, &QScroller::stateChanged, this, [=](QScroller::State newstate)
-  {
-    if (newstate == QScroller::Pressed)
-    {
+  connect(scroller, &QScroller::stateChanged, this, [=](QScroller::State newstate) {
+    if (newstate == QScroller::Pressed) {
       d->_listView->setPressIndexAndUpdate(d->_listView->indexAt(d->_listView->mapFromGlobal(QCursor::pos())));
-    }
-    else if (newstate == QScroller::Scrolling || newstate == QScroller::Inactive)
-    {
+    } else if (newstate == QScroller::Scrolling || newstate == QScroller::Inactive) {
       d->_listView->setPressIndexAndUpdate(QModelIndex());
     }
   });
-  connect(d->_listView, &NXPivotView::clicked, this, [=](QModelIndex const &index)
-  {
-    if (d->_listView->doCurrentIndexChangedAnimation(index))
-    {
+  connect(d->_listView, &NXPivotView::clicked, this, [=](const QModelIndex &index) {
+    if (d->_listView->doCurrentIndexChangedAnimation(index)) {
       Q_EMIT pCurrentIndexChanged();
     }
     Q_EMIT pivotClicked(index.row());
   });
-  connect(d->_listView, &NXPivotView::doubleClicked, this, [=](QModelIndex const &index)
-  {
+  connect(d->_listView, &NXPivotView::doubleClicked, this, [=](const QModelIndex &index) {
     Q_EMIT pivotDoubleClicked(index.row());
   });
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -84,60 +77,54 @@ NXPivot::~NXPivot()
   delete d->_listStyle;
 }
 
-void
-NXPivot::appendPivot(QPixmap const &pixmap)
-{ appendPivot(QString {}, pixmap); }
+void NXPivot::appendPivot(const QPixmap &pixmap)
+{
+  appendPivot(QString {}, pixmap);
+}
 
-void
-NXPivot::appendPivot(QString const &pivotTitle, QPixmap const &pixmap)
+void NXPivot::appendPivot(const QString &pivotTitle, const QPixmap &pixmap)
 {
   Q_D(NXPivot);
-  int const index = d->_listModel->getPivotListCount();
+  const int index = d->_listModel->getPivotListCount();
   d->_listModel->appendPivot(pivotTitle, pixmap);
   setCurrentIndex(index);
   Q_EMIT pivotInserted(index);
 }
 
-void
-NXPivot::insertPivot(int index, QPixmap const &pixmap)
-{ insertPivot(index, QString {}, pixmap); }
+void NXPivot::insertPivot(int index, const QPixmap &pixmap)
+{
+  insertPivot(index, QString {}, pixmap);
+}
 
-void
-NXPivot::insertPivot(int index, QString const &pivotTitle, QPixmap const &pixmap)
+void NXPivot::insertPivot(int index, const QString &pivotTitle, const QPixmap &pixmap)
 {
   Q_D(NXPivot);
-  int const insertIndex = qBound(0, index, d->_listModel->getPivotListCount());
+  const int insertIndex = qBound(0, index, d->_listModel->getPivotListCount());
   d->_listModel->insertPivot(insertIndex, pivotTitle, pixmap);
   setCurrentIndex(insertIndex);
   Q_EMIT pivotInserted(insertIndex);
 }
 
-void
-NXPivot::removePivot(int index)
+void NXPivot::removePivot(int index)
 {
   Q_D(NXPivot);
-  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]]
-  {
+  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]] {
     return;
   }
 
   d->_listModel->removePivot(index);
-  int const count = d->_listModel->getPivotListCount();
+  const int count = d->_listModel->getPivotListCount();
 
-  if (count == 0)
-  {
+  if (count == 0) {
     d->_listView->setCommittedIndexAndUpdate(QModelIndex {});
     Q_EMIT pivotRemoved(index);
     return;
   }
 
   int nextCurrentIndex = getCurrentIndex();
-  if (nextCurrentIndex < 0 || nextCurrentIndex == index)
-  {
+  if (nextCurrentIndex < 0 || nextCurrentIndex == index) {
     nextCurrentIndex = qMin(index, count - 1);
-  }
-  else if (nextCurrentIndex > index)
-  {
+  } else if (nextCurrentIndex > index) {
     nextCurrentIndex -= 1;
   }
   setCurrentIndex(nextCurrentIndex);
@@ -145,51 +132,42 @@ NXPivot::removePivot(int index)
   Q_EMIT pivotRemoved(index);
 }
 
-void
-NXPivot::removePivot(QString const &pivotTitle)
+void NXPivot::removePivot(const QString &pivotTitle)
 {
   Q_D(NXPivot);
-  QList<NXPivotModel::PivotItem> const &items = d->_listModel->getPivotList();
-  for (int i = items.count() - 1; i >= 0; --i)
-  {
-    if (items[i].text == pivotTitle)
-    {
+  const QList<NXPivotModel::PivotItem> &items = d->_listModel->getPivotList();
+  for (int i = items.count() - 1; i >= 0; --i) {
+    if (items[i].text == pivotTitle) {
       removePivot(i);
       return;
     }
   }
 }
 
-void
-NXPivot::setPivot(int index, QPixmap const &pixmap)
+void NXPivot::setPivot(int index, const QPixmap &pixmap)
 {
   Q_D(NXPivot);
-  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]]
-  {
+  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]] {
     return;
   }
   d->_listModel->setPivot(index, pixmap);
   Q_EMIT pivotChanged(index);
 }
 
-void
-NXPivot::setPivot(int index, QString const &pivotTitle, QPixmap const &pixmap)
+void NXPivot::setPivot(int index, const QString &pivotTitle, const QPixmap &pixmap)
 {
   Q_D(NXPivot);
-  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]]
-  {
+  if (index < 0 || index >= d->_listModel->getPivotListCount()) [[unlikely]] {
     return;
   }
   d->_listModel->setPivot(index, pivotTitle, pixmap);
   Q_EMIT pivotChanged(index);
 }
 
-void
-NXPivot::clearPivot()
+void NXPivot::clearPivot()
 {
   Q_D(NXPivot);
-  if (d->_listModel->getPivotListCount() == 0)
-  {
+  if (d->_listModel->getPivotListCount() == 0) {
     return;
   }
   d->_listModel->clearPivot();
@@ -197,33 +175,28 @@ NXPivot::clearPivot()
   Q_EMIT pCurrentIndexChanged();
 }
 
-QStringList
-NXPivot::getPivotTitle() const
+QStringList NXPivot::getPivotTitle() const
 {
   Q_D(const NXPivot);
-  QList<NXPivotModel::PivotItem> const &items = d->_listModel->getPivotList();
+  const QList<NXPivotModel::PivotItem> &items = d->_listModel->getPivotList();
   QStringList titles;
   titles.reserve(items.count());
-  for (auto const &item : items)
-  {
+  for (const auto &item : items) {
     titles.append(item.text);
   }
   return titles;
 }
 
-void
-NXPivot::setCurrentTitle(QString const &pivotTitle)
+void NXPivot::setCurrentTitle(const QString &pivotTitle)
 {
   Q_D(NXPivot);
   setCurrentIndex(d->_listModel->getPivotIndex(pivotTitle));
 }
 
-void
-NXPivot::setTextPixelSize(int textPixelSize)
+void NXPivot::setTextPixelSize(int textPixelSize)
 {
   Q_D(NXPivot);
-  if (textPixelSize <= 0) [[unlikely]]
-  {
+  if (textPixelSize <= 0) [[unlikely]] {
     return;
   }
   QFont textFont = this->font();
@@ -233,53 +206,45 @@ NXPivot::setTextPixelSize(int textPixelSize)
   Q_EMIT pTextPixelSizeChanged();
 }
 
-int
-NXPivot::getTextPixelSize() const
+int NXPivot::getTextPixelSize() const
 {
   Q_D(const NXPivot);
   return d->_listView->font().pixelSize();
 }
 
-void
-NXPivot::setItemCursor(Qt::CursorShape shape)
+void NXPivot::setItemCursor(Qt::CursorShape shape)
 {
   Q_D(NXPivot);
   d->_listView->setItemCursor(shape);
   d->_listView->refreshHoverState();
 }
 
-Qt::CursorShape
-NXPivot::getItemCursor() const
+Qt::CursorShape NXPivot::getItemCursor() const
 {
   Q_D(const NXPivot);
   return d->_listView->getItemCursor();
 }
 
-void
-NXPivot::setCurrentIndex(int currentIndex)
+void NXPivot::setCurrentIndex(int currentIndex)
 {
   Q_D(NXPivot);
-  if (currentIndex < 0 || currentIndex >= d->_listModel->getPivotListCount()) [[unlikely]]
-  {
+  if (currentIndex < 0 || currentIndex >= d->_listModel->getPivotListCount()) [[unlikely]] {
     return;
   }
 
-  QModelIndex const index = d->_listModel->index(currentIndex, 0);
-  if (d->_listView->doCurrentIndexChangedAnimation(index))
-  {
+  const QModelIndex index = d->_listModel->index(currentIndex, 0);
+  if (d->_listView->doCurrentIndexChangedAnimation(index)) {
     Q_EMIT pCurrentIndexChanged();
   }
 }
 
-int
-NXPivot::getCurrentIndex() const
+int NXPivot::getCurrentIndex() const
 {
   Q_D(const NXPivot);
   return d->_listView->getCommittedIndex().row();
 }
 
-void
-NXPivot::setIndicatorWidth(int markWidth)
+void NXPivot::setIndicatorWidth(int markWidth)
 {
   Q_D(NXPivot);
   d->_listView->setIndicatorWidth(markWidth);
@@ -288,99 +253,85 @@ NXPivot::setIndicatorWidth(int markWidth)
   Q_EMIT pIndicatorWidthChanged();
 }
 
-int
-NXPivot::getIndicatorWidth() const
+int NXPivot::getIndicatorWidth() const
 {
   Q_D(const NXPivot);
   return d->_listView->getIndicatorWidth();
 }
 
-void
-NXPivot::setTextNormalColor(QColor const &color)
+void NXPivot::setTextNormalColor(const QColor &color)
 {
   Q_D(NXPivot);
   d->_listStyle->setTextNormalColor(color);
   d->_listView->viewport()->update();
 }
 
-QColor
-NXPivot::getTextNormalColor() const
+QColor NXPivot::getTextNormalColor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getTextNormalColor();
 }
 
-void
-NXPivot::setTextPressedColor(QColor const &color)
+void NXPivot::setTextPressedColor(const QColor &color)
 {
   Q_D(NXPivot);
   d->_listStyle->setTextPressedColor(color);
   d->_listView->viewport()->update();
 }
 
-QColor
-NXPivot::getTextPressedColor() const
+QColor NXPivot::getTextPressedColor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getTextPressedColor();
 }
 
-void
-NXPivot::setTextFocusColor(QColor const &color)
+void NXPivot::setTextFocusColor(const QColor &color)
 {
   Q_D(NXPivot);
   d->_listStyle->setTextFocusColor(color);
   d->_listView->viewport()->update();
 }
 
-QColor
-NXPivot::getTextFocusColor() const
+QColor NXPivot::getTextFocusColor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getTextFocusColor();
 }
 
-void
-NXPivot::setIndicatorColor(QColor const &color)
+void NXPivot::setIndicatorColor(const QColor &color)
 {
   Q_D(NXPivot);
   d->_listStyle->setIndicatorColor(color);
   d->_listView->viewport()->update();
 }
 
-QColor
-NXPivot::getIndicatorColor() const
+QColor NXPivot::getIndicatorColor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getIndicatorColor();
 }
 
-void
-NXPivot::setItemBackgroundColor(QColor const &color)
+void NXPivot::setItemBackgroundColor(const QColor &color)
 {
   Q_D(NXPivot);
   d->_listStyle->setItemBackgroundColor(color);
 
-  QModelIndex const hoverIndex = d->_listView->getHoverIndex();
-  if (hoverIndex.isValid())
-  {
-    QRect const hoverRect = d->_listView->visualRect(hoverIndex).adjusted(-2, -2, 2, 2);
-    if (hoverRect.isValid())
-    {
+  const QModelIndex hoverIndex = d->_listView->getHoverIndex();
+  if (hoverIndex.isValid()) {
+    const QRect hoverRect = d->_listView->visualRect(hoverIndex).adjusted(-2, -2, 2, 2);
+    if (hoverRect.isValid()) {
       d->_listView->viewport()->update(hoverRect);
     }
   }
 }
 
-QColor
-NXPivot::getItemBackgroundColor() const
+QColor NXPivot::getItemBackgroundColor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getItemBackgroundColor();
 }
 
-void
-NXPivot::setItemHorizontalSpacing(int ItemHorizontalSpacing)
+void NXPivot::setItemHorizontalSpacing(int ItemHorizontalSpacing)
 {
   Q_D(NXPivot);
   d->_listStyle->setItemHorizontalSpacing(ItemHorizontalSpacing);
@@ -388,15 +339,13 @@ NXPivot::setItemHorizontalSpacing(int ItemHorizontalSpacing)
   Q_EMIT pItemHorizontalSpacingChanged();
 }
 
-int
-NXPivot::getItemHorizontalSpacing() const
+int NXPivot::getItemHorizontalSpacing() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getItemHorizontalSpacing();
 }
 
-void
-NXPivot::setItemVerticalSpacing(int ItemVerticalSpacing)
+void NXPivot::setItemVerticalSpacing(int ItemVerticalSpacing)
 {
   Q_D(NXPivot);
   d->_listStyle->setItemVerticalSpacing(ItemVerticalSpacing);
@@ -404,30 +353,26 @@ NXPivot::setItemVerticalSpacing(int ItemVerticalSpacing)
   Q_EMIT pItemVerticalSpacingChanged();
 }
 
-int
-NXPivot::getItemVerticalSpacing() const
+int NXPivot::getItemVerticalSpacing() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getItemVerticalSpacing();
 }
 
-void
-NXPivot::setTextIconSpacing(int textIconSpacing)
+void NXPivot::setTextIconSpacing(int textIconSpacing)
 {
   Q_D(NXPivot);
   d->_listStyle->setTextIconSpacing(textIconSpacing);
   d->_listView->viewport()->update();
 }
 
-int
-NXPivot::getTextIconSpacing() const
+int NXPivot::getTextIconSpacing() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getTextIconSpacing();
 }
 
-void
-NXPivot::setDisplayMode(NXPivotType::DisplayMode DisplayMode)
+void NXPivot::setDisplayMode(NXPivotType::DisplayMode DisplayMode)
 {
   Q_D(NXPivot);
   d->_listStyle->setDisplayMode(DisplayMode);
@@ -435,98 +380,85 @@ NXPivot::setDisplayMode(NXPivotType::DisplayMode DisplayMode)
   d->_listView->viewport()->update();
 }
 
-NXPivotType::DisplayMode
-NXPivot::getDisplayMode() const
+NXPivotType::DisplayMode NXPivot::getDisplayMode() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getDisplayMode();
 }
 
-void
-NXPivot::setIndicatorTypeFlags(NXPivotType::IndicatorTypeFlags flags)
+void NXPivot::setIndicatorTypeFlags(NXPivotType::IndicatorTypeFlags flags)
 {
   Q_D(NXPivot);
   d->_listStyle->setIndicatorTypeFlags(flags);
   d->_listView->viewport()->update();
 }
 
-NXPivotType::IndicatorTypeFlags
-NXPivot::getIndicatorTypeFlags() const
+NXPivotType::IndicatorTypeFlags NXPivot::getIndicatorTypeFlags() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getIndicatorTypeFlags();
 }
 
-void
-NXPivot::setOverlayTextOffsetFromCenterAnchor(QPoint OverlayTextOffsetFromCenterAnchor)
+void NXPivot::setOverlayTextOffsetFromCenterAnchor(QPoint OverlayTextOffsetFromCenterAnchor)
 {
   Q_D(NXPivot);
   d->_listStyle->setOverlayTextOffsetFromCenterAnchor(OverlayTextOffsetFromCenterAnchor);
   d->_listView->viewport()->update();
 }
 
-QPoint
-NXPivot::getOverlayTextOffsetFromCenterAnchor() const
+QPoint NXPivot::getOverlayTextOffsetFromCenterAnchor() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getOverlayTextOffsetFromCenterAnchor();
 }
 
-void
-NXPivot::setItemFixedSize(QSize pivotFixedSize)
+void NXPivot::setItemFixedSize(QSize pivotFixedSize)
 {
   Q_D(NXPivot);
   d->_listStyle->setItemFixedSize(pivotFixedSize);
   d->_listView->viewport()->update();
 }
 
-QSize
-NXPivot::getItemFixedSize() const
+QSize NXPivot::getItemFixedSize() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getItemFixedSize();
 }
 
-void
-NXPivot::setIsItemFixedSize(bool isFixedSize)
+void NXPivot::setIsItemFixedSize(bool isFixedSize)
 {
   Q_D(NXPivot);
   d->_listStyle->setIsItemFixedSize(isFixedSize);
   d->_listView->viewport()->update();
 }
 
-bool
-NXPivot::getIsItemFixedSize() const
+bool NXPivot::getIsItemFixedSize() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getIsItemFixedSize();
 }
 
-void
-NXPivot::setIsHoverItemBackgroundEnable(bool enabled)
+void NXPivot::setIsHoverItemBackgroundEnable(bool enabled)
 {
   Q_D(NXPivot);
   d->_listStyle->setIsHoverItemBackgroundEnable(enabled);
   d->_listView->viewport()->update();
 }
 
-bool
-NXPivot::getIsHoverItemBackgroundEnable() const
+bool NXPivot::getIsHoverItemBackgroundEnable() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getIsHoverItemBackgroundEnable();
 }
 
-void
-NXPivot::setIsAutoAdaptiveItemHeight(bool IsAutoAdaptiveItemHeight)
+void NXPivot::setIsAutoAdaptiveItemHeight(bool IsAutoAdaptiveItemHeight)
 {
   Q_D(const NXPivot);
   d->_listStyle->setIsAutoAdaptiveItemHeight(IsAutoAdaptiveItemHeight);
   d->_listView->viewport()->update();
 }
 
-bool
-NXPivot::getIsAutoAdaptiveItemHeight() const
+bool NXPivot::getIsAutoAdaptiveItemHeight() const
 {
   Q_D(const NXPivot);
   return d->_listStyle->getIsAutoAdaptiveItemHeight();

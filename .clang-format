@@ -28,7 +28,7 @@ AlignAfterOpenBracket: AlwaysBreak # Align\AlwaysBreak
 
 # { 是否以下一行开始
 BraceWrapping:
-  AfterCaseLabel: true                      # case 标签后面换行
+  AfterCaseLabel: false                      # case 标签后面换行
   AfterClass: true                          # class 定义后面换行
   AfterControlStatement: false              # 控制语句后面换行
   AfterEnum: true                           # enum 定义后面换行

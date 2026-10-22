@@ -139,16 +139,13 @@ NXTransfer::NXTransfer(QWidget *parent)
   connect(d->_sourceSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onSourceSelectAllChanged);
   connect(d->_targetSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onTargetSelectAllChanged);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode    = themeMode;
     QColor textColor = NXThemeColor(themeMode, BasicText);
-    for (int i = 0; i < d->_sourceModel->rowCount(); ++i)
-    {
+    for (int i = 0; i < d->_sourceModel->rowCount(); ++i) {
       d->_sourceModel->item(i)->setForeground(textColor);
     }
-    for (int i = 0; i < d->_targetModel->rowCount(); ++i)
-    {
+    for (int i = 0; i < d->_targetModel->rowCount(); ++i) {
       d->_targetModel->item(i)->setForeground(textColor);
     }
     update();
@@ -159,14 +156,12 @@ NXTransfer::~NXTransfer()
 {
 }
 
-void
-NXTransfer::setSourceItems(const QStringList &items)
+void NXTransfer::setSourceItems(const QStringList &items)
 {
   Q_D(NXTransfer);
   d->_sourceModel->clear();
   QColor textColor = NXThemeColor(d->_themeMode, BasicText);
-  for (const QString &text : items)
-  {
+  for (const QString &text : items) {
     QStandardItem *item = new QStandardItem(text);
     item->setForeground(textColor);
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -175,8 +170,7 @@ NXTransfer::setSourceItems(const QStringList &items)
   d->_refreshCountText();
 }
 
-void
-NXTransfer::addSourceItem(const QString &text)
+void NXTransfer::addSourceItem(const QString &text)
 {
   Q_D(NXTransfer);
   QStandardItem *item = new QStandardItem(text);
@@ -186,13 +180,11 @@ NXTransfer::addSourceItem(const QString &text)
   d->_refreshCountText();
 }
 
-void
-NXTransfer::addSourceItems(const QStringList &items)
+void NXTransfer::addSourceItems(const QStringList &items)
 {
   Q_D(NXTransfer);
   QColor textColor = NXThemeColor(d->_themeMode, BasicText);
-  for (const QString &text : items)
-  {
+  for (const QString &text : items) {
     QStandardItem *item = new QStandardItem(text);
     item->setForeground(textColor);
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -201,60 +193,51 @@ NXTransfer::addSourceItems(const QStringList &items)
   d->_refreshCountText();
 }
 
-QStringList
-NXTransfer::getSourceItems() const
+QStringList NXTransfer::getSourceItems() const
 {
   QStringList items;
-  for (int i = 0; i < d_ptr->_sourceModel->rowCount(); ++i)
-  {
+  for (int i = 0; i < d_ptr->_sourceModel->rowCount(); ++i) {
     items.append(d_ptr->_sourceModel->item(i)->text());
   }
   return items;
 }
 
-QStringList
-NXTransfer::getTargetItems() const
+QStringList NXTransfer::getTargetItems() const
 {
   QStringList items;
-  for (int i = 0; i < d_ptr->_targetModel->rowCount(); ++i)
-  {
+  for (int i = 0; i < d_ptr->_targetModel->rowCount(); ++i) {
     items.append(d_ptr->_targetModel->item(i)->text());
   }
   return items;
 }
 
-void
-NXTransfer::moveToTarget()
+void NXTransfer::moveToTarget()
 {
   Q_D(NXTransfer);
   d->onMoveToTarget();
 }
 
-void
-NXTransfer::moveToSource()
+void NXTransfer::moveToSource()
 {
   Q_D(NXTransfer);
   d->onMoveToSource();
 }
 
-void
-NXTransfer::moveAllToTarget()
+void NXTransfer::moveAllToTarget()
 {
   Q_D(NXTransfer);
   d->_sourceListView->selectAll();
   d->onMoveToTarget();
 }
 
-void
-NXTransfer::moveAllToSource()
+void NXTransfer::moveAllToSource()
 {
   Q_D(NXTransfer);
   d->_targetListView->selectAll();
   d->onMoveToSource();
 }
 
-void
-NXTransfer::paintEvent(QPaintEvent *event)
+void NXTransfer::paintEvent(QPaintEvent *event)
 {
   Q_D(NXTransfer);
   QPainter painter(this);

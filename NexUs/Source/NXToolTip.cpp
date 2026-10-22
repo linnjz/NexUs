@@ -29,8 +29,7 @@ NXToolTip::NXToolTip(QWidget *parent)
   d->_pHideDelayMsec = 0;
   d->_pCustomWidget  = nullptr;
   setObjectName("NXToolTip");
-  if (parent)
-  {
+  if (parent) {
     parent->installEventFilter(d);
   }
   setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -42,17 +41,14 @@ NXToolTip::NXToolTip(QWidget *parent)
   d->_toolTipText->setTextPixelSize(17);
   d->_mainLayout = new QVBoxLayout(this);
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  d->_mainLayout->setContentsMargins(d->_shadowBorderWidth, d->_shadowBorderWidth, d->_shadowBorderWidth,
-                                     d->_shadowBorderWidth);
+  d->_mainLayout->setContentsMargins(d->_shadowBorderWidth, d->_shadowBorderWidth, d->_shadowBorderWidth, d->_shadowBorderWidth);
 #else
-  d->_mainLayout->setContentsMargins(d->_shadowBorderWidth * 2, d->_shadowBorderWidth * 2, d->_shadowBorderWidth * 2,
-                                     d->_shadowBorderWidth * 2);
+  d->_mainLayout->setContentsMargins(d->_shadowBorderWidth * 2, d->_shadowBorderWidth * 2, d->_shadowBorderWidth * 2, d->_shadowBorderWidth * 2);
 #endif
   d->_mainLayout->addWidget(d->_toolTipText);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -63,8 +59,7 @@ NXToolTip::~NXToolTip()
 {
 }
 
-void
-NXToolTip::setToolTip(const QString &toolTip)
+void NXToolTip::setToolTip(const QString &toolTip)
 {
   Q_D(NXToolTip);
   d->_toolTipText->setText(toolTip);
@@ -76,23 +71,19 @@ NXToolTip::setToolTip(const QString &toolTip)
   Q_EMIT pToolTipChanged();
 }
 
-QString
-NXToolTip::getToolTip() const
+QString NXToolTip::getToolTip() const
 {
   Q_D(const NXToolTip);
   return d->_toolTipText->text();
 }
 
-void
-NXToolTip::setCustomWidget(QWidget *customWidget)
+void NXToolTip::setCustomWidget(QWidget *customWidget)
 {
   Q_D(NXToolTip);
-  if (!customWidget || customWidget == this)
-  {
+  if (!customWidget || customWidget == this) {
     return;
   }
-  if (d->_pCustomWidget)
-  {
+  if (d->_pCustomWidget) {
     d->_mainLayout->removeWidget(d->_pCustomWidget);
     d->_pCustomWidget->deleteLater();
   }
@@ -102,22 +93,19 @@ NXToolTip::setCustomWidget(QWidget *customWidget)
   Q_EMIT pCustomWidgetChanged();
 }
 
-QWidget *
-NXToolTip::getCustomWidget() const
+QWidget * NXToolTip::getCustomWidget() const
 {
   Q_D(const NXToolTip);
   return d->_pCustomWidget;
 }
 
-void
-NXToolTip::updatePos()
+void NXToolTip::updatePos()
 {
   Q_D(NXToolTip);
   d->_updatePos();
 }
 
-void
-NXToolTip::paintEvent(QPaintEvent *event)
+void NXToolTip::paintEvent(QPaintEvent *event)
 {
   Q_D(NXToolTip);
   QPainter painter(this);

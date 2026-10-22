@@ -44,14 +44,10 @@ NXKeyBinder::NXKeyBinder(QWidget *parent)
   confirmBtn->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
   confirmBtn->setDarkTextColor(Qt::black);
 
-  connect(d->_binderDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn)
-  {
-    if (btn == resetBtn)
-    {
+  connect(d->_binderDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn) {
+    if (btn == resetBtn) {
       d->_binderContainer->logOrResetHistoryData(false);
-    }
-    else if (btn == confirmBtn)
-    {
+    } else if (btn == confirmBtn) {
       d->_binderContainer->saveBinderChanged();
     }
   });
@@ -63,60 +59,50 @@ NXKeyBinder::~NXKeyBinder()
 {
 }
 
-void
-NXKeyBinder::setBinderKeyText(const QString &binderKeyText)
+void NXKeyBinder::setBinderKeyText(const QString &binderKeyText)
 {
   Q_D(NXKeyBinder);
   d->_binderContainer->setBinderKeyText(binderKeyText);
   setText(QStringLiteral("  按键: ") + binderKeyText + QStringLiteral("      "));
 }
 
-QString
-NXKeyBinder::getBinderKeyText() const
+QString NXKeyBinder::getBinderKeyText() const
 {
   Q_D(const NXKeyBinder);
   return d->_binderContainer->getBinderKeyText();
 }
 
-void
-NXKeyBinder::setNativeVirtualBinderKey(quint32 binderKey)
+void NXKeyBinder::setNativeVirtualBinderKey(quint32 binderKey)
 {
   Q_D(NXKeyBinder);
   d->_binderContainer->setNativeVirtualBinderKey(binderKey);
 }
 
-quint32
-NXKeyBinder::getNativeVirtualBinderKey() const
+quint32 NXKeyBinder::getNativeVirtualBinderKey() const
 {
   Q_D(const NXKeyBinder);
   return d->_binderContainer->getNativeVirtualBinderKey();
 }
 
-bool
-NXKeyBinder::event(QEvent *event)
+bool NXKeyBinder::event(QEvent *event)
 {
-  switch (event->type())
-  {
+  switch (event->type()) {
   case QEvent::Enter :
-  case QEvent::Leave :
-  {
+  case QEvent::Leave : {
     update();
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QLabel::event(event);
 }
 
-void
-NXKeyBinder::mouseReleaseEvent(QMouseEvent *event)
+void NXKeyBinder::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXKeyBinder);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     d->_binderDialog->show();
     d->_binderContainer->setFocus();
     d->_binderContainer->logOrResetHistoryData(true);
@@ -124,12 +110,10 @@ NXKeyBinder::mouseReleaseEvent(QMouseEvent *event)
   QLabel::mouseReleaseEvent(event);
 }
 
-void
-NXKeyBinder::paintEvent(QPaintEvent *event)
+void NXKeyBinder::paintEvent(QPaintEvent *event)
 {
   Q_D(NXKeyBinder);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QPainter painter(this);

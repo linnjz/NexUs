@@ -13,8 +13,7 @@ NXIcon::~NXIcon()
 {
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(30, 30);
@@ -31,8 +30,7 @@ NXIcon::getNXIcon(NXIconType::IconName awesome)
   return QIcon(pix);
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, const QColor &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(30, 30);
@@ -49,8 +47,7 @@ NXIcon::getNXIcon(NXIconType::IconName awesome, const QColor &iconColor)
   return QIcon(pix);
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(pixelSize, pixelSize);
@@ -66,8 +63,7 @@ NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize)
   return QIcon(pix);
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, const QColor &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(pixelSize, pixelSize);
@@ -84,8 +80,7 @@ NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, const QColor &ico
   return QIcon(pix);
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(fixedWidth, fixedHeight);
@@ -101,8 +96,7 @@ NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, i
   return QIcon(pix);
 }
 
-QIcon
-NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight, const QColor &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(fixedWidth, fixedHeight);

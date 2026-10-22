@@ -26,8 +26,7 @@ NXNotificationCenter::NXNotificationCenter(QWidget *parent)
   setFixedWidth(d->_pPanelWidth);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -38,41 +37,34 @@ NXNotificationCenter::~NXNotificationCenter()
 {
 }
 
-void
-NXNotificationCenter::addNotification(const NotificationItem &item)
+void NXNotificationCenter::addNotification(const NotificationItem &item)
 {
   Q_D(NXNotificationCenter);
   d->_items.prepend(item);
-  if (d->_isVisible)
-  {
+  if (d->_isVisible) {
     update();
   }
 }
 
-void
-NXNotificationCenter::clearAll()
+void NXNotificationCenter::clearAll()
 {
   Q_D(NXNotificationCenter);
   d->_items.clear();
   d->_scrollOffset = 0;
-  if (d->_isVisible)
-  {
+  if (d->_isVisible) {
     update();
   }
 }
 
-int
-NXNotificationCenter::getNotificationCount() const
+int NXNotificationCenter::getNotificationCount() const
 {
   return d_ptr->_items.count();
 }
 
-void
-NXNotificationCenter::showPanel(QWidget *anchor)
+void NXNotificationCenter::showPanel(QWidget *anchor)
 {
   Q_D(NXNotificationCenter);
-  if (!anchor || d->_isVisible)
-  {
+  if (!anchor || d->_isVisible) {
     return;
   }
   d->_anchorWidget = anchor;
@@ -93,8 +85,7 @@ NXNotificationCenter::showPanel(QWidget *anchor)
   show();
   raise();
 
-  if (d->_slideAnimation)
-  {
+  if (d->_slideAnimation) {
     d->_slideAnimation->stop();
     delete d->_slideAnimation;
   }
@@ -104,8 +95,7 @@ NXNotificationCenter::showPanel(QWidget *anchor)
   d->_slideAnimation->setStartValue(QPoint(startX, posY));
   d->_slideAnimation->setEndValue(QPoint(endX, posY));
   d->_slideAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  connect(d->_slideAnimation, &QPropertyAnimation::finished, this, [d]()
-  {
+  connect(d->_slideAnimation, &QPropertyAnimation::finished, this, [d]() {
     d->_slideAnimation = nullptr;
   });
 
@@ -114,25 +104,21 @@ NXNotificationCenter::showPanel(QWidget *anchor)
   Q_EMIT panelVisibilityChanged(true);
 }
 
-void
-NXNotificationCenter::hidePanel()
+void NXNotificationCenter::hidePanel()
 {
   Q_D(NXNotificationCenter);
-  if (!d->_isVisible)
-  {
+  if (!d->_isVisible) {
     return;
   }
   qApp->removeEventFilter(d);
   d->_isVisible = false;
 
-  if (d->_anchorWidget)
-  {
+  if (d->_anchorWidget) {
     QPoint anchorGlobal = d->_anchorWidget->mapToGlobal(QPoint(0, 0));
     int anchorRight     = anchorGlobal.x() + d->_anchorWidget->width();
     int posY            = anchorGlobal.y();
 
-    if (d->_slideAnimation)
-    {
+    if (d->_slideAnimation) {
       d->_slideAnimation->stop();
       delete d->_slideAnimation;
     }
@@ -141,28 +127,23 @@ NXNotificationCenter::hidePanel()
     d->_slideAnimation->setEasingCurve(QEasingCurve::OutCubic);
     d->_slideAnimation->setStartValue(pos());
     d->_slideAnimation->setEndValue(QPoint(anchorRight, posY));
-    connect(d->_slideAnimation, &QPropertyAnimation::finished, this, [this, d]()
-    {
+    connect(d->_slideAnimation, &QPropertyAnimation::finished, this, [this, d]() {
       hide();
       d->_slideAnimation = nullptr;
     });
     d->_slideAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  }
-  else
-  {
+  } else {
     hide();
   }
   Q_EMIT panelVisibilityChanged(false);
 }
 
-bool
-NXNotificationCenter::isPanelVisible() const
+bool NXNotificationCenter::isPanelVisible() const
 {
   return d_ptr->_isVisible;
 }
 
-void
-NXNotificationCenter::paintEvent(QPaintEvent *event)
+void NXNotificationCenter::paintEvent(QPaintEvent *event)
 {
   Q_D(NXNotificationCenter);
   Q_UNUSED(event);
@@ -192,8 +173,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
   painter.setFont(headerFont);
   painter.setPen(NXThemeColor(d->_themeMode, BasicText));
   QRect headerTitleRect(contentLeft, headerY, contentWidth / 2, 24);
-  painter.drawText(headerTitleRect, Qt::AlignLeft | Qt::AlignVCenter,
-                   QString::fromUtf8("\xe9\x80\x9a\xe7\x9f\xa5\xe4\xb8\xad\xe5\xbf\x83"));
+  painter.drawText(headerTitleRect, Qt::AlignLeft | Qt::AlignVCenter, QString::fromUtf8("\xe9\x80\x9a\xe7\x9f\xa5\xe4\xb8\xad\xe5\xbf\x83"));
 
   // "清除全部" button
   QFont clearFont = painter.font();
@@ -202,8 +182,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
   painter.setFont(clearFont);
   painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
   QRect clearButtonRect(contentRight - 80, headerY, 80, 24);
-  painter.drawText(clearButtonRect, Qt::AlignRight | Qt::AlignVCenter,
-                   QString::fromUtf8("\xe6\xb8\x85\xe9\x99\xa4\xe5\x85\xa8\xe9\x83\xa8"));
+  painter.drawText(clearButtonRect, Qt::AlignRight | Qt::AlignVCenter, QString::fromUtf8("\xe6\xb8\x85\xe9\x99\xa4\xe5\x85\xa8\xe9\x83\xa8"));
 
   // Separator line
   int separatorY = headerY + 30;
@@ -213,8 +192,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
   int cardAreaTop    = separatorY + 8;
   int cardAreaBottom = foregroundRect.bottom() - 8;
 
-  if (d->_items.isEmpty())
-  {
+  if (d->_items.isEmpty()) {
     // No notifications
     QFont emptyFont = painter.font();
     emptyFont.setPixelSize(14);
@@ -223,9 +201,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
     painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
     QRect emptyRect(contentLeft, cardAreaTop, contentWidth, cardAreaBottom - cardAreaTop);
     painter.drawText(emptyRect, Qt::AlignCenter, QString::fromUtf8("\xe6\x9a\x82\xe6\x97\xa0\xe9\x80\x9a\xe7\x9f\xa5"));
-  }
-  else
-  {
+  } else {
     // Clip to card area
     painter.setClipRect(QRect(foregroundRect.x(), cardAreaTop, foregroundRect.width(), cardAreaBottom - cardAreaTop));
 
@@ -233,13 +209,11 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
     int cardMargin = 8;
     int currentY   = cardAreaTop - d->_scrollOffset;
 
-    for (int i = 0; i < d->_items.count(); ++i)
-    {
+    for (int i = 0; i < d->_items.count(); ++i) {
       const NotificationItem &item = d->_items[i];
       QRect cardRect(contentLeft, currentY, contentWidth, cardHeight);
 
-      if (cardRect.bottom() >= cardAreaTop && cardRect.top() <= cardAreaBottom)
-      {
+      if (cardRect.bottom() >= cardAreaTop && cardRect.top() <= cardAreaBottom) {
         // Card background
         painter.setPen(Qt::NoPen);
         painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
@@ -251,8 +225,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
         int textLeft      = cardRect.x() + 8;
 
         // Icon
-        if (item.icon != NXIconType::None)
-        {
+        if (item.icon != NXIconType::None) {
           QFont iconFont = QFont(QStringLiteral("NXAwesome"));
           iconFont.setPixelSize(18);
           painter.setFont(iconFont);
@@ -260,9 +233,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
           QRect iconRect(textLeft, cardRect.y() + 8, iconAreaWidth, 22);
           painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignLeft, QChar((unsigned short) item.icon));
           textLeft += iconAreaWidth + 4;
-        }
-        else
-        {
+        } else {
           textLeft += 4;
         }
 
@@ -275,8 +246,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
         painter.setFont(titleFont);
         painter.setPen(NXThemeColor(d->_themeMode, BasicText));
         QRect titleRect(textLeft, cardRect.y() + 6, textWidth, 20);
-        painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter,
-                         painter.fontMetrics().elidedText(item.title, Qt::ElideRight, textWidth));
+        painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, painter.fontMetrics().elidedText(item.title, Qt::ElideRight, textWidth));
 
         // Content
         QFont contentFont = this->font();
@@ -284,8 +254,7 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
         painter.setFont(contentFont);
         painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
         QRect contentRect(textLeft, cardRect.y() + 26, textWidth, 20);
-        painter.drawText(contentRect, Qt::AlignLeft | Qt::AlignVCenter,
-                         painter.fontMetrics().elidedText(item.content, Qt::ElideRight, textWidth));
+        painter.drawText(contentRect, Qt::AlignLeft | Qt::AlignVCenter, painter.fontMetrics().elidedText(item.content, Qt::ElideRight, textWidth));
 
         // Timestamp
         QFont tsFont = this->font();
@@ -302,12 +271,10 @@ NXNotificationCenter::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXNotificationCenter::wheelEvent(QWheelEvent *event)
+void NXNotificationCenter::wheelEvent(QWheelEvent *event)
 {
   Q_D(NXNotificationCenter);
-  if (d->_items.isEmpty())
-  {
+  if (d->_items.isEmpty()) {
     return;
   }
   int cardHeight  = 70;
@@ -325,12 +292,10 @@ NXNotificationCenter::wheelEvent(QWheelEvent *event)
   event->accept();
 }
 
-void
-NXNotificationCenter::mousePressEvent(QMouseEvent *event)
+void NXNotificationCenter::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXNotificationCenter);
-  if (event->button() != Qt::LeftButton)
-  {
+  if (event->button() != Qt::LeftButton) {
     QWidget::mousePressEvent(event);
     return;
   }
@@ -338,16 +303,14 @@ NXNotificationCenter::mousePressEvent(QMouseEvent *event)
   QPoint pos = event->pos();
 
   // Check clear all button
-  if (d->_hitTestClearAll(pos))
-  {
+  if (d->_hitTestClearAll(pos)) {
     clearAll();
     return;
   }
 
   // Check notification cards
   int index = d->_hitTestCard(pos);
-  if (index >= 0)
-  {
+  if (index >= 0) {
     Q_EMIT notificationClicked(index);
     return;
   }
@@ -365,15 +328,12 @@ NXNotificationCenterPrivate::~NXNotificationCenterPrivate()
 {
 }
 
-bool
-NXNotificationCenterPrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXNotificationCenterPrivate::eventFilter(QObject *watched, QEvent *event)
 {
   Q_Q(NXNotificationCenter);
-  if (event->type() == QEvent::MouseButtonPress)
-  {
+  if (event->type() == QEvent::MouseButtonPress) {
     QWidget *clickedWidget = qobject_cast<QWidget *>(watched);
-    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q)
-    {
+    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q) {
       q->hidePanel();
       return false;
     }
@@ -381,8 +341,7 @@ NXNotificationCenterPrivate::eventFilter(QObject *watched, QEvent *event)
   return QObject::eventFilter(watched, event);
 }
 
-int
-NXNotificationCenterPrivate::_hitTestCard(QPoint pos) const
+int NXNotificationCenterPrivate::_hitTestCard(QPoint pos) const
 {
   Q_Q(const NXNotificationCenter);
   int foregroundLeft = _shadowBorderWidth;
@@ -397,20 +356,17 @@ NXNotificationCenterPrivate::_hitTestCard(QPoint pos) const
   int cardHeight = 70;
   int cardMargin = 8;
 
-  for (int i = 0; i < _items.count(); ++i)
-  {
+  for (int i = 0; i < _items.count(); ++i) {
     int currentY = cardAreaTop - _scrollOffset + i * (cardHeight + cardMargin);
     QRect cardRect(contentLeft, currentY, contentWidth, cardHeight);
-    if (cardRect.contains(pos) && currentY + cardHeight > cardAreaTop)
-    {
+    if (cardRect.contains(pos) && currentY + cardHeight > cardAreaTop) {
       return i;
     }
   }
   return -1;
 }
 
-QRect
-NXNotificationCenterPrivate::_clearAllButtonRect() const
+QRect NXNotificationCenterPrivate::_clearAllButtonRect() const
 {
   Q_Q(const NXNotificationCenter);
   int foregroundLeft = _shadowBorderWidth;
@@ -419,8 +375,7 @@ NXNotificationCenterPrivate::_clearAllButtonRect() const
   return QRect(contentRight - 80, headerY, 80, 24);
 }
 
-bool
-NXNotificationCenterPrivate::_hitTestClearAll(QPoint pos) const
+bool NXNotificationCenterPrivate::_hitTestClearAll(QPoint pos) const
 {
   return _clearAllButtonRect().contains(pos);
 }

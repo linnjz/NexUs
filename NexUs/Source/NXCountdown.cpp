@@ -49,8 +49,7 @@ NXCountdown::NXCountdown(QWidget *parent)
   connect(this, &NXCountdown::pDigitHeightChanged, this, &NXCountdown::_updateSize);
   connect(this, &NXCountdown::pDigitSpacingChanged, this, &NXCountdown::_updateSize);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -60,8 +59,7 @@ NXCountdown::~NXCountdown()
 {
 }
 
-void
-NXCountdown::setTargetDateTime(const QDateTime &dateTime)
+void NXCountdown::setTargetDateTime(const QDateTime &dateTime)
 {
   Q_D(NXCountdown);
   d->_targetDateTime   = dateTime;
@@ -71,14 +69,12 @@ NXCountdown::setTargetDateTime(const QDateTime &dateTime)
   update();
 }
 
-QDateTime
-NXCountdown::getTargetDateTime() const
+QDateTime NXCountdown::getTargetDateTime() const
 {
   return d_ptr->_targetDateTime;
 }
 
-void
-NXCountdown::setRemainingSeconds(qint64 seconds)
+void NXCountdown::setRemainingSeconds(qint64 seconds)
 {
   Q_D(NXCountdown);
   d->_remainingSeconds = qMax(static_cast<qint64>(0), seconds);
@@ -86,23 +82,19 @@ NXCountdown::setRemainingSeconds(qint64 seconds)
   update();
 }
 
-qint64
-NXCountdown::getRemainingSeconds() const
+qint64 NXCountdown::getRemainingSeconds() const
 {
   return d_ptr->_remainingSeconds;
 }
 
-void
-NXCountdown::start()
+void NXCountdown::start()
 {
   Q_D(NXCountdown);
-  if (d->_isRunning)
-  {
+  if (d->_isRunning) {
     return;
   }
   d->_isRunning = true;
-  if (d->_useTargetMode)
-  {
+  if (d->_useTargetMode) {
     qint64 secs          = QDateTime::currentDateTime().secsTo(d->_targetDateTime);
     d->_remainingSeconds = qMax(static_cast<qint64>(0), secs);
   }
@@ -114,27 +106,23 @@ NXCountdown::start()
   update();
 }
 
-void
-NXCountdown::pause()
+void NXCountdown::pause()
 {
   Q_D(NXCountdown);
   d->_isRunning = false;
   d->_timer->stop();
 }
 
-void
-NXCountdown::resume()
+void NXCountdown::resume()
 {
   Q_D(NXCountdown);
-  if (!d->_isRunning)
-  {
+  if (!d->_isRunning) {
     d->_isRunning = true;
     d->_timer->start();
   }
 }
 
-void
-NXCountdown::stop()
+void NXCountdown::stop()
 {
   Q_D(NXCountdown);
   d->_isRunning = false;
@@ -143,14 +131,12 @@ NXCountdown::stop()
   update();
 }
 
-bool
-NXCountdown::isRunning() const
+bool NXCountdown::isRunning() const
 {
   return d_ptr->_isRunning;
 }
 
-void
-NXCountdown::paintEvent(QPaintEvent *event)
+void NXCountdown::paintEvent(QPaintEvent *event)
 {
   Q_D(NXCountdown);
   QPainter painter(this);
@@ -180,8 +166,7 @@ NXCountdown::paintEvent(QPaintEvent *event)
   int spacing = d->_pDigitSpacing;
   int br      = d->_pBorderRadius;
 
-  auto drawDigitPair = [&](int x, int value)
-  {
+  auto drawDigitPair = [&](int x, int value) {
     QString text = QString(QStringLiteral("%1")).arg(value, 2, 10, QChar('0'));
 
     QRectF topRect(x, 0, dw, dh / 2);
@@ -220,8 +205,7 @@ NXCountdown::paintEvent(QPaintEvent *event)
   };
 
   int sepW           = 20;
-  auto drawSeparator = [&](int x)
-  {
+  auto drawSeparator = [&](int x) {
     painter.setFont(separatorFont);
     painter.setPen(separatorColor);
     painter.drawText(QRectF(x, 0, sepW, dh), Qt::AlignCenter, QStringLiteral(":"));
@@ -241,12 +225,10 @@ NXCountdown::paintEvent(QPaintEvent *event)
 
   int xPos   = 0;
   bool first = true;
-  for (const auto &sec : sections)
-  {
+  for (const auto &sec : sections) {
     if (!sec.show)
       continue;
-    if (!first)
-    {
+    if (!first) {
       drawSeparator(xPos);
       xPos += sepW;
     }
@@ -256,28 +238,23 @@ NXCountdown::paintEvent(QPaintEvent *event)
   }
 }
 
-void
-NXCountdown::_updateSize()
+void NXCountdown::_updateSize()
 {
   Q_D(NXCountdown);
   int dw           = d->_pDigitWidth;
   int dh           = d->_pDigitHeight;
   int sepW         = 20;
   int sectionCount = 0;
-  if (d->_pIsShowDays)
-  {
+  if (d->_pIsShowDays) {
     sectionCount++;
   }
-  if (d->_pIsShowHours)
-  {
+  if (d->_pIsShowHours) {
     sectionCount++;
   }
-  if (d->_pIsShowMinutes)
-  {
+  if (d->_pIsShowMinutes) {
     sectionCount++;
   }
-  if (d->_pIsShowSeconds)
-  {
+  if (d->_pIsShowSeconds) {
     sectionCount++;
   }
   int totalWidth = sectionCount * dw + qMax(0, sectionCount - 1) * sepW;

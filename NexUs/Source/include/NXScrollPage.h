@@ -24,12 +24,7 @@ public:
   void setBottomCustomWidget(QWidget *customWidget);
   QWidget *getBottomCustomWidget() const;
 
-  void addCentralWidget(QWidget *centralWidget,
-                        bool isWidgetResizeable              = true,
-                        bool isVerticalGrabGesture           = true,
-                        qreal mousePressEventDelay           = 0.0,
-                        Qt::ScrollBarPolicy vScrollBarPolicy = Qt::ScrollBarAsNeeded,
-                        Qt::ScrollBarPolicy hScrollBarPolicy = Qt::ScrollBarAlwaysOff);
+  void addCentralWidget(QWidget *centralWidget, bool isWidgetResizeable = true, bool isVerticalGrabGesture = true, qreal mousePressEventDelay = 0.0, Qt::ScrollBarPolicy vScrollBarPolicy = Qt::ScrollBarAsNeeded, Qt::ScrollBarPolicy hScrollBarPolicy = Qt::ScrollBarAlwaysOff);
 
   void setPageTitle(const QString &title);
 

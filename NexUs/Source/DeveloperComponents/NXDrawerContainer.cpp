@@ -30,8 +30,7 @@ NXDrawerContainer::NXDrawerContainer(QWidget *parent)
   _mainLayout->addWidget(_containerWidget);
 
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
     update();
   });
@@ -41,33 +40,27 @@ NXDrawerContainer::~NXDrawerContainer()
 {
 }
 
-void
-NXDrawerContainer::addWidget(QWidget *widget)
+void NXDrawerContainer::addWidget(QWidget *widget)
 {
-  if (!widget || _drawerWidgetList.contains(widget))
-  {
+  if (!widget || _drawerWidgetList.contains(widget)) {
     return;
   }
   _containerLayout->addWidget(widget);
   _drawerWidgetList.append(widget);
 }
 
-void
-NXDrawerContainer::removeWidget(QWidget *widget)
+void NXDrawerContainer::removeWidget(QWidget *widget)
 {
-  if (!widget)
-  {
+  if (!widget) {
     return;
   }
   _containerLayout->removeWidget(widget);
   _drawerWidgetList.removeOne(widget);
 }
 
-void
-NXDrawerContainer::doDrawerAnimation(bool isExpand)
+void NXDrawerContainer::doDrawerAnimation(bool isExpand)
 {
-  if (_containerLayout->count() == 0)
-  {
+  if (_containerLayout->count() == 0) {
     return;
   }
   _containerWidget->setVisible(true);
@@ -77,12 +70,10 @@ NXDrawerContainer::doDrawerAnimation(bool isExpand)
   setFixedHeight(expandHeight);
   _pContainerPix                       = grab(rect());
   QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pOpacity");
-  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     update();
   });
-  connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
     _pContainerPix = QPixmap();
     _isShowBorder  = isExpand;
     _containerWidget->setVisible(isExpand);
@@ -97,14 +88,12 @@ NXDrawerContainer::doDrawerAnimation(bool isExpand)
   _isShowBorder = false;
 }
 
-void
-NXDrawerContainer::paintEvent(QPaintEvent *event)
+void NXDrawerContainer::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing);
-  if (_isShowBorder)
-  {
+  if (_isShowBorder) {
     // 背景绘制
     painter.setPen(NXThemeColor(_themeMode, BasicBorder));
     painter.setBrush(NXThemeColor(_themeMode, BasicBaseAlpha));
@@ -112,15 +101,13 @@ NXDrawerContainer::paintEvent(QPaintEvent *event)
     painter.drawRoundedRect(foregroundRect, _pBorderRadius, _pBorderRadius);
     // 分割线绘制
     int drawerHeight = 0;
-    for (int i = 0; i < _drawerWidgetList.count() - 1; i++)
-    {
+    for (int i = 0; i < _drawerWidgetList.count() - 1; i++) {
       QWidget *drawerWidget = _drawerWidgetList[i];
       drawerHeight += drawerWidget->height();
       painter.drawLine(0, drawerHeight, width(), drawerHeight);
     }
   }
-  if (!_pContainerPix.isNull())
-  {
+  if (!_pContainerPix.isNull()) {
     painter.setOpacity(_pOpacity);
     painter.drawPixmap(QRect(0, -height() * (1 - _pOpacity), width(), height()), _pContainerPix);
   }

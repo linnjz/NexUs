@@ -12,36 +12,36 @@ NXPivotModel::~NXPivotModel()
 {
 }
 
-void
-NXPivotModel::appendPivot(QPixmap const &pixmap)
-{ appendPivot(QString {}, pixmap); }
+void NXPivotModel::appendPivot(const QPixmap &pixmap)
+{
+  appendPivot(QString {}, pixmap);
+}
 
-void
-NXPivotModel::appendPivot(QString const &text, QPixmap const &pixmap)
-{ insertPivot(_pivotList.count(), text, pixmap); }
+void NXPivotModel::appendPivot(const QString &text, const QPixmap &pixmap)
+{
+  insertPivot(_pivotList.count(), text, pixmap);
+}
 
-void
-NXPivotModel::insertPivot(int index, QPixmap const &pixmap)
-{ insertPivot(index, QString {}, pixmap); }
+void NXPivotModel::insertPivot(int index, const QPixmap &pixmap)
+{
+  insertPivot(index, QString {}, pixmap);
+}
 
-void
-NXPivotModel::insertPivot(int index, QString const &text, QPixmap const &pixmap)
+void NXPivotModel::insertPivot(int index, const QString &text, const QPixmap &pixmap)
 {
   beginInsertRows(QModelIndex(), index, index);
   _pivotList.insert(index, { text, pixmap });
   endInsertRows();
 }
 
-void
-NXPivotModel::removePivot(int index)
+void NXPivotModel::removePivot(int index)
 {
   beginRemoveRows(QModelIndex(), index, index);
   _pivotList.removeAt(index);
   endRemoveRows();
 }
 
-void
-NXPivotModel::removePivot(QString const &text)
+void NXPivotModel::removePivot(const QString &text)
 {
   for (int i = _pivotList.count() - 1; i >= 0; --i) {
     if (_pivotList[i].text == text) {
@@ -51,39 +51,37 @@ NXPivotModel::removePivot(QString const &text)
   }
 }
 
-void
-NXPivotModel::setPivot(int index, QPixmap const &pixmap)
+void NXPivotModel::setPivot(int index, const QPixmap &pixmap)
 {
   _pivotList[index].icon = pixmap;
   Q_EMIT dataChanged(this->index(index, 0), this->index(index, 0), { Qt::UserRole, Qt::DisplayRole });
 }
 
-void
-NXPivotModel::setPivot(int index, QString const &text, QPixmap const &pixmap)
+void NXPivotModel::setPivot(int index, const QString &text, const QPixmap &pixmap)
 {
   _pivotList[index].text = text;
   _pivotList[index].icon = pixmap;
   Q_EMIT dataChanged(this->index(index, 0), this->index(index, 0), { Qt::UserRole, Qt::DisplayRole });
 }
 
-int
-NXPivotModel::getPivotListCount() const
-{ return _pivotList.count(); }
+int NXPivotModel::getPivotListCount() const
+{
+  return _pivotList.count();
+}
 
-void
-NXPivotModel::clearPivot()
+void NXPivotModel::clearPivot()
 {
   beginResetModel();
   _pivotList.clear();
   endResetModel();
 }
 
-QList<NXPivotModel::PivotItem> const &
-NXPivotModel::getPivotList() const
-{ return _pivotList; }
+const QList<NXPivotModel::PivotItem> & NXPivotModel::getPivotList() const
+{
+  return _pivotList;
+}
 
-int
-NXPivotModel::getPivotIndex(QString const &text) const
+int NXPivotModel::getPivotIndex(const QString &text) const
 {
   for (int i = 0; i < _pivotList.count(); ++i) {
     if (_pivotList[i].text == text) {
@@ -93,8 +91,7 @@ NXPivotModel::getPivotIndex(QString const &text) const
   return -1;
 }
 
-int
-NXPivotModel::rowCount(QModelIndex const &parent) const
+int NXPivotModel::rowCount(const QModelIndex &parent) const
 {
   if (parent.isValid()) {
     return 0;
@@ -102,14 +99,13 @@ NXPivotModel::rowCount(QModelIndex const &parent) const
   return _pivotList.count();
 }
 
-QVariant
-NXPivotModel::data(QModelIndex const &index, int role) const
+QVariant NXPivotModel::data(const QModelIndex &index, int role) const
 {
   if (!index.isValid() || index.row() < 0 || index.row() >= _pivotList.count()) {
     return QVariant {};
   }
 
-  PivotItem const &item = _pivotList[index.row()];
+  const PivotItem &item = _pivotList[index.row()];
   if (role == Qt::DisplayRole) {
     return item.text;
   }

@@ -5,13 +5,13 @@
 NXNavigationNode::NXNavigationNode(const QString &nodeTitle, NXNavigationNode *parent)
     : QObject(nullptr)
 {
-  _pDepth     = 0;
-  _pKeyPoints = 0;
-  _nodeKey    = QUuid::createUuid()
-                 .toString()
-                 .remove(QStringLiteral("{"))
-                 .remove(QStringLiteral("}"))
-                 .remove(QStringLiteral("-"));
+  _pDepth           = 0;
+  _pKeyPoints       = 0;
+  _nodeKey          = QUuid::createUuid()
+                          .toString()
+                          .remove(QStringLiteral("{"))
+                          .remove(QStringLiteral("}"))
+                          .remove(QStringLiteral("-"));
   _pNodeTitle       = nodeTitle;
   _pIsRootNode      = false;
   _pIsFooterNode    = false;
@@ -25,107 +25,84 @@ NXNavigationNode::NXNavigationNode(const QString &nodeTitle, NXNavigationNode *p
 
 NXNavigationNode::~NXNavigationNode()
 {
-  for (const auto childNode : _pChildrenNodes)
-  {
+  for (const auto childNode : _pChildrenNodes) {
     childNode->deleteLater();
   }
 }
 
-QString
-NXNavigationNode::getNodeKey() const
+QString NXNavigationNode::getNodeKey() const
 {
   return _nodeKey;
 }
 
-void
-NXNavigationNode::setIsExpanded(bool isExpanded)
+void NXNavigationNode::setIsExpanded(bool isExpanded)
 {
   _isExpanded = isExpanded;
   setChildVisible(isExpanded);
 }
 
-bool
-NXNavigationNode::getIsExpanded() const
+bool NXNavigationNode::getIsExpanded() const
 {
   return _isExpanded;
 }
 
-void
-NXNavigationNode::setChildVisible(bool isVisible)
+void NXNavigationNode::setChildVisible(bool isVisible)
 {
-  if (isVisible)
-  {
-    for (auto node : _pChildrenNodes)
-    {
+  if (isVisible) {
+    for (auto node : _pChildrenNodes) {
       node->setIsVisible(isVisible);
-      if (node->getIsExpanderNode() && !node->getIsExpanded())
-      {
+      if (node->getIsExpanderNode() && !node->getIsExpanded()) {
         continue;
       }
       node->setChildVisible(isVisible);
     }
-  }
-  else
-  {
-    for (auto node : _pChildrenNodes)
-    {
+  } else {
+    for (auto node : _pChildrenNodes) {
       node->setChildVisible(isVisible);
       node->setIsVisible(isVisible);
     }
   }
 }
 
-bool
-NXNavigationNode::getIsHasChild() const
+bool NXNavigationNode::getIsHasChild() const
 {
-  if (_pChildrenNodes.count() > 0)
-  {
+  if (_pChildrenNodes.count() > 0) {
     return true;
   }
   return false;
 }
 
-bool
-NXNavigationNode::getIsHasPageChild() const
+bool NXNavigationNode::getIsHasPageChild() const
 {
-  if (_pChildrenNodes.count() == 0)
-  {
+  if (_pChildrenNodes.count() == 0) {
     return false;
   }
-  for (auto childNode : _pChildrenNodes)
-  {
-    if (!childNode->getIsExpanderNode())
-    {
+  for (auto childNode : _pChildrenNodes) {
+    if (!childNode->getIsExpanderNode()) {
       return true;
     }
-    if (childNode->getIsHasPageChild())
-    {
+    if (childNode->getIsHasPageChild()) {
       return true;
     }
   }
   return false;
 }
 
-void
-NXNavigationNode::appendChildNode(NXNavigationNode *childNode)
+void NXNavigationNode::appendChildNode(NXNavigationNode *childNode)
 {
-  if (_pIsExpanderNode)
-  {
+  if (_pIsExpanderNode) {
     _pChildrenNodes.append(childNode);
   }
 }
 
-void
-NXNavigationNode::removeChildNode(NXNavigationNode *childNode)
+void NXNavigationNode::removeChildNode(NXNavigationNode *childNode)
 {
-  if (_pIsExpanderNode)
-  {
+  if (_pIsExpanderNode) {
     _pChildrenNodes.removeOne(childNode);
   }
 }
 
-void
-NXNavigationNode::insertChildNode(int row, NXNavigationNode *childNode)
+void NXNavigationNode::insertChildNode(int row, NXNavigationNode *childNode)
 {
   if (row < 0 || row > _pChildrenNodes.count())
     return;
@@ -134,54 +111,40 @@ NXNavigationNode::insertChildNode(int row, NXNavigationNode *childNode)
   childNode->setParent(this);
 }
 
-bool
-NXNavigationNode::getIsChildHasKeyPoints() const
+bool NXNavigationNode::getIsChildHasKeyPoints() const
 {
-  for (auto childNnode : _pChildrenNodes)
-  {
-    if (childNnode->getKeyPoints())
-    {
+  for (auto childNnode : _pChildrenNodes) {
+    if (childNnode->getKeyPoints()) {
       return true;
     }
-    if (childNnode->getIsChildHasKeyPoints())
-    {
+    if (childNnode->getIsChildHasKeyPoints()) {
       return true;
     }
   }
   return false;
 }
 
-NXNavigationNode *
-NXNavigationNode::getOriginalNode()
+NXNavigationNode * NXNavigationNode::getOriginalNode()
 {
-  if (this->getParentNode()->getIsRootNode())
-  {
+  if (this->getParentNode()->getIsRootNode()) {
     return this;
-  }
-  else
-  {
+  } else {
     NXNavigationNode *originalNode = this->getParentNode();
-    while (!originalNode->getIsRootNode() && !originalNode->getParentNode()->getIsRootNode())
-    {
+    while (!originalNode->getIsRootNode() && !originalNode->getParentNode()->getIsRootNode()) {
       originalNode = originalNode->getParentNode();
     }
     return originalNode;
   }
 }
 
-bool
-NXNavigationNode::getIsChildNode(NXNavigationNode *node)
+bool NXNavigationNode::getIsChildNode(NXNavigationNode *node)
 {
-  if (_pChildrenNodes.count() > 0)
-  {
-    if (_pChildrenNodes.contains(node))
-    {
+  if (_pChildrenNodes.count() > 0) {
+    if (_pChildrenNodes.contains(node)) {
       return true;
     }
-    for (auto childNnode : _pChildrenNodes)
-    {
-      if (childNnode->getIsChildNode(node))
-      {
+    for (auto childNnode : _pChildrenNodes) {
+      if (childNnode->getIsChildNode(node)) {
         return true;
       }
     }
@@ -189,34 +152,27 @@ NXNavigationNode::getIsChildNode(NXNavigationNode *node)
   return false;
 }
 
-int
-NXNavigationNode::getRow() const
+int NXNavigationNode::getRow() const
 {
-  if (_pParentNode)
-  {
+  if (_pParentNode) {
     return _pParentNode->getChildrenNodes().indexOf(const_cast<NXNavigationNode *>(this));
   }
   return 0;
 }
 
-int
-NXNavigationNode::getRowExceptCategoryNodes() const
+int NXNavigationNode::getRowExceptCategoryNodes() const
 {
-  if (_pParentNode)
-  {
+  if (_pParentNode) {
     return _pParentNode->getExceptCategoryNodes().indexOf(const_cast<NXNavigationNode *>(this));
   }
   return 0;
 }
 
-QList<NXNavigationNode *>
-NXNavigationNode::getExceptCategoryNodes()
+QList<NXNavigationNode *> NXNavigationNode::getExceptCategoryNodes()
 {
   QList<NXNavigationNode *> exceptCategoryNodeList;
-  for (auto node : _pChildrenNodes)
-  {
-    if (!node->getIsCategoryNode())
-    {
+  for (auto node : _pChildrenNodes) {
+    if (!node->getIsCategoryNode()) {
       exceptCategoryNodeList.append(node);
     }
   }

@@ -44,12 +44,10 @@ NXAcrylicUrlCard::NXAcrylicUrlCard(QWidget *parent)
   d->_pCardPixmapBorderRadius = 6;
   d->_pCardPixMode            = NXCardPixType::PixMode::Ellipse;
   d->_themeMode               = nxTheme->getThemeMode();
-  connect(this, &NXAcrylicUrlCard::clicked, this, [=]()
-  {
+  connect(this, &NXAcrylicUrlCard::clicked, this, [=]() {
     QDesktopServices::openUrl(QUrl(d->_pUrl));
   });
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 }
@@ -58,16 +56,14 @@ NXAcrylicUrlCard::~NXAcrylicUrlCard()
 {
 }
 
-void
-NXAcrylicUrlCard::setCardPixmapSize(int width, int height)
+void NXAcrylicUrlCard::setCardPixmapSize(int width, int height)
 {
   Q_D(NXAcrylicUrlCard);
   d->_pCardPixmapSize = QSize(width, height);
   Q_EMIT pCardPixmapSizeChanged();
 }
 
-void
-NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
+void NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
 {
   Q_D(NXAcrylicUrlCard);
   QPainter painter(this);
@@ -75,8 +71,7 @@ NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
   // 亚克力绘制
   painter.save();
   painter.setPen(
-      QPen(underMouse() ? NXThemeColor(d->_themeMode, BasicBorderHover) : NXThemeColor(d->_themeMode, BasicBorder),
-           d->_borderWidth));
+      QPen(underMouse() ? NXThemeColor(d->_themeMode, BasicBorderHover) : NXThemeColor(d->_themeMode, BasicBorder), d->_borderWidth));
   QColor brushColor;
   brushColor = underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase);
   brushColor.setAlpha(d->_pBrushAlpha);
@@ -91,24 +86,17 @@ NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
   painter.restore();
 
   // 图片绘制
-  QRectF pixRect(width / 8.5, height() / 4 - d->_pCardPixmapSize.height() / 2, d->_pCardPixmapSize.width(),
-                 d->_pCardPixmapSize.height());
-  if (!d->_pCardPixmap.isNull())
-  {
+  QRectF pixRect(width / 8.5, height() / 4 - d->_pCardPixmapSize.height() / 2, d->_pCardPixmapSize.width(), d->_pCardPixmapSize.height());
+  if (!d->_pCardPixmap.isNull()) {
     painter.save();
     QPainterPath path;
-    if (d->_pCardPixMode == NXCardPixType::PixMode::Ellipse)
-    {
+    if (d->_pCardPixMode == NXCardPixType::PixMode::Ellipse) {
       path.addEllipse(pixRect.center(), d->_pCardPixmapSize.width() / 2, d->_pCardPixmapSize.height() / 2);
       painter.setClipPath(path);
       painter.drawPixmap(pixRect, d->_pCardPixmap, d->_pCardPixmap.rect());
-    }
-    else if (d->_pCardPixMode == NXCardPixType::PixMode::Default)
-    {
+    } else if (d->_pCardPixMode == NXCardPixType::PixMode::Default) {
       painter.drawPixmap(pixRect, d->_pCardPixmap, d->_pCardPixmap.rect());
-    }
-    else if (d->_pCardPixMode == NXCardPixType::PixMode::RoundedRect)
-    {
+    } else if (d->_pCardPixMode == NXCardPixType::PixMode::RoundedRect) {
       path.addRoundedRect(pixRect, d->_pCardPixmapBorderRadius, d->_pCardPixmapBorderRadius);
       painter.setClipPath(path);
       painter.drawPixmap(pixRect, d->_pCardPixmap, d->_pCardPixmap.rect());
@@ -123,16 +111,13 @@ NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
   font.setPixelSize(d->_pTitlePixelSize);
   painter.setFont(font);
   painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-  painter.drawText(QRect(pixRect.x(), pixRect.bottom() + d->_pTitleSpacing, width - width / 7, height() / 3),
-                   Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, d->_pTitle);
+  painter.drawText(QRect(pixRect.x(), pixRect.bottom() + d->_pTitleSpacing, width - width / 7, height() / 3), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, d->_pTitle);
   font.setWeight(QFont::Normal);
   font.setPixelSize(d->_pSubTitlePixelSize);
   painter.setFont(font);
   painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
   int titleHeight = painter.fontMetrics().boundingRect(d->_pTitle).height() * 1.1;
-  painter.drawText(QRect(pixRect.x(), d->_pSubTitleSpacing + titleHeight + pixRect.bottom() + d->_pTitleSpacing,
-                         width - width / 7, height() / 3),
-                   Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, d->_pSubTitle);
+  painter.drawText(QRect(pixRect.x(), d->_pSubTitleSpacing + titleHeight + pixRect.bottom() + d->_pTitleSpacing, width - width / 7, height() / 3), Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, d->_pSubTitle);
   painter.restore();
 
   // 图标绘制
@@ -141,7 +126,6 @@ NXAcrylicUrlCard::paintEvent(QPaintEvent *event)
   iconFont.setPixelSize(nxApp->getFontPixelSize());
   painter.setFont(iconFont);
   painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-  painter.drawText(width - 1.5 * iconFont.pixelSize(), height() - iconFont.pixelSize(),
-                   QChar((unsigned short) NXIconType::UpRightFromSquare));
+  painter.drawText(width - 1.5 * iconFont.pixelSize(), height() - iconFont.pixelSize(), QChar((unsigned short) NXIconType::UpRightFromSquare));
   painter.restore();
 }

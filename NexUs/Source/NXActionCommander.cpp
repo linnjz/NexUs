@@ -47,9 +47,7 @@ NXActionCommander::NXActionCommander(QObject *parent)
   d->_commanderDesign->resize(400, 1000);
 
   d->_commanderView = new NXActionCommanderView(d->_commanderDesign);
-  connect(d->_commanderView, &NXActionCommanderView::runToCommand, this,
-          [=](const QString &domainName, int commandIndex)
-  {
+  connect(d->_commanderView, &NXActionCommanderView::runToCommand, this, [=](const QString &domainName, int commandIndex) {
     runToCommand(domainName, commandIndex);
   });
 
@@ -87,8 +85,7 @@ NXActionCommander::NXActionCommander(QObject *parent)
   messageDisplayText->setFixedWidth(textWidth);
   auto messageDisplayCheckBox = new NXCheckBox(d->_commanderDesign);
   messageDisplayCheckBox->setChecked(true);
-  connect(messageDisplayCheckBox, &NXCheckBox::stateChanged, this, [=](int state)
-  {
+  connect(messageDisplayCheckBox, &NXCheckBox::stateChanged, this, [=](int state) {
     setIsMessageDisplayEnable(state);
   });
   firstSettingLayout->addWidget(messageDisplayText);
@@ -99,8 +96,7 @@ NXActionCommander::NXActionCommander(QObject *parent)
   processEventEnableText->setFixedWidth(textWidth);
   auto processEventEnableCheckBox = new NXCheckBox(d->_commanderDesign);
   processEventEnableCheckBox->setChecked(true);
-  connect(processEventEnableCheckBox, &NXCheckBox::stateChanged, this, [=](int state)
-  {
+  connect(processEventEnableCheckBox, &NXCheckBox::stateChanged, this, [=](int state) {
     setIsRunToCommandProcessEventEnable(state);
   });
   firstSettingLayout->addWidget(processEventEnableText);
@@ -115,8 +111,7 @@ NXActionCommander::NXActionCommander(QObject *parent)
   messageDisplayTimeSpinBox->setMinimumWidth(200);
   messageDisplayTimeSpinBox->setRange(0, 100000);
   messageDisplayTimeSpinBox->setValue(d->_pMessageDisplayMesc);
-  connect(messageDisplayTimeSpinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value)
-  {
+  connect(messageDisplayTimeSpinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value) {
     setMessageDisplayMesc(value);
   });
   auto messageDisplayTimeEndText = new NXText(QStringLiteral("毫秒"), 17, d->_commanderDesign);
@@ -133,8 +128,7 @@ NXActionCommander::NXActionCommander(QObject *parent)
   maxCommandCountSpinBox->setMinimumWidth(200);
   maxCommandCountSpinBox->setRange(0, 100000);
   maxCommandCountSpinBox->setValue(d->_pMaxCommandCount);
-  connect(maxCommandCountSpinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value)
-  {
+  connect(maxCommandCountSpinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value) {
     setMaxCommandCount(value);
   });
   auto maxCommandCountEndText = new NXText(QStringLiteral("条"), 17, d->_commanderDesign);
@@ -154,35 +148,29 @@ NXActionCommander::~NXActionCommander()
 {
 }
 
-void
-NXActionCommander::setCurrentDomain(const QString &domainName)
+void NXActionCommander::setCurrentDomain(const QString &domainName)
 {
   Q_D(NXActionCommander);
   auto &commandData = d->_commandDomainMap[domainName];
   d->_initDomain(commandData);
-  if (d->_commanderView->getDomainName() != domainName)
-  {
+  if (d->_commanderView->getDomainName() != domainName) {
     d->_commanderView->setDomainName(domainName);
     d->_commanderView->setModel(commandData.commanderModel);
   }
 }
 
-QString
-NXActionCommander::getCurrentDomain() const
+QString NXActionCommander::getCurrentDomain() const
 {
   Q_D(const NXActionCommander);
   return d->_commanderView->getDomainName();
 }
 
-bool
-NXActionCommander::executeCommand(const QString &domainName, NXActionCommand *command, bool isInvoke)
+bool NXActionCommander::executeCommand(const QString &domainName, NXActionCommand *command, bool isInvoke)
 {
   Q_D(NXActionCommander);
-  if (isInvoke)
-  {
+  if (isInvoke) {
     bool result = false;
-    QMetaObject::invokeMethod(this, [&]()
-    {
+    QMetaObject::invokeMethod(this, [&]() {
       result = d->_executeCommand(domainName, command);
     }, Qt::BlockingQueuedConnection);
     return result;
@@ -190,15 +178,12 @@ NXActionCommander::executeCommand(const QString &domainName, NXActionCommand *co
   return d->_executeCommand(domainName, command);
 }
 
-bool
-NXActionCommander::recordCommand(const QString &domainName, NXActionCommand *command, bool isRedo, bool isInvoke)
+bool NXActionCommander::recordCommand(const QString &domainName, NXActionCommand *command, bool isRedo, bool isInvoke)
 {
   Q_D(NXActionCommander);
-  if (isInvoke)
-  {
+  if (isInvoke) {
     bool result = false;
-    QMetaObject::invokeMethod(this, [&]()
-    {
+    QMetaObject::invokeMethod(this, [&]() {
       result = d->_recordCommand(domainName, command, isRedo);
     }, Qt::BlockingQueuedConnection);
     return result;
@@ -206,19 +191,16 @@ NXActionCommander::recordCommand(const QString &domainName, NXActionCommand *com
   return d->_recordCommand(domainName, command, isRedo);
 }
 
-void
-NXActionCommander::clearCommand(const QString &domainName)
+void NXActionCommander::clearCommand(const QString &domainName)
 {
   Q_D(NXActionCommander);
-  if (!d->_commandDomainMap.contains(domainName))
-  {
+  if (!d->_commandDomainMap.contains(domainName)) {
     return;
   }
   auto &commandData        = d->_commandDomainMap[domainName];
   auto &commandList        = commandData.commandList;
   commandData.currentIndex = -1;
-  for (const auto command : commandList)
-  {
+  for (const auto command : commandList) {
     delete command;
   }
   commandList.clear();
@@ -228,130 +210,100 @@ NXActionCommander::clearCommand(const QString &domainName)
   Q_EMIT commanderStateChanged(domainName, NXActionCommanderType::RedoInvalid);
 }
 
-void
-NXActionCommander::undoCommand(const QString &domainName)
+void NXActionCommander::undoCommand(const QString &domainName)
 {
   Q_D(NXActionCommander);
   auto &commandData = d->_commandDomainMap[domainName];
-  if (commandData.isBusyMode)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"),
-                          d->_pMessageDisplayMesc, nullptr);
+  if (commandData.isBusyMode) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), d->_pMessageDisplayMesc, nullptr);
     return;
   }
-  if (!d->_isCommanderValid)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"),
-                          QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"), d->_pMessageDisplayMesc, nullptr);
+  if (!d->_isCommanderValid) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"), d->_pMessageDisplayMesc, nullptr);
     return;
   }
   setCurrentDomain(domainName);
   d->_undoCommand(domainName, true);
 }
 
-void
-NXActionCommander::redoCommand(const QString &domainName)
+void NXActionCommander::redoCommand(const QString &domainName)
 {
   Q_D(NXActionCommander);
   auto &commandData = d->_commandDomainMap[domainName];
-  if (commandData.isBusyMode)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"),
-                          d->_pMessageDisplayMesc, nullptr);
+  if (commandData.isBusyMode) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), d->_pMessageDisplayMesc, nullptr);
     return;
   }
-  if (!d->_isCommanderValid)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"),
-                          QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"), d->_pMessageDisplayMesc, nullptr);
+  if (!d->_isCommanderValid) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"), d->_pMessageDisplayMesc, nullptr);
     return;
   }
   setCurrentDomain(domainName);
   d->_redoCommand(domainName, true);
 }
 
-void
-NXActionCommander::runToCommand(const QString &domainName, int commandIndex)
+void NXActionCommander::runToCommand(const QString &domainName, int commandIndex)
 {
   Q_D(NXActionCommander);
   auto &commandData = d->_commandDomainMap[domainName];
   auto &commandList = commandData.commandList;
-  if (commandData.isBusyMode || commandIndex >= commandList.count())
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"),
-                          d->_pMessageDisplayMesc, nullptr);
+  if (commandData.isBusyMode || commandIndex >= commandList.count()) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), d->_pMessageDisplayMesc, nullptr);
     return;
   }
   commandData.isBusyMode = true;
   bool isRedo            = true;
-  if (commandIndex > commandData.currentIndex)
-  {
+  if (commandIndex > commandData.currentIndex) {
     // 重做到目标索引
     int runCount = commandIndex - commandData.currentIndex;
-    for (int i = 0; i < runCount; i++)
-    {
+    for (int i = 0; i < runCount; i++) {
       d->_redoCommand(domainName, false);
       QString percent = QString::number(100 * (i + 1) / static_cast<qreal>(runCount), 'f', 1);
       d->_commanderBusyRingValue->setText(QStringLiteral("%1%").arg(percent));
-      if (d->_pIsRunToCommandProcessEventEnable)
-      {
+      if (d->_pIsRunToCommandProcessEventEnable) {
         QApplication::processEvents();
       }
     }
-  }
-  else
-  {
+  } else {
     isRedo = false;
     // 撤销到目标索引 _currentIndex最小为-1
     int runCount = commandData.currentIndex - commandIndex + 1;
-    for (int i = 0; i < runCount; i++)
-    {
+    for (int i = 0; i < runCount; i++) {
       d->_undoCommand(domainName, false);
       QString percent = QString::number(100 * (i + 1) / static_cast<qreal>(runCount), 'f', 1);
       d->_commanderBusyRingValue->setText(QStringLiteral("%1%").arg(percent));
-      if (d->_pIsRunToCommandProcessEventEnable)
-      {
+      if (d->_pIsRunToCommandProcessEventEnable) {
         QApplication::processEvents();
       }
     }
   }
-  if (isRedo)
-  {
-    NXMessageBar::information(NXMessageBarType::TopRight, QStringLiteral("重做"), QStringLiteral("重做到指定节点完成!"),
-                              d->_pMessageDisplayMesc, nullptr);
-  }
-  else
-  {
-    NXMessageBar::information(NXMessageBarType::TopRight, QStringLiteral("撤销"), QStringLiteral("撤销到指定节点完成!"),
-                              d->_pMessageDisplayMesc, nullptr);
+  if (isRedo) {
+    NXMessageBar::information(NXMessageBarType::TopRight, QStringLiteral("重做"), QStringLiteral("重做到指定节点完成!"), d->_pMessageDisplayMesc, nullptr);
+  } else {
+    NXMessageBar::information(NXMessageBarType::TopRight, QStringLiteral("撤销"), QStringLiteral("撤销到指定节点完成!"), d->_pMessageDisplayMesc, nullptr);
   }
   commandData.isBusyMode = false;
 }
 
-NXActionCommanderType::CommanderState
-NXActionCommander::getCommanderUndoState(const QString &domainName) const
+NXActionCommanderType::CommanderState NXActionCommander::getCommanderUndoState(const QString &domainName) const
 {
   Q_D(const NXActionCommander);
-  if (!d->_commandDomainMap.contains(domainName))
-  {
+  if (!d->_commandDomainMap.contains(domainName)) {
     return NXActionCommanderType::UndoInvalid;
   }
   return d->_commandDomainMap[domainName].undoState;
 }
 
-NXActionCommanderType::CommanderState
-NXActionCommander::getCommanderRedoState(const QString &domainName) const
+NXActionCommanderType::CommanderState NXActionCommander::getCommanderRedoState(const QString &domainName) const
 {
   Q_D(const NXActionCommander);
-  if (!d->_commandDomainMap.contains(domainName))
-  {
+  if (!d->_commandDomainMap.contains(domainName)) {
     return NXActionCommanderType::RedoInvalid;
   }
   return d->_commandDomainMap[domainName].redoState;
 }
 
-QWidget *
-NXActionCommander::getCommanderDesign() const
+QWidget * NXActionCommander::getCommanderDesign() const
 {
   Q_D(const NXActionCommander);
   return d->_commanderDesign;

@@ -70,16 +70,12 @@ NXNavigationBar::NXNavigationBar(QWidget *parent)
   d->_navigationView  = new NXNavigationView(this);
   d->_navigationView->setNavigationBarPrivate(d);
   d->_navigationView->setModel(d->_navigationModel);
-  connect(d->_navigationView, &NXNavigationView::navigationClicked, this, [=](const QModelIndex &index)
-  {
+  connect(d->_navigationView, &NXNavigationView::navigationClicked, this, [=](const QModelIndex &index) {
     d->onTreeViewClicked(index);
   });
-  connect(d->_navigationView, &NXNavigationView::navigationOpenNewWindow, d,
-          &NXNavigationBarPrivate::onNavigationOpenNewWindow);
-  connect(d->_navigationView, &NXNavigationView::navigationCloseCurrentWindow, d,
-          &NXNavigationBarPrivate::onNavigationCloseCurrentWindow);
-  connect(d->_navigationModel, &NXNavigationModel::rowsMoved, this, [=]()
-  {
+  connect(d->_navigationView, &NXNavigationView::navigationOpenNewWindow, d, &NXNavigationBarPrivate::onNavigationOpenNewWindow);
+  connect(d->_navigationView, &NXNavigationView::navigationCloseCurrentWindow, d, &NXNavigationBarPrivate::onNavigationCloseCurrentWindow);
+  connect(d->_navigationModel, &NXNavigationModel::rowsMoved, this, [=]() {
     d->_initNodeModelIndex(QModelIndex());
     d->_resetNodeSelected();
   });
@@ -91,23 +87,19 @@ NXNavigationBar::NXNavigationBar(QWidget *parent)
   d->_footerDelegate = new NXFooterDelegate(this);
   d->_footerDelegate->setNXListView(d->_footerView);
   d->_footerView->setItemDelegate(d->_footerDelegate);
-  connect(d->_footerView, &NXBaseListView::mousePress, this, [=](const QModelIndex &index)
-  {
+  connect(d->_footerView, &NXBaseListView::mousePress, this, [=](const QModelIndex &index) {
     d->_footerDelegate->setPressIndex(index);
     d->_footerView->viewport()->update();
   });
-  connect(d->_footerView, &NXBaseListView::mouseDoubleClick, this, [=](const QModelIndex &index)
-  {
+  connect(d->_footerView, &NXBaseListView::mouseDoubleClick, this, [=](const QModelIndex &index) {
     d->_footerDelegate->setPressIndex(index);
     d->_footerView->viewport()->update();
   });
-  connect(d->_footerView, &NXBaseListView::mouseRelease, this, [=](const QModelIndex &index)
-  {
+  connect(d->_footerView, &NXBaseListView::mouseRelease, this, [=](const QModelIndex &index) {
     d->_footerDelegate->setPressIndex(QModelIndex());
     d->_footerView->viewport()->update();
   });
-  connect(d->_footerView, &NXBaseListView::clicked, this, [=](const QModelIndex &index)
-  {
+  connect(d->_footerView, &NXBaseListView::clicked, this, [=](const QModelIndex &index) {
     d->onFooterViewClicked(index);
   });
 
@@ -121,8 +113,7 @@ NXNavigationBar::NXNavigationBar(QWidget *parent)
 
   // 主题设置
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 }
@@ -131,91 +122,74 @@ NXNavigationBar::~NXNavigationBar()
 {
 }
 
-void
-NXNavigationBar::setNavigationBarWidth(int navigationBarWidth)
+void NXNavigationBar::setNavigationBarWidth(int navigationBarWidth)
 {
   Q_D(NXNavigationBar);
-  if (navigationBarWidth < 180)
-  {
+  if (navigationBarWidth < 180) {
     navigationBarWidth = 180;
   }
-  if (d->_currentDisplayMode == NXNavigationType::NavigationDisplayMode::Maximal)
-  {
+  if (d->_currentDisplayMode == NXNavigationType::NavigationDisplayMode::Maximal) {
     setFixedWidth(navigationBarWidth);
   }
   d->_pNavigationBarWidth = navigationBarWidth;
   Q_EMIT pNavigationBarWidthChanged();
 }
 
-int
-NXNavigationBar::getNavigationBarWidth() const
+int NXNavigationBar::getNavigationBarWidth() const
 {
   Q_D(const NXNavigationBar);
   return d->_pNavigationBarWidth;
 }
 
-void
-NXNavigationBar::setUserInfoCardVisible(bool isVisible)
+void NXNavigationBar::setUserInfoCardVisible(bool isVisible)
 {
   Q_D(NXNavigationBar);
   d->_isShowUserCard = isVisible;
-  if (d->_currentDisplayMode == NXNavigationType::NavigationDisplayMode::Compact)
-  {
+  if (d->_currentDisplayMode == NXNavigationType::NavigationDisplayMode::Compact) {
     d->_userButton->setVisible(isVisible);
-  }
-  else
-  {
+  } else {
     d->_userCard->setVisible(isVisible);
   }
-  if (isVisible)
-  {
+  if (isVisible) {
     d->_userCardLayout->setContentsMargins(3, 10, 5, 5);
-  }
-  else
-  {
+  } else {
     d->_userCardLayout->setContentsMargins(0, 0, 0, 0);
   }
 }
 
-void
-NXNavigationBar::setUserInfoCardPixmap(const QPixmap &pix)
+void NXNavigationBar::setUserInfoCardPixmap(const QPixmap &pix)
 {
   Q_D(NXNavigationBar);
   d->_userCard->setCardPixmap(pix);
   d->_userButton->setPixmap(pix);
 }
 
-void
-NXNavigationBar::setUserInfoCardTitle(const QString &title)
+void NXNavigationBar::setUserInfoCardTitle(const QString &title)
 {
   Q_D(NXNavigationBar);
   d->_userCard->setTitle(title);
 }
 
-void
-NXNavigationBar::setUserInfoCardSubTitle(const QString &subTitle)
+void NXNavigationBar::setUserInfoCardSubTitle(const QString &subTitle)
 {
   Q_D(NXNavigationBar);
   d->_userCard->setSubTitle(subTitle);
 }
 
-void
-NXNavigationBar::setIsNodeDragDropEnable(bool isEnable)
+void NXNavigationBar::setIsNodeDragDropEnable(bool isEnable)
 {
   Q_D(NXNavigationBar);
   d->_navigationView->setIsDragDropEnable(isEnable);
 }
 
-void
-NXNavigationBar::setToolTipOffset(int offsetX, int offsetY)
+void NXNavigationBar::setToolTipOffset(int offsetX, int offsetY)
 {
   Q_D(NXNavigationBar);
   d->_navigationView->getCompactToolTip()->setOffSetX(offsetX);
   d->_navigationView->getCompactToolTip()->setOffSetY(offsetY);
 }
 
-QString
-NXNavigationBar::addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome)
+QString NXNavigationBar::addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
   QString key = d_ptr->_navigationModel->addExpanderNode(expanderTitle, awesome);
@@ -225,15 +199,11 @@ NXNavigationBar::addExpanderNode(const QString &expanderTitle, NXIconType::IconN
   return key;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addExpanderNode(const QString &expanderTitle,
-                                 const QString &targetExpanderKey,
-                                 NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addExpanderNode(const QString &expanderTitle, const QString &targetExpanderKey, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
   NXNodeResultExpected returnType = d->_navigationModel->addExpanderNode(expanderTitle, targetExpanderKey, awesome);
-  if (returnType.has_value())
-  {
+  if (returnType.has_value()) {
     d->_initNodeModelIndex(QModelIndex());
     d->_resetNodeSelected();
     Q_EMIT navigationNodeAdded(NXNavigationType::ExpanderNode, *returnType, nullptr);
@@ -241,12 +211,10 @@ NXNavigationBar::addExpanderNode(const QString &expanderTitle,
   return returnType;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
-  if (!page)
-  {
+  if (!page) {
     return NXNodeResultUnexpected { NXNavigationType::PageInvalid };
   }
   QString key = d_ptr->_navigationModel->addPageNode(pageTitle, awesome);
@@ -258,17 +226,14 @@ NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, NXIconType
   return key;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, int keyPoints, NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, int keyPoints, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
-  if (!page)
-  {
+  if (!page) {
     return NXNodeResultUnexpected { NXNavigationType::PageInvalid };
   }
   NXNodeResultExpected returnType = d_ptr->_navigationModel->addPageNode(pageTitle, keyPoints, awesome);
-  if (returnType.has_value())
-  {
+  if (returnType.has_value()) {
     d->_pageMetaMap.insert(*returnType, page->metaObject());
     d->_pageNewWindowCountMap.insert(*returnType, 0);
     d->_addStackedPage(page, *returnType);
@@ -278,43 +243,31 @@ NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, int keyPoi
   return returnType;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addPageNode(const QString &pageTitle,
-                             QWidget *page,
-                             const QString &targetExpanderKey,
-                             NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
-  if (!page)
-  {
+  if (!page) {
     return NXNodeResultUnexpected { NXNavigationType::PageInvalid };
   }
-  if (targetExpanderKey.isEmpty())
-  {
+  if (targetExpanderKey.isEmpty()) {
     return NXNodeResultUnexpected { NXNavigationType::TargetNodeInvalid };
   }
   NXNodeResultExpected returnType = d->_navigationModel->addPageNode(pageTitle, targetExpanderKey, awesome);
-  if (returnType.has_value())
-  {
+  if (returnType.has_value()) {
     d->_pageMetaMap.insert(*returnType, page->metaObject());
     d->_pageNewWindowCountMap.insert(*returnType, 0);
     NXNavigationNode *node         = d->_navigationModel->getNavigationNode(*returnType);
     NXNavigationNode *originalNode = node->getOriginalNode();
-    if (d->_compactMenuMap.contains(originalNode))
-    {
+    if (d->_compactMenuMap.contains(originalNode)) {
       NXMenu *menu    = d->_compactMenuMap.value(originalNode);
       QAction *action = menu->addNXIconAction(node->getAwesome(), node->getNodeTitle());
-      connect(action, &QAction::triggered, this, [=]()
-      {
+      connect(action, &QAction::triggered, this, [=]() {
         d->onTreeViewClicked(node->getModelIndex());
       });
-    }
-    else
-    {
+    } else {
       NXMenu *menu    = new NXMenu(const_cast<NXNavigationBar *>(this));
       QAction *action = menu->addNXIconAction(node->getAwesome(), node->getNodeTitle());
-      connect(action, &QAction::triggered, this, [=]()
-      {
+      connect(action, &QAction::triggered, this, [=]() {
         d_ptr->onTreeViewClicked(node->getModelIndex());
       });
       d_ptr->_compactMenuMap.insert(originalNode, menu);
@@ -326,45 +279,32 @@ NXNavigationBar::addPageNode(const QString &pageTitle,
   return returnType;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addPageNode(const QString &pageTitle,
-                             QWidget *page,
-                             const QString &targetExpanderKey,
-                             int keyPoints,
-                             NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, int keyPoints, NXIconType::IconName awesome)
 {
   Q_D(NXNavigationBar);
-  if (!page)
-  {
+  if (!page) {
     return NXNodeResultUnexpected { NXNavigationType::PageInvalid };
   }
-  if (targetExpanderKey.isEmpty())
-  {
+  if (targetExpanderKey.isEmpty()) {
     return NXNodeResultUnexpected { NXNavigationType::TargetNodeInvalid };
   }
   NXNodeResultExpected returnType =
       d_ptr->_navigationModel->addPageNode(pageTitle, targetExpanderKey, keyPoints, awesome);
-  if (returnType.has_value())
-  {
+  if (returnType.has_value()) {
     d->_pageMetaMap.insert(*returnType, page->metaObject());
     d->_pageNewWindowCountMap.insert(*returnType, 0);
     NXNavigationNode *node         = d_ptr->_navigationModel->getNavigationNode(*returnType);
     NXNavigationNode *originalNode = node->getOriginalNode();
-    if (d_ptr->_compactMenuMap.contains(originalNode))
-    {
+    if (d_ptr->_compactMenuMap.contains(originalNode)) {
       NXMenu *menu    = d_ptr->_compactMenuMap.value(originalNode);
       QAction *action = menu->addNXIconAction(node->getAwesome(), node->getNodeTitle());
-      connect(action, &QAction::triggered, this, [=]()
-      {
+      connect(action, &QAction::triggered, this, [=]() {
         d_ptr->onTreeViewClicked(node->getModelIndex());
       });
-    }
-    else
-    {
+    } else {
       NXMenu *menu    = new NXMenu(const_cast<NXNavigationBar *>(this));
       QAction *action = menu->addNXIconAction(node->getAwesome(), node->getNodeTitle());
-      connect(action, &QAction::triggered, this, [=]()
-      {
+      connect(action, &QAction::triggered, this, [=]() {
         d_ptr->onTreeViewClicked(node->getModelIndex());
       });
       d_ptr->_compactMenuMap.insert(originalNode, menu);
@@ -376,26 +316,22 @@ NXNavigationBar::addPageNode(const QString &pageTitle,
   return returnType;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addFooterNode(const QString &footerTitle, int keyPoints, NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addFooterNode(const QString &footerTitle, int keyPoints, NXIconType::IconName awesome)
 {
   return addFooterNode(footerTitle, nullptr, keyPoints, awesome);
 }
 
-NXNodeResultExpected
-NXNavigationBar::addFooterNode(const QString &footerTitle, QWidget *page, int keyPoints, NXIconType::IconName awesome)
+NXNodeResultExpected NXNavigationBar::addFooterNode(const QString &footerTitle, QWidget *page, int keyPoints, NXIconType::IconName awesome)
 {
   NXNodeResultExpected returnType =
       d_ptr->_footerModel->addFooterNode(footerTitle, page != nullptr, keyPoints, awesome);
-  if (returnType.has_value())
-  {
+  if (returnType.has_value()) {
     d_ptr->_addFooterPage(page, *returnType);
   }
   return returnType;
 }
 
-QString
-NXNavigationBar::addCategoryNode(const QString &categoryTitle)
+QString NXNavigationBar::addCategoryNode(const QString &categoryTitle)
 {
   Q_D(NXNavigationBar);
   QString key = d_ptr->_navigationModel->addCategoryNode(categoryTitle);
@@ -405,13 +341,11 @@ NXNavigationBar::addCategoryNode(const QString &categoryTitle)
   return key;
 }
 
-NXNodeResultExpected
-NXNavigationBar::addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey)
+NXNodeResultExpected NXNavigationBar::addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey)
 {
   Q_D(NXNavigationBar);
   NXNodeResultExpected result = d_ptr->_navigationModel->addCategoryNode(categoryTitle, targetExpanderKey);
-  if (result.has_value())
-  {
+  if (result.has_value()) {
     d->_initNodeModelIndex(QModelIndex());
     d->_resetNodeSelected();
     Q_EMIT navigationNodeAdded(NXNavigationType::CategoryNode, *result, nullptr);
@@ -419,197 +353,152 @@ NXNavigationBar::addCategoryNode(const QString &categoryTitle, const QString &ta
   return result;
 }
 
-bool
-NXNavigationBar::getNodeIsExpanded(const QString &expanderKey) const
+bool NXNavigationBar::getNodeIsExpanded(const QString &expanderKey) const
 {
   Q_D(const NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(expanderKey);
-  if (!node || !node->getIsExpanderNode())
-  {
+  if (!node || !node->getIsExpanderNode()) {
     return false;
   }
   return d->_navigationView->isExpanded(node->getModelIndex());
 }
 
-void
-NXNavigationBar::expandNode(const QString &expanderKey)
+void NXNavigationBar::expandNode(const QString &expanderKey)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(expanderKey);
-  if (!node || !node->getIsExpanderNode())
-  {
+  if (!node || !node->getIsExpanderNode()) {
     return;
   }
   d->_expandOrCollapseExpanderNode(node, true);
   d->_resetNodeSelected();
 }
 
-void
-NXNavigationBar::collapseNode(const QString &expanderKey)
+void NXNavigationBar::collapseNode(const QString &expanderKey)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(expanderKey);
-  if (!node || !node->getIsExpanderNode())
-  {
+  if (!node || !node->getIsExpanderNode()) {
     return;
   }
   d->_expandOrCollapseExpanderNode(node, false);
   d->_resetNodeSelected();
 }
 
-void
-NXNavigationBar::removeNode(const QString &nodeKey)
+void NXNavigationBar::removeNode(const QString &nodeKey)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(nodeKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(nodeKey);
   }
-  if (!node)
-  {
+  if (!node) {
     return;
   }
-  if (node->getIsFooterNode())
-  {
+  if (node->getIsFooterNode()) {
     Q_EMIT navigationNodeRemoved(NXNavigationType::FooterNode, nodeKey);
     d->_footerModel->removeNavigationNode(nodeKey);
     d->_footerView->setFixedHeight(40 * d->_footerModel->getFooterNodeCount());
-  }
-  else
-  {
-    if (node->getIsCategoryNode())
-    {
+  } else {
+    if (node->getIsCategoryNode()) {
       QStringList removeKeyList = d->_navigationModel->removeNavigationNode(nodeKey);
       d->_initNodeModelIndex(QModelIndex());
-      for (const auto &removeKey : removeKeyList)
-      {
+      for (const auto &removeKey : removeKeyList) {
         Q_EMIT navigationNodeRemoved(NXNavigationType::CategoryNode, removeKey);
       }
-    }
-    else
-    {
+    } else {
       QStringList removeKeyList = d->_navigationModel->removeNavigationNode(nodeKey);
       d->_initNodeModelIndex(QModelIndex());
-      for (const auto &removeKey : removeKeyList)
-      {
+      for (const auto &removeKey : removeKeyList) {
         d->_pageMetaMap.remove(removeKey);
         d->_pageNewWindowCountMap.remove(removeKey);
         Q_EMIT navigationNodeRemoved(NXNavigationType::PageNode, removeKey);
       }
     }
   }
-  for (int i = 0; i < d->_suggestDataList.count(); i++)
-  {
+  for (int i = 0; i < d->_suggestDataList.count(); i++) {
     auto &suggestData = d->_suggestDataList[i];
-    if (suggestData.getSuggestData().value(QStringLiteral("NXPageKey")).toString() == nodeKey)
-    {
+    if (suggestData.getSuggestData().value(QStringLiteral("NXPageKey")).toString() == nodeKey) {
       d->_suggestDataList.removeAt(i);
       break;
     }
   }
 }
 
-void
-NXNavigationBar::setNodeKeyPoints(const QString &nodeKey, int keyPoints)
+void NXNavigationBar::setNodeKeyPoints(const QString &nodeKey, int keyPoints)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(nodeKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(nodeKey);
-  }
-  else if (node->getIsExpanderNode() || keyPoints < 0)
-  {
+  } else if (node->getIsExpanderNode() || keyPoints < 0) {
     return;
   }
-  if (!node)
-  {
+  if (!node) {
     return;
   }
   node->setKeyPoints(keyPoints);
-  if (node->getIsFooterNode())
-  {
+  if (node->getIsFooterNode()) {
     d->_footerView->viewport()->update();
-  }
-  else
-  {
+  } else {
     d->_navigationView->viewport()->update();
   }
 }
 
-int
-NXNavigationBar::getNodeKeyPoints(const QString &nodeKey) const
+int NXNavigationBar::getNodeKeyPoints(const QString &nodeKey) const
 {
   Q_D(const NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(nodeKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(nodeKey);
-  }
-  else if (node->getIsExpanderNode())
-  {
+  } else if (node->getIsExpanderNode()) {
     return -1;
   }
-  if (!node)
-  {
+  if (!node) {
     return -1;
   }
   return node->getKeyPoints();
 }
 
-void
-NXNavigationBar::setNodeTitle(const QString &nodeKey, const QString &nodeTitle)
+void NXNavigationBar::setNodeTitle(const QString &nodeKey, const QString &nodeTitle)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(nodeKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(nodeKey);
   }
-  if (!node)
-  {
+  if (!node) {
     return;
   }
   node->setNodeTitle(nodeTitle);
   update();
 }
 
-QString
-NXNavigationBar::getNodeTitle(const QString &nodeKey) const
+QString NXNavigationBar::getNodeTitle(const QString &nodeKey) const
 {
   Q_D(const NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(nodeKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(nodeKey);
   }
-  if (!node)
-  {
+  if (!node) {
     return {};
   }
   return node->getNodeTitle();
 }
 
-void
-NXNavigationBar::navigation(const QString &pageKey, bool isLogClicked, bool isRouteBack)
+void NXNavigationBar::navigation(const QString &pageKey, bool isLogClicked, bool isRouteBack)
 {
   Q_D(NXNavigationBar);
   NXNavigationNode *node = d->_navigationModel->getNavigationNode(pageKey);
-  if (!node)
-  {
+  if (!node) {
     node = d->_footerModel->getNavigationNode(pageKey);
   }
-  if (node)
-  {
-    if (node->getIsFooterNode())
-    {
+  if (node) {
+    if (node->getIsFooterNode()) {
       d->onFooterViewClicked(node->getModelIndex(), isLogClicked, isRouteBack);
-    }
-    else
-    {
-      if (!node->getIsExpanderNode())
-      {
+    } else {
+      if (!node->getIsExpanderNode()) {
         d->onTreeViewClicked(node->getModelIndex(), isLogClicked, isRouteBack);
         d->_smoothScrollNavigationView(node->getModelIndex());
       }
@@ -617,12 +506,10 @@ NXNavigationBar::navigation(const QString &pageKey, bool isLogClicked, bool isRo
   }
 }
 
-void
-NXNavigationBar::setDisplayMode(NXNavigationType::NavigationDisplayMode displayMode, bool isAnimation)
+void NXNavigationBar::setDisplayMode(NXNavigationType::NavigationDisplayMode displayMode, bool isAnimation)
 {
   Q_D(NXNavigationBar);
-  if (d->_currentDisplayMode == displayMode || displayMode == NXNavigationType::Auto)
-  {
+  if (d->_currentDisplayMode == displayMode || displayMode == NXNavigationType::Auto) {
     return;
   }
   d->_navigationModel->setIsMaximalMode(displayMode == NXNavigationType::Maximal);
@@ -631,37 +518,31 @@ NXNavigationBar::setDisplayMode(NXNavigationType::NavigationDisplayMode displayM
   Q_EMIT displayModeChanged(displayMode);
 }
 
-NXNavigationType::NavigationDisplayMode
-NXNavigationBar::getDisplayMode() const
+NXNavigationType::NavigationDisplayMode NXNavigationBar::getDisplayMode() const
 {
   Q_D(const NXNavigationBar);
   return d->_currentDisplayMode;
 }
 
-int
-NXNavigationBar::getPageOpenInNewWindowCount(const QString &nodeKey) const
+int NXNavigationBar::getPageOpenInNewWindowCount(const QString &nodeKey) const
 {
   Q_D(const NXNavigationBar);
-  if (!d->_pageNewWindowCountMap.contains(nodeKey))
-  {
+  if (!d->_pageNewWindowCountMap.contains(nodeKey)) {
     return 0;
   }
   return d->_pageNewWindowCountMap[nodeKey];
 }
 
-QList<NXSuggestBox::SuggestData>
-NXNavigationBar::getSuggestDataList() const
+QList<NXSuggestBox::SuggestData> NXNavigationBar::getSuggestDataList() const
 {
   Q_D(const NXNavigationBar);
   return d->_suggestDataList;
 }
 
-void
-NXNavigationBar::paintEvent(QPaintEvent *event)
+void NXNavigationBar::paintEvent(QPaintEvent *event)
 {
   Q_D(NXNavigationBar);
-  if (!d->_pIsTransparent)
-  {
+  if (!d->_pIsTransparent) {
     QPainter painter(this);
     painter.save();
     painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));

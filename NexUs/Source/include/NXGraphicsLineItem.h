@@ -18,11 +18,7 @@ class NX_EXPORT NXGraphicsLineItem : public QGraphicsPathItem
   Q_PRIVATE_CREATE_H(int, EndItemPort)
 
 public:
-  explicit NXGraphicsLineItem(NXGraphicsItem *startItem,
-                              NXGraphicsItem *endItem,
-                              int startItemPort,
-                              int endItemPort,
-                              QGraphicsItem *parent = nullptr);
+  explicit NXGraphicsLineItem(NXGraphicsItem *startItem, NXGraphicsItem *endItem, int startItemPort, int endItemPort, QGraphicsItem *parent = nullptr);
   explicit NXGraphicsLineItem(QPointF startPoint, QPointF endPoint, QGraphicsItem *parent = nullptr);
   ~NXGraphicsLineItem();
 

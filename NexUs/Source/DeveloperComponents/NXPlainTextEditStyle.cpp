@@ -11,8 +11,7 @@ NXPlainTextEditStyle::NXPlainTextEditStyle(QStyle *style)
 {
   _pExpandMarkWidth = 0;
   _themeMode        = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -21,18 +20,11 @@ NXPlainTextEditStyle::~NXPlainTextEditStyle()
 {
 }
 
-void
-NXPlainTextEditStyle::drawControl(ControlElement element,
-                                  const QStyleOption *option,
-                                  QPainter *painter,
-                                  const QWidget *widget) const
+void NXPlainTextEditStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::CE_ShapedFrame :
-  {
-    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option))
-    {
+  switch (element) {
+  case QStyle::CE_ShapedFrame : {
+    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
       //背景绘制
       QRect editRect = option->rect;
       painter->save();
@@ -69,8 +61,7 @@ NXPlainTextEditStyle::drawControl(ControlElement element,
     }
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

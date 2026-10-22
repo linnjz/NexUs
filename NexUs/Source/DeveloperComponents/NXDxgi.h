@@ -3,11 +3,11 @@
 
 #include <QObject>
 #ifdef Q_OS_WIN
-#include <atomic>
+#  include <atomic>
 #  include <QElapsedTimer>
 #  include <QMutex>
 #  include <QPixmap>
-#include <QImage>
+#  include <QImage>
 
 #  include <d3d11.h>
 #  include <dxgi1_6.h>

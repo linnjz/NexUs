@@ -8,8 +8,7 @@
 Q_PROPERTY_CREATE_CPP(NXPersonPicture, QS_SET_CREF(QString), DisplayName)
 Q_PROPERTY_CREATE_CPP(NXPersonPicture, QS_SET_CREF(QPixmap), Picture)
 
-void
-NXPersonPicture::setPictureSize(int PictureSize)
+void NXPersonPicture::setPictureSize(int PictureSize)
 {
   Q_D(NXPersonPicture);
   d->_pPictureSize = PictureSize;
@@ -17,8 +16,7 @@ NXPersonPicture::setPictureSize(int PictureSize)
   Q_EMIT pPictureSizeChanged();
 }
 
-int
-NXPersonPicture::getPictureSize() const
+int NXPersonPicture::getPictureSize() const
 {
   return d_ptr->_pPictureSize;
 }
@@ -33,8 +31,7 @@ NXPersonPicture::NXPersonPicture(QWidget *parent)
   setFixedSize(d->_pPictureSize, d->_pPictureSize);
   setObjectName("NXPersonPicture");
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -44,15 +41,13 @@ NXPersonPicture::~NXPersonPicture()
 {
 }
 
-QSize
-NXPersonPicture::sizeHint() const
+QSize NXPersonPicture::sizeHint() const
 {
   int size = d_ptr->_pPictureSize;
   return QSize(size, size);
 }
 
-void
-NXPersonPicture::paintEvent(QPaintEvent *event)
+void NXPersonPicture::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXPersonPicture);
@@ -65,8 +60,7 @@ NXPersonPicture::paintEvent(QPaintEvent *event)
   QPointF center = circleRect.center();
   qreal radius   = circleRect.width() / 2;
 
-  if (!d->_pPicture.isNull())
-  {
+  if (!d->_pPicture.isNull()) {
     // Draw circular-clipped pixmap
     painter.save();
     QPainterPath clipPath;
@@ -76,9 +70,7 @@ NXPersonPicture::paintEvent(QPaintEvent *event)
         circleRect.toRect(),
         d->_pPicture.scaled(circleRect.size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     painter.restore();
-  }
-  else if (!d->_pDisplayName.isEmpty())
-  {
+  } else if (!d->_pDisplayName.isEmpty()) {
     // Draw circle with PrimaryNormal background and white initials
     painter.save();
     painter.setPen(Qt::NoPen);
@@ -95,9 +87,7 @@ NXPersonPicture::paintEvent(QPaintEvent *event)
     painter.setPen(Qt::white);
     painter.drawText(circleRect.toRect(), Qt::AlignCenter, initials);
     painter.restore();
-  }
-  else
-  {
+  } else {
     // Draw circle with BasicBase background and user icon
     painter.save();
     painter.setPen(Qt::NoPen);

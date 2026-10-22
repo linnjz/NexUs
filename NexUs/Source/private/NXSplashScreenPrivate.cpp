@@ -14,8 +14,7 @@ NXSplashScreenPrivate::~NXSplashScreenPrivate()
 {
 }
 
-void
-NXSplashScreenPrivate::_doShowAnimation()
+void NXSplashScreenPrivate::_doShowAnimation()
 {
   Q_Q(NXSplashScreen);
   q->setWindowOpacity(0);
@@ -27,8 +26,7 @@ NXSplashScreenPrivate::_doShowAnimation()
   opacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void
-NXSplashScreenPrivate::_doCloseAnimation()
+void NXSplashScreenPrivate::_doCloseAnimation()
 {
   Q_Q(NXSplashScreen);
   QPropertyAnimation *opacityAnimation = new QPropertyAnimation(q, "windowOpacity");
@@ -36,8 +34,7 @@ NXSplashScreenPrivate::_doCloseAnimation()
   opacityAnimation->setStartValue(1.0);
   opacityAnimation->setEndValue(0.0);
   opacityAnimation->setEasingCurve(QEasingCurve::InOutCubic);
-  connect(opacityAnimation, &QPropertyAnimation::finished, q, [=]()
-  {
+  connect(opacityAnimation, &QPropertyAnimation::finished, q, [=]() {
     q->QWidget::close();
     Q_EMIT q->closed();
   });

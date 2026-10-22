@@ -44,41 +44,34 @@ NXGraphicsLineItem::~NXGraphicsLineItem()
 {
 }
 
-bool
-NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item) const
+bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item) const
 {
   Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.contains(item))
-  {
+  if (d->_linkItemMap.contains(item)) {
     return true;
   }
   return false;
 }
 
-bool
-NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2) const
+bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2) const
 {
   Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.contains(item1) && d->_linkItemMap.contains(item2))
-  {
+  if (d->_linkItemMap.contains(item1) && d->_linkItemMap.contains(item2)) {
     return true;
   }
   return false;
 }
 
-bool
-NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2, int port1, int port2) const
+bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2, int port1, int port2) const
 {
   Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.value(item1) == port1 && d->_linkItemMap.value(item2) == port2)
-  {
+  if (d->_linkItemMap.value(item1) == port1 && d->_linkItemMap.value(item2) == port2) {
     return true;
   }
   return false;
 }
 
-void
-NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   Q_D(NXGraphicsLineItem);
   painter->save();
@@ -89,15 +82,12 @@ NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
   qreal pathYStart = 0;
   qreal pathXEnd   = 0;
   qreal pathYEnd   = 0;
-  if (d->_isCreateWithItem)
-  {
+  if (d->_isCreateWithItem) {
     pathXStart = d->_pStartItem->x();
     pathYStart = d->_pStartItem->y();
     pathXEnd   = d->_pEndItem->x();
     pathYEnd   = d->_pEndItem->y();
-  }
-  else
-  {
+  } else {
     pathXStart = d->_pStartPoint.x();
     pathYStart = d->_pStartPoint.y();
     pathXEnd   = d->_pEndPoint.x();
@@ -110,11 +100,9 @@ NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
   painter->restore();
 }
 
-QRectF
-NXGraphicsLineItem::boundingRect() const
+QRectF NXGraphicsLineItem::boundingRect() const
 {
-  if (!QGraphicsPathItem::boundingRect().isValid())
-  {
+  if (!QGraphicsPathItem::boundingRect().isValid()) {
     return scene()->sceneRect();
   }
   return QGraphicsPathItem::boundingRect();

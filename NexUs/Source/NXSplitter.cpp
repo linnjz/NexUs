@@ -29,8 +29,7 @@ NXSplitter::~NXSplitter()
 {
 }
 
-QSplitterHandle *
-NXSplitter::createHandle()
+QSplitterHandle * NXSplitter::createHandle()
 {
   Q_D(NXSplitter);
   NXSplitterHandle *handle = new NXSplitterHandle(orientation(), this);

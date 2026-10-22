@@ -22,22 +22,18 @@ static int
 s_calcTargetY(int index)
 {
   int offset = 0;
-  for (int i = s_activeSnackbars.size() - 1; i > index; --i)
-  {
+  for (int i = s_activeSnackbars.size() - 1; i > index; --i) {
     offset += s_activeSnackbars[i]->height() + s_spacing;
   }
   return s_baseBottomY - s_activeSnackbars[index]->height() - offset;
 }
 
-void
-NXSnackbar::_reflowAll()
+void NXSnackbar::_reflowAll()
 {
-  for (int i = 0; i < s_activeSnackbars.size(); ++i)
-  {
+  for (int i = 0; i < s_activeSnackbars.size(); ++i) {
     NXSnackbar *snackbar = s_activeSnackbars[i];
     int targetY          = s_calcTargetY(i);
-    if (snackbar->y() != targetY)
-    {
+    if (snackbar->y() != targetY) {
       QPropertyAnimation *moveAnim = new QPropertyAnimation(snackbar, "pos", snackbar);
       moveAnim->setDuration(200);
       moveAnim->setStartValue(snackbar->pos());
@@ -71,8 +67,7 @@ NXSnackbar::NXSnackbar(
   setMouseTracking(true);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -82,8 +77,7 @@ NXSnackbar::NXSnackbar(
   QFontMetrics fm(textFont);
   int textWidth   = fm.horizontalAdvance(text);
   int actionWidth = 0;
-  if (!actionText.isEmpty())
-  {
+  if (!actionText.isEmpty()) {
     QFont actionFont = textFont;
     actionFont.setBold(true);
     QFontMetrics afm(actionFont);
@@ -94,22 +88,17 @@ NXSnackbar::NXSnackbar(
   setFixedHeight(48 + d->_shadowBorderWidth * 2);
   setFixedWidth(totalWidth + d->_shadowBorderWidth * 2);
 
-  while (s_activeSnackbars.size() >= s_maxSnackbars)
-  {
+  while (s_activeSnackbars.size() >= s_maxSnackbars) {
     s_activeSnackbars.first()->dismiss();
   }
 
-  if (parent)
-  {
+  if (parent) {
     QRect parentRect = parent->geometry();
     s_centerX        = parentRect.x() + (parentRect.width() - width()) / 2;
     s_baseBottomY    = parentRect.y() + parentRect.height() - 30;
-  }
-  else
-  {
+  } else {
     QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
+    if (screen) {
       QRect screenRect = screen->availableGeometry();
       s_centerX        = screenRect.x() + (screenRect.width() - width()) / 2;
       s_baseBottomY    = screenRect.y() + screenRect.height() - 30;
@@ -119,12 +108,10 @@ NXSnackbar::NXSnackbar(
   s_activeSnackbars.append(this);
   int targetY = s_calcTargetY(s_activeSnackbars.size() - 1);
 
-  for (int i = 0; i < s_activeSnackbars.size() - 1; ++i)
-  {
+  for (int i = 0; i < s_activeSnackbars.size() - 1; ++i) {
     NXSnackbar *snackbar = s_activeSnackbars[i];
     int newY             = s_calcTargetY(i);
-    if (snackbar->y() != newY)
-    {
+    if (snackbar->y() != newY) {
       QPropertyAnimation *moveAnim = new QPropertyAnimation(snackbar, "pos", snackbar);
       moveAnim->setDuration(200);
       moveAnim->setStartValue(snackbar->pos());
@@ -153,10 +140,8 @@ NXSnackbar::NXSnackbar(
   slideIn->setEndValue(QPoint(s_centerX, targetY));
   slideIn->setEasingCurve(QEasingCurve::OutCubic);
 
-  d->_doClose = [=]()
-  {
-    if (d->_isClosing)
-    {
+  d->_doClose = [=]() {
+    if (d->_isClosing) {
       return;
     }
     d->_isClosing = true;
@@ -168,8 +153,7 @@ NXSnackbar::NXSnackbar(
     fadeOut->setStartValue(opacityEffect->opacity());
     fadeOut->setEndValue(0.0);
     fadeOut->setEasingCurve(QEasingCurve::InCubic);
-    connect(fadeOut, &QPropertyAnimation::finished, this, [=]()
-    {
+    connect(fadeOut, &QPropertyAnimation::finished, this, [=]() {
       Q_EMIT closed();
       close();
       deleteLater();
@@ -177,8 +161,7 @@ NXSnackbar::NXSnackbar(
     fadeOut->start(QAbstractAnimation::DeleteWhenStopped);
   };
 
-  connect(fadeIn, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(fadeIn, &QPropertyAnimation::finished, this, [=]() {
     QTimer::singleShot(displayMsec, this, d->_doClose);
   });
 
@@ -190,54 +173,45 @@ NXSnackbar::~NXSnackbar()
 {
 }
 
-void
-NXSnackbar::setMaxCount(int count)
+void NXSnackbar::setMaxCount(int count)
 {
   s_maxSnackbars = qBound(1, count, 12);
 }
 
-int
-NXSnackbar::getMaxCount()
+int NXSnackbar::getMaxCount()
 {
   return s_maxSnackbars;
 }
 
-void
-NXSnackbar::dismiss()
+void NXSnackbar::dismiss()
 {
   Q_D(NXSnackbar);
-  if (d->_doClose)
-  {
+  if (d->_doClose) {
     d->_doClose();
   }
 }
 
-NXSnackbar *
-NXSnackbar::success(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
+NXSnackbar * NXSnackbar::success(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
 {
   return new NXSnackbar(Success, text, actionText, displayMsec, parent);
 }
 
-NXSnackbar *
-NXSnackbar::info(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
+NXSnackbar * NXSnackbar::info(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
 {
   return new NXSnackbar(Info, text, actionText, displayMsec, parent);
 }
 
-NXSnackbar *
-NXSnackbar::warning(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
+NXSnackbar * NXSnackbar::warning(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
 {
   return new NXSnackbar(Warning, text, actionText, displayMsec, parent);
 }
 
-NXSnackbar *
-NXSnackbar::error(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
+NXSnackbar * NXSnackbar::error(const QString &text, const QString &actionText, int displayMsec, QWidget *parent)
 {
   return new NXSnackbar(Error, text, actionText, displayMsec, parent);
 }
 
-void
-NXSnackbar::paintEvent(QPaintEvent *event)
+void NXSnackbar::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXSnackbar);
@@ -246,8 +220,7 @@ NXSnackbar::paintEvent(QPaintEvent *event)
 
   nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
 
-  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth,
-                       height() - 2 * d->_shadowBorderWidth);
+  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
 
   painter.save();
   painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));
@@ -258,8 +231,7 @@ NXSnackbar::paintEvent(QPaintEvent *event)
   QColor indicatorColor;
   NXIconType::IconName iconEnum;
   QColor iconColor;
-  switch (d->_snackbarType)
-  {
+  switch (d->_snackbarType) {
   case Success :
     indicatorColor = QColor(0x0F, 0x7B, 0x0F);
     iconEnum       = NXIconType::Check;
@@ -303,8 +275,7 @@ NXSnackbar::paintEvent(QPaintEvent *event)
   int textLeft  = foregroundRect.x() + 42;
   int textRight = foregroundRect.right() - 10;
 
-  if (!d->_actionText.isEmpty())
-  {
+  if (!d->_actionText.isEmpty()) {
     QFont actionFont = font();
     actionFont.setPixelSize(14);
     actionFont.setBold(true);
@@ -316,16 +287,13 @@ NXSnackbar::paintEvent(QPaintEvent *event)
     d->_actionRect   = QRect(actionX, actionY, actionWidth, actionHeight);
     textRight        = actionX - 8;
 
-    if (d->_isActionPressed)
-    {
+    if (d->_isActionPressed) {
       painter.save();
       painter.setPen(Qt::NoPen);
       painter.setBrush(NXThemeColor(d->_themeMode, BasicPress));
       painter.drawRoundedRect(d->_actionRect, 4, 4);
       painter.restore();
-    }
-    else if (d->_isActionHover)
-    {
+    } else if (d->_isActionHover) {
       painter.save();
       painter.setPen(Qt::NoPen);
       painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
@@ -346,29 +314,24 @@ NXSnackbar::paintEvent(QPaintEvent *event)
   textFont.setPixelSize(14);
   painter.setFont(textFont);
   QRect textRect(textLeft, foregroundRect.y(), textRight - textLeft, foregroundRect.height());
-  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft,
-                   painter.fontMetrics().elidedText(d->_text, Qt::ElideRight, textRect.width()));
+  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, painter.fontMetrics().elidedText(d->_text, Qt::ElideRight, textRect.width()));
   painter.restore();
 }
 
-void
-NXSnackbar::mousePressEvent(QMouseEvent *event)
+void NXSnackbar::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXSnackbar);
-  if (!d->_actionText.isEmpty() && d->_actionRect.contains(event->pos()))
-  {
+  if (!d->_actionText.isEmpty() && d->_actionRect.contains(event->pos())) {
     d->_isActionPressed = true;
     update();
   }
   QWidget::mousePressEvent(event);
 }
 
-void
-NXSnackbar::mouseReleaseEvent(QMouseEvent *event)
+void NXSnackbar::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXSnackbar);
-  if (d->_isActionPressed && d->_actionRect.contains(event->pos()))
-  {
+  if (d->_isActionPressed && d->_actionRect.contains(event->pos())) {
     Q_EMIT actionClicked();
   }
   d->_isActionPressed = false;
@@ -376,13 +339,11 @@ NXSnackbar::mouseReleaseEvent(QMouseEvent *event)
   QWidget::mouseReleaseEvent(event);
 }
 
-void
-NXSnackbar::mouseMoveEvent(QMouseEvent *event)
+void NXSnackbar::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXSnackbar);
   bool hover = !d->_actionText.isEmpty() && d->_actionRect.contains(event->pos());
-  if (hover != d->_isActionHover)
-  {
+  if (hover != d->_isActionHover) {
     d->_isActionHover = hover;
     setCursor(hover ? Qt::PointingHandCursor : Qt::ArrowCursor);
     update();

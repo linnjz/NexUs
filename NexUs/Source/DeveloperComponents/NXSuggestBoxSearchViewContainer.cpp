@@ -15,8 +15,7 @@ NXSuggestBoxSearchViewContainer::NXSuggestBoxSearchViewContainer(QWidget *parent
   setObjectName("NXSuggestBoxSearchViewBaseWidget");
   setStyleSheet(QStringLiteral("#NXSuggestBoxSearchViewBaseWidget{background-color:transparent}"));
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -25,8 +24,7 @@ NXSuggestBoxSearchViewContainer::~NXSuggestBoxSearchViewContainer()
 {
 }
 
-void
-NXSuggestBoxSearchViewContainer::paintEvent(QPaintEvent *event)
+void NXSuggestBoxSearchViewContainer::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
   painter.save();

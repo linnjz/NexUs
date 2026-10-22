@@ -12,8 +12,7 @@ NXGraphicsViewPrivate::~NXGraphicsViewPrivate()
 {
 }
 
-void
-NXGraphicsViewPrivate::_initStyle()
+void NXGraphicsViewPrivate::_initStyle()
 {
   Q_Q(NXGraphicsView);
   q->setDragMode(QGraphicsView::RubberBandDrag);

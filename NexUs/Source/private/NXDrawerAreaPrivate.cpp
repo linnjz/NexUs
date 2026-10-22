@@ -11,8 +11,7 @@ NXDrawerAreaPrivate::~NXDrawerAreaPrivate()
 {
 }
 
-void
-NXDrawerAreaPrivate::onDrawerHeaderClicked(bool isExpand)
+void NXDrawerAreaPrivate::onDrawerHeaderClicked(bool isExpand)
 {
   Q_Q(NXDrawerArea);
   _drawerContainer->doDrawerAnimation(isExpand);

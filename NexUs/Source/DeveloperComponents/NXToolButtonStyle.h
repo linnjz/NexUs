@@ -17,14 +17,8 @@ class NXToolButtonStyle : public QProxyStyle
 public:
   explicit NXToolButtonStyle(QStyle *style = nullptr);
   ~NXToolButtonStyle();
-  void drawComplexControl(ComplexControl control,
-                          const QStyleOptionComplex *option,
-                          QPainter *painter,
-                          const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type,
-                         const QStyleOption *option,
-                         const QSize &size,
-                         const QWidget *widget) const override;
+  void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
 
 private:
   NXThemeType::ThemeMode _themeMode;

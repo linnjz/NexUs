@@ -27,16 +27,14 @@ NXWatermarkPrivate::~NXWatermarkPrivate()
 {
 }
 
-void
-NXWatermarkPrivate::rebuildPattern()
+void NXWatermarkPrivate::rebuildPattern()
 {
   Q_Q(NXWatermark);
   _patternDirty = false;
 
   bool hasText  = !_pText.isEmpty();
   bool hasImage = !_pImage.isNull();
-  if (!hasText && !hasImage)
-  {
+  if (!hasText && !hasImage) {
     _patternPixmap = QPixmap();
     return;
   }
@@ -47,29 +45,23 @@ NXWatermarkPrivate::rebuildPattern()
 
   int contentWidth  = 0;
   int contentHeight = 0;
-  if (hasText)
-  {
+  if (hasText) {
     contentWidth  = fm.horizontalAdvance(_pText);
     contentHeight = fm.height();
   }
-  if (hasImage)
-  {
+  if (hasImage) {
     int imgW = _pImageWidth > 0 ? _pImageWidth : _pImage.width();
     int imgH = _pImageHeight > 0 ? _pImageHeight : _pImage.height();
-    if (hasText)
-    {
+    if (hasText) {
       contentWidth = qMax(contentWidth, imgW);
       contentHeight += 4 + imgH;
-    }
-    else
-    {
+    } else {
       contentWidth  = imgW;
       contentHeight = imgH;
     }
   }
 
-  if (contentWidth <= 0 || contentHeight <= 0)
-  {
+  if (contentWidth <= 0 || contentHeight <= 0) {
     _patternPixmap = QPixmap();
     return;
   }
@@ -93,8 +85,7 @@ NXWatermarkPrivate::rebuildPattern()
   painter.translate(-cellWidth / 2.0, -cellHeight / 2.0);
 
   int yOffset = 0;
-  if (hasImage)
-  {
+  if (hasImage) {
     int imgW = _pImageWidth > 0 ? _pImageWidth : _pImage.width();
     int imgH = _pImageHeight > 0 ? _pImageHeight : _pImage.height();
     int imgX = (contentWidth - imgW) / 2;
@@ -103,8 +94,7 @@ NXWatermarkPrivate::rebuildPattern()
     yOffset = imgH + 4;
   }
 
-  if (hasText)
-  {
+  if (hasText) {
     QColor color = _pTextColor.isValid() ? _pTextColor : NXThemeColor(_themeMode, BasicText);
     color.setAlphaF(color.alphaF() * _pOpacity);
     painter.setOpacity(1.0);
@@ -139,23 +129,20 @@ NXWatermark::NXWatermark(QWidget *parent)
   setAttribute(Qt::WA_TranslucentBackground);
   setFocusPolicy(Qt::NoFocus);
 
-  if (parent)
-  {
+  if (parent) {
     parent->installEventFilter(this);
     resize(parent->size());
     raise();
   }
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode    = themeMode;
     d->_patternDirty = true;
     update();
   });
 
-  auto markDirty = [=]()
-  {
+  auto markDirty = [=]() {
     d->_patternDirty = true;
     update();
   };
@@ -183,30 +170,25 @@ NXWatermark::~NXWatermark()
 {
 }
 
-bool
-NXWatermark::eventFilter(QObject *watched, QEvent *event)
+bool NXWatermark::eventFilter(QObject *watched, QEvent *event)
 {
-  if (watched == parent() && event->type() == QEvent::Resize)
-  {
+  if (watched == parent() && event->type() == QEvent::Resize) {
     resize(static_cast<QWidget *>(parent())->size());
     raise();
   }
   return QWidget::eventFilter(watched, event);
 }
 
-void
-NXWatermark::paintEvent(QPaintEvent *event)
+void NXWatermark::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXWatermark);
 
-  if (d->_patternDirty)
-  {
+  if (d->_patternDirty) {
     d->rebuildPattern();
   }
 
-  if (d->_patternPixmap.isNull())
-  {
+  if (d->_patternPixmap.isNull()) {
     return;
   }
 

@@ -10,8 +10,7 @@ NXLCDNumberStyle::NXLCDNumberStyle(QStyle *style)
 {
   _pIsTransparent = false;
   _themeMode      = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -20,20 +19,12 @@ NXLCDNumberStyle::~NXLCDNumberStyle()
 {
 }
 
-void
-NXLCDNumberStyle::drawControl(QStyle::ControlElement element,
-                              const QStyleOption *option,
-                              QPainter *painter,
-                              const QWidget *widget) const
+void NXLCDNumberStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::CE_ShapedFrame :
-  {
-    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option))
-    {
-      if (!_pIsTransparent)
-      {
+  switch (element) {
+  case QStyle::CE_ShapedFrame : {
+    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+      if (!_pIsTransparent) {
         // 背景绘制
         QRect numberRect = option->rect;
         painter->save();
@@ -51,8 +42,7 @@ NXLCDNumberStyle::drawControl(QStyle::ControlElement element,
     }
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

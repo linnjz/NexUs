@@ -14,18 +14,9 @@ class NXListViewStyle : public QProxyStyle
 public:
   explicit NXListViewStyle(QStyle *style = nullptr);
   ~NXListViewStyle();
-  void drawPrimitive(PrimitiveElement element,
-                     const QStyleOption *option,
-                     QPainter *painter,
-                     const QWidget *widget = nullptr) const override;
-  void drawControl(ControlElement element,
-                   const QStyleOption *option,
-                   QPainter *painter,
-                   const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type,
-                         const QStyleOption *option,
-                         const QSize &size,
-                         const QWidget *widget) const override;
+  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
 
 private:
   NXThemeType::ThemeMode _themeMode;

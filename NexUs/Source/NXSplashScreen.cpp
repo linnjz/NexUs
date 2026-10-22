@@ -24,23 +24,19 @@ Q_PROPERTY_CREATE_CPP(NXSplashScreen, bool, IsShowProgressBar)
 Q_PROPERTY_CREATE_CPP(NXSplashScreen, bool, IsShowProgressRing)
 Q_PROPERTY_CREATE_CPP(NXSplashScreen, bool, IsClosable)
 
-void
-NXSplashScreen::setValue(int value)
+void NXSplashScreen::setValue(int value)
 {
   Q_D(NXSplashScreen);
   d->_pValue = value;
-  if (d->_progressBar)
-  {
+  if (d->_progressBar) {
     d->_progressBar->setValue(value);
   }
-  if (d->_progressRing)
-  {
+  if (d->_progressRing) {
     d->_progressRing->setValue(value);
   }
 }
 
-int
-NXSplashScreen::getValue() const
+int NXSplashScreen::getValue() const
 {
   return d_ptr->_pValue;
 }
@@ -107,8 +103,7 @@ NXSplashScreen::NXSplashScreen(QWidget *parent)
   mainLayout->addWidget(d->_progressBar);
   mainLayout->addStretch(1);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -125,42 +120,36 @@ NXSplashScreen::~NXSplashScreen()
 {
 }
 
-void
-NXSplashScreen::setLogo(const QPixmap &logo)
+void NXSplashScreen::setLogo(const QPixmap &logo)
 {
   Q_D(NXSplashScreen);
   d->_logo = logo;
   update();
 }
 
-void
-NXSplashScreen::setTitle(const QString &title)
+void NXSplashScreen::setTitle(const QString &title)
 {
   Q_D(NXSplashScreen);
   d->_titleText->setText(title);
 }
 
-void
-NXSplashScreen::setSubTitle(const QString &subTitle)
+void NXSplashScreen::setSubTitle(const QString &subTitle)
 {
   Q_D(NXSplashScreen);
   d->_subTitleText->setText(subTitle);
 }
 
-void
-NXSplashScreen::setStatusText(const QString &text)
+void NXSplashScreen::setStatusText(const QString &text)
 {
   Q_D(NXSplashScreen);
   d->_statusText->setText(text);
 }
 
-void
-NXSplashScreen::show()
+void NXSplashScreen::show()
 {
   Q_D(NXSplashScreen);
   QScreen *screen = QGuiApplication::primaryScreen();
-  if (screen)
-  {
+  if (screen) {
     QRect screenRect = screen->availableGeometry();
     move((screenRect.width() - width()) / 2, (screenRect.height() - height()) / 2);
   }
@@ -170,26 +159,22 @@ NXSplashScreen::show()
   d->_doShowAnimation();
 }
 
-void
-NXSplashScreen::close()
+void NXSplashScreen::close()
 {
   Q_D(NXSplashScreen);
   d->_doCloseAnimation();
 }
 
-void
-NXSplashScreen::finish(QWidget *mainWindow)
+void NXSplashScreen::finish(QWidget *mainWindow)
 {
   Q_D(NXSplashScreen);
-  if (mainWindow)
-  {
+  if (mainWindow) {
     QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "windowOpacity");
     opacityAnimation->setDuration(300);
     opacityAnimation->setStartValue(1.0);
     opacityAnimation->setEndValue(0.0);
     opacityAnimation->setEasingCurve(QEasingCurve::InOutCubic);
-    connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]()
-    {
+    connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
       QWidget::close();
       Q_EMIT closed();
       mainWindow->show();
@@ -200,8 +185,7 @@ NXSplashScreen::finish(QWidget *mainWindow)
   }
 }
 
-void
-NXSplashScreen::paintEvent(QPaintEvent *event)
+void NXSplashScreen::paintEvent(QPaintEvent *event)
 {
   Q_D(NXSplashScreen);
   QPainter painter(this);
@@ -221,11 +205,9 @@ NXSplashScreen::paintEvent(QPaintEvent *event)
   painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
   painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
 
-  if (!d->_logo.isNull())
-  {
+  if (!d->_logo.isNull()) {
     int logoSize = qMin(80, qMin(foregroundRect.width(), foregroundRect.height()) / 3);
-    QRect logoRect(foregroundRect.x() + (foregroundRect.width() - logoSize) / 2, foregroundRect.y() + 30, logoSize,
-                   logoSize);
+    QRect logoRect(foregroundRect.x() + (foregroundRect.width() - logoSize) / 2, foregroundRect.y() + 30, logoSize, logoSize);
     painter.drawPixmap(logoRect, d->_logo.scaled(logoSize, logoSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
   }
 
@@ -236,12 +218,10 @@ NXSplashScreen::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXSplashScreen::mousePressEvent(QMouseEvent *event)
+void NXSplashScreen::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXSplashScreen);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     d->_isDragging = true;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     d->_dragStartPos = event->globalPosition().toPoint() - frameGeometry().topLeft();
@@ -252,12 +232,10 @@ NXSplashScreen::mousePressEvent(QMouseEvent *event)
   }
 }
 
-void
-NXSplashScreen::mouseMoveEvent(QMouseEvent *event)
+void NXSplashScreen::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXSplashScreen);
-  if (d->_isDragging)
-  {
+  if (d->_isDragging) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     move(event->globalPosition().toPoint() - d->_dragStartPos);
 #else
@@ -267,8 +245,7 @@ NXSplashScreen::mouseMoveEvent(QMouseEvent *event)
   }
 }
 
-void
-NXSplashScreen::mouseReleaseEvent(QMouseEvent *event)
+void NXSplashScreen::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXSplashScreen);
   d->_isDragging = false;

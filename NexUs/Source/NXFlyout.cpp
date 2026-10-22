@@ -34,8 +34,7 @@ NXFlyout::NXFlyout(QWidget *parent)
   setGraphicsEffect(d->_opacityEffect);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -46,16 +45,13 @@ NXFlyout::~NXFlyout()
 {
 }
 
-void
-NXFlyout::setContentWidget(QWidget *widget)
+void NXFlyout::setContentWidget(QWidget *widget)
 {
   Q_D(NXFlyout);
-  if (!widget || widget == this)
-  {
+  if (!widget || widget == this) {
     return;
   }
-  if (d->_contentWidget)
-  {
+  if (d->_contentWidget) {
     d->_mainLayout->removeWidget(d->_contentWidget);
     d->_contentWidget->deleteLater();
   }
@@ -63,30 +59,25 @@ NXFlyout::setContentWidget(QWidget *widget)
   d->_mainLayout->addWidget(widget);
 }
 
-void
-NXFlyout::showFlyout(QWidget *target)
+void NXFlyout::showFlyout(QWidget *target)
 {
   Q_D(NXFlyout);
-  if (!target)
-  {
+  if (!target) {
     return;
   }
   // Calculate size based on content
-  if (!d->_contentWidget)
-  {
+  if (!d->_contentWidget) {
     setFixedWidth(280);
     int contentHeight = d->_shadowBorderWidth * 2 + 12;
     int textWidth     = 280 - d->_shadowBorderWidth * 2 - 30;
-    if (!d->_pTitle.isEmpty())
-    {
+    if (!d->_pTitle.isEmpty()) {
       QFont titleFont = font();
       titleFont.setPixelSize(14);
       titleFont.setBold(true);
       QFontMetrics tfm(titleFont);
       contentHeight += tfm.height() + 6;
     }
-    if (!d->_pContent.isEmpty())
-    {
+    if (!d->_pContent.isEmpty()) {
       QFont contentFont = font();
       contentFont.setPixelSize(13);
       QFontMetrics cfm(contentFont);
@@ -95,9 +86,7 @@ NXFlyout::showFlyout(QWidget *target)
     }
     contentHeight += 12;
     setFixedHeight(contentHeight);
-  }
-  else
-  {
+  } else {
     setMinimumWidth(0);
     setMaximumWidth(QWIDGETSIZE_MAX);
     setMinimumHeight(0);
@@ -109,38 +98,31 @@ NXFlyout::showFlyout(QWidget *target)
   int y               = targetGlobal.y() + 5;
 
   QScreen *screen = QApplication::screenAt(targetGlobal);
-  if (screen)
-  {
+  if (screen) {
     QRect screenRect = screen->availableGeometry();
-    if (x < screenRect.left())
-    {
+    if (x < screenRect.left()) {
       x = screenRect.left();
     }
-    if (x + width() > screenRect.right())
-    {
+    if (x + width() > screenRect.right()) {
       x = screenRect.right() - width();
     }
-    if (y + height() > screenRect.bottom())
-    {
+    if (y + height() > screenRect.bottom()) {
       y = targetGlobal.y() - target->height() - height() - 5;
     }
-    if (y < screenRect.top())
-    {
+    if (y < screenRect.top()) {
       y = screenRect.top();
     }
   }
   move(x, y);
   show();
   raise();
-  if (d->_pIsLightDismiss)
-  {
+  if (d->_pIsLightDismiss) {
     qApp->installEventFilter(d);
   }
   d->_doShowAnimation();
 }
 
-void
-NXFlyout::closeFlyout()
+void NXFlyout::closeFlyout()
 {
   Q_D(NXFlyout);
   qApp->removeEventFilter(d);
@@ -148,8 +130,7 @@ NXFlyout::closeFlyout()
   Q_EMIT closed();
 }
 
-void
-NXFlyout::paintEvent(QPaintEvent *event)
+void NXFlyout::paintEvent(QPaintEvent *event)
 {
   Q_D(NXFlyout);
   QPainter painter(this);
@@ -163,15 +144,13 @@ NXFlyout::paintEvent(QPaintEvent *event)
   painter.setBrush(NXThemeColor(d->_themeMode, PopupBase));
   painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
 
-  if (!d->_contentWidget)
-  {
+  if (!d->_contentWidget) {
     int textX     = foregroundRect.x() + 12;
     int textY     = foregroundRect.y() + 12;
     int textWidth = foregroundRect.width() - 24;
 
     // Title
-    if (!d->_pTitle.isEmpty())
-    {
+    if (!d->_pTitle.isEmpty()) {
       QFont titleFont = painter.font();
       titleFont.setPixelSize(14);
       titleFont.setBold(true);
@@ -183,8 +162,7 @@ NXFlyout::paintEvent(QPaintEvent *event)
     }
 
     // Content
-    if (!d->_pContent.isEmpty())
-    {
+    if (!d->_pContent.isEmpty()) {
       QFont contentFont = painter.font();
       contentFont.setPixelSize(13);
       contentFont.setBold(false);
@@ -208,15 +186,12 @@ NXFlyoutPrivate::~NXFlyoutPrivate()
 {
 }
 
-bool
-NXFlyoutPrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXFlyoutPrivate::eventFilter(QObject *watched, QEvent *event)
 {
   Q_Q(NXFlyout);
-  if (event->type() == QEvent::MouseButtonPress)
-  {
+  if (event->type() == QEvent::MouseButtonPress) {
     QWidget *clickedWidget = qobject_cast<QWidget *>(watched);
-    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q)
-    {
+    if (clickedWidget && !q->isAncestorOf(clickedWidget) && clickedWidget != q) {
       q->closeFlyout();
       return false;
     }
@@ -224,8 +199,7 @@ NXFlyoutPrivate::eventFilter(QObject *watched, QEvent *event)
   return QObject::eventFilter(watched, event);
 }
 
-void
-NXFlyoutPrivate::_doShowAnimation()
+void NXFlyoutPrivate::_doShowAnimation()
 {
   QPropertyAnimation *animation = new QPropertyAnimation(_opacityEffect, "opacity");
   animation->setDuration(250);

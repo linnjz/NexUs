@@ -41,8 +41,7 @@ NXPopularCardFloater::NXPopularCardFloater(NXPopularCard *card, NXPopularCardPri
   connect(_overButton, &NXPushButton::clicked, _card, &NXPopularCard::popularCardButtonClicked);
 
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
   setVisible(false);
@@ -52,8 +51,7 @@ NXPopularCardFloater::~NXPopularCardFloater()
 {
 }
 
-void
-NXPopularCardFloater::showFloater()
+void NXPopularCardFloater::showFloater()
 {
   _isHideAnimationFinished = true;
   _pHoverYOffset           = 6;
@@ -61,16 +59,14 @@ NXPopularCardFloater::showFloater()
   _opacityEffect->setOpacity(1);
 
   QPropertyAnimation *geometryAnimation = new QPropertyAnimation(this, "geometry");
-  connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
     update();
   });
   geometryAnimation->setEasingCurve(QEasingCurve::OutQuad);
   geometryAnimation->setDuration(300);
   QRect cardGeometry  = QRect(_card->mapTo(_cardPrivate->_pCardFloatArea, QPoint(0, 0)), _card->size());
   QRect endGeometry   = _calculateTargetGeometry(cardGeometry);
-  QRect startGeometry = QRect(endGeometry.x() + _floatGeometryOffset, endGeometry.y() + _floatGeometryOffset,
-                              _card->width(), _card->height());
+  QRect startGeometry = QRect(endGeometry.x() + _floatGeometryOffset, endGeometry.y() + _floatGeometryOffset, _card->width(), _card->height());
   geometryAnimation->setStartValue(startGeometry);
   geometryAnimation->setEndValue(endGeometry);
   geometryAnimation->start(QAbstractAnimation::DeleteWhenStopped);
@@ -85,22 +81,18 @@ NXPopularCardFloater::showFloater()
   setVisible(true);
 }
 
-void
-NXPopularCardFloater::hideFloater()
+void NXPopularCardFloater::hideFloater()
 {
-  if (!_isHideAnimationFinished)
-  {
+  if (!_isHideAnimationFinished) {
     return;
   }
   _isHideAnimationFinished              = false;
   QPropertyAnimation *geometryAnimation = new QPropertyAnimation(this, "geometry");
-  connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
     QRect endGeometry = QRect(_card->mapTo(_cardPrivate->_pCardFloatArea, QPoint(0, 0)), _card->size());
     geometryAnimation->setEndValue(endGeometry);
   });
-  connect(geometryAnimation, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(geometryAnimation, &QPropertyAnimation::finished, this, [=]() {
     _cardPrivate->_isFloating = false;
     setVisible(false);
     _card->update();
@@ -120,8 +112,7 @@ NXPopularCardFloater::hideFloater()
 
   //内容调整动画
   QPropertyAnimation *hoverAnimation = new QPropertyAnimation(this, "pHoverYOffset");
-  connect(hoverAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(hoverAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
     update();
   });
   hoverAnimation->setDuration(300);
@@ -147,31 +138,25 @@ NXPopularCardFloater::hideFloater()
   buttonOpacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-bool
-NXPopularCardFloater::event(QEvent *event)
+bool NXPopularCardFloater::event(QEvent *event)
 {
-  switch (event->type())
-  {
-  case QEvent::Leave :
-  {
+  switch (event->type()) {
+  case QEvent::Leave : {
     hideFloater();
     break;
   }
-  case QEvent::MouseButtonRelease :
-  {
+  case QEvent::MouseButtonRelease : {
     Q_EMIT _card->popularCardClicked();
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QWidget::event(event);
 }
 
-void
-NXPopularCardFloater::paintEvent(QPaintEvent *event)
+void NXPopularCardFloater::paintEvent(QPaintEvent *event)
 {
   const int fontPixelSize = nxApp->getFontPixelSize();
   QPainter painter(this);
@@ -182,9 +167,7 @@ NXPopularCardFloater::paintEvent(QPaintEvent *event)
   QRect shadowRect = rect();
   shadowRect.adjust(0, 0, 0, -_pHoverYOffset);
   nxTheme->drawEffectShadow(&painter, shadowRect, _cardPrivate->_shadowBorderWidth, _cardPrivate->_pBorderRadius);
-  QRectF foregroundRect(_cardPrivate->_shadowBorderWidth, _cardPrivate->_shadowBorderWidth - _pHoverYOffset + 1,
-                        width() - 2 * _cardPrivate->_shadowBorderWidth,
-                        height() - 2 * _cardPrivate->_shadowBorderWidth);
+  QRectF foregroundRect(_cardPrivate->_shadowBorderWidth, _cardPrivate->_shadowBorderWidth - _pHoverYOffset + 1, width() - 2 * _cardPrivate->_shadowBorderWidth, height() - 2 * _cardPrivate->_shadowBorderWidth);
   QRectF cardForegroundRect(
       _cardPrivate->_shadowBorderWidth, _cardPrivate->_shadowBorderWidth - _cardPrivate->_pHoverYOffset + 1,
       _card->width() - 2 * _cardPrivate->_shadowBorderWidth, _card->height() - 2 * _cardPrivate->_shadowBorderWidth);
@@ -197,9 +180,7 @@ NXPopularCardFloater::paintEvent(QPaintEvent *event)
   painter.setClipRect(foregroundRect);
   //图片绘制
   painter.save();
-  QRectF pixRect(foregroundRect.x() + cardForegroundRect.height() * 0.15,
-                 foregroundRect.y() + cardForegroundRect.height() * 0.15, cardForegroundRect.height() * 0.7,
-                 cardForegroundRect.height() * 0.7);
+  QRectF pixRect(foregroundRect.x() + cardForegroundRect.height() * 0.15, foregroundRect.y() + cardForegroundRect.height() * 0.15, cardForegroundRect.height() * 0.7, cardForegroundRect.height() * 0.7);
 
   QPainterPath pixPath;
   pixPath.addRoundedRect(pixRect, 4, 4);
@@ -215,11 +196,7 @@ NXPopularCardFloater::paintEvent(QPaintEvent *event)
   font.setPixelSize(fontPixelSize + 2);
   painter.setFont(font);
   int titleHeight = painter.fontMetrics().height();
-  QRectF titleRect(pixRect.right() + _cardPrivate->_textHSpacing, pixRect.y(),
-                   _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() -
-                       _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 -
-                       _cardPrivate->_buttonTargetRect.width(),
-                   titleHeight);
+  QRectF titleRect(pixRect.right() + _cardPrivate->_textHSpacing, pixRect.y(), _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 - _cardPrivate->_buttonTargetRect.width(), titleHeight);
   QString titleText = painter.fontMetrics().elidedText(_cardPrivate->_pTitle, Qt::ElideRight, titleRect.width());
   painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, titleText);
 
@@ -228,11 +205,7 @@ NXPopularCardFloater::paintEvent(QPaintEvent *event)
   font.setPixelSize(fontPixelSize);
   painter.setFont(font);
   int subTitleHeight = painter.fontMetrics().height();
-  QRectF subTitleRect(pixRect.right() + _cardPrivate->_textHSpacing, titleRect.bottom() + _cardPrivate->_textVSpacing,
-                      _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() -
-                          _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 -
-                          _cardPrivate->_buttonTargetRect.width(),
-                      subTitleHeight);
+  QRectF subTitleRect(pixRect.right() + _cardPrivate->_textHSpacing, titleRect.bottom() + _cardPrivate->_textVSpacing, _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 - _cardPrivate->_buttonTargetRect.width(), subTitleHeight);
   QString subTitleText =
       painter.fontMetrics().elidedText(_cardPrivate->_pSubTitle, Qt::ElideRight, subTitleRect.width());
   painter.drawText(subTitleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, subTitleText);
@@ -240,42 +213,30 @@ NXPopularCardFloater::paintEvent(QPaintEvent *event)
   //DetailedText
   painter.setPen(NXThemeColor(_themeMode, BasicDetailsText));
   int detailedTextHeight = painter.fontMetrics().height() * 2 + 2;
-  QRectF detailedTextRect(pixRect.x(), pixRect.bottom() + cardForegroundRect.height() * 0.15,
-                          cardForegroundRect.width() + 2 * _floatGeometryOffset - _cardPrivate->_textHSpacing -
-                              cardForegroundRect.height() * 0.15,
-                          detailedTextHeight);
+  QRectF detailedTextRect(pixRect.x(), pixRect.bottom() + cardForegroundRect.height() * 0.15, cardForegroundRect.width() + 2 * _floatGeometryOffset - _cardPrivate->_textHSpacing - cardForegroundRect.height() * 0.15, detailedTextHeight);
   QString detailedText =
       painter.fontMetrics().elidedText(_cardPrivate->_pDetailedText, Qt::ElideRight, detailedTextRect.width() * 1.9);
   painter.drawText(detailedTextRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, detailedText);
 
   //分割线绘制
   painter.setPen(NXThemeColor(_themeMode, BasicBaseLine));
-  painter.drawLine(foregroundRect.x(), detailedTextRect.bottom() + 5, foregroundRect.right(),
-                   detailedTextRect.bottom() + 5);
+  painter.drawLine(foregroundRect.x(), detailedTextRect.bottom() + 5, foregroundRect.right(), detailedTextRect.bottom() + 5);
 
   //CardFloatPixmap
-  painter.drawPixmap(QRect(pixRect.x(), detailedTextRect.bottom() + 15,
-                           cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 -
-                               _cardPrivate->_shadowBorderWidth - 10,
-                           cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 -
-                               _cardPrivate->_shadowBorderWidth - 10),
-                     _cardPrivate->_pCardFloatPixmap);
+  painter.drawPixmap(QRect(pixRect.x(), detailedTextRect.bottom() + 15, cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - _cardPrivate->_shadowBorderWidth - 10, cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - _cardPrivate->_shadowBorderWidth - 10), _cardPrivate->_pCardFloatPixmap);
   painter.restore();
 }
 
-QRect
-NXPopularCardFloater::_calculateTargetGeometry(QRect cardGeometry)
+QRect NXPopularCardFloater::_calculateTargetGeometry(QRect cardGeometry)
 {
   QRect targetGeometry = cardGeometry;
   targetGeometry.adjust(-_floatGeometryOffset, -_floatGeometryOffset, _floatGeometryOffset, 90);
   QRect windowRect = _cardPrivate->_pCardFloatArea->rect();
-  if (targetGeometry.bottom() > windowRect.bottom())
-  {
+  if (targetGeometry.bottom() > windowRect.bottom()) {
     int offset = targetGeometry.bottom() - windowRect.bottom();
     targetGeometry.adjust(0, -offset, 0, -offset);
   }
-  if (targetGeometry.top() < windowRect.top())
-  {
+  if (targetGeometry.top() < windowRect.top()) {
     int offset = targetGeometry.top() - windowRect.top();
     targetGeometry.adjust(0, -offset, 0, -offset);
   }

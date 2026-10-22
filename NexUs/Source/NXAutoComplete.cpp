@@ -62,12 +62,10 @@ NXAutoComplete::NXAutoComplete(QWidget *parent)
   connect(d->_lineEdit, &NXLineEdit::textEdited, d, &NXAutoCompletePrivate::onTextEdited);
   connect(d->_lineEdit, &NXLineEdit::textChanged, this, &NXAutoComplete::textChanged);
   connect(d->_listView, &NXBaseListView::clicked, d, &NXAutoCompletePrivate::onItemClicked);
-  connect(d->_lineEdit, &NXLineEdit::returnPressed, this, [=]()
-  {
+  connect(d->_lineEdit, &NXLineEdit::returnPressed, this, [=]() {
     Q_EMIT returnPressed(d->_lineEdit->text());
   });
-  connect(d->_popup, &NXAutoCompleteContainer::popupClosed, this, [=]()
-  {
+  connect(d->_popup, &NXAutoCompleteContainer::popupClosed, this, [=]() {
     d->_isPopupVisible   = false;
     d->_isAllowHidePopup = false;
   });
@@ -75,68 +73,58 @@ NXAutoComplete::NXAutoComplete(QWidget *parent)
 
 NXAutoComplete::~NXAutoComplete()
 {
-  if (d_ptr->_popup)
-  {
+  if (d_ptr->_popup) {
     delete d_ptr->_popup;
     d_ptr->_popup = nullptr;
   }
 }
 
-void
-NXAutoComplete::setPlaceholderText(const QString &placeholderText)
+void NXAutoComplete::setPlaceholderText(const QString &placeholderText)
 {
   Q_D(NXAutoComplete);
   d->_lineEdit->setPlaceholderText(placeholderText);
 }
 
-QString
-NXAutoComplete::placeholderText() const
+QString NXAutoComplete::placeholderText() const
 {
   return d_ptr->_lineEdit->placeholderText();
 }
 
-void
-NXAutoComplete::setText(const QString &text)
+void NXAutoComplete::setText(const QString &text)
 {
   Q_D(NXAutoComplete);
   d->_lineEdit->setText(text);
 }
 
-QString
-NXAutoComplete::text() const
+QString NXAutoComplete::text() const
 {
   return d_ptr->_lineEdit->text();
 }
 
-void
-NXAutoComplete::setCompletions(const QStringList &completions)
+void NXAutoComplete::setCompletions(const QStringList &completions)
 {
   Q_D(NXAutoComplete);
   d->_completions = completions;
   d->_sourceModel->setStringList(completions);
 }
 
-QStringList
-NXAutoComplete::completions() const
+QStringList NXAutoComplete::completions() const
 {
   return d_ptr->_completions;
 }
 
-void
-NXAutoComplete::setMatchMode(MatchMode mode)
+void NXAutoComplete::setMatchMode(MatchMode mode)
 {
   Q_D(NXAutoComplete);
   d->_matchMode = mode;
 }
 
-NXAutoComplete::MatchMode
-NXAutoComplete::matchMode() const
+NXAutoComplete::MatchMode NXAutoComplete::matchMode() const
 {
   return d_ptr->_matchMode;
 }
 
-void
-NXAutoComplete::setFixedHeight(int h)
+void NXAutoComplete::setFixedHeight(int h)
 {
   QWidget::setFixedHeight(h);
   Q_D(NXAutoComplete);

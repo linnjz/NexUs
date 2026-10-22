@@ -30,59 +30,48 @@ NXApplication::~NXApplication()
 {
 }
 
-void
-NXApplication::setWindowDisplayMode(NXApplicationType::WindowDisplayMode windowDisplayType)
+void NXApplication::setWindowDisplayMode(NXApplicationType::WindowDisplayMode windowDisplayType)
 {
   Q_D(NXApplication);
   auto lastDisplayMode = d->_pWindowDisplayMode;
-  if (lastDisplayMode == windowDisplayType)
-  {
+  if (lastDisplayMode == windowDisplayType) {
     return;
   }
-  if (lastDisplayMode == NXApplicationType::NXMica)
-  {
+  if (lastDisplayMode == NXApplicationType::NXMica) {
     d->_resetAllMicaWidget();
   }
-  switch (windowDisplayType)
-  {
-  case NXApplicationType::Normal :
-  {
+  switch (windowDisplayType) {
+  case NXApplicationType::Normal : {
     break;
   }
-  case NXApplicationType::NXMica :
-  {
+  case NXApplicationType::NXMica : {
     d->_pWindowDisplayMode = windowDisplayType;
     d->_initMicaBaseImage(QImage(d->_pNXMicaImagePath));
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
 #ifdef Q_OS_WIN
-  for (auto widget : d->_micaWidgetList)
-  {
+  for (auto widget : d->_micaWidgetList) {
     NXWinShadowHelper::getInstance()->setWindowDisplayMode(widget, windowDisplayType, lastDisplayMode);
     NXWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), d->_themeMode == NXThemeType::Light);
   }
 #endif
-  if (windowDisplayType != NXApplicationType::NXMica)
-  {
+  if (windowDisplayType != NXApplicationType::NXMica) {
     d->_pWindowDisplayMode = windowDisplayType;
     Q_EMIT pWindowDisplayModeChanged();
   }
 }
 
-NXApplicationType::WindowDisplayMode
-NXApplication::getWindowDisplayMode() const
+NXApplicationType::WindowDisplayMode NXApplication::getWindowDisplayMode() const
 {
   Q_D(const NXApplication);
   return d->_pWindowDisplayMode;
 }
 
-void
-NXApplication::setNXMicaImagePath(const QString &micaImagePath)
+void NXApplication::setNXMicaImagePath(const QString &micaImagePath)
 {
   Q_D(NXApplication);
   d->_pNXMicaImagePath = std::move(micaImagePath);
@@ -90,15 +79,13 @@ NXApplication::setNXMicaImagePath(const QString &micaImagePath)
   Q_EMIT pNXMicaImagePathChanged();
 }
 
-QString
-NXApplication::getNXMicaImagePath() const
+QString NXApplication::getNXMicaImagePath() const
 {
   Q_D(const NXApplication);
   return d->_pNXMicaImagePath;
 }
 
-void
-NXApplication::setFontPixelSize(int fontPixelSize)
+void NXApplication::setFontPixelSize(int fontPixelSize)
 {
   Q_D(NXApplication);
   d->_pFontPixelSize = fontPixelSize;
@@ -108,15 +95,13 @@ NXApplication::setFontPixelSize(int fontPixelSize)
   Q_EMIT pFontPixelSizeChanged();
 }
 
-int
-NXApplication::getFontPixelSize() const
+int NXApplication::getFontPixelSize() const
 {
   Q_D(const NXApplication);
   return d->_pFontPixelSize;
 }
 
-void
-NXApplication::init()
+void NXApplication::init()
 {
   Q_D(NXApplication);
   Q_INIT_RESOURCE(NexUs);
@@ -138,19 +123,16 @@ NXApplication::init()
 #endif
 
   bool fontFound = false;
-  for (const QString &family : fontFamilies)
-  {
+  for (const QString &family : fontFamilies) {
     QFont testFont(family);
-    if (QFontInfo(testFont).family() == family)
-    {
+    if (QFontInfo(testFont).family() == family) {
       font.setFamily(family);
       fontFound = true;
       break;
     }
   }
 
-  if (!fontFound)
-  {
+  if (!fontFound) {
     qWarning() << "No preferred fonts found, using system default font";
   }
   font.setHintingPreference(QFont::PreferNoHinting);
@@ -161,48 +143,35 @@ NXApplication::init()
   d->syncSystemTheme();
 }
 
-void
-NXApplication::syncWindowDisplayMode(QWidget *widget, bool isSync)
+void NXApplication::syncWindowDisplayMode(QWidget *widget, bool isSync)
 {
   Q_D(NXApplication);
-  if (!widget)
-  {
+  if (!widget) {
     return;
   }
-  if (isSync)
-  {
+  if (isSync) {
     d->_micaWidgetList.append(widget);
     widget->installEventFilter(d);
-  }
-  else
-  {
+  } else {
     d->_micaWidgetList.removeOne(widget);
     widget->removeEventFilter(d);
   }
-  switch (d->_pWindowDisplayMode)
-  {
+  switch (d->_pWindowDisplayMode) {
   case NXApplicationType::Normal :
-  case NXApplicationType::NXMica :
-  {
-    if (isSync)
-    {
-      if (d->_pWindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica)
-      {
+  case NXApplicationType::NXMica : {
+    if (isSync) {
+      if (d->_pWindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
         d->_updateMica(widget, false);
       }
     }
     break;
   }
-  default :
-  {
+  default : {
 #ifdef Q_OS_WIN
-    if (isSync)
-    {
+    if (isSync) {
       NXWinShadowHelper::getInstance()->setWindowDisplayMode(widget, d->_pWindowDisplayMode, NXApplicationType::Normal);
       NXWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), d->_themeMode == NXThemeType::Light);
-    }
-    else
-    {
+    } else {
       NXWinShadowHelper::getInstance()->setWindowDisplayMode(widget, NXApplicationType::Normal, d->_pWindowDisplayMode);
       NXWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), true);
     }
@@ -212,16 +181,13 @@ NXApplication::syncWindowDisplayMode(QWidget *widget, bool isSync)
   }
 }
 
-bool
-NXApplication::containsCursorToItem(QWidget *item)
+bool NXApplication::containsCursorToItem(QWidget *item)
 {
-  if (!item || !item->isVisible())
-  {
+  if (!item || !item->isVisible()) {
     return false;
   }
   auto itemRect = QRect(item->mapToGlobal(QPoint(0, 0)), item->size());
-  if (itemRect.contains(QCursor::pos()))
-  {
+  if (itemRect.contains(QCursor::pos())) {
     return true;
   }
   return false;

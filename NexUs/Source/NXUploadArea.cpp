@@ -47,35 +47,30 @@ NXUploadArea::~NXUploadArea()
 {
 }
 
-QStringList
-NXUploadArea::getSelectedFiles() const
+QStringList NXUploadArea::getSelectedFiles() const
 {
   return d_ptr->_filePaths;
 }
 
-void
-NXUploadArea::clearFiles()
+void NXUploadArea::clearFiles()
 {
   Q_D(NXUploadArea);
   d->_filePaths.clear();
   update();
 }
 
-void
-NXUploadArea::setAcceptedMimeFilter(const QString &filter)
+void NXUploadArea::setAcceptedMimeFilter(const QString &filter)
 {
   Q_D(NXUploadArea);
   d->_mimeFilter = filter;
 }
 
-QString
-NXUploadArea::getAcceptedMimeFilter() const
+QString NXUploadArea::getAcceptedMimeFilter() const
 {
   return d_ptr->_mimeFilter;
 }
 
-void
-NXUploadArea::paintEvent(QPaintEvent *event)
+void NXUploadArea::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXUploadArea);
@@ -87,18 +82,13 @@ NXUploadArea::paintEvent(QPaintEvent *event)
   QPainterPath bgPath;
   bgPath.addRoundedRect(bgRect, d->_pBorderRadius, d->_pBorderRadius);
 
-  if (d->_isDragOver)
-  {
+  if (d->_isDragOver) {
     painter.setPen(QPen(NXThemeColor(d->_themeMode, PrimaryNormal), 2, Qt::DashLine));
     painter.setBrush(NXThemeColor(d->_themeMode, BasicBaseDeepAlpha));
-  }
-  else if (d->_isHover)
-  {
+  } else if (d->_isHover) {
     painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorderHover), 2, Qt::DashLine));
     painter.setBrush(NXThemeColor(d->_themeMode, BasicHoverAlpha));
-  }
-  else
-  {
+  } else {
     painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 2, Qt::DashLine));
     painter.setBrush(Qt::NoBrush);
   }
@@ -107,13 +97,11 @@ NXUploadArea::paintEvent(QPaintEvent *event)
   int contentY  = height() / 2;
   int fileCount = d->_filePaths.size();
 
-  if (fileCount == 0)
-  {
+  if (fileCount == 0) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(36);
     painter.setFont(iconFont);
-    painter.setPen(d->_isDragOver ? NXThemeColor(d->_themeMode, PrimaryNormal)
-                                  : NXThemeColor(d->_themeMode, BasicTextNoFocus));
+    painter.setPen(d->_isDragOver ? NXThemeColor(d->_themeMode, PrimaryNormal) : NXThemeColor(d->_themeMode, BasicTextNoFocus));
     QRectF iconRect(0, contentY - 48, width(), 40);
     painter.drawText(iconRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::CloudArrowUp));
 
@@ -133,9 +121,7 @@ NXUploadArea::paintEvent(QPaintEvent *event)
     painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
     QRectF subRect(0, contentY + 26, width(), 20);
     painter.drawText(subRect, Qt::AlignCenter, d->_pSubTitle);
-  }
-  else
-  {
+  } else {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(24);
     painter.setFont(iconFont);
@@ -152,8 +138,7 @@ NXUploadArea::paintEvent(QPaintEvent *event)
     int lineHeight      = 22;
     int maxDisplayCount = qMin(fileCount, (height() - startY - 10) / lineHeight);
 
-    for (int i = 0; i < maxDisplayCount; ++i)
-    {
+    for (int i = 0; i < maxDisplayCount; ++i) {
       QFileInfo fileInfo(d->_filePaths[i]);
       QString displayName = fileInfo.fileName();
 
@@ -178,25 +163,21 @@ NXUploadArea::paintEvent(QPaintEvent *event)
       painter.drawText(xRect, Qt::AlignVCenter | Qt::AlignCenter, QChar((unsigned short) NXIconType::Xmark));
     }
 
-    if (fileCount > maxDisplayCount)
-    {
+    if (fileCount > maxDisplayCount) {
       painter.setFont(fileFont);
       painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
       QRectF moreRect(0, startY + maxDisplayCount * lineHeight, width(), lineHeight);
-      painter.drawText(moreRect, Qt::AlignCenter,
-                       QString(QStringLiteral("...还有 %1 个文件")).arg(fileCount - maxDisplayCount));
+      painter.drawText(moreRect, Qt::AlignCenter, QString(QStringLiteral("...还有 %1 个文件")).arg(fileCount - maxDisplayCount));
     }
   }
 
   painter.restore();
 }
 
-void
-NXUploadArea::dragEnterEvent(QDragEnterEvent *event)
+void NXUploadArea::dragEnterEvent(QDragEnterEvent *event)
 {
   Q_D(NXUploadArea);
-  if (event->mimeData()->hasUrls())
-  {
+  if (event->mimeData()->hasUrls()) {
     event->setDropAction(Qt::CopyAction);
     event->accept();
     d->_isDragOver = true;
@@ -204,18 +185,15 @@ NXUploadArea::dragEnterEvent(QDragEnterEvent *event)
   }
 }
 
-void
-NXUploadArea::dragMoveEvent(QDragMoveEvent *event)
+void NXUploadArea::dragMoveEvent(QDragMoveEvent *event)
 {
-  if (event->mimeData()->hasUrls())
-  {
+  if (event->mimeData()->hasUrls()) {
     event->setDropAction(Qt::CopyAction);
     event->accept();
   }
 }
 
-void
-NXUploadArea::dragLeaveEvent(QDragLeaveEvent *event)
+void NXUploadArea::dragLeaveEvent(QDragLeaveEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXUploadArea);
@@ -223,27 +201,21 @@ NXUploadArea::dragLeaveEvent(QDragLeaveEvent *event)
   update();
 }
 
-void
-NXUploadArea::dropEvent(QDropEvent *event)
+void NXUploadArea::dropEvent(QDropEvent *event)
 {
   Q_D(NXUploadArea);
   event->accept();
   d->_isDragOver            = false;
   const QMimeData *mimeData = event->mimeData();
-  if (mimeData->hasUrls())
-  {
+  if (mimeData->hasUrls()) {
     QStringList filePaths;
-    for (const QUrl &url : mimeData->urls())
-    {
-      if (url.isLocalFile())
-      {
+    for (const QUrl &url : mimeData->urls()) {
+      if (url.isLocalFile()) {
         filePaths.append(url.toLocalFile());
       }
     }
-    if (!filePaths.isEmpty())
-    {
-      if (!d->_pIsMultiple && filePaths.size() > 1)
-      {
+    if (!filePaths.isEmpty()) {
+      if (!d->_pIsMultiple && filePaths.size() > 1) {
         filePaths = filePaths.mid(0, 1);
       }
       d->_addFiles(filePaths);
@@ -252,25 +224,21 @@ NXUploadArea::dropEvent(QDropEvent *event)
   update();
 }
 
-void
-NXUploadArea::mousePressEvent(QMouseEvent *event)
+void NXUploadArea::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXUploadArea);
   d->_isPressed = true;
 
-  if (!d->_filePaths.isEmpty())
-  {
+  if (!d->_filePaths.isEmpty()) {
     int startY          = 46;
     int lineHeight      = 22;
     int maxDisplayCount = qMin(d->_filePaths.size(), (height() - startY - 10) / lineHeight);
     int clickY          = event->pos().y();
     int clickX          = event->pos().x();
 
-    for (int i = 0; i < maxDisplayCount; ++i)
-    {
+    for (int i = 0; i < maxDisplayCount; ++i) {
       int itemY = startY + i * lineHeight;
-      if (clickY >= itemY && clickY < itemY + lineHeight && clickX >= width() - 28 && clickX <= width() - 12)
-      {
+      if (clickY >= itemY && clickY < itemY + lineHeight && clickX >= width() - 28 && clickX <= width() - 12) {
         d->_removeFile(i);
         d->_isPressed = false;
         return;
@@ -282,12 +250,10 @@ NXUploadArea::mousePressEvent(QMouseEvent *event)
   QWidget::mousePressEvent(event);
 }
 
-void
-NXUploadArea::mouseReleaseEvent(QMouseEvent *event)
+void NXUploadArea::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXUploadArea);
-  if (d->_isPressed && rect().contains(event->pos()))
-  {
+  if (d->_isPressed && rect().contains(event->pos())) {
     d->_openFileDialog();
   }
   d->_isPressed = false;
@@ -296,11 +262,9 @@ NXUploadArea::mouseReleaseEvent(QMouseEvent *event)
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void
-NXUploadArea::enterEvent(QEnterEvent *event)
+void NXUploadArea::enterEvent(QEnterEvent *event)
 #else
-void
-NXUploadArea::enterEvent(QEvent *event)
+void NXUploadArea::enterEvent(QEvent *event)
 #endif
 {
   Q_D(NXUploadArea);
@@ -309,8 +273,7 @@ NXUploadArea::enterEvent(QEvent *event)
   QWidget::enterEvent(event);
 }
 
-void
-NXUploadArea::leaveEvent(QEvent *event)
+void NXUploadArea::leaveEvent(QEvent *event)
 {
   Q_D(NXUploadArea);
   d->_isHover = false;

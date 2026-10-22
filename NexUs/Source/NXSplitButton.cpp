@@ -29,8 +29,7 @@ NXSplitButton::NXSplitButton(QWidget *parent)
   setFont(font);
   setObjectName("NXSplitButton");
   setStyleSheet(QStringLiteral("#NXSplitButton{background-color:transparent;}"));
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -40,33 +39,26 @@ NXSplitButton::~NXSplitButton()
 {
 }
 
-void
-NXSplitButton::setMenu(NXMenu *menu)
+void NXSplitButton::setMenu(NXMenu *menu)
 {
   Q_D(NXSplitButton);
   d->_menu = menu;
 }
 
-NXMenu *
-NXSplitButton::getMenu() const
+NXMenu * NXSplitButton::getMenu() const
 {
   Q_D(const NXSplitButton);
   return d->_menu;
 }
 
-void
-NXSplitButton::mousePressEvent(QMouseEvent *event)
+void NXSplitButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXSplitButton);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     int splitX = width() - d->_dropdownWidth;
-    if (event->pos().x() < splitX)
-    {
+    if (event->pos().x() < splitX) {
       d->_isLeftPressed = true;
-    }
-    else
-    {
+    } else {
       d->_isRightPressed = true;
     }
     update();
@@ -74,21 +66,15 @@ NXSplitButton::mousePressEvent(QMouseEvent *event)
   QWidget::mousePressEvent(event);
 }
 
-void
-NXSplitButton::mouseReleaseEvent(QMouseEvent *event)
+void NXSplitButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXSplitButton);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     int splitX = width() - d->_dropdownWidth;
-    if (d->_isLeftPressed && event->pos().x() < splitX)
-    {
+    if (d->_isLeftPressed && event->pos().x() < splitX) {
       Q_EMIT clicked();
-    }
-    else if (d->_isRightPressed && event->pos().x() >= splitX)
-    {
-      if (d->_menu)
-      {
+    } else if (d->_isRightPressed && event->pos().x() >= splitX) {
+      if (d->_menu) {
         QPoint pos = mapToGlobal(QPoint(0, height()));
         d->_menu->popup(pos);
       }
@@ -100,15 +86,13 @@ NXSplitButton::mouseReleaseEvent(QMouseEvent *event)
   QWidget::mouseReleaseEvent(event);
 }
 
-void
-NXSplitButton::mouseMoveEvent(QMouseEvent *event)
+void NXSplitButton::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXSplitButton);
   int splitX        = width() - d->_dropdownWidth;
   bool leftHovered  = event->pos().x() < splitX;
   bool rightHovered = !leftHovered;
-  if (d->_isLeftHovered != leftHovered || d->_isRightHovered != rightHovered)
-  {
+  if (d->_isLeftHovered != leftHovered || d->_isRightHovered != rightHovered) {
     d->_isLeftHovered  = leftHovered;
     d->_isRightHovered = rightHovered;
     update();
@@ -116,8 +100,7 @@ NXSplitButton::mouseMoveEvent(QMouseEvent *event)
   QWidget::mouseMoveEvent(event);
 }
 
-void
-NXSplitButton::leaveEvent(QEvent *event)
+void NXSplitButton::leaveEvent(QEvent *event)
 {
   Q_D(NXSplitButton);
   d->_isLeftHovered  = false;
@@ -128,8 +111,7 @@ NXSplitButton::leaveEvent(QEvent *event)
   QWidget::leaveEvent(event);
 }
 
-void
-NXSplitButton::paintEvent(QPaintEvent *event)
+void NXSplitButton::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXSplitButton);
@@ -151,22 +133,16 @@ NXSplitButton::paintEvent(QPaintEvent *event)
 
   // Determine left and right fill colors
   QColor leftColor = baseColor;
-  if (d->_isLeftPressed)
-  {
+  if (d->_isLeftPressed) {
     leftColor = pressColor;
-  }
-  else if (d->_isLeftHovered)
-  {
+  } else if (d->_isLeftHovered) {
     leftColor = hoverColor;
   }
 
   QColor rightColor = baseColor;
-  if (d->_isRightPressed)
-  {
+  if (d->_isRightPressed) {
     rightColor = pressColor;
-  }
-  else if (d->_isRightHovered)
-  {
+  } else if (d->_isRightHovered) {
     rightColor = hoverColor;
   }
 
@@ -186,12 +162,9 @@ NXSplitButton::paintEvent(QPaintEvent *event)
 
   // Reset clip and draw border
   painter.setClipPath(fullPath);
-  if (d->_themeMode == NXThemeType::Light)
-  {
+  if (d->_themeMode == NXThemeType::Light) {
     painter.setPen(borderColor);
-  }
-  else
-  {
+  } else {
     painter.setPen(Qt::NoPen);
   }
   painter.setBrush(Qt::NoBrush);
@@ -203,8 +176,7 @@ NXSplitButton::paintEvent(QPaintEvent *event)
 
   // Draw left area content: icon + text
   painter.setPen(textColor);
-  if (d->_pNXIcon != NXIconType::None)
-  {
+  if (d->_pNXIcon != NXIconType::None) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(18);
     QFontMetrics iconFm(iconFont);
@@ -219,18 +191,13 @@ NXSplitButton::paintEvent(QPaintEvent *event)
     int startX     = leftRect.x() + (leftRect.width() - totalWidth) / 2;
 
     painter.setFont(iconFont);
-    painter.drawText(QRect(startX, leftRect.y(), iconWidth, leftRect.height()), Qt::AlignCenter,
-                     QChar((unsigned short) d->_pNXIcon));
+    painter.drawText(QRect(startX, leftRect.y(), iconWidth, leftRect.height()), Qt::AlignCenter, QChar((unsigned short) d->_pNXIcon));
 
-    if (!d->_pText.isEmpty())
-    {
+    if (!d->_pText.isEmpty()) {
       painter.setFont(textFont);
-      painter.drawText(QRect(startX + iconWidth + spacing, leftRect.y(), textWidth, leftRect.height()),
-                       Qt::AlignVCenter | Qt::AlignLeft, d->_pText);
+      painter.drawText(QRect(startX + iconWidth + spacing, leftRect.y(), textWidth, leftRect.height()), Qt::AlignVCenter | Qt::AlignLeft, d->_pText);
     }
-  }
-  else
-  {
+  } else {
     painter.setFont(this->font());
     painter.drawText(leftRect, Qt::AlignCenter, d->_pText);
   }
@@ -245,8 +212,7 @@ NXSplitButton::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-QSize
-NXSplitButton::sizeHint() const
+QSize NXSplitButton::sizeHint() const
 {
   Q_D(const NXSplitButton);
   QFontMetrics fm(font());

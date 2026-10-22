@@ -26,8 +26,7 @@ NXSlider::NXSlider(QWidget *parent)
   d->_valueToolTip->setIsMoveEnable(true);
   d->_valueToolTip->setOffSetX(-20);
   d->_valueToolTip->setOffSetY(-60);
-  connect(this, &NXSlider::valueChanged, this, [=](const int value)
-  {
+  connect(this, &NXSlider::valueChanged, this, [=](const int value) {
     d->_valueToolTip->setToolTip(QString::number(value));
   });
 }
@@ -43,55 +42,42 @@ NXSlider::~NXSlider()
   delete this->style();
 }
 
-void
-NXSlider::mousePressEvent(QMouseEvent *event)
+void NXSlider::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXSlider);
   QSlider::mousePressEvent(event);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     d->_mousePressed = true;
     QStyleOptionSlider opt;
     initStyleOption(&opt);
     QRect handleRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-    if (handleRect.contains(event->pos()))
-    {
+    if (handleRect.contains(event->pos())) {
       d->_valueToolTip->show();
-    }
-    else
-    {
+    } else {
       d->_valueToolTip->hide();
     }
   }
 }
 
-void
-NXSlider::mouseMoveEvent(QMouseEvent *event)
+void NXSlider::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXSlider);
   QSlider::mouseMoveEvent(event);
-  if (d->_mousePressed)
-  {
+  if (d->_mousePressed) {
     QStyleOptionSlider opt;
     initStyleOption(&opt);
     QRect handleRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
-    if (handleRect.contains(event->pos()))
-    {
+    if (handleRect.contains(event->pos())) {
       d->_valueToolTip->show();
-    }
-    else
-    {
+    } else {
       d->_valueToolTip->hide();
     }
-  }
-  else
-  {
+  } else {
     d->_valueToolTip->hide();
   }
 }
 
-void
-NXSlider::mouseReleaseEvent(QMouseEvent *event)
+void NXSlider::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXSlider);
   QSlider::mouseReleaseEvent(event);

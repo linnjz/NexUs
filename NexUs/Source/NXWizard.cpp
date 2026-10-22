@@ -34,16 +34,14 @@ NXWizard::NXWizard(QWidget *parent)
   mainLayout->addWidget(d->_stackedWidget);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
 
   // Center on screen
   QScreen *screen = QApplication::primaryScreen();
-  if (screen)
-  {
+  if (screen) {
     QRect screenGeometry = screen->geometry();
     int x                = (screenGeometry.width() - width()) / 2 + screenGeometry.x();
     int y                = (screenGeometry.height() - height()) / 2 + screenGeometry.y();
@@ -55,8 +53,7 @@ NXWizard::~NXWizard()
 {
 }
 
-void
-NXWizard::addStep(const QString &title, QWidget *page)
+void NXWizard::addStep(const QString &title, QWidget *page)
 {
   Q_D(NXWizard);
   d->_stepTitles.append(title);
@@ -65,12 +62,10 @@ NXWizard::addStep(const QString &title, QWidget *page)
   update();
 }
 
-void
-NXWizard::next()
+void NXWizard::next()
 {
   Q_D(NXWizard);
-  if (d->_pCurrentStep < d->_stepPages.count() - 1)
-  {
+  if (d->_pCurrentStep < d->_stepPages.count() - 1) {
     d->_pCurrentStep++;
     d->_stackedWidget->setCurrentIndex(d->_pCurrentStep);
     update();
@@ -78,12 +73,10 @@ NXWizard::next()
   }
 }
 
-void
-NXWizard::previous()
+void NXWizard::previous()
 {
   Q_D(NXWizard);
-  if (d->_pCurrentStep > 0)
-  {
+  if (d->_pCurrentStep > 0) {
     d->_pCurrentStep--;
     d->_stackedWidget->setCurrentIndex(d->_pCurrentStep);
     update();
@@ -91,22 +84,19 @@ NXWizard::previous()
   }
 }
 
-void
-NXWizard::finish()
+void NXWizard::finish()
 {
   Q_EMIT finished();
   hide();
 }
 
-int
-NXWizard::getStepCount() const
+int NXWizard::getStepCount() const
 {
   Q_D(const NXWizard);
   return d->_stepPages.count();
 }
 
-void
-NXWizard::paintEvent(QPaintEvent *event)
+void NXWizard::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXWizard);
@@ -133,8 +123,7 @@ NXWizard::paintEvent(QPaintEvent *event)
   int topAreaHeight = 70;
   int stepCount     = d->_stepPages.count();
 
-  if (stepCount > 0)
-  {
+  if (stepCount > 0) {
     int circleDiameter = 28;
     int circleRadius   = circleDiameter / 2;
     int circleY        = fgY + 8;
@@ -161,23 +150,18 @@ NXWizard::paintEvent(QPaintEvent *event)
     QFont titleFont = this->font();
     titleFont.setPixelSize(13);
 
-    for (int i = 0; i < stepCount; i++)
-    {
+    for (int i = 0; i < stepCount; i++) {
       qreal cx = (stepCount > 1) ? (fgX + margin + i * spacing) : (fgX + fgW / 2.0);
 
       // Connecting line
-      if (i < stepCount - 1)
-      {
+      if (i < stepCount - 1) {
         qreal lineStartX = cx + circleRadius;
         qreal nextCx     = (fgX + margin + (i + 1) * spacing);
         qreal lineEndX   = nextCx - circleRadius;
 
-        if (i < d->_pCurrentStep)
-        {
+        if (i < d->_pCurrentStep) {
           painter.setPen(QPen(primaryNormal, 2));
-        }
-        else
-        {
+        } else {
           painter.setPen(QPen(basicBorder, 2));
         }
         painter.drawLine(QPointF(lineStartX, lineCenterY), QPointF(lineEndX, lineCenterY));
@@ -187,26 +171,21 @@ NXWizard::paintEvent(QPaintEvent *event)
       QRectF circleRect(cx - circleRadius, circleY, circleDiameter, circleDiameter);
       painter.setPen(Qt::NoPen);
 
-      if (i < d->_pCurrentStep)
-      {
+      if (i < d->_pCurrentStep) {
         // Completed
         painter.setBrush(primaryNormal);
         painter.drawEllipse(circleRect);
         painter.setPen(whiteColor);
         painter.setFont(iconFont);
         painter.drawText(circleRect, Qt::AlignCenter, QChar((unsigned short) 0xea'6c));
-      }
-      else if (i == d->_pCurrentStep)
-      {
+      } else if (i == d->_pCurrentStep) {
         // Active
         painter.setBrush(primaryNormal);
         painter.drawEllipse(circleRect);
         painter.setPen(whiteColor);
         painter.setFont(numberFont);
         painter.drawText(circleRect, Qt::AlignCenter, QString::number(i + 1));
-      }
-      else
-      {
+      } else {
         // Pending
         painter.setBrush(basicBase);
         painter.drawEllipse(circleRect);
@@ -219,8 +198,7 @@ NXWizard::paintEvent(QPaintEvent *event)
       }
 
       // Title
-      if (i < d->_stepTitles.size())
-      {
+      if (i < d->_stepTitles.size()) {
         painter.setPen(NXThemeColor(d->_themeMode, BasicText));
         painter.setFont(titleFont);
         int titleWidth = 120;
@@ -289,44 +267,34 @@ NXWizard::paintEvent(QPaintEvent *event)
   painter.setPen(QPen(basicBorder, 1));
   painter.setBrush(basicBase);
   painter.drawRoundedRect(prevRect, 4, 4);
-  if (prevDisabled)
-  {
+  if (prevDisabled) {
     QColor disabledText = basicText;
     disabledText.setAlpha(80);
     painter.setPen(disabledText);
-  }
-  else
-  {
+  } else {
     painter.setPen(basicText);
   }
   painter.drawText(prevRect, Qt::AlignCenter, prevText);
 }
 
-void
-NXWizard::mousePressEvent(QMouseEvent *event)
+void NXWizard::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXWizard);
   QPoint pos = event->pos();
-  if (d->_cancelButtonRect.contains(pos))
-  {
+  if (d->_cancelButtonRect.contains(pos)) {
     Q_EMIT cancelled();
     hide();
     return;
   }
-  if (d->_prevButtonRect.contains(pos) && d->_pCurrentStep > 0)
-  {
+  if (d->_prevButtonRect.contains(pos) && d->_pCurrentStep > 0) {
     previous();
     return;
   }
-  if (d->_nextButtonRect.contains(pos))
-  {
+  if (d->_nextButtonRect.contains(pos)) {
     bool isLastStep = (d->_pCurrentStep >= d->_stepPages.count() - 1) && (d->_stepPages.count() > 0);
-    if (isLastStep)
-    {
+    if (isLastStep) {
       finish();
-    }
-    else
-    {
+    } else {
       next();
     }
     return;

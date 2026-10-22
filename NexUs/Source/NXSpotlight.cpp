@@ -62,14 +62,10 @@ NXSpotlight::NXSpotlight(QWidget *parent)
   d->_nextButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
   d->_nextButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
   d->_nextButton->setDarkTextColor(Qt::black);
-  connect(d->_nextButton, &NXPushButton::clicked, this, [=]()
-  {
-    if (d->_currentStep >= d->_steps.size() - 1)
-    {
+  connect(d->_nextButton, &NXPushButton::clicked, this, [=]() {
+    if (d->_currentStep >= d->_steps.size() - 1) {
       finish();
-    }
-    else
-    {
+    } else {
       next();
     }
   });
@@ -88,8 +84,7 @@ NXSpotlight::NXSpotlight(QWidget *parent)
   buttonLayout->addWidget(d->_nextButton);
   tipLayout->addLayout(buttonLayout);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -99,8 +94,7 @@ NXSpotlight::~NXSpotlight()
 {
 }
 
-void
-NXSpotlight::showSpotlight(QWidget *target, const QString &buttonText)
+void NXSpotlight::showSpotlight(QWidget *target, const QString &buttonText)
 {
   Q_D(NXSpotlight);
   SpotlightStep step;
@@ -116,24 +110,20 @@ NXSpotlight::showSpotlight(QWidget *target, const QString &buttonText)
   start();
 }
 
-void
-NXSpotlight::setSteps(const QList<SpotlightStep> &steps)
+void NXSpotlight::setSteps(const QList<SpotlightStep> &steps)
 {
   Q_D(NXSpotlight);
   d->_steps = steps;
 }
 
-void
-NXSpotlight::start()
+void NXSpotlight::start()
 {
   Q_D(NXSpotlight);
-  if (d->_steps.isEmpty())
-  {
+  if (d->_steps.isEmpty()) {
     return;
   }
   QWidget *parent = parentWidget();
-  if (!parent)
-  {
+  if (!parent) {
     return;
   }
   setGeometry(0, 0, parent->width(), parent->height());
@@ -145,8 +135,7 @@ NXSpotlight::start()
 
   d->_pOpacity               = 0.0;
   QPropertyAnimation *fadeIn = new QPropertyAnimation(d, "pOpacity");
-  connect(fadeIn, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(fadeIn, &QPropertyAnimation::valueChanged, this, [=]() {
     update();
   });
   fadeIn->setDuration(300);
@@ -159,35 +148,29 @@ NXSpotlight::start()
   d->_showStep(0);
 }
 
-void
-NXSpotlight::next()
+void NXSpotlight::next()
 {
   Q_D(NXSpotlight);
-  if (d->_currentStep < d->_steps.size() - 1)
-  {
+  if (d->_currentStep < d->_steps.size() - 1) {
     d->_showStep(d->_currentStep + 1);
   }
 }
 
-void
-NXSpotlight::previous()
+void NXSpotlight::previous()
 {
   Q_D(NXSpotlight);
-  if (d->_currentStep > 0)
-  {
+  if (d->_currentStep > 0) {
     d->_showStep(d->_currentStep - 1);
   }
 }
 
-void
-NXSpotlight::finish()
+void NXSpotlight::finish()
 {
   Q_D(NXSpotlight);
   d->_isActive = false;
 
   QPropertyAnimation *fadeOut = new QPropertyAnimation(d, "pOpacity");
-  connect(fadeOut, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(fadeOut, &QPropertyAnimation::valueChanged, this, [=]() {
     d->_tipWidget->setWindowOpacity(d->_pOpacity);
     update();
   });
@@ -195,14 +178,12 @@ NXSpotlight::finish()
   fadeOut->setStartValue(d->_pOpacity);
   fadeOut->setEndValue(0.0);
   fadeOut->setEasingCurve(QEasingCurve::InCubic);
-  connect(fadeOut, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(fadeOut, &QPropertyAnimation::finished, this, [=]() {
     setVisible(false);
     d->_tipWidget->setVisible(false);
     d->_tipWidget->setWindowOpacity(1.0);
     d->_pOpacity = 1.0;
-    if (parentWidget())
-    {
+    if (parentWidget()) {
       parentWidget()->removeEventFilter(this);
     }
     Q_EMIT finished();
@@ -210,20 +191,17 @@ NXSpotlight::finish()
   fadeOut->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-int
-NXSpotlight::currentStep() const
+int NXSpotlight::currentStep() const
 {
   return d_ptr->_currentStep;
 }
 
-int
-NXSpotlight::stepCount() const
+int NXSpotlight::stepCount() const
 {
   return d_ptr->_steps.size();
 }
 
-void
-NXSpotlight::paintEvent(QPaintEvent *event)
+void NXSpotlight::paintEvent(QPaintEvent *event)
 {
   Q_D(NXSpotlight);
   QPainter painter(this);
@@ -233,16 +211,12 @@ NXSpotlight::paintEvent(QPaintEvent *event)
   overlayPath.addRect(rect());
 
   QRectF spotRect = d->_pSpotlightRect;
-  if (spotRect.isValid())
-  {
+  if (spotRect.isValid()) {
     QPainterPath holePath;
-    if (d->_pIsCircle)
-    {
+    if (d->_pIsCircle) {
       qreal radius = qMax(spotRect.width(), spotRect.height()) / 2.0;
       holePath.addEllipse(spotRect.center(), radius, radius);
-    }
-    else
-    {
+    } else {
       holePath.addRoundedRect(spotRect, d->_pBorderRadius, d->_pBorderRadius);
     }
     overlayPath = overlayPath.subtracted(holePath);
@@ -252,48 +226,38 @@ NXSpotlight::paintEvent(QPaintEvent *event)
   painter.setBrush(QColor(0, 0, 0, static_cast<int>(d->_pOverlayAlpha * d->_pOpacity)));
   painter.drawPath(overlayPath);
 
-  if (spotRect.isValid())
-  {
+  if (spotRect.isValid()) {
     QColor borderColor = NXThemeColor(d->_themeMode, PrimaryNormal);
     borderColor.setAlphaF(d->_pOpacity);
     painter.setPen(QPen(borderColor, 2));
     painter.setBrush(Qt::NoBrush);
-    if (d->_pIsCircle)
-    {
+    if (d->_pIsCircle) {
       qreal radius = qMax(spotRect.width(), spotRect.height()) / 2.0;
       painter.drawEllipse(spotRect.center(), radius, radius);
-    }
-    else
-    {
+    } else {
       painter.drawRoundedRect(spotRect, d->_pBorderRadius, d->_pBorderRadius);
     }
   }
 }
 
-void
-NXSpotlight::mousePressEvent(QMouseEvent *event)
+void NXSpotlight::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXSpotlight);
   QRectF spotRect = d->_pSpotlightRect;
-  if (spotRect.isValid() && !spotRect.contains(event->pos()))
-  {
-    if (d->_steps.size() <= 1)
-    {
+  if (spotRect.isValid() && !spotRect.contains(event->pos())) {
+    if (d->_steps.size() <= 1) {
       finish();
     }
   }
   event->accept();
 }
 
-bool
-NXSpotlight::eventFilter(QObject *watched, QEvent *event)
+bool NXSpotlight::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXSpotlight);
-  if (watched == parentWidget() && event->type() == QEvent::Resize)
-  {
+  if (watched == parentWidget() && event->type() == QEvent::Resize) {
     setGeometry(0, 0, parentWidget()->width(), parentWidget()->height());
-    if (d->_isActive && d->_currentStep >= 0 && d->_currentStep < d->_steps.size())
-    {
+    if (d->_isActive && d->_currentStep >= 0 && d->_currentStep < d->_steps.size()) {
       d->_updateOverlay();
       d->_updateTipPosition();
     }

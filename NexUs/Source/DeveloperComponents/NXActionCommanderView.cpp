@@ -24,8 +24,7 @@ NXActionCommanderView::NXActionCommanderView(QWidget *parent)
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   NXScrollBar *vScrollBar = new NXScrollBar(this);
-  connect(vScrollBar, &NXScrollBar::rangeAnimationFinished, this, [=]()
-  {
+  connect(vScrollBar, &NXScrollBar::rangeAnimationFinished, this, [=]() {
     doItemsLayout();
   });
   setVerticalScrollBar(vScrollBar);
@@ -35,8 +34,7 @@ NXActionCommanderView::NXActionCommanderView(QWidget *parent)
   floatVScrollBar->setIsAnimation(true);
 
   setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(this, &NXActionCommanderView::customContextMenuRequested, this,
-          &NXActionCommanderView::onCustomContextMenuRequested);
+  connect(this, &NXActionCommanderView::customContextMenuRequested, this, &NXActionCommanderView::onCustomContextMenuRequested);
 
   _style = new NXActionCommanderViewStyle(style());
   setStyle(_style);
@@ -46,20 +44,16 @@ NXActionCommanderView::~NXActionCommanderView()
 {
 }
 
-void
-NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
+void NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
 {
   auto modelIndex      = indexAt(pos);
   auto actionCommander = NXActionCommander::getInstance();
   NXMenu menu(this);
   menu.setMinimumWidth(200);
   menu.setMenuItemHeight(35);
-  connect(menu.addNXIconAction(NXIconType::LocationArrow, QStringLiteral("定位到当前位置")), &QAction::triggered, this,
-          [=]()
-  {
+  connect(menu.addNXIconAction(NXIconType::LocationArrow, QStringLiteral("定位到当前位置")), &QAction::triggered, this, [=]() {
     auto selectedIndexList = selectionModel()->selectedRows(0);
-    if (selectedIndexList.isEmpty())
-    {
+    if (selectedIndexList.isEmpty()) {
       return;
     }
     auto vScrollBar = verticalScrollBar();
@@ -73,44 +67,35 @@ NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
     scrollAnimation->setEndValue(endValue);
     scrollAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   });
-  connect(menu.addNXIconAction(NXIconType::ListTree, QStringLiteral("展开全部")), &QAction::triggered, this, [=]()
-  {
+  connect(menu.addNXIconAction(NXIconType::ListTree, QStringLiteral("展开全部")), &QAction::triggered, this, [=]() {
     expandAll();
   });
-  connect(menu.addNXIconAction(NXIconType::ListUl, QStringLiteral("收起全部")), &QAction::triggered, this, [=]()
-  {
+  connect(menu.addNXIconAction(NXIconType::ListUl, QStringLiteral("收起全部")), &QAction::triggered, this, [=]() {
     collapseAll();
   });
   auto undoAction = menu.addNXIconAction(NXIconType::RotateLeft, QStringLiteral("撤销"));
   undoAction->setEnabled(actionCommander->getCommanderUndoState(_pDomainName) == NXActionCommanderType::UndoValid);
-  connect(undoAction, &QAction::triggered, this, [=]()
-  {
+  connect(undoAction, &QAction::triggered, this, [=]() {
     actionCommander->undoCommand(_pDomainName);
   });
   auto redoAction = menu.addNXIconAction(NXIconType::RotateRight, QStringLiteral("重做"));
   redoAction->setEnabled(actionCommander->getCommanderRedoState(_pDomainName) == NXActionCommanderType::RedoValid);
-  connect(redoAction, &QAction::triggered, this, [=]()
-  {
+  connect(redoAction, &QAction::triggered, this, [=]() {
     actionCommander->redoCommand(_pDomainName);
   });
-  if (modelIndex.isValid())
-  {
+  if (modelIndex.isValid()) {
     // 如果是次要行 定位到主要行
-    if (modelIndex.parent().isValid())
-    {
+    if (modelIndex.parent().isValid()) {
       modelIndex = modelIndex.parent();
     }
-    connect(menu.addNXIconAction(NXIconType::ArrowsRotate, QStringLiteral("运行到此处")), &QAction::triggered, this,
-            [=]()
-    {
+    connect(menu.addNXIconAction(NXIconType::ArrowsRotate, QStringLiteral("运行到此处")), &QAction::triggered, this, [=]() {
       Q_EMIT runToCommand(_pDomainName, modelIndex.row());
     });
   }
   menu.exec(QCursor::pos());
 }
 
-void
-NXActionCommanderView::paintEvent(QPaintEvent *event)
+void NXActionCommanderView::paintEvent(QPaintEvent *event)
 {
   QTreeView::paintEvent(event);
   // 绘制底边线

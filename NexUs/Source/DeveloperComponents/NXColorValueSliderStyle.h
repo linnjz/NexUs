@@ -15,16 +15,9 @@ class NXColorValueSliderStyle : public QProxyStyle
 public:
   explicit NXColorValueSliderStyle(QStyle *style = nullptr);
   ~NXColorValueSliderStyle();
-  void drawComplexControl(ComplexControl control,
-                          const QStyleOptionComplex *option,
-                          QPainter *painter,
-                          const QWidget *widget = nullptr) const override;
-  int
-  pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
-  int styleHint(StyleHint hint,
-                const QStyleOption *option   = nullptr,
-                const QWidget *widget        = nullptr,
-                QStyleHintReturn *returnData = nullptr) const override;
+  void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  int styleHint(StyleHint hint, const QStyleOption *option = nullptr, const QWidget *widget = nullptr, QStyleHintReturn *returnData = nullptr) const override;
 
 private:
   NXThemeType::ThemeMode _themeMode;

@@ -18,8 +18,7 @@ Q_PROPERTY_CREATE_CPP(NXNumberBox, int, Decimals)
 Q_PROPERTY_CREATE_CPP(NXNumberBox, bool, IsWrapping)
 
 // Custom setter for Value to clamp and emit
-void
-NXNumberBox::setValue(double value)
+void NXNumberBox::setValue(double value)
 {
   Q_D(NXNumberBox);
   d->_pValue = value;
@@ -29,8 +28,7 @@ NXNumberBox::setValue(double value)
   update();
 }
 
-double
-NXNumberBox::getValue() const
+double NXNumberBox::getValue() const
 {
   return d_ptr->_pValue;
 }
@@ -44,53 +42,44 @@ NXNumberBoxPrivate::~NXNumberBoxPrivate()
 {
 }
 
-QRect
-NXNumberBoxPrivate::_minusRect() const
+QRect NXNumberBoxPrivate::_minusRect() const
 {
   Q_Q(const NXNumberBox);
   return QRect(0, 0, _buttonWidth, q->height());
 }
 
-QRect
-NXNumberBoxPrivate::_plusRect() const
+QRect NXNumberBoxPrivate::_plusRect() const
 {
   Q_Q(const NXNumberBox);
   return QRect(q->width() - _buttonWidth, 0, _buttonWidth, q->height());
 }
 
-QRect
-NXNumberBoxPrivate::_valueRect() const
+QRect NXNumberBoxPrivate::_valueRect() const
 {
   Q_Q(const NXNumberBox);
   return QRect(_buttonWidth, 0, q->width() - _buttonWidth * 2, q->height());
 }
 
-QString
-NXNumberBoxPrivate::_formatValue() const
+QString NXNumberBoxPrivate::_formatValue() const
 {
   return QString::number(_pValue, 'f', _pDecimals);
 }
 
-void
-NXNumberBoxPrivate::_clampValue()
+void NXNumberBoxPrivate::_clampValue()
 {
-  if (_pValue < _pMinimum)
-  {
+  if (_pValue < _pMinimum) {
     _pValue = _pIsWrapping ? _pMaximum : _pMinimum;
   }
-  if (_pValue > _pMaximum)
-  {
+  if (_pValue > _pMaximum) {
     _pValue = _pIsWrapping ? _pMinimum : _pMaximum;
   }
 }
 
-void
-NXNumberBoxPrivate::_startEditing()
+void NXNumberBoxPrivate::_startEditing()
 {
   Q_Q(NXNumberBox);
   _isEditing = true;
-  if (!_lineEdit)
-  {
+  if (!_lineEdit) {
     _lineEdit = new QLineEdit(q);
     _lineEdit->setAlignment(Qt::AlignCenter);
     _lineEdit->setFrame(false);
@@ -107,21 +96,17 @@ NXNumberBoxPrivate::_startEditing()
   _lineEdit->setFocus();
 }
 
-void
-NXNumberBoxPrivate::_finishEditing()
+void NXNumberBoxPrivate::_finishEditing()
 {
   Q_Q(NXNumberBox);
-  if (!_isEditing)
-  {
+  if (!_isEditing) {
     return;
   }
   _isEditing = false;
-  if (_lineEdit)
-  {
+  if (_lineEdit) {
     bool ok;
     double newVal = _lineEdit->text().toDouble(&ok);
-    if (ok)
-    {
+    if (ok) {
       _pValue = newVal;
       _clampValue();
       Q_EMIT q->pValueChanged();
@@ -151,8 +136,7 @@ NXNumberBox::NXNumberBox(QWidget *parent)
   setFixedSize(160, 36);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -162,22 +146,19 @@ NXNumberBox::~NXNumberBox()
 {
 }
 
-void
-NXNumberBox::stepUp()
+void NXNumberBox::stepUp()
 {
   Q_D(NXNumberBox);
   setValue(d->_pValue + d->_pStep);
 }
 
-void
-NXNumberBox::stepDown()
+void NXNumberBox::stepDown()
 {
   Q_D(NXNumberBox);
   setValue(d->_pValue - d->_pStep);
 }
 
-void
-NXNumberBox::paintEvent(QPaintEvent *event)
+void NXNumberBox::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXNumberBox);
@@ -248,8 +229,7 @@ NXNumberBox::paintEvent(QPaintEvent *event)
   painter.drawText(plusR, Qt::AlignCenter, QStringLiteral("+"));
 
   // Value text (only when not editing)
-  if (!d->_isEditing)
-  {
+  if (!d->_isEditing) {
     QFont valFont = font();
     valFont.setPixelSize(14);
     painter.setFont(valFont);
@@ -258,19 +238,14 @@ NXNumberBox::paintEvent(QPaintEvent *event)
   }
 }
 
-void
-NXNumberBox::mousePressEvent(QMouseEvent *event)
+void NXNumberBox::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXNumberBox);
-  if (event->button() == Qt::LeftButton)
-  {
-    if (d->_minusRect().contains(event->pos()))
-    {
+  if (event->button() == Qt::LeftButton) {
+    if (d->_minusRect().contains(event->pos())) {
       d->_isMinusPressed = true;
       update();
-    }
-    else if (d->_plusRect().contains(event->pos()))
-    {
+    } else if (d->_plusRect().contains(event->pos())) {
       d->_isPlusPressed = true;
       update();
     }
@@ -278,18 +253,14 @@ NXNumberBox::mousePressEvent(QMouseEvent *event)
   QWidget::mousePressEvent(event);
 }
 
-void
-NXNumberBox::mouseReleaseEvent(QMouseEvent *event)
+void NXNumberBox::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXNumberBox);
-  if (event->button() == Qt::LeftButton)
-  {
-    if (d->_isMinusPressed && d->_minusRect().contains(event->pos()))
-    {
+  if (event->button() == Qt::LeftButton) {
+    if (d->_isMinusPressed && d->_minusRect().contains(event->pos())) {
       stepDown();
     }
-    if (d->_isPlusPressed && d->_plusRect().contains(event->pos()))
-    {
+    if (d->_isPlusPressed && d->_plusRect().contains(event->pos())) {
       stepUp();
     }
     d->_isMinusPressed = false;
@@ -299,14 +270,12 @@ NXNumberBox::mouseReleaseEvent(QMouseEvent *event)
   QWidget::mouseReleaseEvent(event);
 }
 
-void
-NXNumberBox::mouseMoveEvent(QMouseEvent *event)
+void NXNumberBox::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXNumberBox);
   bool minusHover = d->_minusRect().contains(event->pos());
   bool plusHover  = d->_plusRect().contains(event->pos());
-  if (d->_isMinusHovered != minusHover || d->_isPlusHovered != plusHover)
-  {
+  if (d->_isMinusHovered != minusHover || d->_isPlusHovered != plusHover) {
     d->_isMinusHovered = minusHover;
     d->_isPlusHovered  = plusHover;
     update();
@@ -314,8 +283,7 @@ NXNumberBox::mouseMoveEvent(QMouseEvent *event)
   QWidget::mouseMoveEvent(event);
 }
 
-void
-NXNumberBox::leaveEvent(QEvent *event)
+void NXNumberBox::leaveEvent(QEvent *event)
 {
   Q_D(NXNumberBox);
   d->_isMinusHovered = false;
@@ -326,45 +294,34 @@ NXNumberBox::leaveEvent(QEvent *event)
   QWidget::leaveEvent(event);
 }
 
-void
-NXNumberBox::wheelEvent(QWheelEvent *event)
+void NXNumberBox::wheelEvent(QWheelEvent *event)
 {
-  if (event->angleDelta().y() > 0)
-  {
+  if (event->angleDelta().y() > 0) {
     stepUp();
-  }
-  else if (event->angleDelta().y() < 0)
-  {
+  } else if (event->angleDelta().y() < 0) {
     stepDown();
   }
   event->accept();
 }
 
-void
-NXNumberBox::keyPressEvent(QKeyEvent *event)
+void NXNumberBox::keyPressEvent(QKeyEvent *event)
 {
   Q_D(NXNumberBox);
-  switch (event->key())
-  {
+  switch (event->key()) {
   case Qt::Key_Up   : stepUp(); return;
   case Qt::Key_Down : stepDown(); return;
   case Qt::Key_Return :
   case Qt::Key_Enter :
-    if (d->_isEditing)
-    {
+    if (d->_isEditing) {
       d->_finishEditing();
-    }
-    else
-    {
+    } else {
       d->_startEditing();
     }
     return;
   case Qt::Key_Escape :
-    if (d->_isEditing)
-    {
+    if (d->_isEditing) {
       d->_isEditing = false;
-      if (d->_lineEdit)
-      {
+      if (d->_lineEdit) {
         d->_lineEdit->hide();
       }
       setFocus();
@@ -376,38 +333,29 @@ NXNumberBox::keyPressEvent(QKeyEvent *event)
   QWidget::keyPressEvent(event);
 }
 
-void
-NXNumberBox::mouseDoubleClickEvent(QMouseEvent *event)
+void NXNumberBox::mouseDoubleClickEvent(QMouseEvent *event)
 {
   Q_D(NXNumberBox);
-  if (d->_valueRect().contains(event->pos()))
-  {
+  if (d->_valueRect().contains(event->pos())) {
     d->_startEditing();
   }
   QWidget::mouseDoubleClickEvent(event);
 }
 
-bool
-NXNumberBox::eventFilter(QObject *watched, QEvent *event)
+bool NXNumberBox::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXNumberBox);
-  if (watched == d->_lineEdit)
-  {
-    if (event->type() == QEvent::FocusOut)
-    {
+  if (watched == d->_lineEdit) {
+    if (event->type() == QEvent::FocusOut) {
       d->_finishEditing();
-    }
-    else if (event->type() == QEvent::KeyPress)
-    {
+    } else if (event->type() == QEvent::KeyPress) {
       QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-      if (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter)
-      {
+      if (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter) {
         d->_finishEditing();
         setFocus();
         return true;
       }
-      if (ke->key() == Qt::Key_Escape)
-      {
+      if (ke->key() == Qt::Key_Escape) {
         d->_isEditing = false;
         d->_lineEdit->hide();
         setFocus();

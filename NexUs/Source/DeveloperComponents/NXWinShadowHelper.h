@@ -33,9 +33,7 @@ public:
 
   void setWindowShadow(quint64 hwnd);
   void setWindowThemeMode(quint64 hwnd, bool isLightMode);
-  void setWindowDisplayMode(QWidget *widget,
-                            NXApplicationType::WindowDisplayMode displayMode,
-                            NXApplicationType::WindowDisplayMode lastDisplayMode);
+  void setWindowDisplayMode(QWidget *widget, NXApplicationType::WindowDisplayMode displayMode, NXApplicationType::WindowDisplayMode lastDisplayMode);
   bool getIsCompositionEnabled() const;
   bool getIsFullScreen(const HWND &hwnd);
   MONITORINFOEXW getMonitorForWindow(const HWND &hwnd);
@@ -142,17 +140,14 @@ private:
   };
 
   using DwmExtendFrameIntoClientAreaFunc  = HRESULT(WINAPI *)(HWND hWnd, const MARGINS *pMarInset);
-  using DwmSetWindowAttributeFunc         = HRESULT(WINAPI *)(HWND hwnd,
-                                                      DWORD dwAttribute,
-                                                      LPCVOID pvAttribute,
-                                                      DWORD cbAttribute);
+  using DwmSetWindowAttributeFunc         = HRESULT(WINAPI *)(HWND hwnd, DWORD dwAttribute, LPCVOID pvAttribute, DWORD cbAttribute);
   using DwmIsCompositionEnabledFunc       = HRESULT(WINAPI *)(BOOL *pfEnabled);
   using RtlGetVersionFunc                 = NTSTATUS(WINAPI *)(PRTL_OSVERSIONINFOW);
   using DwmEnableBlurBehindWindowFunc     = HRESULT(WINAPI *)(HWND hWnd, const DWM_BLURBEHIND *pBlurBehind);
   using SetWindowCompositionAttributeFunc = BOOL(WINAPI *)(HWND hwnd, const _WINDOWCOMPOSITIONATTRIBDATA *);
   using GetDpiForWindowFunc               = UINT(WINAPI *)(HWND hwnd);
-  using GetDpiForMonitorFunc = HRESULT(WINAPI *)(HMONITOR hmonitor, _MONITOR_DPI_TYPE dpiType, UINT *dpiX, UINT *dpiY);
-  using GetSystemMetricsForDpiFunc = int(WINAPI *)(int index, UINT dpi);
+  using GetDpiForMonitorFunc              = HRESULT(WINAPI *)(HMONITOR hmonitor, _MONITOR_DPI_TYPE dpiType, UINT *dpiX, UINT *dpiY);
+  using GetSystemMetricsForDpiFunc        = int(WINAPI *)(int index, UINT dpi);
   DwmExtendFrameIntoClientAreaFunc _dwmExtendFrameIntoClientArea { nullptr };
   DwmSetWindowAttributeFunc _dwmSetWindowAttribute { nullptr };
   DwmIsCompositionEnabledFunc _dwmIsCompositionEnabled { nullptr };

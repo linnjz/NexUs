@@ -31,34 +31,29 @@ NXListView::~NXListView()
   delete d->_listViewStyle;
 }
 
-void
-NXListView::setItemHeight(int itemHeight)
+void NXListView::setItemHeight(int itemHeight)
 {
   Q_D(NXListView);
-  if (itemHeight > 0)
-  {
+  if (itemHeight > 0) {
     d->_listViewStyle->setItemHeight(itemHeight);
     doItemsLayout();
   }
 }
 
-int
-NXListView::getItemHeight() const
+int NXListView::getItemHeight() const
 {
   Q_D(const NXListView);
   return d->_listViewStyle->getItemHeight();
 }
 
-void
-NXListView::setIsTransparent(bool isTransparent)
+void NXListView::setIsTransparent(bool isTransparent)
 {
   Q_D(NXListView);
   d->_listViewStyle->setIsTransparent(isTransparent);
   update();
 }
 
-bool
-NXListView::getIsTransparent() const
+bool NXListView::getIsTransparent() const
 {
   Q_D(const NXListView);
   return d->_listViewStyle->getIsTransparent();

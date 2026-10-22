@@ -11,21 +11,18 @@ NXCentralStackedWidgetPrivate::~NXCentralStackedWidgetPrivate()
 {
 }
 
-void
-NXCentralStackedWidgetPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
+void NXCentralStackedWidgetPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
   _themeMode = themeMode;
 }
 
-void
-NXCentralStackedWidgetPrivate::_getCurrentStackPix()
+void NXCentralStackedWidgetPrivate::_getCurrentStackPix()
 {
   _targetStackPix        = QPixmap();
   bool isTransparent     = _isTransparent;
   _isTransparent         = true;
   QWidget *currentWidget = _containerStackedWidget->currentWidget();
-  if (!currentWidget)
-  {
+  if (!currentWidget) {
     _isTransparent = isTransparent;
     return;
   }
@@ -35,8 +32,7 @@ NXCentralStackedWidgetPrivate::_getCurrentStackPix()
   _isTransparent = isTransparent;
 }
 
-void
-NXCentralStackedWidgetPrivate::_getTargetStackPix()
+void NXCentralStackedWidgetPrivate::_getTargetStackPix()
 {
   _targetStackPix    = QPixmap();
   bool isTransparent = _isTransparent;

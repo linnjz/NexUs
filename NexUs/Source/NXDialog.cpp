@@ -30,8 +30,7 @@ NXDialog::NXDialog(QWidget *parent)
   // 自定义AppBar
   d->_appBar = new NXAppBar(this);
   d->_appBar->setIsStayTop(true);
-  d->_appBar->setWindowButtonFlags(NXAppBarType::StayTopButtonHint | NXAppBarType::MinimizeButtonHint |
-                                   NXAppBarType::MaximizeButtonHint | NXAppBarType::CloseButtonHint);
+  d->_appBar->setWindowButtonFlags(NXAppBarType::StayTopButtonHint | NXAppBarType::MinimizeButtonHint | NXAppBarType::MaximizeButtonHint | NXAppBarType::CloseButtonHint);
   connect(d->_appBar, &NXAppBar::routeBackButtonClicked, this, &NXDialog::routeBackButtonClicked);
   connect(d->_appBar, &NXAppBar::navigationButtonClicked, this, &NXDialog::navigationButtonClicked);
   connect(d->_appBar, &NXAppBar::themeChangeButtonClicked, this, &NXDialog::themeChangeButtonClicked);
@@ -39,15 +38,13 @@ NXDialog::NXDialog(QWidget *parent)
 
   // 主题
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
 
   d->_windowDisplayMode = nxApp->getWindowDisplayMode();
-  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]()
-  {
+  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]() {
     d->_windowDisplayMode = nxApp->getWindowDisplayMode();
     update();
   });
@@ -59,67 +56,57 @@ NXDialog::~NXDialog()
   nxApp->syncWindowDisplayMode(this, false);
 }
 
-void
-NXDialog::setIsStayTop(bool isStayTop)
+void NXDialog::setIsStayTop(bool isStayTop)
 {
   Q_D(NXDialog);
   d->_appBar->setIsStayTop(isStayTop);
 }
 
-bool
-NXDialog::getIsStayTop() const
+bool NXDialog::getIsStayTop() const
 {
   return d_ptr->_appBar->getIsStayTop();
 }
 
-void
-NXDialog::setIsFixedSize(bool isFixedSize)
+void NXDialog::setIsFixedSize(bool isFixedSize)
 {
   Q_D(NXDialog);
   d->_appBar->setIsFixedSize(isFixedSize);
 }
 
-bool
-NXDialog::getIsFixedSize() const
+bool NXDialog::getIsFixedSize() const
 {
   return d_ptr->_appBar->getIsFixedSize();
 }
 
-void
-NXDialog::setIsDefaultClosed(bool isDefaultClosed)
+void NXDialog::setIsDefaultClosed(bool isDefaultClosed)
 {
   Q_D(NXDialog);
   d->_appBar->setIsDefaultClosed(isDefaultClosed);
   Q_EMIT pIsDefaultClosedChanged();
 }
 
-bool
-NXDialog::getIsDefaultClosed() const
+bool NXDialog::getIsDefaultClosed() const
 {
   Q_D(const NXDialog);
   return d->_appBar->getIsDefaultClosed();
 }
 
-void
-NXDialog::setAppBarHeight(int appBarHeight)
+void NXDialog::setAppBarHeight(int appBarHeight)
 {
   Q_D(NXDialog);
   d->_appBar->setAppBarHeight(appBarHeight);
   Q_EMIT pAppBarHeightChanged();
 }
 
-int
-NXDialog::getAppBarHeight() const
+int NXDialog::getAppBarHeight() const
 {
   Q_D(const NXDialog);
   return d->_appBar->getAppBarHeight();
 }
 
-void
-NXDialog::moveToCenter()
+void NXDialog::moveToCenter()
 {
-  if (isMaximized() || isFullScreen())
-  {
+  if (isMaximized() || isFullScreen()) {
     return;
   }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -127,32 +114,27 @@ NXDialog::moveToCenter()
 #else
   auto geometry = qApp->screenAt(this->geometry().center())->geometry();
 #endif
-  setGeometry((geometry.left() + geometry.right() - width()) / 2, (geometry.top() + geometry.bottom() - height()) / 2,
-              width(), height());
+  setGeometry((geometry.left() + geometry.right() - width()) / 2, (geometry.top() + geometry.bottom() - height()) / 2, width(), height());
 }
 
-void
-NXDialog::setWindowButtonFlag(NXAppBarType::ButtonType buttonFlag, bool isEnable)
+void NXDialog::setWindowButtonFlag(NXAppBarType::ButtonType buttonFlag, bool isEnable)
 {
   Q_D(NXDialog);
   d->_appBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
-void
-NXDialog::setWindowButtonFlags(NXAppBarType::ButtonFlags buttonFlags)
+void NXDialog::setWindowButtonFlags(NXAppBarType::ButtonFlags buttonFlags)
 {
   Q_D(NXDialog);
   d->_appBar->setWindowButtonFlags(buttonFlags);
 }
 
-NXAppBarType::ButtonFlags
-NXDialog::getWindowButtonFlags() const
+NXAppBarType::ButtonFlags NXDialog::getWindowButtonFlags() const
 {
   return d_ptr->_appBar->getWindowButtonFlags();
 }
 
-void
-NXDialog::paintEvent(QPaintEvent *event)
+void NXDialog::paintEvent(QPaintEvent *event)
 {
   Q_D(NXDialog);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))

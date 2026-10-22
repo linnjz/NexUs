@@ -32,25 +32,21 @@ NXTeachingTipPrivate::~NXTeachingTipPrivate()
 {
 }
 
-QPoint
-NXTeachingTipPrivate::_calculatePosition() const
+QPoint NXTeachingTipPrivate::_calculatePosition() const
 {
   Q_Q(const NXTeachingTip);
-  if (!_target)
-  {
+  if (!_target) {
     return QPoint(0, 0);
   }
   QPoint targetCenter             = _target->mapToGlobal(QPoint(_target->width() / 2, _target->height() / 2));
   NXTeachingTip::TailPosition pos = _tailPosition;
-  if (pos == NXTeachingTip::Auto)
-  {
+  if (pos == NXTeachingTip::Auto) {
     pos = _calculateAutoTailPosition();
   }
 
   int gap = _tailSize + 4;
   QPoint result;
-  switch (pos)
-  {
+  switch (pos) {
   case NXTeachingTip::Bottom :
     // Tip appears above target, tail points down
     result = QPoint(targetCenter.x() - q->width() / 2, _target->mapToGlobal(QPoint(0, 0)).y() - q->height() - gap);
@@ -74,8 +70,7 @@ NXTeachingTipPrivate::_calculatePosition() const
 
   // Screen boundary clamping
   QScreen *screen = QApplication::screenAt(targetCenter);
-  if (screen)
-  {
+  if (screen) {
     QRect screenGeo = screen->availableGeometry();
     result.setX(qBound(screenGeo.left() + 4, result.x(), screenGeo.right() - q->width() - 4));
     result.setY(qBound(screenGeo.top() + 4, result.y(), screenGeo.bottom() - q->height() - 4));
@@ -83,18 +78,15 @@ NXTeachingTipPrivate::_calculatePosition() const
   return result;
 }
 
-NXTeachingTip::TailPosition
-NXTeachingTipPrivate::_calculateAutoTailPosition() const
+NXTeachingTip::TailPosition NXTeachingTipPrivate::_calculateAutoTailPosition() const
 {
   Q_Q(const NXTeachingTip);
-  if (!_target)
-  {
+  if (!_target) {
     return NXTeachingTip::Bottom;
   }
   QPoint targetGlobal = _target->mapToGlobal(QPoint(0, 0));
   QScreen *screen     = QApplication::screenAt(targetGlobal);
-  if (!screen)
-  {
+  if (!screen) {
     return NXTeachingTip::Bottom;
   }
   QRect screenGeo = screen->availableGeometry();
@@ -102,19 +94,16 @@ NXTeachingTipPrivate::_calculateAutoTailPosition() const
   int spaceBelow  = screenGeo.bottom() - targetGlobal.y() - _target->height();
 
   // Prefer showing above (tail at bottom)
-  if (spaceAbove >= q->sizeHint().height() + _tailSize + 4)
-  {
+  if (spaceAbove >= q->sizeHint().height() + _tailSize + 4) {
     return NXTeachingTip::Bottom;
   }
-  if (spaceBelow >= q->sizeHint().height() + _tailSize + 4)
-  {
+  if (spaceBelow >= q->sizeHint().height() + _tailSize + 4) {
     return NXTeachingTip::Top;
   }
   return NXTeachingTip::Bottom;
 }
 
-void
-NXTeachingTipPrivate::_doShowAnimation()
+void NXTeachingTipPrivate::_doShowAnimation()
 {
   Q_Q(NXTeachingTip);
   QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect(q);
@@ -127,8 +116,7 @@ NXTeachingTipPrivate::_doShowAnimation()
   animation->setStartValue(0.0);
   animation->setEndValue(1.0);
   animation->setEasingCurve(QEasingCurve::OutCubic);
-  QObject::connect(animation, &QPropertyAnimation::finished, q, [=]()
-  {
+  QObject::connect(animation, &QPropertyAnimation::finished, q, [=]() {
     q->setGraphicsEffect(nullptr);
   });
   animation->start(QAbstractAnimation::DeleteWhenStopped);
@@ -154,8 +142,7 @@ NXTeachingTip::NXTeachingTip(QWidget *parent)
   setFixedWidth(320);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -166,88 +153,73 @@ NXTeachingTip::~NXTeachingTip()
 {
 }
 
-void
-NXTeachingTip::setTailPosition(TailPosition position)
+void NXTeachingTip::setTailPosition(TailPosition position)
 {
   Q_D(NXTeachingTip);
   d->_tailPosition = position;
 }
 
-NXTeachingTip::TailPosition
-NXTeachingTip::getTailPosition() const
+NXTeachingTip::TailPosition NXTeachingTip::getTailPosition() const
 {
   return d_ptr->_tailPosition;
 }
 
-void
-NXTeachingTip::setTarget(QWidget *target)
+void NXTeachingTip::setTarget(QWidget *target)
 {
   Q_D(NXTeachingTip);
-  if (d->_target)
-  {
+  if (d->_target) {
     d->_target->removeEventFilter(this);
   }
   d->_target = target;
-  if (target)
-  {
+  if (target) {
     target->installEventFilter(this);
   }
 }
 
-QWidget *
-NXTeachingTip::getTarget() const
+QWidget * NXTeachingTip::getTarget() const
 {
   return d_ptr->_target;
 }
 
-void
-NXTeachingTip::setCloseButtonVisible(bool visible)
+void NXTeachingTip::setCloseButtonVisible(bool visible)
 {
   Q_D(NXTeachingTip);
   d->_closeButtonVisible = visible;
   update();
 }
 
-void
-NXTeachingTip::addAction(const QString &text, const std::function<void()> &callback)
+void NXTeachingTip::addAction(const QString &text, const std::function<void()> &callback)
 {
   Q_D(NXTeachingTip);
   d->_actions.append({ text, callback });
 }
 
-void
-NXTeachingTip::clearActions()
+void NXTeachingTip::clearActions()
 {
   Q_D(NXTeachingTip);
   d->_actions.clear();
 }
 
-void
-NXTeachingTip::showTip()
+void NXTeachingTip::showTip()
 {
   Q_D(NXTeachingTip);
-  if (d->_pIsLightDismiss)
-  {
+  if (d->_pIsLightDismiss) {
     qApp->installEventFilter(this);
   }
   // Calculate size based on content
   int contentHeight = d->_shadowBorderWidth * 2;
-  if (!d->_pHeroImage.isNull())
-  {
+  if (!d->_pHeroImage.isNull()) {
     QPixmap scaled = d->_pHeroImage.scaledToWidth(width() - d->_shadowBorderWidth * 2, Qt::SmoothTransformation);
     contentHeight += scaled.height();
   }
   contentHeight += 12; // top padding
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     contentHeight += 24;
   }
-  if (!d->_pSubTitle.isEmpty())
-  {
+  if (!d->_pSubTitle.isEmpty()) {
     contentHeight += 20;
   }
-  if (!d->_pContent.isEmpty())
-  {
+  if (!d->_pContent.isEmpty()) {
     QFont contentFont = font();
     contentFont.setPixelSize(13);
     QFontMetrics fm(contentFont);
@@ -255,8 +227,7 @@ NXTeachingTip::showTip()
     QRect boundingRect = fm.boundingRect(QRect(0, 0, textWidth, 0), Qt::TextWordWrap, d->_pContent);
     contentHeight += boundingRect.height() + 8;
   }
-  if (!d->_actions.isEmpty())
-  {
+  if (!d->_actions.isEmpty()) {
     contentHeight += 44;
   }
   contentHeight += d->_shadowBorderWidth + 4; // bottom padding
@@ -269,8 +240,7 @@ NXTeachingTip::showTip()
   d->_doShowAnimation();
 }
 
-void
-NXTeachingTip::closeTip()
+void NXTeachingTip::closeTip()
 {
   Q_D(NXTeachingTip);
   qApp->removeEventFilter(this);
@@ -278,8 +248,7 @@ NXTeachingTip::closeTip()
   Q_EMIT closed();
 }
 
-void
-NXTeachingTip::paintEvent(QPaintEvent *event)
+void NXTeachingTip::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXTeachingTip);
@@ -300,8 +269,7 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   int contentWidth = bodyRect.width() - 30;
 
   // Hero image
-  if (!d->_pHeroImage.isNull())
-  {
+  if (!d->_pHeroImage.isNull()) {
     QPixmap scaled = d->_pHeroImage.scaledToWidth(bodyRect.width(), Qt::SmoothTransformation);
     QRect imageRect(d->_shadowBorderWidth, currentY, bodyRect.width(), scaled.height());
 
@@ -321,8 +289,7 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   currentY += 12;
 
   // Close button
-  if (d->_closeButtonVisible)
-  {
+  if (d->_closeButtonVisible) {
     QFont closeFont = QFont(QStringLiteral("NXAwesome"));
     closeFont.setPixelSize(12);
     painter.setFont(closeFont);
@@ -332,17 +299,14 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   }
 
   // Icon + Title
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     int titleX = contentLeft;
-    if (d->_pTipIcon != NXIconType::None)
-    {
+    if (d->_pTipIcon != NXIconType::None) {
       QFont iconFont = QFont(QStringLiteral("NXAwesome"));
       iconFont.setPixelSize(16);
       painter.setFont(iconFont);
       painter.setPen(NXThemeColor(d->_themeMode, PrimaryNormal));
-      painter.drawText(QRect(contentLeft, currentY, 20, 22), Qt::AlignVCenter | Qt::AlignLeft,
-                       QChar((unsigned short) d->_pTipIcon));
+      painter.drawText(QRect(contentLeft, currentY, 20, 22), Qt::AlignVCenter | Qt::AlignLeft, QChar((unsigned short) d->_pTipIcon));
       titleX += 26;
     }
     QFont titleFont = font();
@@ -350,14 +314,12 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
     titleFont.setBold(true);
     painter.setFont(titleFont);
     painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-    painter.drawText(QRect(titleX, currentY, contentWidth - (titleX - contentLeft) - 25, 22),
-                     Qt::AlignVCenter | Qt::AlignLeft, d->_pTitle);
+    painter.drawText(QRect(titleX, currentY, contentWidth - (titleX - contentLeft) - 25, 22), Qt::AlignVCenter | Qt::AlignLeft, d->_pTitle);
     currentY += 24;
   }
 
   // SubTitle
-  if (!d->_pSubTitle.isEmpty())
-  {
+  if (!d->_pSubTitle.isEmpty()) {
     QFont subFont = font();
     subFont.setPixelSize(12);
     painter.setFont(subFont);
@@ -367,8 +329,7 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   }
 
   // Content text (word wrap)
-  if (!d->_pContent.isEmpty())
-  {
+  if (!d->_pContent.isEmpty()) {
     currentY += 4;
     QFont contentFont = font();
     contentFont.setPixelSize(13);
@@ -382,8 +343,7 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   }
 
   // Action buttons area
-  if (!d->_actions.isEmpty())
-  {
+  if (!d->_actions.isEmpty()) {
     currentY += 8;
     int buttonWidth   = 80;
     int buttonHeight  = 30;
@@ -395,19 +355,15 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
     buttonFont.setPixelSize(12);
     painter.setFont(buttonFont);
 
-    for (int i = 0; i < d->_actions.size(); ++i)
-    {
+    for (int i = 0; i < d->_actions.size(); ++i) {
       QRect btnRect(startX + i * (buttonWidth + buttonSpacing), currentY, buttonWidth, buttonHeight);
-      if (i == d->_actions.size() - 1)
-      {
+      if (i == d->_actions.size() - 1) {
         // Primary button (last)
         painter.setPen(Qt::NoPen);
         painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
         painter.drawRoundedRect(btnRect, 4, 4);
         painter.setPen(Qt::white);
-      }
-      else
-      {
+      } else {
         painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
         painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
         painter.drawRoundedRect(btnRect, 4, 4);
@@ -418,11 +374,9 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   }
 
   // Tail/arrow
-  if (d->_target)
-  {
+  if (d->_target) {
     NXTeachingTip::TailPosition tailPos = d->_tailPosition;
-    if (tailPos == NXTeachingTip::Auto)
-    {
+    if (tailPos == NXTeachingTip::Auto) {
       tailPos = d->_calculateAutoTailPosition();
     }
     painter.setPen(Qt::NoPen);
@@ -430,32 +384,27 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
 
     QPolygonF triangle;
     int ts = d->_tailSize;
-    switch (tailPos)
-    {
-    case NXTeachingTip::Bottom :
-    {
+    switch (tailPos) {
+    case NXTeachingTip::Bottom : {
       // Tail at bottom center
       int cx = width() / 2;
       int by = bodyRect.bottom();
       triangle << QPointF(cx - ts, by) << QPointF(cx + ts, by) << QPointF(cx, by + ts);
       break;
     }
-    case NXTeachingTip::Top :
-    {
+    case NXTeachingTip::Top : {
       int cx = width() / 2;
       int ty = bodyRect.top();
       triangle << QPointF(cx - ts, ty) << QPointF(cx + ts, ty) << QPointF(cx, ty - ts);
       break;
     }
-    case NXTeachingTip::Left :
-    {
+    case NXTeachingTip::Left : {
       int cy = height() / 2;
       int lx = bodyRect.left();
       triangle << QPointF(lx, cy - ts) << QPointF(lx, cy + ts) << QPointF(lx - ts, cy);
       break;
     }
-    case NXTeachingTip::Right :
-    {
+    case NXTeachingTip::Right : {
       int cy = height() / 2;
       int rx = bodyRect.right();
       triangle << QPointF(rx, cy - ts) << QPointF(rx, cy + ts) << QPointF(rx + ts, cy);
@@ -463,8 +412,7 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
     }
     default : break;
     }
-    if (!triangle.isEmpty())
-    {
+    if (!triangle.isEmpty()) {
       QPainterPath tailPath;
       tailPath.addPolygon(triangle);
       tailPath.closeSubpath();
@@ -473,61 +421,49 @@ NXTeachingTip::paintEvent(QPaintEvent *event)
   }
 }
 
-bool
-NXTeachingTip::eventFilter(QObject *watched, QEvent *event)
+bool NXTeachingTip::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXTeachingTip);
-  if (watched == d->_target)
-  {
-    if (event->type() == QEvent::Move || event->type() == QEvent::Resize)
-    {
-      if (isVisible())
-      {
+  if (watched == d->_target) {
+    if (event->type() == QEvent::Move || event->type() == QEvent::Resize) {
+      if (isVisible()) {
         move(d->_calculatePosition());
       }
-    }
-    else if (event->type() == QEvent::Hide || event->type() == QEvent::Destroy)
-    {
+    } else if (event->type() == QEvent::Hide || event->type() == QEvent::Destroy) {
       closeTip();
     }
   }
   // Light dismiss: click outside closes the tip
-  if (d->_pIsLightDismiss && event->type() == QEvent::MouseButtonPress)
-  {
+  if (d->_pIsLightDismiss && event->type() == QEvent::MouseButtonPress) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint point = mouseEvent->globalPosition().toPoint();
 #else
     QPoint point = mouseEvent->globalPos();
 #endif
-    if (watched != this && !this->geometry().contains(this->mapFromGlobal(point)))
-    {
+    if (watched != this && !this->geometry().contains(this->mapFromGlobal(point))) {
       closeTip();
     }
   }
   return QWidget::eventFilter(watched, event);
 }
 
-void
-NXTeachingTip::showEvent(QShowEvent *event)
+void NXTeachingTip::showEvent(QShowEvent *event)
 {
   QWidget::showEvent(event);
 }
 
-void
-NXTeachingTip::mousePressEvent(QMouseEvent *event)
+void NXTeachingTip::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXTeachingTip);
   // Close button hit test
-  if (d->_closeButtonVisible && d->_closeButtonRect.contains(event->pos()))
-  {
+  if (d->_closeButtonVisible && d->_closeButtonRect.contains(event->pos())) {
     Q_EMIT closeButtonClicked();
     closeTip();
     return;
   }
   // Action button hit test
-  if (!d->_actions.isEmpty())
-  {
+  if (!d->_actions.isEmpty()) {
     QRect bodyRect =
         rect().adjusted(d->_shadowBorderWidth, d->_shadowBorderWidth, -d->_shadowBorderWidth, -d->_shadowBorderWidth);
     int buttonWidth   = 80;
@@ -539,13 +475,10 @@ NXTeachingTip::mousePressEvent(QMouseEvent *event)
     // Approximate button Y
     int buttonY = height() - d->_shadowBorderWidth - 12 - buttonHeight;
 
-    for (int i = 0; i < d->_actions.size(); ++i)
-    {
+    for (int i = 0; i < d->_actions.size(); ++i) {
       QRect btnRect(startX + i * (buttonWidth + buttonSpacing), buttonY, buttonWidth, buttonHeight);
-      if (btnRect.contains(event->pos()))
-      {
-        if (d->_actions[i].callback)
-        {
+      if (btnRect.contains(event->pos())) {
+        if (d->_actions[i].callback) {
           d->_actions[i].callback();
         }
         return;

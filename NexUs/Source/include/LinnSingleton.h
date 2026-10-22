@@ -83,341 +83,327 @@
 
 // friend std::default_delete<CLASS>;可以没有，利用LinnSingletonMakeHelper UB行为，建议CLASS的析构使用virtual，其实没有也可以
 // 标准写法定义friend std::default_delete<CLASS>;， 直接eturn std::make_unique<CLASS>(std::forward<Args>(args)...)不用helper
-#define LINN_SINGLETON_CREATE_BODY_UNIQUE_NO_DESTROY(CLASS)                                                            \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static CLASS *getInstance(Args &&...args)                                                                            \
-  {                                                                                                                    \
-    std::call_once(s_InitFlag, [args_tuple = std::forward_as_tuple(std::forward<Args>(args)...)]() mutable             \
-    {                                                                                                                  \
-      std::apply([](auto &&...unpacked_args)                                                                           \
-      {                                                                                                                \
-        s_Instance = _InstanceCreateImpl(std::forward<decltype(unpacked_args)>(unpacked_args)...);                     \
-      }, std::move(args_tuple));                                                                                       \
-    });                                                                                                                \
-    return s_Instance.get();                                                                                           \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static std::once_flag s_InitFlag;                                                                             \
+#define LINN_SINGLETON_CREATE_BODY_UNIQUE_NO_DESTROY(CLASS)                                                  \
+                                                                                                             \
+public:                                                                                                      \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                                              \
+                                                                                                             \
+  template <typename... Args>                                                                                \
+  static CLASS *getInstance(Args &&...args)                                                                  \
+  {                                                                                                          \
+    std::call_once(s_InitFlag, [args_tuple = std::forward_as_tuple(std::forward<Args>(args)...)]() mutable { \
+      std::apply([](auto &&...unpacked_args) {                                                               \
+        s_Instance = _InstanceCreateImpl(std::forward<decltype(unpacked_args)>(unpacked_args)...);           \
+      }, std::move(args_tuple));                                                                             \
+    });                                                                                                      \
+    return s_Instance.get();                                                                                 \
+  }                                                                                                          \
+                                                                                                             \
+private:                                                                                                     \
+  friend std::default_delete<CLASS>;                                                                         \
+                                                                                                             \
+  template <typename... Args>                                                                                \
+  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                          \
+  {                                                                                                          \
+    struct LinnSingletonMakeHelper : public CLASS                                                            \
+    {                                                                                                        \
+      explicit LinnSingletonMakeHelper(Args &&...args)                                                       \
+          : CLASS(std::forward<Args>(args)...)                                                               \
+      {                                                                                                      \
+      }                                                                                                      \
+    };                                                                                                       \
+                                                                                                             \
+    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                           \
+  }                                                                                                          \
+                                                                                                             \
+  inline static std::once_flag s_InitFlag;                                                                   \
   inline static std::unique_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_DESTROY(CLASS)                                                        \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static CLASS *getInstance(Args &&...args)                                                                            \
-  {                                                                                                                    \
-    if (s_Destroyed)                                                                                                   \
-    {                                                                                                                  \
-      return nullptr;                                                                                                  \
-    }                                                                                                                  \
-    if (!s_Instance)                                                                                                   \
-    {                                                                                                                  \
-      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);                                                   \
-    }                                                                                                                  \
-    return s_Instance.get();                                                                                           \
-  }                                                                                                                    \
-                                                                                                                       \
-  static void destroyInstance()                                                                                        \
-  {                                                                                                                    \
-    s_Instance.reset();                                                                                                \
-    s_Destroyed = true;                                                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-  static bool isDestroyed()                                                                                            \
-  {                                                                                                                    \
-    return s_Destroyed;                                                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static bool s_Destroyed { false };                                                                            \
+#define LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_DESTROY(CLASS)                    \
+                                                                                   \
+public:                                                                            \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                    \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static CLASS *getInstance(Args &&...args)                                        \
+  {                                                                                \
+    if (s_Destroyed) {                                                             \
+      return nullptr;                                                              \
+    }                                                                              \
+    if (!s_Instance) {                                                             \
+      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);               \
+    }                                                                              \
+    return s_Instance.get();                                                       \
+  }                                                                                \
+                                                                                   \
+  static void destroyInstance()                                                    \
+  {                                                                                \
+    s_Instance.reset();                                                            \
+    s_Destroyed = true;                                                            \
+  }                                                                                \
+                                                                                   \
+  static bool isDestroyed()                                                        \
+  {                                                                                \
+    return s_Destroyed;                                                            \
+  }                                                                                \
+                                                                                   \
+private:                                                                           \
+  friend std::default_delete<CLASS>;                                               \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                \
+  {                                                                                \
+    struct LinnSingletonMakeHelper : public CLASS                                  \
+    {                                                                              \
+      explicit LinnSingletonMakeHelper(Args &&...args)                             \
+          : CLASS(std::forward<Args>(args)...)                                     \
+      {                                                                            \
+      }                                                                            \
+    };                                                                             \
+                                                                                   \
+    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...); \
+  }                                                                                \
+                                                                                   \
+  inline static bool s_Destroyed { false };                                        \
   inline static std::unique_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_LOCK_DESTROY(CLASS)                                                   \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static CLASS *getInstance(Args &&...args)                                                                            \
-  {                                                                                                                    \
-    if (s_Destroyed.load(std::memory_order_acquire))                                                                   \
-    {                                                                                                                  \
-      return nullptr;                                                                                                  \
-    }                                                                                                                  \
-    std::scoped_lock lock(s_Mutex);                                                                                    \
-    if (s_Destroyed.load(std::memory_order_relaxed))                                                                   \
-    {                                                                                                                  \
-      return nullptr;                                                                                                  \
-    }                                                                                                                  \
-    if (!s_Instance)                                                                                                   \
-    {                                                                                                                  \
-      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);                                                   \
-    }                                                                                                                  \
-    return s_Instance.get();                                                                                           \
-  }                                                                                                                    \
-                                                                                                                       \
-  static void destroyInstance()                                                                                        \
-  {                                                                                                                    \
-    std::scoped_lock lock(s_Mutex);                                                                                    \
-    s_Instance.reset();                                                                                                \
-    s_Destroyed.store(true, std::memory_order_release);                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-  static bool isDestroyed()                                                                                            \
-  {                                                                                                                    \
-    return s_Destroyed.load(std::memory_order_acquire);                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static std::mutex s_Mutex;                                                                                    \
-  inline static std::atomic_bool s_Destroyed { false };                                                                \
+#define LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_LOCK_DESTROY(CLASS)               \
+                                                                                   \
+public:                                                                            \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                    \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static CLASS *getInstance(Args &&...args)                                        \
+  {                                                                                \
+    if (s_Destroyed.load(std::memory_order_acquire)) {                             \
+      return nullptr;                                                              \
+    }                                                                              \
+    std::scoped_lock lock(s_Mutex);                                                \
+    if (s_Destroyed.load(std::memory_order_relaxed)) {                             \
+      return nullptr;                                                              \
+    }                                                                              \
+    if (!s_Instance) {                                                             \
+      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);               \
+    }                                                                              \
+    return s_Instance.get();                                                       \
+  }                                                                                \
+                                                                                   \
+  static void destroyInstance()                                                    \
+  {                                                                                \
+    std::scoped_lock lock(s_Mutex);                                                \
+    s_Instance.reset();                                                            \
+    s_Destroyed.store(true, std::memory_order_release);                            \
+  }                                                                                \
+                                                                                   \
+  static bool isDestroyed()                                                        \
+  {                                                                                \
+    return s_Destroyed.load(std::memory_order_acquire);                            \
+  }                                                                                \
+                                                                                   \
+private:                                                                           \
+  friend std::default_delete<CLASS>;                                               \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::unique_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                \
+  {                                                                                \
+    struct LinnSingletonMakeHelper : public CLASS                                  \
+    {                                                                              \
+      explicit LinnSingletonMakeHelper(Args &&...args)                             \
+          : CLASS(std::forward<Args>(args)...)                                     \
+      {                                                                            \
+      }                                                                            \
+    };                                                                             \
+                                                                                   \
+    return std::make_unique<LinnSingletonMakeHelper>(std::forward<Args>(args)...); \
+  }                                                                                \
+                                                                                   \
+  inline static std::mutex s_Mutex;                                                \
+  inline static std::atomic_bool s_Destroyed { false };                            \
   inline static std::unique_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_SHARED_NO_DESTROY(CLASS)                                                            \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> getInstance(Args &&...args)                                                            \
-  {                                                                                                                    \
-    std::call_once(s_InitFlag, [args_tuple = std::forward_as_tuple(std::forward<Args>(args)...)]() mutable             \
-    {                                                                                                                  \
-      std::apply([](auto &&...unpacked_args)                                                                           \
-      {                                                                                                                \
-        s_Instance = _InstanceCreateImpl(std::forward<decltype(unpacked_args)>(unpacked_args)...);                     \
-      }, std::move(args_tuple));                                                                                       \
-    });                                                                                                                \
-    return s_Instance;                                                                                                 \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static std::once_flag s_InitFlag;                                                                             \
+#define LINN_SINGLETON_CREATE_BODY_SHARED_NO_DESTROY(CLASS)                                                  \
+                                                                                                             \
+public:                                                                                                      \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                                              \
+                                                                                                             \
+  template <typename... Args>                                                                                \
+  static std::shared_ptr<CLASS> getInstance(Args &&...args)                                                  \
+  {                                                                                                          \
+    std::call_once(s_InitFlag, [args_tuple = std::forward_as_tuple(std::forward<Args>(args)...)]() mutable { \
+      std::apply([](auto &&...unpacked_args) {                                                               \
+        s_Instance = _InstanceCreateImpl(std::forward<decltype(unpacked_args)>(unpacked_args)...);           \
+      }, std::move(args_tuple));                                                                             \
+    });                                                                                                      \
+    return s_Instance;                                                                                       \
+  }                                                                                                          \
+                                                                                                             \
+private:                                                                                                     \
+  friend std::default_delete<CLASS>;                                                                         \
+                                                                                                             \
+  template <typename... Args>                                                                                \
+  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                          \
+  {                                                                                                          \
+    struct LinnSingletonMakeHelper : public CLASS                                                            \
+    {                                                                                                        \
+      explicit LinnSingletonMakeHelper(Args &&...args)                                                       \
+          : CLASS(std::forward<Args>(args)...)                                                               \
+      {                                                                                                      \
+      }                                                                                                      \
+    };                                                                                                       \
+                                                                                                             \
+    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                           \
+  }                                                                                                          \
+                                                                                                             \
+  inline static std::once_flag s_InitFlag;                                                                   \
   inline static std::shared_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_DESTROY(CLASS)                                                        \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> getInstance(Args &&...args)                                                            \
-  {                                                                                                                    \
-    if (s_Destroyed)                                                                                                   \
-    {                                                                                                                  \
-      return {};                                                                                                       \
-    }                                                                                                                  \
-    if (!s_Instance)                                                                                                   \
-    {                                                                                                                  \
-      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);                                                   \
-    }                                                                                                                  \
-    return s_Instance;                                                                                                 \
-  }                                                                                                                    \
-                                                                                                                       \
-  static void destroyInstance()                                                                                        \
-  {                                                                                                                    \
-    s_Instance.reset();                                                                                                \
-    s_Destroyed = true;                                                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-  static bool isDestroyed()                                                                                            \
-  {                                                                                                                    \
-    return s_Destroyed;                                                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static bool s_Destroyed { false };                                                                            \
+#define LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_DESTROY(CLASS)                    \
+                                                                                   \
+public:                                                                            \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                    \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::shared_ptr<CLASS> getInstance(Args &&...args)                        \
+  {                                                                                \
+    if (s_Destroyed) {                                                             \
+      return {};                                                                   \
+    }                                                                              \
+    if (!s_Instance) {                                                             \
+      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);               \
+    }                                                                              \
+    return s_Instance;                                                             \
+  }                                                                                \
+                                                                                   \
+  static void destroyInstance()                                                    \
+  {                                                                                \
+    s_Instance.reset();                                                            \
+    s_Destroyed = true;                                                            \
+  }                                                                                \
+                                                                                   \
+  static bool isDestroyed()                                                        \
+  {                                                                                \
+    return s_Destroyed;                                                            \
+  }                                                                                \
+                                                                                   \
+private:                                                                           \
+  friend std::default_delete<CLASS>;                                               \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                \
+  {                                                                                \
+    struct LinnSingletonMakeHelper : public CLASS                                  \
+    {                                                                              \
+      explicit LinnSingletonMakeHelper(Args &&...args)                             \
+          : CLASS(std::forward<Args>(args)...)                                     \
+      {                                                                            \
+      }                                                                            \
+    };                                                                             \
+                                                                                   \
+    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...); \
+  }                                                                                \
+                                                                                   \
+  inline static bool s_Destroyed { false };                                        \
   inline static std::shared_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_LOCK_DESTROY(CLASS)                                                   \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> getInstance(Args &&...args)                                                            \
-  {                                                                                                                    \
-    if (s_Destroyed.load(std::memory_order_acquire))                                                                   \
-    {                                                                                                                  \
-      return {};                                                                                                       \
-    }                                                                                                                  \
-    std::scoped_lock lock(s_Mutex);                                                                                    \
-    if (s_Destroyed.load(std::memory_order_relaxed))                                                                   \
-    {                                                                                                                  \
-      return {};                                                                                                       \
-    }                                                                                                                  \
-    if (!s_Instance)                                                                                                   \
-    {                                                                                                                  \
-      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);                                                   \
-    }                                                                                                                  \
-    return s_Instance;                                                                                                 \
-  }                                                                                                                    \
-                                                                                                                       \
-  static void destroyInstance()                                                                                        \
-  {                                                                                                                    \
-    std::scoped_lock lock(s_Mutex);                                                                                    \
-    s_Instance.reset();                                                                                                \
-    s_Destroyed.store(true, std::memory_order_release);                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-  static bool isDestroyed()                                                                                            \
-  {                                                                                                                    \
-    return s_Destroyed.load(std::memory_order_acquire);                                                                \
-  }                                                                                                                    \
-                                                                                                                       \
-private:                                                                                                               \
-  friend std::default_delete<CLASS>;                                                                                   \
-                                                                                                                       \
-  template<typename... Args>                                                                                           \
-  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                                                    \
-  {                                                                                                                    \
-    struct LinnSingletonMakeHelper : public CLASS                                                                      \
-    {                                                                                                                  \
-      explicit LinnSingletonMakeHelper(Args &&...args)                                                                 \
-          : CLASS(std::forward<Args>(args)...)                                                                         \
-      {                                                                                                                \
-      }                                                                                                                \
-    };                                                                                                                 \
-                                                                                                                       \
-    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...);                                     \
-  }                                                                                                                    \
-                                                                                                                       \
-  inline static std::mutex s_Mutex;                                                                                    \
-  inline static std::atomic_bool s_Destroyed { false };                                                                \
+#define LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_LOCK_DESTROY(CLASS)               \
+                                                                                   \
+public:                                                                            \
+  LINN_DISABLE_COPY_MOVE(CLASS)                                                    \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::shared_ptr<CLASS> getInstance(Args &&...args)                        \
+  {                                                                                \
+    if (s_Destroyed.load(std::memory_order_acquire)) {                             \
+      return {};                                                                   \
+    }                                                                              \
+    std::scoped_lock lock(s_Mutex);                                                \
+    if (s_Destroyed.load(std::memory_order_relaxed)) {                             \
+      return {};                                                                   \
+    }                                                                              \
+    if (!s_Instance) {                                                             \
+      s_Instance = _InstanceCreateImpl(std::forward<Args>(args)...);               \
+    }                                                                              \
+    return s_Instance;                                                             \
+  }                                                                                \
+                                                                                   \
+  static void destroyInstance()                                                    \
+  {                                                                                \
+    std::scoped_lock lock(s_Mutex);                                                \
+    s_Instance.reset();                                                            \
+    s_Destroyed.store(true, std::memory_order_release);                            \
+  }                                                                                \
+                                                                                   \
+  static bool isDestroyed()                                                        \
+  {                                                                                \
+    return s_Destroyed.load(std::memory_order_acquire);                            \
+  }                                                                                \
+                                                                                   \
+private:                                                                           \
+  friend std::default_delete<CLASS>;                                               \
+                                                                                   \
+  template <typename... Args>                                                      \
+  static std::shared_ptr<CLASS> _InstanceCreateImpl(Args &&...args)                \
+  {                                                                                \
+    struct LinnSingletonMakeHelper : public CLASS                                  \
+    {                                                                              \
+      explicit LinnSingletonMakeHelper(Args &&...args)                             \
+          : CLASS(std::forward<Args>(args)...)                                     \
+      {                                                                            \
+      }                                                                            \
+    };                                                                             \
+                                                                                   \
+    return std::make_shared<LinnSingletonMakeHelper>(std::forward<Args>(args)...); \
+  }                                                                                \
+                                                                                   \
+  inline static std::mutex s_Mutex;                                                \
+  inline static std::atomic_bool s_Destroyed { false };                            \
   inline static std::shared_ptr<CLASS> s_Instance { nullptr };
 
-#define LINN_SINGLETON_CREATE_BODY_MEYERS_NO_DESTROY(CLASS)                                                            \
-                                                                                                                       \
-public:                                                                                                                \
-  LINN_DISABLE_COPY_MOVE(CLASS)                                                                                        \
-                                                                                                                       \
-  static CLASS &getInstance()                                                                                          \
-  {                                                                                                                    \
-    static CLASS instance;                                                                                             \
-    return instance;                                                                                                   \
+#define LINN_SINGLETON_CREATE_BODY_MEYERS_NO_DESTROY(CLASS) \
+                                                            \
+public:                                                     \
+  LINN_DISABLE_COPY_MOVE(CLASS)                             \
+                                                            \
+  static CLASS &getInstance()                               \
+  {                                                         \
+    static CLASS instance;                                  \
+    return instance;                                        \
   }
 
 #define LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_DESTROY(CLASS) LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_DESTROY(CLASS)
 
-#define LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_LOCK_DESTROY(CLASS)                                                   \
+#define LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_LOCK_DESTROY(CLASS) \
   LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_LOCK_DESTROY(CLASS)
 
-#define LINN_SINGLETON_SELECT_DESTROY_UNIQUE(DESTROY_MODE, CLASS)                                                      \
-  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(                                      \
-      LINN_SINGLETON_CREATE_BODY_UNIQUE_NO_DESTROY(CLASS),                                                             \
-      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))(                              \
-          LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_DESTROY(CLASS),                                                     \
+#define LINN_SINGLETON_SELECT_DESTROY_UNIQUE(DESTROY_MODE, CLASS)                         \
+  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(         \
+      LINN_SINGLETON_CREATE_BODY_UNIQUE_NO_DESTROY(CLASS),                                \
+      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))( \
+          LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_DESTROY(CLASS),                        \
           LINN_SINGLETON_CREATE_BODY_UNIQUE_ENABLE_LOCK_DESTROY(CLASS)))
 
-#define LINN_SINGLETON_SELECT_DESTROY_SHARED(DESTROY_MODE, CLASS)                                                      \
-  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(                                      \
-      LINN_SINGLETON_CREATE_BODY_SHARED_NO_DESTROY(CLASS),                                                             \
-      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))(                              \
-          LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_DESTROY(CLASS),                                                     \
+#define LINN_SINGLETON_SELECT_DESTROY_SHARED(DESTROY_MODE, CLASS)                         \
+  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(         \
+      LINN_SINGLETON_CREATE_BODY_SHARED_NO_DESTROY(CLASS),                                \
+      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))( \
+          LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_DESTROY(CLASS),                        \
           LINN_SINGLETON_CREATE_BODY_SHARED_ENABLE_LOCK_DESTROY(CLASS)))
 
-#define LINN_SINGLETON_SELECT_DESTROY_MEYERS(DESTROY_MODE, CLASS)                                                      \
-  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(                                      \
-      LINN_SINGLETON_CREATE_BODY_MEYERS_NO_DESTROY(CLASS),                                                             \
-      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))(                              \
-          LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_DESTROY(CLASS),                                                     \
+#define LINN_SINGLETON_SELECT_DESTROY_MEYERS(DESTROY_MODE, CLASS)                         \
+  LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_NO_DESTROY))(         \
+      LINN_SINGLETON_CREATE_BODY_MEYERS_NO_DESTROY(CLASS),                                \
+      LINN_IF(LINN_SINGLETON_PP_EQ(DESTROY_MODE, LINN_SINGLETON_DESTROY_ENABLE_DESTROY))( \
+          LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_DESTROY(CLASS),                        \
           LINN_SINGLETON_CREATE_BODY_MEYERS_ENABLE_LOCK_DESTROY(CLASS)))
 
-#define LINN_SINGLETON_CREATE_FROM_TAG(MODE_TAG, DESTROY_MODE, CLASS)                                                  \
-  LINN_IF(LINN_SINGLETON_PP_EQ(MODE_TAG, LINN_SINGLETON_MODE_UNIQUE))(                                                 \
-      LINN_SINGLETON_SELECT_DESTROY_UNIQUE(DESTROY_MODE, CLASS),                                                       \
-      LINN_IF(LINN_SINGLETON_PP_EQ(MODE_TAG, LINN_SINGLETON_MODE_SHARED))(                                             \
-          LINN_SINGLETON_SELECT_DESTROY_SHARED(DESTROY_MODE, CLASS),                                                   \
+#define LINN_SINGLETON_CREATE_FROM_TAG(MODE_TAG, DESTROY_MODE, CLASS)      \
+  LINN_IF(LINN_SINGLETON_PP_EQ(MODE_TAG, LINN_SINGLETON_MODE_UNIQUE))(     \
+      LINN_SINGLETON_SELECT_DESTROY_UNIQUE(DESTROY_MODE, CLASS),           \
+      LINN_IF(LINN_SINGLETON_PP_EQ(MODE_TAG, LINN_SINGLETON_MODE_SHARED))( \
+          LINN_SINGLETON_SELECT_DESTROY_SHARED(DESTROY_MODE, CLASS),       \
           LINN_SINGLETON_SELECT_DESTROY_MEYERS(DESTROY_MODE, CLASS)))
 
-#define LINN_SINGLETON_CREATE_FROM_PAIR(MODE_PAIR, DESTROY_MODE)                                                       \
+#define LINN_SINGLETON_CREATE_FROM_PAIR(MODE_PAIR, DESTROY_MODE) \
   LINN_SINGLETON_CREATE_FROM_TAG(LINN_PAIR_FIRST(MODE_PAIR), DESTROY_MODE, LINN_PAIR_SECOND(MODE_PAIR))
 
 #pragma endregion LINN_SINGLETON_HELPER_CORE

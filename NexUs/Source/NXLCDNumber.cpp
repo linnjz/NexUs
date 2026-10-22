@@ -23,8 +23,7 @@ NXLCDNumber::NXLCDNumber(QWidget *parent)
   d->_lcdNumberStyle = new NXLCDNumberStyle();
   setStyle(d->_lcdNumberStyle);
   d->_clockTimer = new QTimer(this);
-  connect(d->_clockTimer, &QTimer::timeout, this, [=]()
-  {
+  connect(d->_clockTimer, &QTimer::timeout, this, [=]() {
     display(QDateTime::currentDateTime().toString(d->_pAutoClockFormat));
   });
 
@@ -44,34 +43,28 @@ NXLCDNumber::~NXLCDNumber()
   delete d->_lcdNumberStyle;
 }
 
-void
-NXLCDNumber::setIsUseAutoClock(bool isUseAutoClock)
+void NXLCDNumber::setIsUseAutoClock(bool isUseAutoClock)
 {
   Q_D(NXLCDNumber);
   d->_pIsUseAutoClock = isUseAutoClock;
-  if (d->_pIsUseAutoClock)
-  {
+  if (d->_pIsUseAutoClock) {
     setDigitCount(d->_pAutoClockFormat.length());
     display(QDateTime::currentDateTime().toString(d->_pAutoClockFormat));
     d->_clockTimer->start(200);
-  }
-  else
-  {
+  } else {
     d->_clockTimer->stop();
     display(QStringLiteral(""));
   }
   Q_EMIT pIsUseAutoClockChanged();
 }
 
-bool
-NXLCDNumber::getIsUseAutoClock() const
+bool NXLCDNumber::getIsUseAutoClock() const
 {
   Q_D(const NXLCDNumber);
   return d->_pIsUseAutoClock;
 }
 
-void
-NXLCDNumber::setAutoClockFormat(const QString &autoClockFormat)
+void NXLCDNumber::setAutoClockFormat(const QString &autoClockFormat)
 {
   Q_D(NXLCDNumber);
   d->_pAutoClockFormat = autoClockFormat;
@@ -79,15 +72,13 @@ NXLCDNumber::setAutoClockFormat(const QString &autoClockFormat)
   Q_EMIT pAutoClockFormatChanged();
 }
 
-QString
-NXLCDNumber::getAutoClockFormat() const
+QString NXLCDNumber::getAutoClockFormat() const
 {
   Q_D(const NXLCDNumber);
   return d->_pAutoClockFormat;
 }
 
-void
-NXLCDNumber::setIsTransparent(bool isTransparent)
+void NXLCDNumber::setIsTransparent(bool isTransparent)
 {
   Q_D(NXLCDNumber);
   d->_lcdNumberStyle->setIsTransparent(isTransparent);
@@ -95,19 +86,16 @@ NXLCDNumber::setIsTransparent(bool isTransparent)
   Q_EMIT pIsTransparentChanged();
 }
 
-bool
-NXLCDNumber::getIsTransparent() const
+bool NXLCDNumber::getIsTransparent() const
 {
   Q_D(const NXLCDNumber);
   return d->_lcdNumberStyle->getIsTransparent();
 }
 
-void
-NXLCDNumber::paintEvent(QPaintEvent *event)
+void NXLCDNumber::paintEvent(QPaintEvent *event)
 {
   Q_D(NXLCDNumber);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeModeChanged(d->_themeMode);
   }
   QLCDNumber::paintEvent(event);

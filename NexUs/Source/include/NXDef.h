@@ -3753,7 +3753,7 @@ using NXNodeResultExpected = std::expected<QString, NXNavigationType::NodeResult
 using NXNodeResultUnexpected = std::unexpected<NXNavigationType::NodeResult>;
 #else
 #  include "expected.hpp"
-template<typename T>
+template <typename T>
 using NXNodeResultExpected = tl::expected<QString, NXNavigationType::NodeResult>;
 
 using NXNodeResultUnexpected = tl::unexpected<NXNavigationType::NodeResult>;

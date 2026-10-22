@@ -84,8 +84,7 @@ private:
   static QString joinPath(const QString &parent, const QString &child);
 
   bool _isOnRouterPage() const;
-  NXRouterType::NavigationResult addRouteToTree(const NXRouteConfig &config,
-                                                const QString &parentPathPrefix = QString());
+  NXRouterType::NavigationResult addRouteToTree(const NXRouteConfig &config, const QString &parentPathPrefix = QString());
   bool runBeforeGuards(const QString &to, const QString &from, const QVariantMap &params, NXRouteNode *toNode);
   void runAfterHooks(const QString &to, const QString &from, const QVariantMap &params);
   QWidget *ensureWidget(NXRouteNode *node);

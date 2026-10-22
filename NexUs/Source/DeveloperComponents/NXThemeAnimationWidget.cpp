@@ -14,19 +14,16 @@ NXThemeAnimationWidget::~NXThemeAnimationWidget()
 {
 }
 
-void
-NXThemeAnimationWidget::startAnimation(int msec)
+void NXThemeAnimationWidget::startAnimation(int msec)
 {
   QPropertyAnimation *themeChangeAnimation = new QPropertyAnimation(this, "pRadius");
   themeChangeAnimation->setDuration(msec);
   themeChangeAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(themeChangeAnimation, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(themeChangeAnimation, &QPropertyAnimation::finished, this, [=]() {
     Q_EMIT animationFinished();
     this->deleteLater();
   });
-  connect(themeChangeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-  {
+  connect(themeChangeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
     update();
   });
   themeChangeAnimation->setStartValue(0);
@@ -35,8 +32,7 @@ NXThemeAnimationWidget::startAnimation(int msec)
   show();
 }
 
-void
-NXThemeAnimationWidget::paintEvent(QPaintEvent *event)
+void NXThemeAnimationWidget::paintEvent(QPaintEvent *event)
 {
   QPainter painter(this);
   painter.save();
@@ -53,8 +49,7 @@ NXThemeAnimationWidget::paintEvent(QPaintEvent *event)
   qreal devicePixelRatioF = _pOldWindowBackground.devicePixelRatioF();
   QPainterPath clipPath;
   clipPath.moveTo(_pCenter.x() * devicePixelRatioF, _pCenter.y() * devicePixelRatioF);
-  clipPath.addEllipse(QPointF(_pCenter.x() * devicePixelRatioF, _pCenter.y() * devicePixelRatioF),
-                      _pRadius * devicePixelRatioF, _pRadius * devicePixelRatioF);
+  clipPath.addEllipse(QPointF(_pCenter.x() * devicePixelRatioF, _pCenter.y() * devicePixelRatioF), _pRadius * devicePixelRatioF, _pRadius * devicePixelRatioF);
   animationImagePainter.setClipPath(clipPath);
   animationImagePainter.drawImage(animationImage.rect(), animationImage);
   animationImagePainter.end();

@@ -13,8 +13,7 @@ NXCalendarPickerContainer::NXCalendarPickerContainer(QWidget *parent)
   setObjectName("NXCalendarPickerContainer");
   setStyleSheet(QStringLiteral("#NXCalendarPickerContainer{background-color:transparent}"));
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
     update();
   });
@@ -24,8 +23,7 @@ NXCalendarPickerContainer::~NXCalendarPickerContainer()
 {
 }
 
-void
-NXCalendarPickerContainer::paintEvent(QPaintEvent *event)
+void NXCalendarPickerContainer::paintEvent(QPaintEvent *event)
 {
 #if !(defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0))
   QPainter painter(this);

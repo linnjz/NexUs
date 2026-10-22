@@ -27,8 +27,7 @@ NXLog::~NXLog()
 {
 }
 
-void
-NXLog::initMessageLog(bool isEnable)
+void NXLog::initMessageLog(bool isEnable)
 {
   Q_D(NXLog);
   qInstallMessageHandler(isEnable ? d->_messageLogHander : 0);

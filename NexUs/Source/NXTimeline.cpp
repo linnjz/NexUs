@@ -23,8 +23,7 @@ NXTimeline::NXTimeline(QWidget *parent)
   d->q_ptr = this;
   setObjectName("NXTimeline");
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -34,8 +33,7 @@ NXTimeline::~NXTimeline()
 {
 }
 
-void
-NXTimeline::addItem(const TimelineItem &item)
+void NXTimeline::addItem(const TimelineItem &item)
 {
   Q_D(NXTimeline);
   d->_items.append(item);
@@ -43,8 +41,7 @@ NXTimeline::addItem(const TimelineItem &item)
   update();
 }
 
-void
-NXTimeline::clearItems()
+void NXTimeline::clearItems()
 {
   Q_D(NXTimeline);
   d->_items.clear();
@@ -52,19 +49,16 @@ NXTimeline::clearItems()
   update();
 }
 
-int
-NXTimeline::getItemCount() const
+int NXTimeline::getItemCount() const
 {
   return d_ptr->_items.count();
 }
 
-void
-NXTimeline::paintEvent(QPaintEvent *event)
+void NXTimeline::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXTimeline);
-  if (d->_items.isEmpty())
-  {
+  if (d->_items.isEmpty()) {
     return;
   }
 
@@ -101,8 +95,7 @@ NXTimeline::paintEvent(QPaintEvent *event)
 
   int currentY = 0;
 
-  for (int i = 0; i < d->_items.count(); ++i)
-  {
+  for (int i = 0; i < d->_items.count(); ++i) {
     const TimelineItem &item  = d->_items[i];
     bool hasIcon              = (item.icon != NXIconType::None);
     int currentCircleDiameter = hasIcon ? iconCircleDiameter : circleDiameter;
@@ -116,8 +109,7 @@ NXTimeline::paintEvent(QPaintEvent *event)
     painter.setFont(contentFont);
     QFontMetrics contentFm(contentFont);
     int contentTextHeight = 0;
-    if (!item.content.isEmpty())
-    {
+    if (!item.content.isEmpty()) {
       QRect contentBound = contentFm.boundingRect(QRect(0, 0, contentWidth, 10000), Qt::TextWordWrap, item.content);
       contentTextHeight  = contentBound.height();
     }
@@ -138,37 +130,28 @@ NXTimeline::paintEvent(QPaintEvent *event)
 
     // Draw circle
     painter.setPen(Qt::NoPen);
-    if (i == 0)
-    {
+    if (i == 0) {
       painter.setBrush(primaryColor);
-    }
-    else
-    {
+    } else {
       painter.setBrush(borderColor);
     }
 
-    if (hasIcon)
-    {
+    if (hasIcon) {
       // Draw larger circle with icon
-      painter.drawEllipse(lineX - iconCircleRadius, circleCenterY - iconCircleRadius, iconCircleDiameter,
-                          iconCircleDiameter);
+      painter.drawEllipse(lineX - iconCircleRadius, circleCenterY - iconCircleRadius, iconCircleDiameter, iconCircleDiameter);
 
       // Draw icon inside circle
       iconFont.setPixelSize(12);
       painter.setFont(iconFont);
       painter.setPen(Qt::white);
-      QRect iconRect(lineX - iconCircleRadius, circleCenterY - iconCircleRadius, iconCircleDiameter,
-                     iconCircleDiameter);
+      QRect iconRect(lineX - iconCircleRadius, circleCenterY - iconCircleRadius, iconCircleDiameter, iconCircleDiameter);
       painter.drawText(iconRect, Qt::AlignCenter, QChar((unsigned short) item.icon));
-    }
-    else
-    {
+    } else {
       painter.drawEllipse(leftMargin, circleCenterY - circleRadius, circleDiameter, circleDiameter);
     }
 
     // Draw vertical line to next item
-    if (i < d->_items.count() - 1)
-    {
+    if (i < d->_items.count() - 1) {
       QPen linePen(borderColor, 1);
       painter.setPen(linePen);
       int lineStartY = circleCenterY + currentCircleRadius;
@@ -183,8 +166,7 @@ NXTimeline::paintEvent(QPaintEvent *event)
     painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, item.title);
 
     // Draw content
-    if (!item.content.isEmpty())
-    {
+    if (!item.content.isEmpty()) {
       painter.setFont(contentFont);
       painter.setPen(detailsTextColor);
       QRect contentRect(contentX, currentY + titleHeight + 4, contentWidth, contentTextHeight);
@@ -195,12 +177,10 @@ NXTimeline::paintEvent(QPaintEvent *event)
   }
 }
 
-QSize
-NXTimeline::sizeHint() const
+QSize NXTimeline::sizeHint() const
 {
   Q_D(const NXTimeline);
-  if (d->_items.isEmpty())
-  {
+  if (d->_items.isEmpty()) {
     return QSize(400, 0);
   }
 
@@ -215,14 +195,12 @@ NXTimeline::sizeHint() const
   int totalHeight   = 0;
   const int itemGap = 8;
 
-  for (int i = 0; i < d->_items.count(); ++i)
-  {
+  for (int i = 0; i < d->_items.count(); ++i) {
     QFontMetrics titleFm(titleFont);
     int titleHeight = titleFm.height();
 
     int contentTextHeight = 0;
-    if (!d->_items[i].content.isEmpty())
-    {
+    if (!d->_items[i].content.isEmpty()) {
       QFontMetrics contentFm(contentFont);
       QRect contentBound =
           contentFm.boundingRect(QRect(0, 0, contentWidth, 10000), Qt::TextWordWrap, d->_items[i].content);
@@ -232,8 +210,7 @@ NXTimeline::sizeHint() const
     int itemContentHeight = titleHeight + (contentTextHeight > 0 ? 4 + contentTextHeight : 0);
     int itemHeight        = qMax(60, itemContentHeight + 10);
     totalHeight += itemHeight;
-    if (i < d->_items.count() - 1)
-    {
+    if (i < d->_items.count() - 1) {
       totalHeight += itemGap;
     }
   }

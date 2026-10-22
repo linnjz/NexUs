@@ -19,8 +19,7 @@ Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, ValuePixelSize)
 Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, Decimals)
 Q_PROPERTY_CREATE_CPP(NXDashboardGauge, bool, IsAnimated)
 
-void
-NXDashboardGauge::setMinimum(qreal minimum)
+void NXDashboardGauge::setMinimum(qreal minimum)
 {
   Q_D(NXDashboardGauge);
   d->_pMinimum = minimum;
@@ -28,14 +27,12 @@ NXDashboardGauge::setMinimum(qreal minimum)
   Q_EMIT pMinimumChanged();
 }
 
-qreal
-NXDashboardGauge::getMinimum() const
+qreal NXDashboardGauge::getMinimum() const
 {
   return d_ptr->_pMinimum;
 }
 
-void
-NXDashboardGauge::setMaximum(qreal maximum)
+void NXDashboardGauge::setMaximum(qreal maximum)
 {
   Q_D(NXDashboardGauge);
   d->_pMaximum = maximum;
@@ -43,38 +40,31 @@ NXDashboardGauge::setMaximum(qreal maximum)
   Q_EMIT pMaximumChanged();
 }
 
-qreal
-NXDashboardGauge::getMaximum() const
+qreal NXDashboardGauge::getMaximum() const
 {
   return d_ptr->_pMaximum;
 }
 
-void
-NXDashboardGauge::setValue(qreal value)
+void NXDashboardGauge::setValue(qreal value)
 {
   Q_D(NXDashboardGauge);
   value = qBound(d->_pMinimum, value, d->_pMaximum);
-  if (qFuzzyCompare(d->_pValue, value))
-  {
+  if (qFuzzyCompare(d->_pValue, value)) {
     return;
   }
   d->_pValue = value;
 
-  if (d->_pIsAnimated)
-  {
+  if (d->_pIsAnimated) {
     QPropertyAnimation *animation = new QPropertyAnimation(d, "pAnimatedValue");
     animation->setDuration(600);
     animation->setStartValue(d->_animatedValue);
     animation->setEndValue(value);
     animation->setEasingCurve(QEasingCurve::OutCubic);
-    connect(animation, &QPropertyAnimation::valueChanged, this, [this]()
-    {
+    connect(animation, &QPropertyAnimation::valueChanged, this, [this]() {
       update();
     });
     animation->start(QAbstractAnimation::DeleteWhenStopped);
-  }
-  else
-  {
+  } else {
     d->_animatedValue = value;
     update();
   }
@@ -82,8 +72,7 @@ NXDashboardGauge::setValue(qreal value)
   Q_EMIT pValueChanged();
 }
 
-qreal
-NXDashboardGauge::getValue() const
+qreal NXDashboardGauge::getValue() const
 {
   return d_ptr->_pValue;
 }
@@ -110,8 +99,7 @@ NXDashboardGauge::NXDashboardGauge(QWidget *parent)
   setFixedSize(260, 260);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -121,50 +109,43 @@ NXDashboardGauge::~NXDashboardGauge()
 {
 }
 
-void
-NXDashboardGauge::setDangerPercent(qreal percent)
+void NXDashboardGauge::setDangerPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
   d->_dangerPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
-qreal
-NXDashboardGauge::getDangerPercent() const
+qreal NXDashboardGauge::getDangerPercent() const
 {
   return d_ptr->_dangerPercent;
 }
 
-void
-NXDashboardGauge::setWarningPercent(qreal percent)
+void NXDashboardGauge::setWarningPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
   d->_warningPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
-qreal
-NXDashboardGauge::getWarningPercent() const
+qreal NXDashboardGauge::getWarningPercent() const
 {
   return d_ptr->_warningPercent;
 }
 
-void
-NXDashboardGauge::setTickWarningPercent(qreal percent)
+void NXDashboardGauge::setTickWarningPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
   d->_tickWarningPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
-qreal
-NXDashboardGauge::getTickWarningPercent() const
+qreal NXDashboardGauge::getTickWarningPercent() const
 {
   return d_ptr->_tickWarningPercent;
 }
 
-void
-NXDashboardGauge::paintEvent(QPaintEvent *event)
+void NXDashboardGauge::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXDashboardGauge);
@@ -195,16 +176,11 @@ NXDashboardGauge::paintEvent(QPaintEvent *event)
   int valueSpan      = static_cast<int>(d->_pSpanAngle * percent);
 
   QColor arcColor;
-  if (percent >= d->_dangerPercent)
-  {
+  if (percent >= d->_dangerPercent) {
     arcColor = NXThemeColor(d->_themeMode, StatusDanger);
-  }
-  else if (percent >= d->_warningPercent)
-  {
+  } else if (percent >= d->_warningPercent) {
     arcColor = QColor(0xF7, 0x94, 0x0B);
-  }
-  else
-  {
+  } else {
     arcColor = NXThemeColor(d->_themeMode, PrimaryNormal);
   }
 
@@ -220,8 +196,7 @@ NXDashboardGauge::paintEvent(QPaintEvent *event)
   qreal minorTickLength = 5;
   int totalTicks        = d->_pMajorTickCount * d->_pMinorTickCount;
 
-  for (int i = 0; i <= totalTicks; i++)
-  {
+  for (int i = 0; i <= totalTicks; i++) {
     qreal tickAngle = d->_pStartAngle - (d->_pSpanAngle * i / static_cast<qreal>(totalTicks));
     qreal rad       = qDegreesToRadians(tickAngle);
     bool isMajor    = (i % d->_pMinorTickCount == 0);
@@ -234,16 +209,11 @@ NXDashboardGauge::paintEvent(QPaintEvent *event)
 
     qreal tickPercent = i / static_cast<qreal>(totalTicks);
     QColor tickColor;
-    if (tickPercent >= d->_dangerPercent)
-    {
+    if (tickPercent >= d->_dangerPercent) {
       tickColor = NXThemeColor(d->_themeMode, StatusDanger);
-    }
-    else if (tickPercent >= d->_tickWarningPercent)
-    {
+    } else if (tickPercent >= d->_tickWarningPercent) {
       tickColor = QColor(0xF7, 0x94, 0x0B);
-    }
-    else
-    {
+    } else {
       tickColor = NXThemeColor(d->_themeMode, BasicText);
     }
 
@@ -253,8 +223,7 @@ NXDashboardGauge::paintEvent(QPaintEvent *event)
     painter.setPen(tickPen);
     painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
 
-    if (isMajor)
-    {
+    if (isMajor) {
       qreal tickValue   = d->_pMinimum + range * tickPercent;
       QString tickLabel = QString::number(tickValue, 'f', d->_pDecimals);
 
@@ -303,14 +272,12 @@ NXDashboardGauge::paintEvent(QPaintEvent *event)
   painter.setPen(arcColor);
 
   QString valueText = QString::number(displayValue, 'f', d->_pDecimals);
-  if (!d->_pUnit.isEmpty())
-  {
+  if (!d->_pUnit.isEmpty()) {
     valueText += QStringLiteral(" ") + d->_pUnit;
   }
   painter.drawText(QRectF(-80, 15, 160, 40), Qt::AlignCenter, valueText);
 
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(13);
     painter.setFont(titleFont);

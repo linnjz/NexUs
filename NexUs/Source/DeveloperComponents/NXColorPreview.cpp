@@ -16,8 +16,7 @@ NXColorPreview::~NXColorPreview()
 {
 }
 
-void
-NXColorPreview::paintEvent(QPaintEvent *event)
+void NXColorPreview::paintEvent(QPaintEvent *event)
 {
   int penWidth     = 3;
   int borderRadius = 5;

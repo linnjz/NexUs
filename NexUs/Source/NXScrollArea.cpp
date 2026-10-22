@@ -24,11 +24,9 @@ NXScrollArea::~NXScrollArea()
 {
 }
 
-void
-NXScrollArea::setIsGrabGesture(bool isEnable, qreal mousePressEventDelay)
+void NXScrollArea::setIsGrabGesture(bool isEnable, qreal mousePressEventDelay)
 {
-  if (isEnable)
-  {
+  if (isEnable) {
     QScroller::grabGesture(this->viewport(), QScroller::LeftMouseButtonGesture);
     QScrollerProperties properties = QScroller::scroller(this->viewport())->scrollerProperties();
     properties.setScrollMetric(QScrollerProperties::MousePressEventDelay, mousePressEventDelay);
@@ -36,56 +34,40 @@ NXScrollArea::setIsGrabGesture(bool isEnable, qreal mousePressEventDelay)
     properties.setScrollMetric(QScrollerProperties::OvershootScrollTime, 0.5);
     properties.setScrollMetric(QScrollerProperties::FrameRate, QScrollerProperties::Fps60);
     QScroller::scroller(this->viewport())->setScrollerProperties(properties);
-  }
-  else
-  {
+  } else {
     QScroller::ungrabGesture(this->viewport());
   }
 }
 
-void
-NXScrollArea::setIsOverShoot(Qt::Orientation orientation, bool isEnable)
+void NXScrollArea::setIsOverShoot(Qt::Orientation orientation, bool isEnable)
 {
   QScrollerProperties properties = QScroller::scroller(this->viewport())->scrollerProperties();
-  properties.setScrollMetric(orientation == Qt::Horizontal ? QScrollerProperties::HorizontalOvershootPolicy
-                                                           : QScrollerProperties::VerticalOvershootPolicy,
-                             isEnable ? QScrollerProperties::OvershootAlwaysOn
-                                      : QScrollerProperties::OvershootAlwaysOff);
+  properties.setScrollMetric(orientation == Qt::Horizontal ? QScrollerProperties::HorizontalOvershootPolicy : QScrollerProperties::VerticalOvershootPolicy, isEnable ? QScrollerProperties::OvershootAlwaysOn : QScrollerProperties::OvershootAlwaysOff);
   QScroller::scroller(this->viewport())->setScrollerProperties(properties);
 }
 
-bool
-NXScrollArea::getIsOverShoot(Qt::Orientation orientation) const
+bool NXScrollArea::getIsOverShoot(Qt::Orientation orientation) const
 {
   QScrollerProperties properties = QScroller::scroller(this->viewport())->scrollerProperties();
   return properties
-      .scrollMetric(orientation == Qt::Horizontal ? QScrollerProperties::HorizontalOvershootPolicy
-                                                  : QScrollerProperties::VerticalOvershootPolicy)
+      .scrollMetric(orientation == Qt::Horizontal ? QScrollerProperties::HorizontalOvershootPolicy : QScrollerProperties::VerticalOvershootPolicy)
       .toBool();
 }
 
-void
-NXScrollArea::setIsAnimation(Qt::Orientation orientation, bool isAnimation)
+void NXScrollArea::setIsAnimation(Qt::Orientation orientation, bool isAnimation)
 {
-  if (orientation == Qt::Horizontal)
-  {
+  if (orientation == Qt::Horizontal) {
     dynamic_cast<NXScrollBar *>(this->horizontalScrollBar())->setIsAnimation(isAnimation);
-  }
-  else
-  {
+  } else {
     dynamic_cast<NXScrollBar *>(this->verticalScrollBar())->setIsAnimation(isAnimation);
   }
 }
 
-bool
-NXScrollArea::getIsAnimation(Qt::Orientation orientation) const
+bool NXScrollArea::getIsAnimation(Qt::Orientation orientation) const
 {
-  if (orientation == Qt::Horizontal)
-  {
+  if (orientation == Qt::Horizontal) {
     return dynamic_cast<NXScrollBar *>(this->horizontalScrollBar())->getIsAnimation();
-  }
-  else
-  {
+  } else {
     return dynamic_cast<NXScrollBar *>(this->verticalScrollBar())->getIsAnimation();
   }
 }

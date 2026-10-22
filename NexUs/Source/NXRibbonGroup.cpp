@@ -36,8 +36,7 @@ NXRibbonGroup::NXRibbonGroup(const QString &title, QWidget *parent)
   mainLayout->addSpacing(16);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -47,95 +46,80 @@ NXRibbonGroup::~NXRibbonGroup()
 {
 }
 
-void
-NXRibbonGroup::setTitle(const QString &title)
+void NXRibbonGroup::setTitle(const QString &title)
 {
   Q_D(NXRibbonGroup);
   d->_title = title;
   update();
 }
 
-QString
-NXRibbonGroup::getTitle() const
+QString NXRibbonGroup::getTitle() const
 {
   Q_D(const NXRibbonGroup);
   return d->_title;
 }
 
-NXToolButton *
-NXRibbonGroup::addToolButton(NXIconType::IconName icon, const QString &text, ButtonSize size)
+NXToolButton * NXRibbonGroup::addToolButton(NXIconType::IconName icon, const QString &text, ButtonSize size)
 {
   Q_D(NXRibbonGroup);
   NXToolButton *button = new NXToolButton(this);
   button->setNXIcon(icon);
   button->setText(text);
-  if (const int fs = nxApp->getFontPixelSize(); size == Large)
-  {
+  if (const int fs = nxApp->getFontPixelSize(); size == Large) {
     button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     button->setIconSize(QSize(fs * 2 - 2, fs * 2 - 2));
     button->setFixedSize(fs * 4, fs * 4);
     QFont f = button->font();
     f.setPixelSize(fs - 2);
     button->setFont(f);
-  }
-  else
-  {
+  } else {
     button->setToolButtonStyle(Qt::ToolButtonIconOnly);
     button->setIconSize(QSize(fs + 5, fs + 5));
     button->setFixedSize(fs * 2 + 4, fs * 2 + 4);
   }
   d->_contentLayout->insertWidget(d->_contentLayout->count() - 1, button);
-  connect(button, &NXToolButton::clicked, this, [this, button]
-  {
+  connect(button, &NXToolButton::clicked, this, [this, button] {
     Q_EMIT ribbonButtonTriggered(button);
   });
   return button;
 }
 
-void
-NXRibbonGroup::addWidget(QWidget *widget)
+void NXRibbonGroup::addWidget(QWidget *widget)
 {
   Q_D(NXRibbonGroup);
   d->_contentLayout->insertWidget(d->_contentLayout->count() - 1, widget);
 }
 
-void
-NXRibbonGroup::removeButton(NXToolButton *button)
+void NXRibbonGroup::removeButton(NXToolButton *button)
 {
   Q_D(NXRibbonGroup);
-  if (!button || button->parentWidget() != this)
-  {
+  if (!button || button->parentWidget() != this) {
     return;
   }
   d->_contentLayout->removeWidget(button);
   button->deleteLater();
 }
 
-QList<NXToolButton *>
-NXRibbonGroup::getButtons() const
+QList<NXToolButton *> NXRibbonGroup::getButtons() const
 {
   Q_D(const NXRibbonGroup);
   QList<NXToolButton *> buttons;
-  for (int i = 0; i < d->_contentLayout->count(); ++i)
-  {
-    if (auto *button = qobject_cast<NXToolButton *>(d->_contentLayout->itemAt(i)->widget()))
-    {
+  for (int i = 0; i < d->_contentLayout->count(); ++i) {
+    if (auto *button = qobject_cast<NXToolButton *>(d->_contentLayout->itemAt(i)->widget())) {
       buttons.append(button);
     }
   }
   return buttons;
 }
 
-void
-NXRibbonGroup::paintEvent(QPaintEvent *event)
+void NXRibbonGroup::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXRibbonGroup);
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  if (!d->_title.isEmpty())
-  {
+  if (!d->_title.isEmpty()) {
     const int fs    = nxApp->getFontPixelSize();
     QFont titleFont = font();
     titleFont.setPixelSize(fs - 2);
@@ -154,12 +138,10 @@ NXRibbonGroup::paintEvent(QPaintEvent *event)
     const int textRight = center + textW / 2 + textGap;
 
     painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
-    if (textLeft > leftStart)
-    {
+    if (textLeft > leftStart) {
       painter.drawLine(leftStart, lineY, textLeft, lineY);
     }
-    if (rightEnd > textRight)
-    {
+    if (rightEnd > textRight) {
       painter.drawLine(textRight, lineY, rightEnd, lineY);
     }
 
@@ -175,8 +157,7 @@ NXRibbonGroup::paintEvent(QPaintEvent *event)
   painter.drawLine(sepX, sepTop, sepX, sepBottom);
 }
 
-QSize
-NXRibbonGroup::sizeHint() const
+QSize NXRibbonGroup::sizeHint() const
 {
   Q_D(const NXRibbonGroup);
   QSize hint   = QWidget::sizeHint();
@@ -185,12 +166,10 @@ NXRibbonGroup::sizeHint() const
   f.setPixelSize(fs - 2);
   QFontMetrics fm(f);
   int titleW = fm.horizontalAdvance(d->_title) + fs + 7;
-  if (hint.width() < titleW)
-  {
+  if (hint.width() < titleW) {
     hint.setWidth(titleW);
   }
-  if (hint.height() < fs * 6 + 2)
-  {
+  if (hint.height() < fs * 6 + 2) {
     hint.setHeight(fs * 6 + 2);
   }
   return hint;

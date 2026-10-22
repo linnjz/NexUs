@@ -31,8 +31,7 @@ NXToast::NXToast(ToastType type, const QString &text, int displayMsec, QWidget *
   setAttribute(Qt::WA_DeleteOnClose);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -49,18 +48,14 @@ NXToast::NXToast(ToastType type, const QString &text, int displayMsec, QWidget *
 
   // Position: centered at top of parent window or screen
   QPoint targetPos;
-  if (parent)
-  {
+  if (parent) {
     QRect parentRect = parent->geometry();
     int x            = parentRect.x() + (parentRect.width() - width()) / 2;
     int y            = parentRect.y() + 60;
     targetPos        = QPoint(x, y);
-  }
-  else
-  {
+  } else {
     QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
+    if (screen) {
       QRect screenRect = screen->availableGeometry();
       int x            = screenRect.x() + (screenRect.width() - width()) / 2;
       int y            = screenRect.y() + 60;
@@ -88,16 +83,13 @@ NXToast::NXToast(ToastType type, const QString &text, int displayMsec, QWidget *
   fadeOut->setEndValue(0.0);
   fadeOut->setEasingCurve(QEasingCurve::InCubic);
 
-  connect(fadeIn, &QPropertyAnimation::finished, this, [=]()
-  {
-    QTimer::singleShot(displayMsec, this, [fadeOut]()
-    {
+  connect(fadeIn, &QPropertyAnimation::finished, this, [=]() {
+    QTimer::singleShot(displayMsec, this, [fadeOut]() {
       fadeOut->start();
     });
   });
 
-  connect(fadeOut, &QPropertyAnimation::finished, this, [=]()
-  {
+  connect(fadeOut, &QPropertyAnimation::finished, this, [=]() {
     close();
     deleteLater();
   });
@@ -110,36 +102,31 @@ NXToast::~NXToast()
 {
 }
 
-void
-NXToast::success(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::success(const QString &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Success, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void
-NXToast::info(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::info(const QString &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Info, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void
-NXToast::warning(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::warning(const QString &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Warning, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void
-NXToast::error(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::error(const QString &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Error, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void
-NXToast::paintEvent(QPaintEvent *event)
+void NXToast::paintEvent(QPaintEvent *event)
 {
   Q_D(NXToast);
   QPainter painter(this);
@@ -149,8 +136,7 @@ NXToast::paintEvent(QPaintEvent *event)
   nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
 
   // Foreground rect
-  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth,
-                       height() - 2 * d->_shadowBorderWidth);
+  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
 
   // Background
   painter.save();
@@ -163,8 +149,7 @@ NXToast::paintEvent(QPaintEvent *event)
   QColor indicatorColor;
   NXIconType::IconName iconEnum;
   QColor iconColor;
-  switch (d->_toastType)
-  {
+  switch (d->_toastType) {
   case Success :
     indicatorColor = QColor(0x0F, 0x7B, 0x0F);
     iconEnum       = NXIconType::Check;

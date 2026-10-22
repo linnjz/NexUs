@@ -45,8 +45,7 @@ NXVirtualList::NXVirtualList(QWidget *parent)
   setLayoutMode(QListView::Batched);
   setBatchSize(100);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     viewport()->update();
   });
@@ -56,25 +55,21 @@ NXVirtualList::~NXVirtualList()
 {
 }
 
-void
-NXVirtualList::setItemCount(int count)
+void NXVirtualList::setItemCount(int count)
 {
   Q_D(NXVirtualList);
   d->_itemCount = count;
 }
 
-int
-NXVirtualList::getItemCount() const
+int NXVirtualList::getItemCount() const
 {
   return d_ptr->_itemCount;
 }
 
-void
-NXVirtualList::paintEvent(QPaintEvent *event)
+void NXVirtualList::paintEvent(QPaintEvent *event)
 {
   Q_D(NXVirtualList);
-  if (!d->_pIsTransparent)
-  {
+  if (!d->_pIsTransparent) {
     QPainter painter(viewport());
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing);

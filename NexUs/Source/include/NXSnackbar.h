@@ -30,22 +30,10 @@ public:
   static void setMaxCount(int count);
   static int getMaxCount();
 
-  static NXSnackbar *success(const QString &text,
-                             const QString &actionText = QStringLiteral(""),
-                             int displayMsec           = 4000,
-                             QWidget *parent           = nullptr);
-  static NXSnackbar *info(const QString &text,
-                          const QString &actionText = QStringLiteral(""),
-                          int displayMsec           = 4000,
-                          QWidget *parent           = nullptr);
-  static NXSnackbar *warning(const QString &text,
-                             const QString &actionText = QStringLiteral(""),
-                             int displayMsec           = 4000,
-                             QWidget *parent           = nullptr);
-  static NXSnackbar *error(const QString &text,
-                           const QString &actionText = QStringLiteral(""),
-                           int displayMsec           = 4000,
-                           QWidget *parent           = nullptr);
+  static NXSnackbar *success(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *info(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *warning(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *error(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
   Q_SIGNAL void actionClicked();
   Q_SIGNAL void closed();
 

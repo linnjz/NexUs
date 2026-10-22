@@ -82,83 +82,70 @@ NXTreeSelect::~NXTreeSelect()
   d_ptr->_popupContainer->deleteLater();
 }
 
-void
-NXTreeSelect::setItemHeight(int itemHeight)
+void NXTreeSelect::setItemHeight(int itemHeight)
 {
   Q_D(NXTreeSelect);
-  if (itemHeight > 0)
-  {
+  if (itemHeight > 0) {
     d->_pItemHeight = itemHeight;
     d->_treeView->setItemHeight(itemHeight);
   }
 }
 
-int
-NXTreeSelect::getItemHeight() const
+int NXTreeSelect::getItemHeight() const
 {
   return d_ptr->_pItemHeight;
 }
 
-void
-NXTreeSelect::setModel(QStandardItemModel *model)
+void NXTreeSelect::setModel(QStandardItemModel *model)
 {
   Q_D(NXTreeSelect);
   d->_model = model;
-  if (model)
-  {
+  if (model) {
     d->_proxyModel->setSourceModel(model);
     d->_treeView->setModel(d->_proxyModel);
   }
 }
 
-QStandardItemModel *
-NXTreeSelect::model() const
+QStandardItemModel * NXTreeSelect::model() const
 {
   return d_ptr->_model;
 }
 
-void
-NXTreeSelect::setCurrentIndex(const QModelIndex &index)
+void NXTreeSelect::setCurrentIndex(const QModelIndex &index)
 {
   Q_D(NXTreeSelect);
   d->_currentIndex = index;
   d->_updateDisplayText();
-  if (d->_proxyModel && index.isValid())
-  {
+  if (d->_proxyModel && index.isValid()) {
     QModelIndex proxyIndex = d->_proxyModel->mapFromSource(index);
     d->_treeView->setCurrentIndex(proxyIndex);
   }
   update();
 }
 
-QModelIndex
-NXTreeSelect::currentIndex() const
+QModelIndex NXTreeSelect::currentIndex() const
 {
   return d_ptr->_currentIndex;
 }
 
-QString
-NXTreeSelect::currentText() const
+QString NXTreeSelect::currentText() const
 {
   return d_ptr->_currentText;
 }
 
-void
-NXTreeSelect::expandAll()
+void NXTreeSelect::expandAll()
 {
   Q_D(NXTreeSelect);
   d->_treeView->expandAll();
 }
 
-void
-NXTreeSelect::collapseAll()
+void NXTreeSelect::collapseAll()
 {
   Q_D(NXTreeSelect);
   d->_treeView->collapseAll();
 }
 
-void
-NXTreeSelect::paintEvent(QPaintEvent *event)
+void NXTreeSelect::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXTreeSelect);
@@ -170,25 +157,19 @@ NXTreeSelect::paintEvent(QPaintEvent *event)
   QPainterPath bgPath;
   bgPath.addRoundedRect(bgRect, d->_pBorderRadius, d->_pBorderRadius);
 
-  if (d->_isPressed)
-  {
+  if (d->_isPressed) {
     painter.setPen(NXThemeColor(d->_themeMode, BasicBorderDeep));
     painter.setBrush(NXThemeColor(d->_themeMode, BasicPress));
-  }
-  else if (d->_isHover)
-  {
+  } else if (d->_isHover) {
     painter.setPen(NXThemeColor(d->_themeMode, BasicBorderHover));
     painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
-  }
-  else
-  {
+  } else {
     painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
     painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
   }
   painter.drawPath(bgPath);
 
-  if (d->_isPopupVisible)
-  {
+  if (d->_isPopupVisible) {
     painter.setPen(Qt::NoPen);
     painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
     QRectF indicatorRect(d->_pBorderRadius + 6, height() - 3, width() - 2 * (d->_pBorderRadius + 6), 3);
@@ -196,13 +177,10 @@ NXTreeSelect::paintEvent(QPaintEvent *event)
   }
 
   QRectF textRect(10, 0, width() - 35, height());
-  if (d->_currentText.isEmpty())
-  {
+  if (d->_currentText.isEmpty()) {
     painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
     painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->_pPlaceholderText);
-  }
-  else
-  {
+  } else {
     painter.setPen(NXThemeColor(d->_themeMode, BasicText));
     QString elidedText = painter.fontMetrics().elidedText(d->_currentText, Qt::ElideRight, textRect.width());
     painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, elidedText);
@@ -221,8 +199,7 @@ NXTreeSelect::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXTreeSelect::mousePressEvent(QMouseEvent *event)
+void NXTreeSelect::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXTreeSelect);
   d->_isPressed = true;
@@ -230,19 +207,14 @@ NXTreeSelect::mousePressEvent(QMouseEvent *event)
   QWidget::mousePressEvent(event);
 }
 
-void
-NXTreeSelect::mouseReleaseEvent(QMouseEvent *event)
+void NXTreeSelect::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXTreeSelect);
   d->_isPressed = false;
-  if (rect().contains(event->pos()))
-  {
-    if (d->_isPopupVisible)
-    {
+  if (rect().contains(event->pos())) {
+    if (d->_isPopupVisible) {
       d->_hidePopup();
-    }
-    else
-    {
+    } else {
       d->_showPopup();
     }
   }
@@ -251,11 +223,9 @@ NXTreeSelect::mouseReleaseEvent(QMouseEvent *event)
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void
-NXTreeSelect::enterEvent(QEnterEvent *event)
+void NXTreeSelect::enterEvent(QEnterEvent *event)
 #else
-void
-NXTreeSelect::enterEvent(QEvent *event)
+void NXTreeSelect::enterEvent(QEvent *event)
 #endif
 {
   Q_D(NXTreeSelect);
@@ -264,8 +234,7 @@ NXTreeSelect::enterEvent(QEvent *event)
   QWidget::enterEvent(event);
 }
 
-void
-NXTreeSelect::leaveEvent(QEvent *event)
+void NXTreeSelect::leaveEvent(QEvent *event)
 {
   Q_D(NXTreeSelect);
   d->_isHover = false;

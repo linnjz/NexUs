@@ -15,8 +15,7 @@ NXAutoCompleteContainer::NXAutoCompleteContainer(QWidget *parent)
   setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
     update();
   });
@@ -26,14 +25,12 @@ NXAutoCompleteContainer::~NXAutoCompleteContainer()
 {
 }
 
-void
-NXAutoCompleteContainer::setForwardTarget(NXLineEdit *target)
+void NXAutoCompleteContainer::setForwardTarget(NXLineEdit *target)
 {
   _forwardTarget = target;
 }
 
-void
-NXAutoCompleteContainer::paintEvent(QPaintEvent *event)
+void NXAutoCompleteContainer::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   QPainter painter(this);
@@ -48,20 +45,16 @@ NXAutoCompleteContainer::paintEvent(QPaintEvent *event)
   painter.drawPath(backgroundPath);
 }
 
-void
-NXAutoCompleteContainer::keyPressEvent(QKeyEvent *event)
+void NXAutoCompleteContainer::keyPressEvent(QKeyEvent *event)
 {
-  if (_forwardTarget)
-  {
-    if (event->key() == Qt::Key_Escape)
-    {
+  if (_forwardTarget) {
+    if (event->key() == Qt::Key_Escape) {
       hide();
       _forwardTarget->setFocus();
       return;
     }
     if (event->key() != Qt::Key_Up && event->key() != Qt::Key_Down && event->key() != Qt::Key_Enter &&
-        event->key() != Qt::Key_Return)
-    {
+        event->key() != Qt::Key_Return) {
       QApplication::sendEvent(_forwardTarget, event);
       return;
     }
@@ -69,8 +62,7 @@ NXAutoCompleteContainer::keyPressEvent(QKeyEvent *event)
   QWidget::keyPressEvent(event);
 }
 
-void
-NXAutoCompleteContainer::hideEvent(QHideEvent *event)
+void NXAutoCompleteContainer::hideEvent(QHideEvent *event)
 {
   QWidget::hideEvent(event);
   Q_EMIT popupClosed();

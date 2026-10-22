@@ -15,23 +15,18 @@ NXCountdownPrivate::~NXCountdownPrivate()
 {
 }
 
-void
-NXCountdownPrivate::onTimerTick()
+void NXCountdownPrivate::onTimerTick()
 {
   Q_Q(NXCountdown);
-  if (_useTargetMode)
-  {
+  if (_useTargetMode) {
     qint64 secs       = QDateTime::currentDateTime().secsTo(_targetDateTime);
     _remainingSeconds = qMax(static_cast<qint64>(0), secs);
-  }
-  else
-  {
+  } else {
     _remainingSeconds = qMax(static_cast<qint64>(0), _remainingSeconds - 1);
   }
 
   int curSeconds = static_cast<int>(_remainingSeconds % 60);
-  if (_prevSeconds != curSeconds)
-  {
+  if (_prevSeconds != curSeconds) {
     _startFlipAnimation();
     _prevSeconds = curSeconds;
   }
@@ -42,22 +37,19 @@ NXCountdownPrivate::onTimerTick()
   Q_EMIT q->tick(_remainingSeconds);
   q->update();
 
-  if (_remainingSeconds <= 0)
-  {
+  if (_remainingSeconds <= 0) {
     _isRunning = false;
     _timer->stop();
     Q_EMIT q->timeout();
   }
 }
 
-void
-NXCountdownPrivate::_startFlipAnimation()
+void NXCountdownPrivate::_startFlipAnimation()
 {
   Q_Q(NXCountdown);
   _pFlipAngle                  = 0;
   QPropertyAnimation *flipAnim = new QPropertyAnimation(this, "pFlipAngle");
-  connect(flipAnim, &QPropertyAnimation::valueChanged, q, [=]()
-  {
+  connect(flipAnim, &QPropertyAnimation::valueChanged, q, [=]() {
     q->update();
   });
   flipAnim->setDuration(300);

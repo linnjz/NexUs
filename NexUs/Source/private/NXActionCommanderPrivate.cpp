@@ -14,58 +14,43 @@ NXActionCommanderPrivate::~NXActionCommanderPrivate()
 {
 }
 
-void
-NXActionCommanderPrivate::_showCommandDesc(const NXActionCommand *command, bool isRedo, bool isExecute) const
+void NXActionCommanderPrivate::_showCommandDesc(const NXActionCommand *command, bool isRedo, bool isExecute) const
 {
-  if (!command->getIsShowMessage() || !_pIsMessageDisplayEnable)
-  {
+  if (!command->getIsShowMessage() || !_pIsMessageDisplayEnable) {
     return;
   }
-  QString commandTitle = isExecute ? QStringLiteral("执行") : isRedo ? QStringLiteral("重做") : QStringLiteral("撤回");
-  switch (command->getMessageMode())
-  {
-  case NXMessageBarType::Success :
-  {
-    NXMessageBar::success(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc,
-                          command->getMessageWidget());
+  QString commandTitle = isExecute ? QStringLiteral("执行") : isRedo ? QStringLiteral("重做")
+                                                                     : QStringLiteral("撤回");
+  switch (command->getMessageMode()) {
+  case NXMessageBarType::Success : {
+    NXMessageBar::success(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc, command->getMessageWidget());
     break;
   }
-  case NXMessageBarType::Warning :
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc,
-                          command->getMessageWidget());
+  case NXMessageBarType::Warning : {
+    NXMessageBar::warning(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc, command->getMessageWidget());
     break;
   }
-  case NXMessageBarType::Information :
-  {
-    NXMessageBar::information(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc,
-                              command->getMessageWidget());
+  case NXMessageBarType::Information : {
+    NXMessageBar::information(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc, command->getMessageWidget());
     break;
   }
-  case NXMessageBarType::Error :
-  {
-    NXMessageBar::error(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc,
-                        command->getMessageWidget());
+  case NXMessageBarType::Error : {
+    NXMessageBar::error(NXMessageBarType::TopRight, commandTitle, command->getCommandDesc(), _pMessageDisplayMesc, command->getMessageWidget());
     break;
   }
   }
 }
 
-bool
-NXActionCommanderPrivate::_executeCommand(const QString &domainName, NXActionCommand *command)
+bool NXActionCommanderPrivate::_executeCommand(const QString &domainName, NXActionCommand *command)
 {
   Q_Q(NXActionCommander);
   auto &commandData = _commandDomainMap[domainName];
-  if (commandData.isBusyMode)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), _pMessageDisplayMesc,
-                           command->getMessageWidget());
+  if (commandData.isBusyMode) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), _pMessageDisplayMesc, command->getMessageWidget());
     return false;
   }
-  if (!command)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("命令对象不可用!"), _pMessageDisplayMesc,
-                           command->getMessageWidget());
+  if (!command) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("命令对象不可用!"), _pMessageDisplayMesc, command->getMessageWidget());
     return false;
   }
   q->setCurrentDomain(domainName);
@@ -76,57 +61,44 @@ NXActionCommanderPrivate::_executeCommand(const QString &domainName, NXActionCom
   return true;
 }
 
-bool
-NXActionCommanderPrivate::_recordCommand(const QString &domainName, NXActionCommand *command, bool isRedo)
+bool NXActionCommanderPrivate::_recordCommand(const QString &domainName, NXActionCommand *command, bool isRedo)
 {
   Q_Q(NXActionCommander);
   auto &commandData = _commandDomainMap[domainName];
-  if (commandData.isBusyMode)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), _pMessageDisplayMesc,
-                           command->getMessageWidget());
+  if (commandData.isBusyMode) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("任务管理器繁忙中!"), _pMessageDisplayMesc, command->getMessageWidget());
     return false;
   }
-  if (!command)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("命令对象不可用!"), _pMessageDisplayMesc,
-                           command->getMessageWidget());
+  if (!command) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("命令对象不可用!"), _pMessageDisplayMesc, command->getMessageWidget());
     return false;
   }
-  if (!_isCommanderValid)
-  {
-    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"),
-                           _pMessageDisplayMesc, command->getMessageWidget());
+  if (!_isCommanderValid) {
+    NXMessageBar::warning(NXMessageBarType::TopRight, QStringLiteral("警告"), QStringLiteral("当前不处于可编辑模式，仅支持运行命令!"), _pMessageDisplayMesc, command->getMessageWidget());
     return false;
   }
   q->setCurrentDomain(domainName);
   command->setParent(q);
-  if (isRedo)
-  {
+  if (isRedo) {
     // 加入时Redo一次
     command->redo();
     _showCommandDesc(command, true, true);
     // 记录时执行失败则丢弃命令 后续撤回重做时失败不进行处理
-    if (command->getMessageMode() == NXMessageBarType::Error)
-    {
+    if (command->getMessageMode() == NXMessageBarType::Error) {
       delete command;
       return false;
     }
   }
   auto &commandList = commandData.commandList;
   auto commandModel = commandData.commanderModel;
-  if (commandData.currentIndex <= 0 || commandList.count() == 0)
-  {
+  if (commandData.currentIndex <= 0 || commandList.count() == 0) {
     commandData.undoState = NXActionCommanderType::UndoValid;
     commandData.redoState = NXActionCommanderType::RedoInvalid;
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::UndoValid);
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::RedoInvalid);
-  }
-  else
-  {
+  } else {
     // 超过最大命令数 则移除第一条命令
-    if (commandList.count() >= _pMaxCommandCount)
-    {
+    if (commandList.count() >= _pMaxCommandCount) {
       auto deleteCommand = commandList[0];
       commandModel->removeCommand(deleteCommand);
       delete deleteCommand;
@@ -135,20 +107,17 @@ NXActionCommanderPrivate::_recordCommand(const QString &domainName, NXActionComm
     }
   }
   // 当前索引不位于末尾 则清除索引后的数据
-  if (commandData.currentIndex != commandList.count() - 1)
-  {
+  if (commandData.currentIndex != commandList.count() - 1) {
     int deleteStartIndex = commandData.currentIndex + 1;
     int deleteCount      = commandList.count() - commandData.currentIndex - 1;
     int deleteEndIndex   = deleteStartIndex + deleteCount;
-    for (int i = deleteStartIndex; i < deleteEndIndex; i++)
-    {
+    for (int i = deleteStartIndex; i < deleteEndIndex; i++) {
       auto deleteCommand = commandList[i];
       commandModel->removeCommand(deleteCommand);
       delete deleteCommand;
     }
     commandList.remove(deleteStartIndex, deleteCount);
-    if (commandData.currentIndex > 0)
-    {
+    if (commandData.currentIndex > 0) {
       commandData.redoState = NXActionCommanderType::RedoInvalid;
       Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::RedoInvalid);
     }
@@ -157,32 +126,26 @@ NXActionCommanderPrivate::_recordCommand(const QString &domainName, NXActionComm
   commandData.currentIndex = commandList.count() - 1;
   commandModel->addCommand(command);
   _commanderView->clearSelection();
-  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command),
-                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
+  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command), QItemSelectionModel::Select | QItemSelectionModel::Rows);
   return true;
 }
 
-void
-NXActionCommanderPrivate::_undoCommand(const QString &domainName, bool isShowMessage)
+void NXActionCommanderPrivate::_undoCommand(const QString &domainName, bool isShowMessage)
 {
   Q_Q(NXActionCommander);
   auto &commandData = _commandDomainMap[domainName];
-  if (commandData.undoState == NXActionCommanderType::UndoInvalid)
-  {
+  if (commandData.undoState == NXActionCommanderType::UndoInvalid) {
     return;
   }
   auto &commandList = commandData.commandList;
-  if (commandList.isEmpty())
-  {
+  if (commandList.isEmpty()) {
     return;
   }
-  if (commandData.currentIndex == 0)
-  {
+  if (commandData.currentIndex == 0) {
     commandData.undoState = NXActionCommanderType::UndoInvalid;
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::UndoInvalid);
   }
-  if (commandData.currentIndex == commandList.size() - 1)
-  {
+  if (commandData.currentIndex == commandList.size() - 1) {
     commandData.redoState = NXActionCommanderType::RedoValid;
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::RedoValid);
   }
@@ -192,41 +155,33 @@ NXActionCommanderPrivate::_undoCommand(const QString &domainName, bool isShowMes
   auto commandModel = commandData.commanderModel;
   commandModel->updateCommand(command, false);
   _commanderView->clearSelection();
-  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command),
-                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
+  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command), QItemSelectionModel::Select | QItemSelectionModel::Rows);
   _commanderView->viewport()->update();
-  if (isShowMessage)
-  {
+  if (isShowMessage) {
     _showCommandDesc(command, false);
   }
 }
 
-void
-NXActionCommanderPrivate::_redoCommand(const QString &domainName, bool isShowMessage)
+void NXActionCommanderPrivate::_redoCommand(const QString &domainName, bool isShowMessage)
 {
   Q_Q(NXActionCommander);
   auto &commandData = _commandDomainMap[domainName];
   auto &commandList = commandData.commandList;
-  if (commandData.redoState == NXActionCommanderType::RedoInvalid)
-  {
+  if (commandData.redoState == NXActionCommanderType::RedoInvalid) {
     return;
   }
-  if (commandList.isEmpty())
-  {
+  if (commandList.isEmpty()) {
     return;
   }
-  if (commandData.currentIndex <= 0)
-  {
+  if (commandData.currentIndex <= 0) {
     commandData.undoState = NXActionCommanderType::UndoValid;
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::UndoValid);
   }
-  if (commandData.currentIndex == commandList.size() - 2)
-  {
+  if (commandData.currentIndex == commandList.size() - 2) {
     commandData.redoState = NXActionCommanderType::RedoInvalid;
     Q_EMIT q->commanderStateChanged(domainName, NXActionCommanderType::RedoInvalid);
   }
-  if (commandData.currentIndex < commandList.size() - 1)
-  {
+  if (commandData.currentIndex < commandList.size() - 1) {
     commandData.currentIndex += 1;
   }
   auto command = commandList[commandData.currentIndex];
@@ -235,19 +190,15 @@ NXActionCommanderPrivate::_redoCommand(const QString &domainName, bool isShowMes
   commandModel->updateCommand(command, true);
   _commanderView->viewport()->update();
   _commanderView->clearSelection();
-  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command),
-                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
-  if (isShowMessage)
-  {
+  _commanderView->selectionModel()->select(commandModel->getCommandModelIndex(command), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+  if (isShowMessage) {
     _showCommandDesc(command, true);
   }
 }
 
-void
-NXActionCommanderPrivate::_initDomain(NXActionCommandDomainData &domainData) const
+void NXActionCommanderPrivate::_initDomain(NXActionCommandDomainData &domainData) const
 {
-  if (domainData.commanderModel)
-  {
+  if (domainData.commanderModel) {
     return;
   }
   domainData.commanderModel = new NXActionCommanderModel(_commanderDesign);

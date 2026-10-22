@@ -15,14 +15,13 @@ NXMicaBaseInitObject::~NXMicaBaseInitObject()
 {
 }
 
-void
-NXMicaBaseInitObject::onInitMicaBase(const QImage &img)
+void NXMicaBaseInitObject::onInitMicaBase(const QImage &img)
 {
   // QColorDialog
   // 统一处理为1920*1080以节省空间
-  QImage blurImage = NXExponentialBlur::doExponentialBlur(
-                         img.scaled(QSize(1920, 1080), Qt::IgnoreAspectRatio, Qt::SmoothTransformation), 500)
-                         .toImage();
+  QImage blurImage     = NXExponentialBlur::doExponentialBlur(
+                             img.scaled(QSize(1920, 1080), Qt::IgnoreAspectRatio, Qt::SmoothTransformation), 500)
+                             .toImage();
   QImage lightImage    = blurImage;
   QImage darkImage     = blurImage;
   QColor lightMixColor = QColor(0xF3, 0xF3, 0xF3);
@@ -33,31 +32,23 @@ NXMicaBaseInitObject::onInitMicaBase(const QImage &img)
   QColor lightColor;
   QColor darkColor;
   int h, s, v;
-  for (int y = 0; y < blurImage.height(); y++)
-  {
+  for (int y = 0; y < blurImage.height(); y++) {
     QRgb *line = (QRgb *) blurImage.scanLine(y);
-    for (int x = 0; x < blurImage.width(); x++)
-    {
+    for (int x = 0; x < blurImage.width(); x++) {
       originColor = QColor(line[x]);
       originColor = originColor.toHsv();
       h           = originColor.hsvHue();
       s           = originColor.hsvSaturation();
       v           = originColor.value();
-      if (s / 20 > 11)
-      {
+      if (s / 20 > 11) {
         lightColor.setHsv(h, (s / 20 + 11) / 2, 250);
-      }
-      else
-      {
+      } else {
         lightColor.setHsv(h, 11, 250);
       }
       lightColor = lightColor.toRgb();
-      if (v / 1.1 > 40)
-      {
+      if (v / 1.1 > 40) {
         darkColor.setHsv(h, s / 2, (v / 1.1 + 40) / 2);
-      }
-      else
-      {
+      } else {
         darkColor.setHsv(h, s / 2, 40);
       }
       darkColor = darkColor.toRgb();

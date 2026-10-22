@@ -11,22 +11,15 @@ NXComboBoxPrivate::NXComboBoxPrivate(QObject *parent)
 {
 }
 
-bool
-NXComboBoxPrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXComboBoxPrivate::eventFilter(QObject *watched, QEvent *event)
 {
-  if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
-  {
+  if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
     _isKeyEvent = true;
-  }
-  else if (event->type() == QEvent::MouseMove || event->type() == QEvent::HoverMove)
-  {
+  } else if (event->type() == QEvent::MouseMove || event->type() == QEvent::HoverMove) {
     _isKeyEvent = false;
-  }
-  else if (event->type() == QEvent::Hide)
-  {
+  } else if (event->type() == QEvent::Hide) {
     Q_Q(NXComboBox);
-    if (watched == q->findChild<QFrame *>())
-    {
+    if (watched == q->findChild<QFrame *>()) {
       q->_resetIndicatorAnimations();
     }
   }
@@ -37,18 +30,15 @@ NXComboBoxPrivate::~NXComboBoxPrivate()
 {
 }
 
-void
-NXComboBoxPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
+void NXComboBoxPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXComboBox);
   _themeMode    = themeMode;
   auto lineEdit = q->lineEdit();
-  if (lineEdit)
-  {
+  if (lineEdit) {
     QPalette palette = lineEdit->palette();
     palette.setColor(QPalette::Text, NXThemeColor(_themeMode, BasicText));
-    palette.setColor(QPalette::PlaceholderText,
-                     _themeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
+    palette.setColor(QPalette::PlaceholderText, _themeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
     lineEdit->setPalette(palette);
   }
 }

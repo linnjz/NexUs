@@ -30,43 +30,30 @@ class NXPivotStyle : public QProxyStyle
 public:
   explicit NXPivotStyle(QStyle *style = nullptr);
   ~NXPivotStyle() override;
-  void drawPrimitive(PrimitiveElement element,
-                     QStyleOption const *option,
-                     QPainter *painter,
-                     QWidget const *widget = nullptr) const override;
-  void drawControl(ControlElement element,
-                   QStyleOption const *option,
-                   QPainter *painter,
-                   QWidget const *widget = nullptr) const override;
-  int
-  pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
 
-  QRect subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const override;
+  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const override;
 
-  QSize sizeFromContents(ContentsType type,
-                         QStyleOption const *option,
-                         QSize const &size,
-                         QWidget const *widget) const override;
+  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
 
 private:
   NXThemeType::ThemeMode _themeMode;
 
-  void _drawCenteredPixmap(QPainter *painter, QRect const &containerRect, QPixmap const &pixmap) const;
-  void _drawTextOnly(QPainter *painter, QRect const &contentRect, QString const &text) const;
-  void _drawIconOnly(QPainter *painter, QRect const &contentRect, QPixmap const &icon) const;
-  void _drawTextBesideIcon(QPainter *painter, QRect const &contentRect, QPixmap const &icon, QString const &text) const;
-  void _drawTextUnderIcon(QPainter *painter, QRect const &contentRect, QPixmap const &icon, QString const &text) const;
+  void _drawCenteredPixmap(QPainter *painter, const QRect &containerRect, const QPixmap &pixmap) const;
+  void _drawTextOnly(QPainter *painter, const QRect &contentRect, const QString &text) const;
+  void _drawIconOnly(QPainter *painter, const QRect &contentRect, const QPixmap &icon) const;
+  void _drawTextBesideIcon(QPainter *painter, const QRect &contentRect, const QPixmap &icon, const QString &text) const;
+  void _drawTextUnderIcon(QPainter *painter, const QRect &contentRect, const QPixmap &icon, const QString &text) const;
   void
-  _drawIconWithOverlayText(QPainter *painter, QRect const &contentRect, QPixmap const &icon, QString const &text) const;
-  void _drawDisplayContent(QPainter *painter, QRect const &contentRect, NXPivotModel::PivotItem const &pivotItem) const;
-  void _drawFocusRectBackground(QPainter *painter, QRect const &rect, QColor const &color) const;
-  void _drawIndicator(QPainter *painter, QRect const &rect, QColor const &color) const;
+  _drawIconWithOverlayText(QPainter *painter, const QRect &contentRect, const QPixmap &icon, const QString &text) const;
+  void _drawDisplayContent(QPainter *painter, const QRect &contentRect, const NXPivotModel::PivotItem &pivotItem) const;
+  void _drawFocusRectBackground(QPainter *painter, const QRect &rect, const QColor &color) const;
+  void _drawIndicator(QPainter *painter, const QRect &rect, const QColor &color) const;
 
-  void _alignHeight(NXPivotView const *pivotView, int actualHeight) const;
-  QSize _calculateItemSize(NXPivotModel::PivotItem const &pivotItem,
-                           QFontMetrics const &metrics,
-                           bool hasIcon,
-                           bool hasText) const;
+  void _alignHeight(const NXPivotView *pivotView, int actualHeight) const;
+  QSize _calculateItemSize(const NXPivotModel::PivotItem &pivotItem, const QFontMetrics &metrics, bool hasIcon, bool hasText) const;
 };
 
 #endif // NXPIVOTSTYLE_H

@@ -11,8 +11,7 @@
 NXGroupBoxStyle::NXGroupBoxStyle(QStyle *style)
 {
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -21,30 +20,22 @@ NXGroupBoxStyle::~NXGroupBoxStyle()
 {
 }
 
-void
-NXGroupBoxStyle::drawComplexControl(ComplexControl control,
-                                    const QStyleOptionComplex *option,
-                                    QPainter *painter,
-                                    const QWidget *widget) const
+void NXGroupBoxStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
-  if (control == CC_GroupBox)
-  {
-    if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option))
-    {
+  if (control == CC_GroupBox) {
+    if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option)) {
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
       int borderRadius = 6;
-      if (const NXGroupBox *groupBox = qobject_cast<const NXGroupBox *>(widget))
-      {
+      if (const NXGroupBox *groupBox = qobject_cast<const NXGroupBox *>(widget)) {
         borderRadius = groupBox->getBorderRadius();
       }
 
       QRect frameRect = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxFrame, widget);
       QRect textRect  = proxy()->subControlRect(CC_GroupBox, option, SC_GroupBoxLabel, widget);
 
-      if (groupBox->subControls & QStyle::SC_GroupBoxFrame)
-      {
+      if (groupBox->subControls & QStyle::SC_GroupBoxFrame) {
         QRect drawRect = frameRect;
         QFontMetrics fm(groupBox->fontMetrics);
         int titleHeight = fm.height();
@@ -57,8 +48,7 @@ NXGroupBoxStyle::drawComplexControl(ComplexControl control,
         painter->drawPath(framePath);
       }
 
-      if ((groupBox->subControls & QStyle::SC_GroupBoxLabel) && !groupBox->text.isEmpty())
-      {
+      if ((groupBox->subControls & QStyle::SC_GroupBoxLabel) && !groupBox->text.isEmpty()) {
         QFontMetrics fm(groupBox->fontMetrics);
         int titleHeight = fm.height();
         int borderTop   = frameRect.top() + titleHeight / 2;
@@ -71,16 +61,14 @@ NXGroupBoxStyle::drawComplexControl(ComplexControl control,
         //painter->fillRect(titleBgRect, NXThemeColor(_themeMode, WindowBase));
 
         QColor textColor = NXThemeColor(_themeMode, BasicText);
-        if (option->state & State_HasFocus)
-        {
+        if (option->state & State_HasFocus) {
           textColor = NXThemeColor(_themeMode, PrimaryNormal);
         }
         painter->setPen(textColor);
         painter->setBrush(Qt::NoBrush);
 
         int alignment = int(groupBox->textAlignment);
-        if (!proxy()->styleHint(QStyle::SH_UnderlineShortcut, option, widget))
-        {
+        if (!proxy()->styleHint(QStyle::SH_UnderlineShortcut, option, widget)) {
           alignment |= Qt::TextHideMnemonic;
         }
 
@@ -95,16 +83,10 @@ NXGroupBoxStyle::drawComplexControl(ComplexControl control,
   QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-void
-NXGroupBoxStyle::drawPrimitive(PrimitiveElement element,
-                               const QStyleOption *option,
-                               QPainter *painter,
-                               const QWidget *widget) const
+void NXGroupBoxStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case PE_FrameGroupBox :
-  {
+  switch (element) {
+  case PE_FrameGroupBox : {
     return;
   }
   default : break;
@@ -113,8 +95,7 @@ NXGroupBoxStyle::drawPrimitive(PrimitiveElement element,
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-int
-NXGroupBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXGroupBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
   return QProxyStyle::pixelMetric(metric, option, widget);
 }

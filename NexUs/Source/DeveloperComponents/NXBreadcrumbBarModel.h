@@ -1,4 +1,4 @@
-#ifndef NXBREADCRUMBBARMODEL_H
+﻿#ifndef NXBREADCRUMBBARMODEL_H
 #define NXBREADCRUMBBARMODEL_H
 
 #include <QAbstractListModel>
@@ -17,8 +17,8 @@ public:
 
   void setBreadcrumbList(const QStringList &breadcrumbList);
 
-  int getBreadcrumbListCount();
-  QStringList getBreadcrumbList();
+  int getBreadcrumbListCount() const;
+  QStringList getBreadcrumbList() const;
 
 protected:
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;

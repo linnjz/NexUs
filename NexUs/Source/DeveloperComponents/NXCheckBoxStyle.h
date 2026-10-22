@@ -14,10 +14,7 @@ class NXCheckBoxStyle : public QProxyStyle
 public:
   explicit NXCheckBoxStyle(QStyle *style = nullptr);
   ~NXCheckBoxStyle();
-  void drawControl(ControlElement element,
-                   const QStyleOption *option,
-                   QPainter *painter,
-                   const QWidget *widget = nullptr) const override;
+  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
   int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget = nullptr) const override;
 

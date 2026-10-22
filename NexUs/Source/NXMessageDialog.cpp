@@ -30,8 +30,7 @@ NXMessageDialog::NXMessageDialog(QWidget *parent)
   setMinimumSize(280, 150);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -55,13 +54,11 @@ NXMessageDialog::NXMessageDialog(QWidget *parent)
 
   mainLayout->addLayout(buttonLayout);
 
-  connect(d->_confirmButton, &NXMessageDialogButton::clicked, this, [=]()
-  {
+  connect(d->_confirmButton, &NXMessageDialogButton::clicked, this, [=]() {
     Q_EMIT confirmed();
     hide();
   });
-  connect(d->_cancelButton, &NXMessageDialogButton::clicked, this, [=]()
-  {
+  connect(d->_cancelButton, &NXMessageDialogButton::clicked, this, [=]() {
     Q_EMIT cancelled();
     hide();
   });
@@ -71,8 +68,7 @@ NXMessageDialog::~NXMessageDialog()
 {
 }
 
-void
-NXMessageDialog::paintEvent(QPaintEvent *event)
+void NXMessageDialog::paintEvent(QPaintEvent *event)
 {
   Q_D(NXMessageDialog);
   QPainter painter(this);
@@ -95,8 +91,7 @@ NXMessageDialog::paintEvent(QPaintEvent *event)
   painter.setFont(contentFont);
   painter.setPen(NXThemeColor(d->_themeMode, BasicText));
   int contentHeight = height() - 40 - 45 - 15;
-  painter.drawText(QRect(15, 45, width() - 30, contentHeight), Qt::TextWordWrap | Qt::AlignLeft | Qt::AlignTop,
-                   d->_pContent);
+  painter.drawText(QRect(15, 45, width() - 30, contentHeight), Qt::TextWordWrap | Qt::AlignLeft | Qt::AlignTop, d->_pContent);
 
   painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
   painter.drawLine(0, height() - 40, width(), height() - 40);

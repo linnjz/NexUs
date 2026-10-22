@@ -22,8 +22,7 @@ class NX_EXPORT NXSplitInput : public QWidget
 
 public:
   explicit NXSplitInput(QWidget *parent = nullptr);
-  explicit NXSplitInput(int segmentCount, const QString &separator = QStringLiteral("."),
-                        QWidget *parent = nullptr);
+  explicit NXSplitInput(int segmentCount, const QString &separator = QStringLiteral("."), QWidget *parent = nullptr);
   ~NXSplitInput();
 
   int getSegmentCount() const;

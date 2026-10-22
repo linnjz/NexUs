@@ -25,20 +25,13 @@ private:
 
 public:
   // 全局路由（向后兼容）
-  NXNavigationRouterType::NavigationRouteType navigationRoute(QObject *routeObject,
-                                                              const QString &routeFunctionName,
-                                                              const QVariantMap &routeData      = {},
-                                                              Qt::ConnectionType connectionType = Qt::AutoConnection);
+  NXNavigationRouterType::NavigationRouteType navigationRoute(QObject *routeObject, const QString &routeFunctionName, const QVariantMap &routeData = {}, Qt::ConnectionType connectionType = Qt::AutoConnection);
   void clearNavigationRoute();
   void navigationRouteBack();
   void navigationRouteForward();
 
   // 每窗口独立路由
-  NXNavigationRouterType::NavigationRouteType navigationRoute(QObject *context,
-                                                              QObject *routeObject,
-                                                              const QString &routeFunctionName,
-                                                              const QVariantMap &routeData      = {},
-                                                              Qt::ConnectionType connectionType = Qt::AutoConnection);
+  NXNavigationRouterType::NavigationRouteType navigationRoute(QObject *context, QObject *routeObject, const QString &routeFunctionName, const QVariantMap &routeData = {}, Qt::ConnectionType connectionType = Qt::AutoConnection);
   void clearNavigationRoute(QObject *context);
   void navigationRouteBack(QObject *context);
   void navigationRouteForward(QObject *context);

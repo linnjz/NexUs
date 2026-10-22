@@ -17,21 +17,17 @@ NXColorDisplayDelegate::~NXColorDisplayDelegate()
 {
 }
 
-void
-NXColorDisplayDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXColorDisplayDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing);
   QRectF itemRect = option.rect;
   // 颜色球绘制
   QColor displayColor = index.data(Qt::UserRole).value<QColor>();
-  if (displayColor.isValid())
-  {
+  if (displayColor.isValid()) {
     painter->setPen(NXThemeColor(_pThemeMode, PopupBorderHover));
     painter->setBrush(index.data(Qt::UserRole).value<QColor>());
-  }
-  else
-  {
+  } else {
     QPen pen(NXThemeColor(_pThemeMode, PopupBorderHover));
     pen.setStyle(Qt::DashLine);
     painter->setPen(pen);
@@ -39,8 +35,7 @@ NXColorDisplayDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
   painter->drawEllipse(itemRect.center(), 10, 10);
 
   // 覆盖效果绘制
-  if (option.state.testFlag(QStyle::State_MouseOver) || option.state.testFlag(QStyle::State_Selected))
-  {
+  if (option.state.testFlag(QStyle::State_MouseOver) || option.state.testFlag(QStyle::State_Selected)) {
     painter->setBrush(Qt::NoBrush);
     painter->drawEllipse(itemRect.center(), 13, 13);
   }
@@ -49,8 +44,7 @@ NXColorDisplayDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
   QStyledItemDelegate::paint(painter, option, index);
 }
 
-QSize
-NXColorDisplayDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXColorDisplayDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   return QSize(30, 30);
 }

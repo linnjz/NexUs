@@ -14,8 +14,7 @@ NXActionCommanderViewStyle::NXActionCommanderViewStyle(QStyle *style)
   _pItemHeight   = 40;
   _pHeaderMargin = 5;
   _themeMode     = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -24,42 +23,28 @@ NXActionCommanderViewStyle::~NXActionCommanderViewStyle()
 {
 }
 
-void
-NXActionCommanderViewStyle::drawPrimitive(PrimitiveElement element,
-                                          const QStyleOption *option,
-                                          QPainter *painter,
-                                          const QWidget *widget) const
+void NXActionCommanderViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::PE_PanelItemViewItem :
-  {
+  switch (element) {
+  case QStyle::PE_PanelItemViewItem : {
     // Item背景
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
       painter->save();
       painter->setRenderHint(QPainter::Antialiasing);
       QRect itemRect = vopt->rect;
       itemRect.adjust(0, 2, 0, -2);
       painter->setPen(Qt::NoPen);
       bool isEnable = vopt->state.testFlag(QStyle::State_Enabled);
-      if (vopt->state & QStyle::State_Selected)
-      {
-        if (vopt->state & QStyle::State_MouseOver && isEnable)
-        {
+      if (vopt->state & QStyle::State_Selected) {
+        if (vopt->state & QStyle::State_MouseOver && isEnable) {
           // 选中时覆盖
           painter->setBrush(NXThemeColor(_themeMode, BasicSelectedHoverAlpha));
-        }
-        else
-        {
+        } else {
           // 选中
           painter->setBrush(NXThemeColor(_themeMode, BasicSelectedAlpha));
         }
-      }
-      else
-      {
-        if (vopt->state & QStyle::State_MouseOver && isEnable)
-        {
+      } else {
+        if (vopt->state & QStyle::State_MouseOver && isEnable) {
           // 覆盖时颜色
           painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
         }
@@ -69,13 +54,10 @@ NXActionCommanderViewStyle::drawPrimitive(PrimitiveElement element,
     }
     return;
   }
-  case QStyle::PE_IndicatorBranch :
-  {
+  case QStyle::PE_IndicatorBranch : {
     // 展开图标绘制
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
-      if (vopt->state.testFlag(QStyle::State_Children))
-      {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+      if (vopt->state.testFlag(QStyle::State_Children)) {
         painter->save();
         QRect indicatorRect = option->rect;
         indicatorRect.adjust(0, 0, -2, 0);
@@ -83,63 +65,47 @@ NXActionCommanderViewStyle::drawPrimitive(PrimitiveElement element,
         iconFont.setPixelSize(nxApp->getFontPixelSize() + 4);
         painter->setFont(iconFont);
         painter->setPen(NXThemeColor(_themeMode, BasicText));
-        painter->drawText(indicatorRect, Qt::AlignVCenter | Qt::AlignRight,
-                          vopt->state.testFlag(QStyle::State_Open) ? QChar(NXIconType::AngleDown)
-                                                                   : QChar(NXIconType::AngleRight));
+        painter->drawText(indicatorRect, Qt::AlignVCenter | Qt::AlignRight, vopt->state.testFlag(QStyle::State_Open) ? QChar(NXIconType::AngleDown) : QChar(NXIconType::AngleRight));
         painter->restore();
       }
     }
     return;
   }
-  case QStyle::PE_IndicatorItemViewItemDrop :
-  {
+  case QStyle::PE_IndicatorItemViewItemDrop : {
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter->setPen(NXThemeColor(_themeMode, BasicText));
     painter->setBrush(Qt::NoBrush);
     QRect optionRect = option->rect;
-    if (optionRect.height() == 0)
-    {
+    if (optionRect.height() == 0) {
       painter->drawLine(optionRect.topLeft(), optionRect.topRight());
-    }
-    else
-    {
+    } else {
       painter->drawRect(optionRect);
     }
     painter->restore();
     return;
   }
-  case QStyle::PE_PanelItemViewRow :
-  {
+  case QStyle::PE_PanelItemViewRow : {
     return;
   }
-  case QStyle::PE_Widget :
-  {
+  case QStyle::PE_Widget : {
     return;
   }
-  case QStyle::PE_Frame :
-  {
+  case QStyle::PE_Frame : {
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void
-NXActionCommanderViewStyle::drawControl(ControlElement element,
-                                        const QStyleOption *option,
-                                        QPainter *painter,
-                                        const QWidget *widget) const
+void NXActionCommanderViewStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
   int fontPixelSize = nxApp->getFontPixelSize();
-  switch (element)
-  {
-  case QStyle::CE_ShapedFrame :
-  {
+  switch (element) {
+  case QStyle::CE_ShapedFrame : {
     // viewport视口外的其他区域背景
     QRect frameRect = option->rect;
     frameRect.adjust(1, 1, -1, -1);
@@ -151,16 +117,13 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
     painter->restore();
     return;
   }
-  case QStyle::CE_HeaderLabel :
-  {
+  case QStyle::CE_HeaderLabel : {
     // 表头文字绘制
-    if (const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(option))
-    {
+    if (const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
       QRect headerRect = option->rect;
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
-      if (!hopt->text.isEmpty())
-      {
+      if (!hopt->text.isEmpty()) {
         painter->setPen(NXThemeColor(_themeMode, BasicText));
         painter->drawText(headerRect, hopt->textAlignment, hopt->text);
       }
@@ -168,8 +131,7 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
     }
     return;
   }
-  case QStyle::CE_HeaderSection :
-  {
+  case QStyle::CE_HeaderSection : {
     // 表头背景绘制
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
@@ -179,10 +141,8 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
     painter->restore();
     return;
   }
-  case QStyle::CE_ItemViewItem :
-  {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
+  case QStyle::CE_ItemViewItem : {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
       // 背景绘制
       this->drawPrimitive(QStyle::PE_PanelItemViewItem, option, painter, widget);
       // 内容绘制
@@ -193,12 +153,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
       QRect iconRect  = proxy()->subElementRect(SE_ItemViewItemDecoration, vopt, widget);
       QRect textRect  = proxy()->subElementRect(SE_ItemViewItemText, vopt, widget);
       // 复选框绘制
-      if (checkRect.isValid())
-      {
+      if (checkRect.isValid()) {
         painter->save();
         //图标绘制
-        if (vopt->checkState == Qt::Checked)
-        {
+        if (vopt->checkState == Qt::Checked) {
           painter->setPen(Qt::NoPen);
           painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
           painter->drawRoundedRect(checkRect, 2, 2);
@@ -207,18 +165,14 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
           painter->setFont(iconFont);
           painter->setPen(NXThemeColor(NXThemeType::Dark, BasicText));
           painter->drawText(checkRect, Qt::AlignCenter, QChar(NXIconType::Check));
-        }
-        else if (vopt->checkState == Qt::PartiallyChecked)
-        {
+        } else if (vopt->checkState == Qt::PartiallyChecked) {
           painter->setPen(Qt::NoPen);
           painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
           painter->drawRoundedRect(checkRect, 2, 2);
           painter->setPen(NXThemeColor(NXThemeType::Dark, BasicText));
           QLine checkLine(checkRect.x() + 3, checkRect.center().y(), checkRect.right() - 3, checkRect.center().y());
           painter->drawLine(checkLine);
-        }
-        else
-        {
+        } else {
           painter->setPen(QPen(NXThemeColor(_themeMode, BasicBorderDeep), 1.2));
           painter->setBrush(Qt::transparent);
           painter->drawRoundedRect(checkRect, 2, 2);
@@ -226,8 +180,7 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
         painter->restore();
       }
       // 图标绘制
-      if (!vopt->icon.isNull())
-      {
+      if (!vopt->icon.isNull()) {
         QIcon::Mode mode   = QIcon::Normal;
         QIcon::State state = vopt->state & QStyle::State_Open ? QIcon::On : QIcon::Off;
         vopt->icon.paint(painter, iconRect, vopt->decorationAlignment, mode, state);
@@ -235,13 +188,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
       // 消息类型绘制
       auto modelIndex      = vopt->index;
       const auto indexNode = static_cast<NXActionCommanderNode *>(modelIndex.internalPointer());
-      if (indexNode && indexNode->getIsCommandNode())
-      {
+      if (indexNode && indexNode->getIsCommandNode()) {
         painter->save();
-        switch (indexNode->getMessageMode())
-        {
-        case NXMessageBarType::Success :
-        {
+        switch (indexNode->getMessageMode()) {
+        case NXMessageBarType::Success : {
           painter->setPen(Qt::NoPen);
           painter->setBrush(QColor(0x01, 0xE5, 0x7B));
           painter->drawEllipse(QPoint(textRect.x(), textRect.y() + textRect.height() / 2), 10, 10);
@@ -249,12 +199,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
           iconFont.setPixelSize(fontPixelSize - 1);
           painter->setFont(iconFont);
           painter->setPen(Qt::black);
-          painter->drawText(textRect.x() - 5, textRect.y(), textRect.width(), textRect.height(),
-                            Qt::AlignVCenter | Qt::AlignLeft, QChar(NXIconType::Check));
+          painter->drawText(textRect.x() - 5, textRect.y(), textRect.width(), textRect.height(), Qt::AlignVCenter | Qt::AlignLeft, QChar(NXIconType::Check));
           break;
         }
-        case NXMessageBarType::Information :
-        {
+        case NXMessageBarType::Information : {
           painter->setPen(Qt::NoPen);
           painter->setBrush(QColor(0xF4, 0xF4, 0xF4));
           painter->drawEllipse(QPoint(textRect.x(), textRect.y() + textRect.height() / 2), 10, 10);
@@ -263,12 +211,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
           iconFont.setBold(true);
           painter->setFont(iconFont);
           painter->setPen(Qt::black);
-          painter->drawText(textRect.x() - 2, textRect.y(), textRect.width(), textRect.height(),
-                            Qt::AlignVCenter | Qt::AlignLeft, QStringLiteral("i"));
+          painter->drawText(textRect.x() - 2, textRect.y(), textRect.width(), textRect.height(), Qt::AlignVCenter | Qt::AlignLeft, QStringLiteral("i"));
           break;
         }
-        case NXMessageBarType::Warning :
-        {
+        case NXMessageBarType::Warning : {
           painter->setPen(Qt::NoPen);
           painter->setBrush(QColor(0xFA, 0xB6, 0x00));
           painter->drawEllipse(QPoint(textRect.x(), textRect.y() + textRect.height() / 2), 10, 10);
@@ -277,12 +223,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
           iconFont.setBold(true);
           painter->setFont(iconFont);
           painter->setPen(Qt::black);
-          painter->drawText(textRect.x() - 3, textRect.y(), textRect.width(), textRect.height(),
-                            Qt::AlignVCenter | Qt::AlignLeft, QStringLiteral("!"));
+          painter->drawText(textRect.x() - 3, textRect.y(), textRect.width(), textRect.height(), Qt::AlignVCenter | Qt::AlignLeft, QStringLiteral("!"));
           break;
         }
-        case NXMessageBarType::Error :
-        {
+        case NXMessageBarType::Error : {
           painter->setPen(Qt::NoPen);
           painter->setBrush(NXThemeColor(_themeMode, StatusDanger));
           painter->drawEllipse(QPoint(textRect.x(), textRect.y() + textRect.height() / 2), 10, 10);
@@ -290,12 +234,10 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
           iconFont.setPixelSize(fontPixelSize);
           painter->setFont(iconFont);
           painter->setPen(Qt::white);
-          painter->drawText(textRect.x() - 5, textRect.y(), textRect.width(), textRect.height(),
-                            Qt::AlignVCenter | Qt::AlignLeft, QChar(NXIconType::Xmark));
+          painter->drawText(textRect.x() - 5, textRect.y(), textRect.width(), textRect.height(), Qt::AlignVCenter | Qt::AlignLeft, QChar(NXIconType::Xmark));
           break;
         }
-        default :
-        {
+        default : {
           break;
         }
         }
@@ -303,8 +245,7 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
       }
       // 文字绘制
       bool isEnable = vopt->state.testFlag(QStyle::State_Enabled);
-      if (!vopt->text.isEmpty())
-      {
+      if (!vopt->text.isEmpty()) {
         painter->setPen(isEnable ? NXThemeColor(_themeMode, BasicText) : NXThemeColor(_themeMode, BasicTextDisable));
         painter->drawText(textRect, vopt->displayAlignment, vopt->text);
       }
@@ -313,8 +254,7 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
       painter->setPen(Qt::NoPen);
       painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
       if (vopt->state.testFlag(QStyle::State_Selected) && (vopt->viewItemPosition == QStyleOptionViewItem::Beginning ||
-                                                           vopt->viewItemPosition == QStyleOptionViewItem::OnlyOne))
-      {
+                                                           vopt->viewItemPosition == QStyleOptionViewItem::OnlyOne)) {
         painter->drawRoundedRect(
             QRectF(itemRect.x() + 3, itemRect.y() + heightOffset, 3, itemRect.height() - 2 * heightOffset), 1.5, 1.5);
       }
@@ -322,64 +262,47 @@ NXActionCommanderViewStyle::drawControl(ControlElement element,
     }
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-QSize
-NXActionCommanderViewStyle::sizeFromContents(ContentsType type,
-                                             const QStyleOption *option,
-                                             const QSize &size,
-                                             const QWidget *widget) const
+QSize NXActionCommanderViewStyle::sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
 {
-  switch (type)
-  {
-  case QStyle::CT_ItemViewItem :
-  {
+  switch (type) {
+  case QStyle::CT_ItemViewItem : {
     QSize itemSize = QProxyStyle::sizeFromContents(type, option, size, widget);
     itemSize.setHeight(_pItemHeight);
     return itemSize;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QProxyStyle::sizeFromContents(type, option, size, widget);
 }
 
-int
-NXActionCommanderViewStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXActionCommanderViewStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
-  switch (metric)
-  {
-  case QStyle::PM_HeaderMargin :
-  {
+  switch (metric) {
+  case QStyle::PM_HeaderMargin : {
     return _pHeaderMargin;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-QRect
-NXActionCommanderViewStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+QRect NXActionCommanderViewStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
-  switch (element)
-  {
-  case QStyle::SE_ItemViewItemCheckIndicator :
-  {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
-      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End)
-      {
+  switch (element) {
+  case QStyle::SE_ItemViewItemCheckIndicator : {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End) {
         QRect indicatorRect = QProxyStyle::subElementRect(element, option, widget);
         indicatorRect.adjust(_leftPadding, 0, _leftPadding, 0);
         return indicatorRect;
@@ -387,12 +310,9 @@ NXActionCommanderViewStyle::subElementRect(SubElement element, const QStyleOptio
     }
     break;
   }
-  case QStyle::SE_ItemViewItemDecoration :
-  {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
-      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End)
-      {
+  case QStyle::SE_ItemViewItemDecoration : {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End) {
         QRect iconRect = QProxyStyle::subElementRect(element, option, widget);
         iconRect.adjust(_leftPadding + 5, 0, _leftPadding + 5, 0);
         return iconRect;
@@ -400,12 +320,9 @@ NXActionCommanderViewStyle::subElementRect(SubElement element, const QStyleOptio
     }
     break;
   }
-  case QStyle::SE_ItemViewItemText :
-  {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option))
-    {
-      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End)
-      {
+  case QStyle::SE_ItemViewItemText : {
+    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+      if (vopt->viewItemPosition != QStyleOptionViewItem::Middle && vopt->viewItemPosition != QStyleOptionViewItem::End) {
         QRect textRect = QProxyStyle::subElementRect(element, option, widget);
         textRect.adjust(_leftPadding + 10, 0, 0, 0);
         return textRect;
@@ -413,14 +330,14 @@ NXActionCommanderViewStyle::subElementRect(SubElement element, const QStyleOptio
     }
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QProxyStyle::subElementRect(element, option, widget);
 }
 
-NXThemeType::ThemeMode
-NXActionCommanderViewStyle::getThemeMode() const
-{ return _themeMode; }
+NXThemeType::ThemeMode NXActionCommanderViewStyle::getThemeMode() const
+{
+  return _themeMode;
+}

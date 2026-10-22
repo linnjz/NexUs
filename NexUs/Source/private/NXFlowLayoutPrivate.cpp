@@ -15,8 +15,7 @@ NXFlowLayoutPrivate::~NXFlowLayoutPrivate()
 {
 }
 
-int
-NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
+int NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
 {
   Q_Q(const NXFlowLayout);
   int left, top, right, bottom;
@@ -25,45 +24,34 @@ NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
   int x               = effectiveRect.x();
   int y               = effectiveRect.y();
   int lineHeight      = 0;
-  for (QLayoutItem *item : _itemList)
-  {
+  for (QLayoutItem *item : _itemList) {
     const QWidget *wid = item->widget();
     int spaceX         = q->horizontalSpacing();
-    if (spaceX == -1)
-    {
+    if (spaceX == -1) {
       spaceX = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
     }
     int spaceY = q->verticalSpacing();
-    if (spaceY == -1)
-    {
+    if (spaceY == -1) {
       spaceY = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
     }
 
     int nextX = x + item->sizeHint().width() + spaceX;
-    if (nextX - spaceX > effectiveRect.right() && lineHeight > 0)
-    {
+    if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
       x          = effectiveRect.x();
       y          = y + lineHeight + spaceY;
       nextX      = x + item->sizeHint().width() + spaceX;
       lineHeight = 0;
     }
-    if (!_lastGeometryMap.contains(item))
-    {
+    if (!_lastGeometryMap.contains(item)) {
       _lastGeometryMap.insert(item, QPoint(x, y));
     }
-    if (!testOnly)
-    {
-      if ((item->geometry().x() == 0 && item->geometry().y() == 0))
-      {
+    if (!testOnly) {
+      if ((item->geometry().x() == 0 && item->geometry().y() == 0)) {
         item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
-      }
-      else if (item->geometry().x() != x || item->geometry().y() != y)
-      {
-        if (_isAnimation)
-        {
+      } else if (item->geometry().x() != x || item->geometry().y() != y) {
+        if (_isAnimation) {
           // 阻止多重动画
-          if (_lastGeometryMap[item] == QPoint(x, y))
-          {
+          if (_lastGeometryMap[item] == QPoint(x, y)) {
             x          = nextX;
             lineHeight = qMax(lineHeight, item->sizeHint().height());
             continue;
@@ -75,9 +63,7 @@ NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
           geometryAnimation->setEasingCurve(QEasingCurve::OutCubic);
           geometryAnimation->start(QAbstractAnimation::DeleteWhenStopped);
           _lastGeometryMap[item] = QPoint(x, y);
-        }
-        else
-        {
+        } else {
           item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
         }
       }
@@ -88,22 +74,16 @@ NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
   return y + lineHeight - rect.y() + bottom;
 }
 
-int
-NXFlowLayoutPrivate::_smartSpacing(QStyle::PixelMetric pm) const
+int NXFlowLayoutPrivate::_smartSpacing(QStyle::PixelMetric pm) const
 {
   Q_Q(const NXFlowLayout);
   QObject *parent = q->parent();
-  if (!parent)
-  {
+  if (!parent) {
     return -1;
-  }
-  else if (parent->isWidgetType())
-  {
+  } else if (parent->isWidgetType()) {
     QWidget *pw = static_cast<QWidget *>(parent);
     return pw->style()->pixelMetric(pm, nullptr, pw);
-  }
-  else
-  {
+  } else {
     return static_cast<QLayout *>(parent)->spacing();
   }
 }

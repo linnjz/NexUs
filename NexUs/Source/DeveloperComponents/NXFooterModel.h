@@ -14,10 +14,7 @@ class NXFooterModel : public QAbstractListModel
 public:
   explicit NXFooterModel(QObject *parent = nullptr);
   ~NXFooterModel();
-  NXNodeResultExpected addFooterNode(const QString &footerTitle,
-                                     bool isHasFooterPage,
-                                     int keyPoints                = 0,
-                                     NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addFooterNode(const QString &footerTitle, bool isHasFooterPage, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
   int getFooterNodeCount() const;
   NXNavigationNode *getNavigationNode(const QString &footerKey) const;
   void removeNavigationNode(const QString &footerKey);

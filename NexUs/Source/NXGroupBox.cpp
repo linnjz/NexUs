@@ -36,12 +36,10 @@ NXGroupBox::~NXGroupBox()
   delete this->style();
 }
 
-void
-NXGroupBox::paintEvent(QPaintEvent *event)
+void NXGroupBox::paintEvent(QPaintEvent *event)
 {
   Q_D(NXGroupBox);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText))
-  {
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
     d->onThemeChanged(d->_themeMode);
   }
   QGroupBox::paintEvent(event);

@@ -36,8 +36,7 @@ NXProgressRing::NXProgressRing(QWidget *parent)
   setStyleSheet("#NXProgressRing{background-color:transparent;}");
 
   d->_busyStartDegAnimation = new QPropertyAnimation(d, "pBusyStartDeg");
-  connect(d->_busyStartDegAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-  {
+  connect(d->_busyStartDegAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
     update();
   });
   d->_busyStartDegAnimation->setEasingCurve(QEasingCurve::Linear);
@@ -55,8 +54,7 @@ NXProgressRing::NXProgressRing(QWidget *parent)
   d->_busyContentDegAnimation->setLoopCount(-1);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -66,18 +64,14 @@ NXProgressRing::~NXProgressRing()
 {
 }
 
-void
-NXProgressRing::setIsBusying(bool isBusying)
+void NXProgressRing::setIsBusying(bool isBusying)
 {
   Q_D(NXProgressRing);
   d->_pIsBusying = isBusying;
-  if (isBusying)
-  {
+  if (isBusying) {
     d->_busyStartDegAnimation->start();
     d->_busyContentDegAnimation->start();
-  }
-  else
-  {
+  } else {
     d->_busyStartDegAnimation->stop();
     d->_busyContentDegAnimation->stop();
   }
@@ -85,15 +79,13 @@ NXProgressRing::setIsBusying(bool isBusying)
   Q_EMIT pIsBusyingChanged();
 }
 
-bool
-NXProgressRing::getIsBusying() const
+bool NXProgressRing::getIsBusying() const
 {
   Q_D(const NXProgressRing);
   return d->_pIsBusying;
 }
 
-void
-NXProgressRing::setBusyingWidth(int width)
+void NXProgressRing::setBusyingWidth(int width)
 {
   Q_D(NXProgressRing);
   d->_pBusyingWidth = width;
@@ -101,15 +93,13 @@ NXProgressRing::setBusyingWidth(int width)
   Q_EMIT pBusyingWidthChanged();
 }
 
-int
-NXProgressRing::getBusyingWidth() const
+int NXProgressRing::getBusyingWidth() const
 {
   Q_D(const NXProgressRing);
   return d->_pBusyingWidth;
 }
 
-void
-NXProgressRing::setBusyingDurationTime(int busyingDurationTime)
+void NXProgressRing::setBusyingDurationTime(int busyingDurationTime)
 {
   Q_D(NXProgressRing);
   d->_pBusyingDurationTime = busyingDurationTime;
@@ -117,15 +107,13 @@ NXProgressRing::setBusyingDurationTime(int busyingDurationTime)
   Q_EMIT pBusyingDurationTimeChanged();
 }
 
-int
-NXProgressRing::getBusyingDurationTime() const
+int NXProgressRing::getBusyingDurationTime() const
 {
   Q_D(const NXProgressRing);
   return d->_pBusyingDurationTime;
 }
 
-void
-NXProgressRing::setMinimum(int minimum)
+void NXProgressRing::setMinimum(int minimum)
 {
   Q_D(NXProgressRing);
   d->_pMinimum = minimum;
@@ -134,15 +122,13 @@ NXProgressRing::setMinimum(int minimum)
   Q_EMIT rangeChanged(d->_pMinimum, d->_pMaximum);
 }
 
-int
-NXProgressRing::getMinimum() const
+int NXProgressRing::getMinimum() const
 {
   Q_D(const NXProgressRing);
   return d->_pMinimum;
 }
 
-void
-NXProgressRing::setMaximum(int maximum)
+void NXProgressRing::setMaximum(int maximum)
 {
   Q_D(NXProgressRing);
   d->_pMaximum = maximum;
@@ -151,19 +137,16 @@ NXProgressRing::setMaximum(int maximum)
   Q_EMIT rangeChanged(d->_pMinimum, d->_pMaximum);
 }
 
-int
-NXProgressRing::getMaximum() const
+int NXProgressRing::getMaximum() const
 {
   Q_D(const NXProgressRing);
   return d->_pMaximum;
 }
 
-void
-NXProgressRing::setValue(int value)
+void NXProgressRing::setValue(int value)
 {
   Q_D(NXProgressRing);
-  if (value < d->_pMinimum || value > d->_pMaximum)
-  {
+  if (value < d->_pMinimum || value > d->_pMaximum) {
     return;
   }
   d->_pValue = value;
@@ -171,19 +154,16 @@ NXProgressRing::setValue(int value)
   Q_EMIT pValueChanged();
 }
 
-int
-NXProgressRing::getValue() const
+int NXProgressRing::getValue() const
 {
   Q_D(const NXProgressRing);
   return d->_pValue;
 }
 
-void
-NXProgressRing::setRange(int min, int max)
+void NXProgressRing::setRange(int min, int max)
 {
   Q_D(NXProgressRing);
-  if (min < 0 || max < 0 || min > max)
-  {
+  if (min < 0 || max < 0 || min > max) {
     return;
   }
   d->_pMinimum = min;
@@ -194,24 +174,19 @@ NXProgressRing::setRange(int min, int max)
   Q_EMIT rangeChanged(min, max);
 }
 
-void
-NXProgressRing::paintEvent(QPaintEvent *event)
+void NXProgressRing::paintEvent(QPaintEvent *event)
 {
   Q_D(NXProgressRing);
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
   // 文字绘制
-  if (d->_pIsDisplayValue && !d->_pIsBusying)
-  {
+  if (d->_pIsDisplayValue && !d->_pIsBusying) {
     painter.setPen(NXThemeColor(d->_themeMode, BasicText));
     QString valueText;
-    if (d->_pValueDisplayMode == NXProgressRingType::ValueDisplayMode::Actual)
-    {
+    if (d->_pValueDisplayMode == NXProgressRingType::ValueDisplayMode::Actual) {
       valueText = QString::number(d->_pValue);
-    }
-    else
-    {
+    } else {
       valueText = QString::number(d->_pValue / (qreal) (d->_pMaximum - d->_pMinimum) * 100) + "%";
     }
     painter.drawText(rect(), Qt::AlignCenter | Qt::TextSingleLine, valueText);
@@ -226,19 +201,15 @@ NXProgressRing::paintEvent(QPaintEvent *event)
   painter.setClipPath(basePath.subtracted(maskPath));
   painter.setPen(Qt::NoPen);
   // 底色
-  if (!d->_pIsTransparent)
-  {
+  if (!d->_pIsTransparent) {
     painter.setBrush(NXThemeColor(d->_themeMode, BasicBaseDeep));
     painter.drawEllipse(ringRect);
   }
   // 环
   painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-  if (d->_pIsBusying)
-  {
+  if (d->_pIsBusying) {
     painter.drawPie(ringRect, -d->_pBusyStartDeg * 16, d->_pBusyContentDeg * 16);
-  }
-  else
-  {
+  } else {
     qreal valueDeg = d->_pValue / (qreal) (d->_pMaximum - d->_pMinimum) * 360;
     painter.drawPie(ringRect, 90 * 16, -valueDeg * 16);
   }

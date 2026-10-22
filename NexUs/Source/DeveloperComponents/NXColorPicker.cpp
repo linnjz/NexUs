@@ -17,10 +17,8 @@ NXColorPicker::NXColorPicker(QWidget *parent)
   // 初始化色相图
   QPixmap colorPickerPix(QSize(360, 360));
   QImage colorPickerImage = colorPickerPix.toImage();
-  for (int y = 0; y < colorPickerImage.height(); y++)
-  {
-    for (int x = 0; x < colorPickerImage.width(); x++)
-    {
+  for (int y = 0; y < colorPickerImage.height(); y++) {
+    for (int x = 0; x < colorPickerImage.width(); x++) {
       QColor pixColor;
       qreal h = qBound(0.0, (qreal) x / colorPickerPix.width(), 1.0);
       qreal s = qBound(0.0, 1 - (qreal) y / (colorPickerPix.height() - 1), 1.0);
@@ -36,8 +34,7 @@ NXColorPicker::~NXColorPicker()
 {
 }
 
-void
-NXColorPicker::setSelectedColor(const QColor &color)
+void NXColorPicker::setSelectedColor(const QColor &color)
 {
   _selectedColor = std::move(color);
   _selectedPoint =
@@ -45,14 +42,12 @@ NXColorPicker::setSelectedColor(const QColor &color)
   update();
 }
 
-QColor
-NXColorPicker::getSelectedColor() const
+QColor NXColorPicker::getSelectedColor() const
 {
   return _selectedColor;
 }
 
-void
-NXColorPicker::mousePressEvent(QMouseEvent *event)
+void NXColorPicker::mousePressEvent(QMouseEvent *event)
 {
   _selectedPoint = _adjustPointLimit(event->pos());
   QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
@@ -66,8 +61,7 @@ NXColorPicker::mousePressEvent(QMouseEvent *event)
   update();
 }
 
-void
-NXColorPicker::mouseReleaseEvent(QMouseEvent *event)
+void NXColorPicker::mouseReleaseEvent(QMouseEvent *event)
 {
   _selectedPoint = _adjustPointLimit(event->pos());
   QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
@@ -81,8 +75,7 @@ NXColorPicker::mouseReleaseEvent(QMouseEvent *event)
   update();
 }
 
-void
-NXColorPicker::mouseMoveEvent(QMouseEvent *event)
+void NXColorPicker::mouseMoveEvent(QMouseEvent *event)
 {
   _selectedPoint = _adjustPointLimit(event->pos());
   QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
@@ -96,8 +89,7 @@ NXColorPicker::mouseMoveEvent(QMouseEvent *event)
   update();
 }
 
-void
-NXColorPicker::paintEvent(QPaintEvent *event)
+void NXColorPicker::paintEvent(QPaintEvent *event)
 {
   int penWidth     = 3;
   int borderRadius = 5;
@@ -115,8 +107,7 @@ NXColorPicker::paintEvent(QPaintEvent *event)
   painter.drawImage(pickerRect, _colorPickerImage);
 
   // 取色点绘制
-  if (!_selectedPoint.isNull())
-  {
+  if (!_selectedPoint.isNull()) {
     painter.setPen(QPen(Qt::black, 2));
     painter.setBrush(Qt::NoBrush);
     painter.drawEllipse(_selectedPoint, 8, 8);
@@ -124,24 +115,17 @@ NXColorPicker::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-QPoint
-NXColorPicker::_adjustPointLimit(QPoint point)
+QPoint NXColorPicker::_adjustPointLimit(QPoint point)
 {
   QRect pickerRect = rect();
-  if (point.x() < 3)
-  {
+  if (point.x() < 3) {
     point.setX(3);
-  }
-  else if (point.x() > pickerRect.width() - 3)
-  {
+  } else if (point.x() > pickerRect.width() - 3) {
     point.setX(pickerRect.width() - 3);
   }
-  if (point.y() < 3)
-  {
+  if (point.y() < 3) {
     point.setY(3);
-  }
-  else if (point.y() > pickerRect.height() - 3)
-  {
+  } else if (point.y() > pickerRect.height() - 3) {
     point.setY(pickerRect.height() - 3);
   }
   return point;

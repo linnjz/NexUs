@@ -34,56 +34,48 @@ NXToolButton::~NXToolButton()
   delete d->_toolButtonStyle;
 }
 
-void
-NXToolButton::setBorderRadius(int borderRadius)
+void NXToolButton::setBorderRadius(int borderRadius)
 {
   Q_D(NXToolButton);
   d->_toolButtonStyle->setBorderRadius(borderRadius);
   Q_EMIT pBorderRadiusChanged();
 }
 
-int
-NXToolButton::getBorderRadius() const
+int NXToolButton::getBorderRadius() const
 {
   Q_D(const NXToolButton);
   return d->_toolButtonStyle->getBorderRadius();
 }
 
-void
-NXToolButton::setIsSelected(bool isSelected)
+void NXToolButton::setIsSelected(bool isSelected)
 {
   Q_D(NXToolButton);
   d->_toolButtonStyle->setIsSelected(isSelected);
   Q_EMIT pIsSelectedChanged();
 }
 
-bool
-NXToolButton::getIsSelected() const
+bool NXToolButton::getIsSelected() const
 {
   Q_D(const NXToolButton);
   return d->_toolButtonStyle->getIsSelected();
 }
 
-void
-NXToolButton::setIsTransparent(bool isTransparent)
+void NXToolButton::setIsTransparent(bool isTransparent)
 {
   Q_D(NXToolButton);
   d->_toolButtonStyle->setIsTransparent(isTransparent);
   update();
 }
 
-bool
-NXToolButton::getIsTransparent() const
+bool NXToolButton::getIsTransparent() const
 {
   Q_D(const NXToolButton);
   return d->_toolButtonStyle->getIsTransparent();
 }
 
-void
-NXToolButton::setMenu(NXMenu *menu)
+void NXToolButton::setMenu(NXMenu *menu)
 {
-  if (!menu || menu == this->menu())
-  {
+  if (!menu || menu == this->menu()) {
     return;
   }
   menu->setMenuItemHeight(27);
@@ -91,34 +83,27 @@ NXToolButton::setMenu(NXMenu *menu)
   menu->installEventFilter(this);
 }
 
-void
-NXToolButton::setNXIcon(NXIconType::IconName icon)
+void NXToolButton::setNXIcon(NXIconType::IconName icon)
 {
   setProperty("NXIconType", QChar((unsigned short) icon));
   setIcon(NXIcon::getInstance()->getNXIcon(NXIconType::Broom, 1));
 }
 
-void
-NXToolButton::setNXIcon(NXIconType::IconName icon, int rotate)
+void NXToolButton::setNXIcon(NXIconType::IconName icon, int rotate)
 {
   setNXIcon(icon);
   setProperty("NXIconRotate", rotate);
 }
 
-bool
-NXToolButton::eventFilter(QObject *watched, QEvent *event)
+bool NXToolButton::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXToolButton);
-  if (watched == menu())
-  {
-    switch (event->type())
-    {
-    case QEvent::Show :
-    {
+  if (watched == menu()) {
+    switch (event->type()) {
+    case QEvent::Show : {
       //指示器动画
       QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->_toolButtonStyle, "pExpandIconRotate");
-      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-      {
+      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
         update();
       });
       rotateAnimation->setDuration(300);
@@ -128,12 +113,10 @@ NXToolButton::eventFilter(QObject *watched, QEvent *event)
       rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
       break;
     }
-    case QEvent::Hide :
-    {
+    case QEvent::Hide : {
       //指示器动画
       QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->_toolButtonStyle, "pExpandIconRotate");
-      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value)
-      {
+      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
         update();
       });
       rotateAnimation->setDuration(300);
@@ -141,13 +124,11 @@ NXToolButton::eventFilter(QObject *watched, QEvent *event)
       rotateAnimation->setStartValue(d->_toolButtonStyle->getExpandIconRotate());
       rotateAnimation->setEndValue(0);
       rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-      QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton,
-                             Qt::NoModifier);
+      QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
       QApplication::sendEvent(parentWidget(), &focusEvent);
       break;
     }
-    default :
-    {
+    default : {
       break;
     }
     }

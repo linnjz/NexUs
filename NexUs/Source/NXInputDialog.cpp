@@ -81,21 +81,18 @@ NXInputDialog::NXInputDialog(QWidget *parent)
   d->_lineEdit->setText(d->_pTextValue);
   d->_lineEdit->setPlaceholderText(d->_pPlaceholderText);
   d->_lineEdit->setIsClearButtonEnable(true);
-  connect(d->_lineEdit, &NXLineEdit::textChanged, this, [=](const QString &text)
-  {
+  connect(d->_lineEdit, &NXLineEdit::textChanged, this, [=](const QString &text) {
     d->_pTextValue = text;
     Q_EMIT textValueChanged(text);
     bool okInt;
     int intValue = text.toInt(&okInt);
-    if (okInt)
-    {
+    if (okInt) {
       d->_pIntValue = intValue;
       Q_EMIT intValueChanged(intValue);
     }
     bool okDouble;
     double doubleValue = text.toDouble(&okDouble);
-    if (okDouble)
-    {
+    if (okDouble) {
       d->_pDoubleValue = doubleValue;
       Q_EMIT doubleValueChanged(doubleValue);
     }
@@ -150,13 +147,11 @@ NXInputDialog::NXInputDialog(QWidget *parent)
   mainLayout->addWidget(d->_buttonWidget);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 
-  QTimer::singleShot(0, d->_lineEdit, [=]()
-  {
+  QTimer::singleShot(0, d->_lineEdit, [=]() {
     d->_lineEdit->setFocus();
   });
 }
@@ -167,17 +162,7 @@ NXInputDialog::~NXInputDialog()
   d->_maskWidget->deleteLater();
 }
 
-QString
-NXInputDialog::getText(QWidget *parent,
-                       const QString &title,
-                       const QString &subtitle,
-                       const QString &label,
-                       const QString &text,
-                       bool *ok,
-                       const QString &okButtonText,
-                       const QString &cancelButtonText,
-                       int inputMinWidth,
-                       int inputMaxWidth)
+QString NXInputDialog::getText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -197,20 +182,7 @@ NXInputDialog::getText(QWidget *parent,
   return accepted ? dialog.getTextValue() : QString();
 }
 
-int
-NXInputDialog::getInt(QWidget *parent,
-                      const QString &title,
-                      const QString &subtitle,
-                      const QString &label,
-                      int value,
-                      int minValue,
-                      int maxValue,
-                      int step,
-                      bool *ok,
-                      const QString &okButtonText,
-                      const QString &cancelButtonText,
-                      int inputMinWidth,
-                      int inputMaxWidth)
+int NXInputDialog::getInt(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, int value, int minValue, int maxValue, int step, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -232,20 +204,7 @@ NXInputDialog::getInt(QWidget *parent,
   return accepted ? dialog.getIntValue() : value;
 }
 
-double
-NXInputDialog::getDouble(QWidget *parent,
-                         const QString &title,
-                         const QString &subtitle,
-                         const QString &label,
-                         double value,
-                         double minValue,
-                         double maxValue,
-                         int decimals,
-                         bool *ok,
-                         const QString &okButtonText,
-                         const QString &cancelButtonText,
-                         int inputMinWidth,
-                         int inputMaxWidth)
+double NXInputDialog::getDouble(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, double value, double minValue, double maxValue, int decimals, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -267,17 +226,7 @@ NXInputDialog::getDouble(QWidget *parent,
   return accepted ? dialog.getDoubleValue() : value;
 }
 
-QString
-NXInputDialog::getMultiLineText(QWidget *parent,
-                                const QString &title,
-                                const QString &subtitle,
-                                const QString &label,
-                                const QString &text,
-                                bool *ok,
-                                const QString &okButtonText,
-                                const QString &cancelButtonText,
-                                int inputMinWidth,
-                                int inputMaxWidth)
+QString NXInputDialog::getMultiLineText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -298,22 +247,19 @@ NXInputDialog::getMultiLineText(QWidget *parent,
   return accepted ? dialog.getTextValue() : QString();
 }
 
-void
-NXInputDialog::setTextEchoMode(QLineEdit::EchoMode mode)
+void NXInputDialog::setTextEchoMode(QLineEdit::EchoMode mode)
 {
   Q_D(NXInputDialog);
   d->_lineEdit->setEchoMode(mode);
 }
 
-QLineEdit::EchoMode
-NXInputDialog::textEchoMode() const
+QLineEdit::EchoMode NXInputDialog::textEchoMode() const
 {
   Q_D(const NXInputDialog);
   return d->_lineEdit->echoMode();
 }
 
-void
-NXInputDialog::setIntRange(int minValue, int maxValue, int step)
+void NXInputDialog::setIntRange(int minValue, int maxValue, int step)
 {
   Q_D(NXInputDialog);
 
@@ -322,8 +268,7 @@ NXInputDialog::setIntRange(int minValue, int maxValue, int step)
 
   d->_isIntMode = true;
 
-  if (!d->_spinBox)
-  {
+  if (!d->_spinBox) {
     d->_spinBox = new NXSpinBox(this);
     d->_spinBox->setButtonMode(NXSpinBoxType::PMSide);
     d->_spinBox->setMinimumWidth(d->_pInputMinimumWidth);
@@ -333,8 +278,7 @@ NXInputDialog::setIntRange(int minValue, int maxValue, int step)
     d->_spinBox->setSingleStep(step);
     d->_spinBox->setValue(d->_pIntValue);
 
-    connect(d->_spinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value)
-    {
+    connect(d->_spinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value) {
       d->_pIntValue  = value;
       d->_pTextValue = QString::number(value);
       Q_EMIT intValueChanged(value);
@@ -349,15 +293,13 @@ NXInputDialog::setIntRange(int minValue, int maxValue, int step)
   d->_spinBox->setSingleStep(step);
   d->_spinBox->setValue(d->_pIntValue);
 
-  if (d->_contentLayout)
-  {
+  if (d->_contentLayout) {
     d->_contentLayout->removeWidget(d->_lineEdit);
     d->_contentLayout->insertWidget(6, d->_spinBox);
   }
 }
 
-void
-NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimals)
+void NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimals)
 {
   Q_D(NXInputDialog);
 
@@ -366,8 +308,7 @@ NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimals)
 
   d->_isDoubleMode = true;
 
-  if (!d->_doubleSpinBox)
-  {
+  if (!d->_doubleSpinBox) {
     d->_doubleSpinBox = new NXDoubleSpinBox(this);
     d->_doubleSpinBox->setButtonMode(NXSpinBoxType::PMSide);
     d->_doubleSpinBox->setMinimumWidth(d->_pInputMinimumWidth);
@@ -377,8 +318,7 @@ NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimals)
     d->_doubleSpinBox->setDecimals(decimals);
     d->_doubleSpinBox->setValue(d->_pDoubleValue);
 
-    connect(d->_doubleSpinBox, QOverload<double>::of(&NXDoubleSpinBox::valueChanged), this, [=](double value)
-    {
+    connect(d->_doubleSpinBox, QOverload<double>::of(&NXDoubleSpinBox::valueChanged), this, [=](double value) {
       d->_pDoubleValue = value;
       d->_pTextValue   = QString::number(value, 'f', decimals);
       Q_EMIT doubleValueChanged(value);
@@ -393,15 +333,13 @@ NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimals)
   d->_doubleSpinBox->setDecimals(decimals);
   d->_doubleSpinBox->setValue(d->_pDoubleValue);
 
-  if (d->_contentLayout)
-  {
+  if (d->_contentLayout) {
     d->_contentLayout->removeWidget(d->_lineEdit);
     d->_contentLayout->insertWidget(6, d->_doubleSpinBox);
   }
 }
 
-void
-NXInputDialog::setMultiLine(bool multiLine)
+void NXInputDialog::setMultiLine(bool multiLine)
 {
   Q_D(NXInputDialog);
   if (d->_isMultiLine == multiLine)
@@ -409,15 +347,12 @@ NXInputDialog::setMultiLine(bool multiLine)
 
   d->_isMultiLine = multiLine;
 
-  if (multiLine)
-  {
-    if (!d->_textEdit)
-    {
+  if (multiLine) {
+    if (!d->_textEdit) {
       d->_textEdit = new QTextEdit(this);
       d->_textEdit->setPlainText(d->_pTextValue);
       d->_textEdit->setMinimumHeight(150);
-      connect(d->_textEdit, &QTextEdit::textChanged, this, [=]()
-      {
+      connect(d->_textEdit, &QTextEdit::textChanged, this, [=]() {
         d->_pTextValue = d->_textEdit->toPlainText();
         Q_EMIT textValueChanged(d->_pTextValue);
       });
@@ -426,24 +361,19 @@ NXInputDialog::setMultiLine(bool multiLine)
     d->_textEdit->setVisible(true);
     d->_textEdit->setPlainText(d->_pTextValue);
 
-    if (d->_contentLayout)
-    {
+    if (d->_contentLayout) {
       d->_contentLayout->removeWidget(d->_lineEdit);
       d->_contentLayout->insertWidget(6, d->_textEdit);
     }
     resize(400, 350);
-  }
-  else
-  {
-    if (d->_textEdit)
-    {
+  } else {
+    if (d->_textEdit) {
       d->_textEdit->setVisible(false);
     }
     d->_lineEdit->setVisible(true);
     d->_lineEdit->setText(d->_pTextValue);
 
-    if (d->_contentLayout && d->_textEdit)
-    {
+    if (d->_contentLayout && d->_textEdit) {
       d->_contentLayout->removeWidget(d->_textEdit);
       d->_contentLayout->insertWidget(4, d->_lineEdit);
     }
@@ -451,12 +381,10 @@ NXInputDialog::setMultiLine(bool multiLine)
   }
 }
 
-void
-NXInputDialog::showEvent(QShowEvent *event)
+void NXInputDialog::showEvent(QShowEvent *event)
 {
   Q_D(NXInputDialog);
-  if (parentWidget())
-  {
+  if (parentWidget()) {
     d->_maskWidget->setVisible(true);
     d->_maskWidget->raise();
     d->_maskWidget->setFixedSize(parentWidget()->size());
@@ -465,8 +393,7 @@ NXInputDialog::showEvent(QShowEvent *event)
   QDialog::showEvent(event);
 }
 
-void
-NXInputDialog::paintEvent(QPaintEvent *event)
+void NXInputDialog::paintEvent(QPaintEvent *event)
 {
   Q_D(NXInputDialog);
   QPainter painter(this);
@@ -480,17 +407,13 @@ NXInputDialog::paintEvent(QPaintEvent *event)
   painter.restore();
 }
 
-void
-NXInputDialog::keyPressEvent(QKeyEvent *event)
+void NXInputDialog::keyPressEvent(QKeyEvent *event)
 {
-  if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
-  {
+  if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
     onOkButtonClicked();
     event->accept();
     return;
-  }
-  else if (event->key() == Qt::Key_Escape)
-  {
+  } else if (event->key() == Qt::Key_Escape) {
     onCancelButtonClicked();
     event->accept();
     return;
@@ -498,22 +421,19 @@ NXInputDialog::keyPressEvent(QKeyEvent *event)
   QDialog::keyPressEvent(event);
 }
 
-void
-NXInputDialog::onOkButtonClicked()
+void NXInputDialog::onOkButtonClicked()
 {
   Q_D(NXInputDialog);
   d->_doCloseAnimation(true);
 }
 
-void
-NXInputDialog::onCancelButtonClicked()
+void NXInputDialog::onCancelButtonClicked()
 {
   Q_D(NXInputDialog);
   d->_doCloseAnimation(false);
 }
 
-void
-NXInputDialog::updateLabels()
+void NXInputDialog::updateLabels()
 {
   Q_D(NXInputDialog);
   d->_titleLabel->setText(d->_pTitleText);

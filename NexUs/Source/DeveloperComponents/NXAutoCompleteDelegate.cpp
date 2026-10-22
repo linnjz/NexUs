@@ -10,8 +10,7 @@ NXAutoCompleteDelegate::NXAutoCompleteDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -20,20 +19,17 @@ NXAutoCompleteDelegate::~NXAutoCompleteDelegate()
 {
 }
 
-void
-NXAutoCompleteDelegate::setHighlightText(const QString &text)
+void NXAutoCompleteDelegate::setHighlightText(const QString &text)
 {
   _highlightText = text;
 }
 
-void
-NXAutoCompleteDelegate::setMatchMode(NXAutoComplete::MatchMode mode)
+void NXAutoCompleteDelegate::setMatchMode(NXAutoComplete::MatchMode mode)
 {
   _matchMode = mode;
 }
 
-void
-NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
@@ -41,8 +37,7 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
   QRectF itemRect = option.rect;
   itemRect.adjust(4, 2, -4, -2);
-  if (option.state & QStyle::State_MouseOver)
-  {
+  if (option.state & QStyle::State_MouseOver) {
     QPainterPath hoverPath;
     hoverPath.addRoundedRect(itemRect, 4, 4);
     painter->fillPath(hoverPath, NXThemeColor(_themeMode, BasicHover));
@@ -55,8 +50,7 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
   QRectF textRect = itemRect.adjusted(10, 0, -4, 0);
 
-  if (!_highlightText.isEmpty())
-  {
+  if (!_highlightText.isEmpty()) {
     QFontMetrics fm(textFont);
     QFont boldFont = textFont;
     boldFont.setBold(true);
@@ -64,44 +58,30 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     int searchLen = _highlightText.length();
     QVector<QPair<int, int>> matches;
-    if (_matchMode == NXAutoComplete::StartsWith)
-    {
-      if (displayText.startsWith(_highlightText, Qt::CaseInsensitive))
-      {
+    if (_matchMode == NXAutoComplete::StartsWith) {
+      if (displayText.startsWith(_highlightText, Qt::CaseInsensitive)) {
         matches.append({ 0, searchLen });
       }
-    }
-    else if (_matchMode == NXAutoComplete::EndsWith)
-    {
-      if (displayText.endsWith(_highlightText, Qt::CaseInsensitive))
-      {
+    } else if (_matchMode == NXAutoComplete::EndsWith) {
+      if (displayText.endsWith(_highlightText, Qt::CaseInsensitive)) {
         matches.append({ displayText.length() - searchLen, searchLen });
       }
-    }
-    else if (_matchMode == NXAutoComplete::RegExp)
-    {
+    } else if (_matchMode == NXAutoComplete::RegExp) {
       QRegularExpression re(_highlightText, QRegularExpression::CaseInsensitiveOption);
-      if (re.isValid())
-      {
+      if (re.isValid()) {
         QRegularExpressionMatchIterator it = re.globalMatch(displayText);
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
           QRegularExpressionMatch m = it.next();
-          if (m.capturedLength() > 0)
-          {
+          if (m.capturedLength() > 0) {
             matches.append({ static_cast<int>(m.capturedStart()), static_cast<int>(m.capturedLength()) });
           }
         }
       }
-    }
-    else
-    {
+    } else {
       int searchFrom = 0;
-      while (searchFrom < displayText.length())
-      {
+      while (searchFrom < displayText.length()) {
         int idx = displayText.indexOf(_highlightText, searchFrom, Qt::CaseInsensitive);
-        if (idx < 0)
-        {
+        if (idx < 0) {
           break;
         }
         matches.append({ idx, searchLen });
@@ -109,16 +89,13 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
       }
     }
 
-    if (!matches.isEmpty())
-    {
+    if (!matches.isEmpty()) {
       qreal x = textRect.left();
       qreal y = textRect.center().y() + fm.ascent() / 2.0 - 1;
       int pos = 0;
 
-      for (const auto &m : matches)
-      {
-        if (m.first > pos)
-        {
+      for (const auto &m : matches) {
+        if (m.first > pos) {
           QString segment = displayText.mid(pos, m.first - pos);
           painter->setFont(textFont);
           painter->setPen(NXThemeColor(_themeMode, BasicText));
@@ -132,8 +109,7 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         x += boldFm.horizontalAdvance(matchStr);
         pos = m.first + m.second;
       }
-      if (pos < displayText.length())
-      {
+      if (pos < displayText.length()) {
         QString tail = displayText.mid(pos);
         painter->setFont(textFont);
         painter->setPen(NXThemeColor(_themeMode, BasicText));
@@ -151,8 +127,7 @@ NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
   painter->restore();
 }
 
-QSize
-NXAutoCompleteDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXAutoCompleteDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   Q_UNUSED(option)
   Q_UNUSED(index)

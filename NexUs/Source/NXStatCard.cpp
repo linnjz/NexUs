@@ -24,8 +24,7 @@ NXStatCard::NXStatCard(QWidget *parent)
   setFixedSize(220, 120);
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -35,36 +34,31 @@ NXStatCard::~NXStatCard()
 {
 }
 
-void
-NXStatCard::setTrend(TrendType trend)
+void NXStatCard::setTrend(TrendType trend)
 {
   Q_D(NXStatCard);
   d->_trend = trend;
   update();
 }
 
-NXStatCard::TrendType
-NXStatCard::getTrend() const
+NXStatCard::TrendType NXStatCard::getTrend() const
 {
   return d_ptr->_trend;
 }
 
-void
-NXStatCard::setTrendText(const QString &text)
+void NXStatCard::setTrendText(const QString &text)
 {
   Q_D(NXStatCard);
   d->_trendText = text;
   update();
 }
 
-QString
-NXStatCard::getTrendText() const
+QString NXStatCard::getTrendText() const
 {
   return d_ptr->_trendText;
 }
 
-void
-NXStatCard::paintEvent(QPaintEvent *event)
+void NXStatCard::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXStatCard);
@@ -84,8 +78,7 @@ NXStatCard::paintEvent(QPaintEvent *event)
   int titleY   = 16;
 
   // Icon + Title row
-  if (d->_pCardIcon != NXIconType::None)
-  {
+  if (d->_pCardIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(20);
     painter.setFont(iconFont);
@@ -95,8 +88,7 @@ NXStatCard::paintEvent(QPaintEvent *event)
     currentX += 24;
   }
 
-  if (!d->_pTitle.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(13);
     painter.setFont(titleFont);
@@ -105,8 +97,7 @@ NXStatCard::paintEvent(QPaintEvent *event)
   }
 
   // Value (big number)
-  if (!d->_pValue.isEmpty())
-  {
+  if (!d->_pValue.isEmpty()) {
     QFont valueFont = font();
     valueFont.setPixelSize(28);
     valueFont.setBold(true);
@@ -119,16 +110,14 @@ NXStatCard::paintEvent(QPaintEvent *event)
   int bottomY = 88 + 14;
   int trendX  = padding;
 
-  if (d->_trend != None)
-  {
+  if (d->_trend != None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(12);
 
     QFont trendFont = font();
     trendFont.setPixelSize(12);
 
-    if (d->_trend == Up)
-    {
+    if (d->_trend == Up) {
       QColor greenColor(0x0F, 0x7B, 0x0F);
       painter.setFont(iconFont);
       painter.setPen(greenColor);
@@ -136,15 +125,12 @@ NXStatCard::paintEvent(QPaintEvent *event)
       painter.drawText(trendX, bottomY, QString(arrowChar));
       trendX += 14;
 
-      if (!d->_trendText.isEmpty())
-      {
+      if (!d->_trendText.isEmpty()) {
         painter.setFont(trendFont);
         painter.drawText(trendX, bottomY, d->_trendText);
         trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
       }
-    }
-    else if (d->_trend == Down)
-    {
+    } else if (d->_trend == Down) {
       QColor redColor = NXThemeColor(d->_themeMode, StatusDanger);
       painter.setFont(iconFont);
       painter.setPen(redColor);
@@ -152,23 +138,19 @@ NXStatCard::paintEvent(QPaintEvent *event)
       painter.drawText(trendX, bottomY, QString(arrowChar));
       trendX += 14;
 
-      if (!d->_trendText.isEmpty())
-      {
+      if (!d->_trendText.isEmpty()) {
         painter.setFont(trendFont);
         painter.drawText(trendX, bottomY, d->_trendText);
         trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
       }
-    }
-    else if (d->_trend == Neutral)
-    {
+    } else if (d->_trend == Neutral) {
       QColor neutralColor = NXThemeColor(d->_themeMode, BasicDetailsText);
       painter.setFont(trendFont);
       painter.setPen(neutralColor);
       painter.drawText(trendX, bottomY, QStringLiteral("\u2014"));
       trendX += QFontMetrics(trendFont).horizontalAdvance(QStringLiteral("\u2014")) + 6;
 
-      if (!d->_trendText.isEmpty())
-      {
+      if (!d->_trendText.isEmpty()) {
         painter.drawText(trendX, bottomY, d->_trendText);
         trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
       }
@@ -176,8 +158,7 @@ NXStatCard::paintEvent(QPaintEvent *event)
   }
 
   // Description
-  if (!d->_pDescription.isEmpty())
-  {
+  if (!d->_pDescription.isEmpty()) {
     QFont descFont = font();
     descFont.setPixelSize(12);
     painter.setFont(descFont);

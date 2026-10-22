@@ -12,28 +12,24 @@ NXCustomWidget::NXCustomWidget(QWidget *parent)
 {
   resize(500, 500); // 默认宽高
   setObjectName("NXCustomWidget");
-  setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint |
-                 Qt::WindowCloseButtonHint | Qt::WindowFullscreenButtonHint);
+  setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::WindowFullscreenButtonHint);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 5, 3) || QT_VERSION > QT_VERSION_CHECK(6, 6, 1))
   setStyleSheet(QStringLiteral("#NXCustomWidget{background-color:transparent;}"));
 #endif
   // 自定义AppBar
   _appBar = new NXAppBar(this);
-  _appBar->setWindowButtonFlags(NXAppBarType::MinimizeButtonHint | NXAppBarType::MaximizeButtonHint |
-                                NXAppBarType::CloseButtonHint);
+  _appBar->setWindowButtonFlags(NXAppBarType::MinimizeButtonHint | NXAppBarType::MaximizeButtonHint | NXAppBarType::CloseButtonHint);
   _mainLayout = new QVBoxLayout(this);
   _mainLayout->setContentsMargins(0, 0, 0, 0);
 
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
     update();
   });
 
   _windowDisplayMode = nxApp->getWindowDisplayMode();
-  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]()
-  {
+  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]() {
     _windowDisplayMode = nxApp->getWindowDisplayMode();
     update();
   });
@@ -46,11 +42,9 @@ NXCustomWidget::~NXCustomWidget()
   nxApp->syncWindowDisplayMode(this, false);
 }
 
-void
-NXCustomWidget::setCentralWidget(QWidget *widget)
+void NXCustomWidget::setCentralWidget(QWidget *widget)
 {
-  if (!widget)
-  {
+  if (!widget) {
     return;
   }
   _centralWidget = widget;
@@ -58,8 +52,7 @@ NXCustomWidget::setCentralWidget(QWidget *widget)
   widget->setVisible(true);
 }
 
-void
-NXCustomWidget::paintEvent(QPaintEvent *event)
+void NXCustomWidget::paintEvent(QPaintEvent *event)
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
   if (_windowDisplayMode != NXApplicationType::WindowDisplayMode::NXMica)

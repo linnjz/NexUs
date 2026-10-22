@@ -18,11 +18,9 @@ NXTabBarPrivate::~NXTabBarPrivate()
 {
 }
 
-void
-NXTabBarPrivate::startScrollAnimation()
+void NXTabBarPrivate::startScrollAnimation()
 {
-  if (qFuzzyCompare(_pScrollOffset, _pTargetScrollOffset))
-  {
+  if (qFuzzyCompare(_pScrollOffset, _pTargetScrollOffset)) {
     return;
   }
   _scrollAnimation->stop();
@@ -31,8 +29,7 @@ NXTabBarPrivate::startScrollAnimation()
   _scrollAnimation->start();
 }
 
-void
-NXTabBarPrivate::restoreScrollOffset(qreal offset)
+void NXTabBarPrivate::restoreScrollOffset(qreal offset)
 {
   Q_Q(NXTabBar);
   // 不超过当前最大偏移

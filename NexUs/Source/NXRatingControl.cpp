@@ -12,12 +12,10 @@ Q_PROPERTY_CREATE_CPP(NXRatingControl, int, StarSize)
 Q_PROPERTY_CREATE_CPP(NXRatingControl, int, Spacing)
 Q_PROPERTY_CREATE_CPP(NXRatingControl, bool, IsReadOnly)
 
-void
-NXRatingControl::setRating(int Rating)
+void NXRatingControl::setRating(int Rating)
 {
   Q_D(NXRatingControl);
-  if (d->_pRating == Rating)
-  {
+  if (d->_pRating == Rating) {
     return;
   }
   d->_pRating = Rating;
@@ -26,8 +24,7 @@ NXRatingControl::setRating(int Rating)
   update();
 }
 
-int
-NXRatingControl::getRating() const
+int NXRatingControl::getRating() const
 {
   return d_ptr->_pRating;
 }
@@ -56,8 +53,7 @@ NXRatingControl::NXRatingControl(QWidget *parent)
   setMouseTracking(true);
   setFixedHeight(d->_pStarSize + 4);
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -67,8 +63,7 @@ NXRatingControl::~NXRatingControl()
 {
 }
 
-void
-NXRatingControl::paintEvent(QPaintEvent *event)
+void NXRatingControl::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXRatingControl);
@@ -80,67 +75,54 @@ NXRatingControl::paintEvent(QPaintEvent *event)
   painter.setFont(iconFont);
 
   int effectiveRating = d->_pRating;
-  if (!d->_pIsReadOnly && d->_hoveredStar >= 0)
-  {
+  if (!d->_pIsReadOnly && d->_hoveredStar >= 0) {
     effectiveRating = d->_hoveredStar + 1;
   }
 
-  for (int i = 0; i < d->_pMaxRating; ++i)
-  {
+  for (int i = 0; i < d->_pMaxRating; ++i) {
     QRect starRect(i * (d->_pStarSize + d->_pSpacing), 2, d->_pStarSize, d->_pStarSize);
-    if (i < effectiveRating)
-    {
+    if (i < effectiveRating) {
       painter.setPen(NXThemeColor(d->_themeMode, PrimaryNormal));
-    }
-    else
-    {
+    } else {
       painter.setPen(NXThemeColor(d->_themeMode, BasicBorderDeep));
     }
     painter.drawText(starRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Star));
   }
 }
 
-void
-NXRatingControl::mouseMoveEvent(QMouseEvent *event)
+void NXRatingControl::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXRatingControl);
-  if (d->_pIsReadOnly)
-  {
+  if (d->_pIsReadOnly) {
     QWidget::mouseMoveEvent(event);
     return;
   }
   int x           = event->pos().x();
   int starUnit    = d->_pStarSize + d->_pSpacing;
   int hoveredStar = -1;
-  if (x >= 0 && starUnit > 0)
-  {
+  if (x >= 0 && starUnit > 0) {
     hoveredStar = x / starUnit;
-    if (hoveredStar >= d->_pMaxRating)
-    {
+    if (hoveredStar >= d->_pMaxRating) {
       hoveredStar = -1;
     }
   }
-  if (d->_hoveredStar != hoveredStar)
-  {
+  if (d->_hoveredStar != hoveredStar) {
     d->_hoveredStar = hoveredStar;
     update();
   }
   QWidget::mouseMoveEvent(event);
 }
 
-void
-NXRatingControl::mousePressEvent(QMouseEvent *event)
+void NXRatingControl::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXRatingControl);
-  if (!d->_pIsReadOnly && d->_hoveredStar >= 0)
-  {
+  if (!d->_pIsReadOnly && d->_hoveredStar >= 0) {
     setRating(d->_hoveredStar + 1);
   }
   QWidget::mousePressEvent(event);
 }
 
-void
-NXRatingControl::leaveEvent(QEvent *event)
+void NXRatingControl::leaveEvent(QEvent *event)
 {
   Q_D(NXRatingControl);
   d->_hoveredStar = -1;
@@ -148,8 +130,7 @@ NXRatingControl::leaveEvent(QEvent *event)
   QWidget::leaveEvent(event);
 }
 
-QSize
-NXRatingControl::sizeHint() const
+QSize NXRatingControl::sizeHint() const
 {
   Q_D(const NXRatingControl);
   int w = d->_pMaxRating * (d->_pStarSize + d->_pSpacing) - d->_pSpacing;

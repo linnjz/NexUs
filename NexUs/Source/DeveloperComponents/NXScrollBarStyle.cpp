@@ -16,8 +16,7 @@ NXScrollBarStyle::NXScrollBarStyle(QStyle *style)
   _pScrollBar    = nullptr;
   _pSliderExtent = 2.4;
   _themeMode     = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -26,25 +25,17 @@ NXScrollBarStyle::~NXScrollBarStyle()
 {
 }
 
-void
-NXScrollBarStyle::drawComplexControl(ComplexControl control,
-                                     const QStyleOptionComplex *option,
-                                     QPainter *painter,
-                                     const QWidget *widget) const
+void NXScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
   //QStyle::SC_ScrollBarGroove QStyle::SC_ScrollBarAddLine   QStyle::SC_ScrollBarSubLine上指示器
-  switch (control)
-  {
-  case QStyle::CC_ScrollBar :
-  {
-    if (const QStyleOptionSlider *sopt = qstyleoption_cast<const QStyleOptionSlider *>(option))
-    {
+  switch (control) {
+  case QStyle::CC_ScrollBar : {
+    if (const QStyleOptionSlider *sopt = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
       painter->save();
       painter->setRenderHint(QPainter::Antialiasing);
       painter->setPen(Qt::NoPen);
       QRect scrollBarRect = sopt->rect;
-      if (_pIsExpand)
-      {
+      if (_pIsExpand) {
         // 背景绘制
         painter->setOpacity(_pOpacity);
         painter->setPen(Qt::NoPen);
@@ -53,8 +44,7 @@ NXScrollBarStyle::drawComplexControl(ComplexControl control,
         //指示器绘制 center()在此处不适用 存在外围边距宽度 需手动计算
         int sideLength = 8;
         painter->setBrush(NXThemeColor(_themeMode, ScrollBarHandle));
-        if (sopt->orientation == Qt::Horizontal)
-        {
+        if (sopt->orientation == Qt::Horizontal) {
           QRect leftIndicatorRect  = subControlRect(control, sopt, QStyle::SC_ScrollBarSubLine, widget);
           QRect rightIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarAddLine, widget);
           // 左三角
@@ -75,9 +65,7 @@ NXScrollBarStyle::drawComplexControl(ComplexControl control,
           rightPath.lineTo(centerRightX - qCos(30 * M_PI / 180.0) * sideLength / 2, centerY - sideLength / 2);
           rightPath.closeSubpath();
           painter->drawPath(rightPath);
-        }
-        else
-        {
+        } else {
           QRect upIndicatorRect   = subControlRect(control, sopt, QStyle::SC_ScrollBarSubLine, widget);
           QRect downIndicatorRect = subControlRect(control, sopt, QStyle::SC_ScrollBarAddLine, widget);
           qreal centerToTop       = (sideLength / 2) / qCos(30 * M_PI / 180.0);
@@ -106,69 +94,51 @@ NXScrollBarStyle::drawComplexControl(ComplexControl control,
       //滑块绘制
       QRectF sliderRect = subControlRect(control, sopt, QStyle::SC_ScrollBarSlider, widget);
       painter->setBrush(NXThemeColor(_themeMode, ScrollBarHandle));
-      if (sopt->orientation == Qt::Horizontal)
-      {
-        sliderRect.setRect(sliderRect.x(), sliderRect.bottom() - _sliderMargin - _pSliderExtent, sliderRect.width(),
-                           _pSliderExtent);
-      }
-      else
-      {
-        sliderRect.setRect(sliderRect.right() - _sliderMargin - _pSliderExtent, sliderRect.y(), _pSliderExtent,
-                           sliderRect.height());
+      if (sopt->orientation == Qt::Horizontal) {
+        sliderRect.setRect(sliderRect.x(), sliderRect.bottom() - _sliderMargin - _pSliderExtent, sliderRect.width(), _pSliderExtent);
+      } else {
+        sliderRect.setRect(sliderRect.right() - _sliderMargin - _pSliderExtent, sliderRect.y(), _pSliderExtent, sliderRect.height());
       }
       painter->drawRoundedRect(sliderRect, _pSliderExtent / 2.0, _pSliderExtent / 2.0);
       painter->restore();
     }
     return;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-int
-NXScrollBarStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXScrollBarStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
   // qDebug() << metric << QProxyStyle::pixelMetric(metric, option, widget);
-  switch (metric)
-  {
-  case QStyle::PM_ScrollBarExtent :
-  {
+  switch (metric) {
+  case QStyle::PM_ScrollBarExtent : {
     return _scrollBarExtent;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-int
-NXScrollBarStyle::styleHint(StyleHint hint,
-                            const QStyleOption *option,
-                            const QWidget *widget,
-                            QStyleHintReturn *returnData) const
+int NXScrollBarStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
 {
-  if (hint == QStyle::SH_ScrollBar_LeftClickAbsolutePosition)
-  {
+  if (hint == QStyle::SH_ScrollBar_LeftClickAbsolutePosition) {
     return true;
   }
   return QProxyStyle::styleHint(hint, option, widget, returnData);
 }
 
-void
-NXScrollBarStyle::startExpandAnimation(bool isExpand)
+void NXScrollBarStyle::startExpandAnimation(bool isExpand)
 {
-  if (isExpand)
-  {
+  if (isExpand) {
     _pIsExpand                           = true;
     QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pOpacity");
-    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-    {
+    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
       _pScrollBar->update();
     });
     opacityAnimation->setDuration(250);
@@ -183,16 +153,12 @@ NXScrollBarStyle::startExpandAnimation(bool isExpand)
     extentAnimation->setStartValue(_pSliderExtent);
     extentAnimation->setEndValue(_scrollBarExtent - 2 * _sliderMargin);
     extentAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  }
-  else
-  {
+  } else {
     QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pOpacity");
-    connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]()
-    {
+    connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
       _pIsExpand = false;
     });
-    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=]()
-    {
+    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
       _pScrollBar->update();
     });
     opacityAnimation->setDuration(250);

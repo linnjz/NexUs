@@ -29,13 +29,11 @@ NXMarkdownViewer::NXMarkdownViewer(QWidget *parent)
 
   d->_themeMode = nxTheme->getThemeMode();
   d->_applyThemeStyle();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     d->_applyThemeStyle();
   });
-  connect(this, &NXMarkdownViewer::pMarkdownChanged, this, [=]()
-  {
+  connect(this, &NXMarkdownViewer::pMarkdownChanged, this, [=]() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     d->_textBrowser->setMarkdown(d->_pMarkdown);
 #else
@@ -59,24 +57,22 @@ NXMarkdownViewerPrivate::~NXMarkdownViewerPrivate()
 {
 }
 
-void
-NXMarkdownViewerPrivate::_applyThemeStyle()
+void NXMarkdownViewerPrivate::_applyThemeStyle()
 {
-  if (!_textBrowser)
-  {
+  if (!_textBrowser) {
     return;
   }
   QColor textColor      = NXThemeColor(_themeMode, BasicText);
   QColor linkColor      = NXThemeColor(_themeMode, PrimaryNormal);
   QColor codeBackground = NXThemeColor(_themeMode, BasicBaseDeep);
   QString styleSheet    = QString(QStringLiteral("QTextBrowser {"
-                                                    "    background-color: transparent;"
-                                                    "    color: %1;"
-                                                    "}"
-                                                    "a { color: %2; }"
-                                                    "code, pre {"
-                                                    "    background-color: %3;"
-                                                    "}"))
-                           .arg(textColor.name(), linkColor.name(), codeBackground.name());
+                                                 "    background-color: transparent;"
+                                                 "    color: %1;"
+                                                 "}"
+                                                 "a { color: %2; }"
+                                                 "code, pre {"
+                                                 "    background-color: %3;"
+                                                 "}"))
+                              .arg(textColor.name(), linkColor.name(), codeBackground.name());
   _textBrowser->setStyleSheet(styleSheet);
 }

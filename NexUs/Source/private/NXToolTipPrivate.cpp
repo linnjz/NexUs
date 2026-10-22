@@ -26,36 +26,28 @@ NXToolTipPrivate::~NXToolTipPrivate()
 {
 }
 
-bool
-NXToolTipPrivate::eventFilter(QObject *watched, QEvent *event)
+bool NXToolTipPrivate::eventFilter(QObject *watched, QEvent *event)
 {
   Q_Q(NXToolTip);
-  if (_toolTipText && (!_toolTipText->text().isEmpty() || _pCustomWidget))
-  {
-    switch (event->type())
-    {
-    case QEvent::Enter :
-    {
+  if (_toolTipText && (!_toolTipText->text().isEmpty() || _pCustomWidget)) {
+    switch (event->type()) {
+    case QEvent::Enter : {
       _hideTimer->stop();
       _autoHideTimer->stop();
-      if (!q->isVisible())
-      {
+      if (!q->isVisible()) {
         _showTimer->start(_pShowDelayMsec);
       }
       break;
     }
-    case QEvent::Leave :
-    {
+    case QEvent::Leave : {
       _showTimer->stop();
       _autoHideTimer->stop();
       _hideTimer->start(_pHideDelayMsec);
       break;
     }
     case QEvent::HoverMove :
-    case QEvent::MouseMove :
-    {
-      if (_pIsMoveEnable)
-      {
+    case QEvent::MouseMove : {
+      if (_pIsMoveEnable) {
         _updatePos();
       }
       break;
@@ -66,30 +58,26 @@ NXToolTipPrivate::eventFilter(QObject *watched, QEvent *event)
   return QObject::eventFilter(watched, event);
 }
 
-void
-NXToolTipPrivate::onShowTimeout()
+void NXToolTipPrivate::onShowTimeout()
 {
   _doShowAnimation();
 }
 
-void
-NXToolTipPrivate::onHideTimeout()
+void NXToolTipPrivate::onHideTimeout()
 {
   Q_Q(NXToolTip);
   q->hide();
   _stopAllTimers();
 }
 
-void
-NXToolTipPrivate::onAutoHideTimeout()
+void NXToolTipPrivate::onAutoHideTimeout()
 {
   Q_Q(NXToolTip);
   q->hide();
   _stopAllTimers();
 }
 
-void
-NXToolTipPrivate::_doShowAnimation()
+void NXToolTipPrivate::_doShowAnimation()
 {
   Q_Q(NXToolTip);
   QPoint cursorPoint = QCursor::pos();
@@ -102,22 +90,19 @@ NXToolTipPrivate::_doShowAnimation()
   showAnimation->setEndValue(1);
   showAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-  if (_pDisplayMsec > 0)
-  {
+  if (_pDisplayMsec > 0) {
     _autoHideTimer->start(_pDisplayMsec);
   }
 }
 
-void
-NXToolTipPrivate::_updatePos()
+void NXToolTipPrivate::_updatePos()
 {
   Q_Q(NXToolTip);
   QPoint cursorPoint = QCursor::pos();
   q->move(cursorPoint.x() + _pOffSetX, cursorPoint.y() + _pOffSetY);
 }
 
-void
-NXToolTipPrivate::_stopAllTimers()
+void NXToolTipPrivate::_stopAllTimers()
 {
   _showTimer->stop();
   _hideTimer->stop();

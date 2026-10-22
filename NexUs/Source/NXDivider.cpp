@@ -32,23 +32,18 @@ NXDivider::NXDivider(QWidget *parent)
   setFixedHeight(20);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
-  connect(this, &NXDivider::pOrientationChanged, this, [=]()
-  {
-    if (d->_pOrientation == Qt::Horizontal)
-    {
+  connect(this, &NXDivider::pOrientationChanged, this, [=]() {
+    if (d->_pOrientation == Qt::Horizontal) {
       setFixedHeight(20);
       setMinimumWidth(0);
       setMaximumWidth(QWIDGETSIZE_MAX);
       setMaximumHeight(20);
       setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    }
-    else
-    {
+    } else {
       setFixedWidth(20);
       setMinimumHeight(0);
       setMaximumHeight(QWIDGETSIZE_MAX);
@@ -58,12 +53,10 @@ NXDivider::NXDivider(QWidget *parent)
     updateGeometry();
     update();
   });
-  connect(this, &NXDivider::pTextChanged, this, [=]()
-  {
+  connect(this, &NXDivider::pTextChanged, this, [=]() {
     update();
   });
-  connect(this, &NXDivider::pContentPositionChanged, this, [=]()
-  {
+  connect(this, &NXDivider::pContentPositionChanged, this, [=]() {
     update();
   });
 }
@@ -79,8 +72,7 @@ NXDivider::~NXDivider()
 {
 }
 
-void
-NXDivider::paintEvent(QPaintEvent *event)
+void NXDivider::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXDivider);
@@ -90,8 +82,7 @@ NXDivider::paintEvent(QPaintEvent *event)
   QColor lineColor = NXThemeColor(d->_themeMode, BasicBorder);
   QPen linePen(lineColor, 1);
 
-  if (d->_pOrientation == Qt::Vertical)
-  {
+  if (d->_pOrientation == Qt::Vertical) {
     // Vertical line at horizontal center
     int centerX = width() / 2;
     painter.setPen(linePen);
@@ -102,8 +93,7 @@ NXDivider::paintEvent(QPaintEvent *event)
   // Horizontal mode
   int centerY = height() / 2;
 
-  if (d->_pText.isEmpty())
-  {
+  if (d->_pText.isEmpty()) {
     // Simple horizontal line
     painter.setPen(linePen);
     painter.drawLine(0, centerY, width(), centerY);
@@ -120,16 +110,11 @@ NXDivider::paintEvent(QPaintEvent *event)
   int padding    = 8;
 
   int textX = 0;
-  if (d->_pContentPosition == Left)
-  {
+  if (d->_pContentPosition == Left) {
     textX = 20;
-  }
-  else if (d->_pContentPosition == Center)
-  {
+  } else if (d->_pContentPosition == Center) {
     textX = (width() - textWidth) / 2;
-  }
-  else
-  {
+  } else {
     // Right
     textX = width() - 20 - textWidth;
   }
@@ -139,14 +124,12 @@ NXDivider::paintEvent(QPaintEvent *event)
 
   // Draw left line segment
   painter.setPen(linePen);
-  if (gapLeft > 0)
-  {
+  if (gapLeft > 0) {
     painter.drawLine(0, centerY, gapLeft, centerY);
   }
 
   // Draw right line segment
-  if (gapRight < width())
-  {
+  if (gapRight < width()) {
     painter.drawLine(gapRight, centerY, width(), centerY);
   }
 
@@ -157,12 +140,10 @@ NXDivider::paintEvent(QPaintEvent *event)
   painter.drawText(textRect, Qt::AlignCenter, d->_pText);
 }
 
-QSize
-NXDivider::sizeHint() const
+QSize NXDivider::sizeHint() const
 {
   Q_D(const NXDivider);
-  if (d->_pOrientation == Qt::Horizontal)
-  {
+  if (d->_pOrientation == Qt::Horizontal) {
     return QSize(200, 20);
   }
   return QSize(20, 200);

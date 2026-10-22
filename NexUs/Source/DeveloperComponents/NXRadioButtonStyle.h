@@ -7,6 +7,7 @@
 #include "NXDef.h"
 
 class QPropertyAnimation;
+
 class NXRadioButtonStyle : public QProxyStyle
 {
   Q_OBJECT
@@ -16,12 +17,8 @@ class NXRadioButtonStyle : public QProxyStyle
 public:
   explicit NXRadioButtonStyle(QStyle *style = nullptr);
   ~NXRadioButtonStyle();
-  void drawPrimitive(PrimitiveElement element,
-                     const QStyleOption *option,
-                     QPainter *painter,
-                     const QWidget *widget = nullptr) const override;
-  int
-  pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
 
 private:
   NXThemeType::ThemeMode _themeMode;

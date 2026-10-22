@@ -22,9 +22,9 @@ class NXPivotView : public QListView
 public:
   explicit NXPivotView(QWidget *parent = nullptr);
   ~NXPivotView() override;
-  bool doCurrentIndexChangedAnimation(QModelIndex const &index);
-  void setPressIndexAndUpdate(QModelIndex const &index);
-  void setCommittedIndexAndUpdate(QModelIndex const &index);
+  bool doCurrentIndexChangedAnimation(const QModelIndex &index);
+  void setPressIndexAndUpdate(const QModelIndex &index);
+  void setCommittedIndexAndUpdate(const QModelIndex &index);
   void refreshHoverState();
 
 protected:
@@ -39,16 +39,12 @@ private:
   bool _isAnimationFinished { true };
   QRect _committedIndexRect {}; // 提交索引在上次动画/提交时的快照矩形，用于布局位移补偿
 
-  void _startIndicatorAnimation(qreal indicatorXStart,
-                                qreal indicatorXEnd,
-                                int indicatorWidthStart,
-                                int indicatorWidthEnd,
-                                QRect const &dirtyRect);
+  void _startIndicatorAnimation(qreal indicatorXStart, qreal indicatorXEnd, int indicatorWidthStart, int indicatorWidthEnd, const QRect &dirtyRect);
 
-  void _setHoverIndexInternal(QModelIndex const &index);
+  void _setHoverIndexInternal(const QModelIndex &index);
   void _updateIndicatorRegion(QRect rect);
-  void _updateIndexRect(QModelIndex const &index);
-  void _updateIndexPair(QModelIndex const &first, QModelIndex const &second);
+  void _updateIndexRect(const QModelIndex &index);
+  void _updateIndexPair(const QModelIndex &first, const QModelIndex &second);
   void _syncHoverCursor();
 };
 

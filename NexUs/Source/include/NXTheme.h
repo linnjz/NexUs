@@ -31,14 +31,7 @@ public:
   void setThemeMode(NXThemeType::ThemeMode themeMode);
   NXThemeType::ThemeMode getThemeMode() const;
 
-  void drawEffectShadow(QPainter *painter,
-                        QRect widgetRect,
-                        int shadowBorderWidth,
-                        int borderRadius,
-                        int maxAlpha             = 32,
-                        int extendPixels         = 1,
-                        const QColor &lightColor = QColor(0xC0, 0xC0, 0xC0),
-                        const QColor &darkColor  = QColor(0x80, 0x80, 0x80));
+  void drawEffectShadow(QPainter *painter, QRect widgetRect, int shadowBorderWidth, int borderRadius, int maxAlpha = 32, int extendPixels = 1, const QColor &lightColor = QColor(0xC0, 0xC0, 0xC0), const QColor &darkColor = QColor(0x80, 0x80, 0x80));
 
   void setThemeColor(NXThemeType::ThemeMode themeMode, NXThemeType::ThemeColor themeColor, const QColor &newColor);
   QColor getThemeColor(NXThemeType::ThemeMode themeMode, NXThemeType::ThemeColor themeColor);

@@ -9,8 +9,7 @@ NXMultiSelectComboBoxDelegate::NXMultiSelectComboBoxDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -19,16 +18,12 @@ NXMultiSelectComboBoxDelegate::~NXMultiSelectComboBoxDelegate()
 {
 }
 
-void
-NXMultiSelectComboBoxDelegate::setItemSelection(const QVector<bool> &selection)
+void NXMultiSelectComboBoxDelegate::setItemSelection(const QVector<bool> &selection)
 {
   _itemSelection = selection;
 }
 
-void
-NXMultiSelectComboBoxDelegate::paint(QPainter *painter,
-                                     const QStyleOptionViewItem &option,
-                                     const QModelIndex &index) const
+void NXMultiSelectComboBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
@@ -46,21 +41,14 @@ NXMultiSelectComboBoxDelegate::paint(QPainter *painter,
   bool isSelected = index.row() < _itemSelection.size() && _itemSelection[index.row()];
 
   painter->setPen(Qt::NoPen);
-  if (isSelected)
-  {
-    if (option.state & QStyle::State_MouseOver)
-    {
+  if (isSelected) {
+    if (option.state & QStyle::State_MouseOver) {
       painter->fillPath(bgPath, NXThemeColor(_themeMode, BasicSelectedHoverAlpha));
-    }
-    else
-    {
+    } else {
       painter->fillPath(bgPath, NXThemeColor(_themeMode, BasicSelectedAlpha));
     }
-  }
-  else
-  {
-    if (option.state & QStyle::State_MouseOver)
-    {
+  } else {
+    if (option.state & QStyle::State_MouseOver) {
       painter->fillPath(bgPath, NXThemeColor(_themeMode, BasicHoverAlpha));
     }
   }
@@ -70,33 +58,23 @@ NXMultiSelectComboBoxDelegate::paint(QPainter *painter,
   checkBoxRect.adjust(1, 1, -1, -1);
 
   painter->setPen(Qt::NoPen);
-  if (isSelected)
-  {
-    if (option.state & QStyle::State_MouseOver)
-    {
+  if (isSelected) {
+    if (option.state & QStyle::State_MouseOver) {
       painter->setBrush(NXThemeColor(_themeMode, PrimaryHover));
-    }
-    else
-    {
+    } else {
       painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
     }
-  }
-  else
-  {
+  } else {
     painter->setPen(NXThemeColor(_themeMode, BasicBorderDeep));
-    if (option.state & QStyle::State_MouseOver)
-    {
+    if (option.state & QStyle::State_MouseOver) {
       painter->setBrush(NXThemeColor(_themeMode, BasicHover));
-    }
-    else
-    {
+    } else {
       painter->setBrush(NXThemeColor(_themeMode, BasicBase));
     }
   }
   painter->drawRoundedRect(checkBoxRect, 2, 2);
 
-  if (isSelected)
-  {
+  if (isSelected) {
     painter->setPen(NXThemeColor(NXThemeType::Dark, BasicText));
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(checkBoxSize * 0.75);
@@ -112,8 +90,7 @@ NXMultiSelectComboBoxDelegate::paint(QPainter *painter,
   painter->restore();
 }
 
-QSize
-NXMultiSelectComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXMultiSelectComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   return QSize(option.rect.width(), 35);
 }

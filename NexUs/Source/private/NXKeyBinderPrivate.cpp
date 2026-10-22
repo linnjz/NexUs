@@ -14,8 +14,7 @@ NXKeyBinderPrivate::~NXKeyBinderPrivate()
 {
 }
 
-void
-NXKeyBinderPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
+void NXKeyBinderPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXKeyBinder);
   _themeMode       = themeMode;

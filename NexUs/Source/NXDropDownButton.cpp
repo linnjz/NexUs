@@ -26,8 +26,7 @@ NXDropDownButton::NXDropDownButton(QWidget *parent)
   setFixedHeight(35);
   setMouseTracking(true);
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -37,75 +36,62 @@ NXDropDownButton::~NXDropDownButton()
 {
 }
 
-void
-NXDropDownButton::setMenu(NXMenu *menu)
+void NXDropDownButton::setMenu(NXMenu *menu)
 {
   Q_D(NXDropDownButton);
   d->_menu = menu;
 }
 
-NXMenu *
-NXDropDownButton::getMenu() const
+NXMenu * NXDropDownButton::getMenu() const
 {
   return d_ptr->_menu;
 }
 
-bool
-NXDropDownButton::event(QEvent *event)
+bool NXDropDownButton::event(QEvent *event)
 {
   Q_D(NXDropDownButton);
-  switch (event->type())
-  {
-  case QEvent::HoverEnter :
-  {
+  switch (event->type()) {
+  case QEvent::HoverEnter : {
     d->_isHover = true;
     update();
     break;
   }
-  case QEvent::HoverLeave :
-  {
+  case QEvent::HoverLeave : {
     d->_isHover = false;
     update();
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }
   return QWidget::event(event);
 }
 
-void
-NXDropDownButton::mousePressEvent(QMouseEvent *event)
+void NXDropDownButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXDropDownButton);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     d->_isPressed = true;
     update();
   }
   QWidget::mousePressEvent(event);
 }
 
-void
-NXDropDownButton::mouseReleaseEvent(QMouseEvent *event)
+void NXDropDownButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXDropDownButton);
-  if (event->button() == Qt::LeftButton)
-  {
+  if (event->button() == Qt::LeftButton) {
     d->_isPressed = false;
     update();
-    if (d->_menu && rect().contains(event->pos()))
-    {
+    if (d->_menu && rect().contains(event->pos())) {
       d->_menu->popup(mapToGlobal(QPoint(0, height())));
     }
   }
   QWidget::mouseReleaseEvent(event);
 }
 
-void
-NXDropDownButton::leaveEvent(QEvent *event)
+void NXDropDownButton::leaveEvent(QEvent *event)
 {
   Q_D(NXDropDownButton);
   d->_isHover   = false;
@@ -114,8 +100,7 @@ NXDropDownButton::leaveEvent(QEvent *event)
   QWidget::leaveEvent(event);
 }
 
-void
-NXDropDownButton::paintEvent(QPaintEvent *event)
+void NXDropDownButton::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXDropDownButton);
@@ -126,22 +111,16 @@ NXDropDownButton::paintEvent(QPaintEvent *event)
   // Background
   QPainterPath backgroundPath;
   backgroundPath.addRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->_pBorderRadius, d->_pBorderRadius);
-  if (d->_isPressed)
-  {
+  if (d->_isPressed) {
     painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicPress));
-  }
-  else if (d->_isHover)
-  {
+  } else if (d->_isHover) {
     painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicHover));
-  }
-  else
-  {
+  } else {
     painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicBase));
   }
 
   // Border (light mode only)
-  if (d->_themeMode == NXThemeType::Light)
-  {
+  if (d->_themeMode == NXThemeType::Light) {
     painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
     painter.drawPath(backgroundPath);
   }
@@ -160,23 +139,20 @@ NXDropDownButton::paintEvent(QPaintEvent *event)
   int iconTextGap = 6;
   int textWidth   = 0;
 
-  if (d->_pNXIcon != NXIconType::None)
-  {
+  if (d->_pNXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->_pNXIcon)));
   }
 
-  if (!d->_pText.isEmpty())
-  {
+  if (!d->_pText.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
     textWidth = QFontMetrics(textFont).horizontalAdvance(d->_pText);
   }
 
   int totalContentWidth = iconWidth;
-  if (iconWidth > 0 && textWidth > 0)
-  {
+  if (iconWidth > 0 && textWidth > 0) {
     totalContentWidth += iconTextGap;
   }
   totalContentWidth += textWidth;
@@ -184,8 +160,7 @@ NXDropDownButton::paintEvent(QPaintEvent *event)
   int drawX = contentLeft + (contentWidth - totalContentWidth) / 2;
 
   // Draw icon
-  if (d->_pNXIcon != NXIconType::None)
-  {
+  if (d->_pNXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     painter.setFont(iconFont);
@@ -196,8 +171,7 @@ NXDropDownButton::paintEvent(QPaintEvent *event)
   }
 
   // Draw text
-  if (!d->_pText.isEmpty())
-  {
+  if (!d->_pText.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
     painter.setFont(textFont);
@@ -215,8 +189,7 @@ NXDropDownButton::paintEvent(QPaintEvent *event)
   painter.drawText(arrowRect, Qt::AlignCenter, QString(QChar(static_cast<int>(NXIconType::AngleDown))));
 }
 
-QSize
-NXDropDownButton::sizeHint() const
+QSize NXDropDownButton::sizeHint() const
 {
   Q_D(const NXDropDownButton);
 
@@ -228,23 +201,20 @@ NXDropDownButton::sizeHint() const
   int leftPadding      = 10;
   int rightPadding     = 10;
 
-  if (d->_pNXIcon != NXIconType::None)
-  {
+  if (d->_pNXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->_pNXIcon)));
   }
 
-  if (!d->_pText.isEmpty())
-  {
+  if (!d->_pText.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
     textWidth = QFontMetrics(textFont).horizontalAdvance(d->_pText);
   }
 
   int totalWidth = leftPadding + iconWidth;
-  if (iconWidth > 0 && textWidth > 0)
-  {
+  if (iconWidth > 0 && textWidth > 0) {
     totalWidth += iconTextGap;
   }
   totalWidth += textWidth + arrowAreaWidth + arrowRightMargin + rightPadding;

@@ -43,8 +43,7 @@ NXCalendarPicker::NXCalendarPicker(QWidget *parent)
   setSelectedDate(QDate::currentDate());
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 }
@@ -53,23 +52,20 @@ NXCalendarPicker::~NXCalendarPicker()
 {
 }
 
-void
-NXCalendarPicker::setSelectedDate(QDate selectedDate)
+void NXCalendarPicker::setSelectedDate(QDate selectedDate)
 {
   Q_D(NXCalendarPicker);
   d->_calendar->setSelectedDate(selectedDate);
   Q_EMIT selectedDateChanged(selectedDate);
 }
 
-QDate
-NXCalendarPicker::getSelectedDate() const
+QDate NXCalendarPicker::getSelectedDate() const
 {
   Q_D(const NXCalendarPicker);
   return d->_calendar->getSelectedDate();
 }
 
-void
-NXCalendarPicker::paintEvent(QPaintEvent *event)
+void NXCalendarPicker::paintEvent(QPaintEvent *event)
 {
   Q_D(NXCalendarPicker);
   QPainter painter(this);
@@ -95,7 +91,6 @@ NXCalendarPicker::paintEvent(QPaintEvent *event)
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   iconFont.setPixelSize(nxApp->getFontPixelSize() + 4);
   painter.setFont(iconFont);
-  painter.drawText(QRect(baseRect.right() - 25, 0, 15, height()), Qt::AlignVCenter | Qt::AlignRight,
-                   QChar((unsigned short) NXIconType::CalendarRange));
+  painter.drawText(QRect(baseRect.right() - 25, 0, 15, height()), Qt::AlignVCenter | Qt::AlignRight, QChar((unsigned short) NXIconType::CalendarRange));
   painter.restore();
 }

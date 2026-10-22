@@ -26,17 +26,14 @@ NXPromotionView::NXPromotionView(QWidget *parent)
   setStyleSheet(QStringLiteral("#NXPromotionView{background-color:transparent;}"));
 
   d->_autoScrollTimer = new QTimer(this);
-  connect(d->_autoScrollTimer, &QTimer::timeout, this, [=]()
-  {
-    if (isVisible() && d->_promotionCardList.count() > 2)
-    {
+  connect(d->_autoScrollTimer, &QTimer::timeout, this, [=]() {
+    if (isVisible() && d->_promotionCardList.count() > 2) {
       d->onPromotionCardClicked(d->_promotionCardList[d->_getAdjacentIndex(Qt::LeftToRight, d->_pCurrentIndex)]);
     }
   });
 
   d->_themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
   });
 }
@@ -45,145 +42,118 @@ NXPromotionView::~NXPromotionView()
 {
 }
 
-void
-NXPromotionView::setCardExpandWidth(int width)
+void NXPromotionView::setCardExpandWidth(int width)
 {
   Q_D(NXPromotionView);
-  if (width <= 0)
-  {
+  if (width <= 0) {
     return;
   }
   d->_pCardExpandWidth = width;
   d->_updatePromotionCardGeometry();
 }
 
-int
-NXPromotionView::getCardExpandWidth() const
+int NXPromotionView::getCardExpandWidth() const
 {
   Q_D(const NXPromotionView);
   return d->_pCardExpandWidth;
 }
 
-void
-NXPromotionView::setCardCollapseWidth(int width)
+void NXPromotionView::setCardCollapseWidth(int width)
 {
   Q_D(NXPromotionView);
-  if (width <= 0)
-  {
+  if (width <= 0) {
     return;
   }
   d->_pCardCollapseWidth = width;
   d->_updatePromotionCardGeometry();
 }
 
-int
-NXPromotionView::getCardCollapseWidth() const
+int NXPromotionView::getCardCollapseWidth() const
 {
   Q_D(const NXPromotionView);
   return d->_pCardCollapseWidth;
 }
 
-void
-NXPromotionView::setCurrentIndex(int index)
+void NXPromotionView::setCurrentIndex(int index)
 {
   Q_D(NXPromotionView);
-  if (index < 0 || index >= d->_promotionCardList.count())
-  {
+  if (index < 0 || index >= d->_promotionCardList.count()) {
     return;
   }
   d->onPromotionCardClicked(d->_promotionCardList[index]);
 }
 
-int
-NXPromotionView::getCurrentIndex() const
+int NXPromotionView::getCurrentIndex() const
 {
   Q_D(const NXPromotionView);
   return d->_pCurrentIndex;
 }
 
-void
-NXPromotionView::setIsAutoScroll(bool isAutoScroll)
+void NXPromotionView::setIsAutoScroll(bool isAutoScroll)
 {
   Q_D(NXPromotionView);
-  if (isAutoScroll)
-  {
+  if (isAutoScroll) {
     d->_autoScrollTimer->start(d->_pAutoScrollInterval);
-  }
-  else
-  {
+  } else {
     d->_autoScrollTimer->stop();
   }
   d->_pIsAutoScroll = isAutoScroll;
   Q_EMIT pIsAutoScrollChanged();
 }
 
-bool
-NXPromotionView::getIsAutoScroll() const
+bool NXPromotionView::getIsAutoScroll() const
 {
   Q_D(const NXPromotionView);
   return d->_pIsAutoScroll;
 }
 
-void
-NXPromotionView::setAutoScrollInterval(int autoScrollInterval)
+void NXPromotionView::setAutoScrollInterval(int autoScrollInterval)
 {
   Q_D(NXPromotionView);
-  if (autoScrollInterval < 400)
-  {
+  if (autoScrollInterval < 400) {
     return;
   }
   d->_pAutoScrollInterval = autoScrollInterval;
   Q_EMIT pAutoScrollIntervalChanged();
 }
 
-int
-NXPromotionView::getAutoScrollInterval() const
+int NXPromotionView::getAutoScrollInterval() const
 {
   Q_D(const NXPromotionView);
   return d->_pAutoScrollInterval;
 }
 
-void
-NXPromotionView::appendPromotionCard(NXPromotionCard *card)
+void NXPromotionView::appendPromotionCard(NXPromotionCard *card)
 {
   Q_D(NXPromotionView);
-  if (!card || d->_promotionCardList.contains(card))
-  {
+  if (!card || d->_promotionCardList.contains(card)) {
     return;
   }
   card->setMinimumSize(0, 0);
   card->setMaximumSize(10000, 10000);
   card->setParent(this);
   d->_promotionCardList.append(card);
-  connect(card, &NXPromotionCard::promotionCardClicked, this, [=]()
-  {
+  connect(card, &NXPromotionCard::promotionCardClicked, this, [=]() {
     d->onPromotionCardClicked(card);
   });
   d->_updatePromotionCardGeometry();
 }
 
-void
-NXPromotionView::wheelEvent(QWheelEvent *event)
+void NXPromotionView::wheelEvent(QWheelEvent *event)
 {
   Q_D(NXPromotionView);
-  if (d->_isAllowSwitch)
-  {
-    if (event->angleDelta().y() > 0)
-    {
+  if (d->_isAllowSwitch) {
+    if (event->angleDelta().y() > 0) {
       //右滑
       d->_isAllowSwitch = false;
-      QTimer::singleShot(400, this, [=]
-      {
+      QTimer::singleShot(400, this, [=] {
         d->_isAllowSwitch = true;
       });
       d->onPromotionCardClicked(d->_promotionCardList[d->_getAdjacentIndex(Qt::RightToLeft, d->_pCurrentIndex)]);
-    }
-    else
-    {
+    } else {
       //左滑
       d->_isAllowSwitch = false;
-      QTimer::singleShot(400, this, [=]
-      {
+      QTimer::singleShot(400, this, [=] {
         d->_isAllowSwitch = true;
       });
       d->onPromotionCardClicked(d->_promotionCardList[d->_getAdjacentIndex(Qt::LeftToRight, d->_pCurrentIndex)]);
@@ -192,12 +162,10 @@ NXPromotionView::wheelEvent(QWheelEvent *event)
   event->accept();
 }
 
-void
-NXPromotionView::resizeEvent(QResizeEvent *event)
+void NXPromotionView::resizeEvent(QResizeEvent *event)
 {
   Q_D(NXPromotionView);
-  if (d->_promotionCardList.count() > 0)
-  {
+  if (d->_promotionCardList.count() > 0) {
     int cardCount = d->_promotionCardList.count();
 
     const int defaultExpandWidth   = 600;
@@ -206,33 +174,27 @@ NXPromotionView::resizeEvent(QResizeEvent *event)
 
     qreal scale = 1.0;
 
-    if (cardCount >= 3)
-    {
+    if (cardCount >= 3) {
       int visibleCollapseCount = cardCount - 2;
       int originalTotalWidth   = defaultExpandWidth + visibleCollapseCount * (defaultCollapseWidth + d->_cardSpacing);
       int availableWidth       = width() - d->_leftPadding - d->_cardSpacing;
       scale                    = static_cast<qreal>(availableWidth) / originalTotalWidth;
       d->_pCardExpandWidth     = static_cast<int>(defaultExpandWidth * scale);
       d->_pCardCollapseWidth   = static_cast<int>(defaultCollapseWidth * scale);
-    }
-    else if (cardCount == 2)
-    {
+    } else if (cardCount == 2) {
       int originalTotalWidth = defaultExpandWidth + defaultCollapseWidth + d->_cardSpacing;
       int availableWidth     = width() - d->_leftPadding - d->_cardSpacing;
       scale                  = static_cast<qreal>(availableWidth) / originalTotalWidth;
       d->_pCardExpandWidth   = static_cast<int>(defaultExpandWidth * scale);
       d->_pCardCollapseWidth = static_cast<int>(defaultCollapseWidth * scale);
-    }
-    else
-    {
+    } else {
       int totalWidth       = width() - d->_leftPadding - d->_cardSpacing;
       d->_pCardExpandWidth = qMax(300, totalWidth);
       scale                = static_cast<qreal>(d->_pCardExpandWidth) / defaultExpandWidth;
     }
 
     int newHeight = qMax(200, static_cast<int>(defaultHeight * scale));
-    if (height() != newHeight)
-    {
+    if (height() != newHeight) {
       setFixedHeight(newHeight);
     }
 
@@ -241,8 +203,7 @@ NXPromotionView::resizeEvent(QResizeEvent *event)
   QWidget::resizeEvent(event);
 }
 
-void
-NXPromotionView::paintEvent(QPaintEvent *event)
+void NXPromotionView::paintEvent(QPaintEvent *event)
 {
   Q_D(NXPromotionView);
   QPainter painter(this);
@@ -255,16 +216,11 @@ NXPromotionView::paintEvent(QPaintEvent *event)
   bool isCountOdd        = promotionCardCount % 2;
   QPoint startPoint =
       isCountOdd ? QPoint(width() / 2 - promotionCardCount / 2 * d->_indicatorSpacing, height() - d->_bottomMargin / 2)
-                 : QPoint(width() / 2 - promotionCardCount / 2 * d->_indicatorSpacing - d->_indicatorSpacing / 2,
-                          height() - d->_bottomMargin / 2);
-  for (int i = 0; i < promotionCardCount; i++)
-  {
-    if (i == d->_pCurrentIndex)
-    {
+                 : QPoint(width() / 2 - promotionCardCount / 2 * d->_indicatorSpacing - d->_indicatorSpacing / 2, height() - d->_bottomMargin / 2);
+  for (int i = 0; i < promotionCardCount; i++) {
+    if (i == d->_pCurrentIndex) {
       painter.drawEllipse(QPointF(startPoint.x() + i * d->_indicatorSpacing, startPoint.y()), 3.5, 3.5);
-    }
-    else
-    {
+    } else {
       painter.drawEllipse(QPointF(startPoint.x() + i * d->_indicatorSpacing, startPoint.y()), 2.5, 2.5);
     }
   }

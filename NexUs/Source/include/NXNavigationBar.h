@@ -27,32 +27,17 @@ public:
   void setToolTipOffset(int offsetX, int offsetY);
 
   QString addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addExpanderNode(const QString &expanderTitle,
-                                       const QString &targetExpanderKey,
-                                       NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addExpanderNode(const QString &expanderTitle, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
 
   NXNodeResultExpected
   addPageNode(const QString &pageTitle, QWidget *page, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle,
-                                   QWidget *page,
-                                   const QString &targetExpanderKey,
-                                   NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle,
-                                   QWidget *page,
-                                   int keyPoints                = 0,
-                                   NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle,
-                                   QWidget *page,
-                                   const QString &targetExpanderKey,
-                                   int keyPoints                = 0,
-                                   NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
 
   NXNodeResultExpected
   addFooterNode(const QString &footerTitle, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addFooterNode(const QString &footerTitle,
-                                     QWidget *page,
-                                     int keyPoints                = 0,
-                                     NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addFooterNode(const QString &footerTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
 
   QString addCategoryNode(const QString &categoryTitle);
   NXNodeResultExpected addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey);

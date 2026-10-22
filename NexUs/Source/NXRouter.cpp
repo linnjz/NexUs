@@ -16,40 +16,33 @@ NXRouter::~NXRouter()
 {
 }
 
-void
-NXRouter::bindWindow(NXWindow *window)
+void NXRouter::bindWindow(NXWindow *window)
 {
   Q_D(NXRouter);
   d->_window = window;
 }
 
-NXWindow *
-NXRouter::getBoundWindow() const
+NXWindow * NXRouter::getBoundWindow() const
 {
   return d_ptr->_window;
 }
 
-NXRouterType::NavigationResult
-NXRouter::addRoute(const NXRouteConfig &config)
+NXRouterType::NavigationResult NXRouter::addRoute(const NXRouteConfig &config)
 {
   Q_D(NXRouter);
   NXRouterType::NavigationResult result = d->addRouteToTree(config);
-  if (result == NXRouterType::Success)
-  {
+  if (result == NXRouterType::Success) {
     Q_EMIT routeTableChanged();
   }
   return result;
 }
 
-NXRouterType::NavigationResult
-NXRouter::addRoutes(const QVector<NXRouteConfig> &configs)
+NXRouterType::NavigationResult NXRouter::addRoutes(const QVector<NXRouteConfig> &configs)
 {
   Q_D(NXRouter);
-  for (const auto &config : configs)
-  {
+  for (const auto &config : configs) {
     NXRouterType::NavigationResult result = d->addRouteToTree(config);
-    if (result != NXRouterType::Success)
-    {
+    if (result != NXRouterType::Success) {
       return result;
     }
   }
@@ -57,25 +50,20 @@ NXRouter::addRoutes(const QVector<NXRouteConfig> &configs)
   return NXRouterType::Success;
 }
 
-NXRouterType::NavigationResult
-NXRouter::addDynamicRoute(const QString &parentPath, const NXRouteConfig &config)
+NXRouterType::NavigationResult NXRouter::addDynamicRoute(const QString &parentPath, const NXRouteConfig &config)
 {
   Q_D(NXRouter);
   QString normalizedParent = NXRouterPrivate::normalizePath(parentPath);
-  if (!d->_pathIndex.contains(normalizedParent))
-  {
+  if (!d->_pathIndex.contains(normalizedParent)) {
     return NXRouterType::ParentRouteNotFound;
   }
   NXRouterType::NavigationResult result = d->addRouteToTree(config, normalizedParent);
-  if (result == NXRouterType::Success)
-  {
+  if (result == NXRouterType::Success) {
     NXRouteNode *parentNode = d->_pathIndex[normalizedParent];
-    if (d->_window && parentNode->isRegisteredInWindow)
-    {
+    if (d->_window && parentNode->isRegisteredInWindow) {
       QString fullPath     = NXRouterPrivate::joinPath(normalizedParent, config.path);
       NXRouteNode *newNode = d->_pathIndex.value(fullPath);
-      if (newNode)
-      {
+      if (newNode) {
         d->installNodeTree(newNode, parentNode->expanderKey);
       }
     }
@@ -84,44 +72,35 @@ NXRouter::addDynamicRoute(const QString &parentPath, const NXRouteConfig &config
   return result;
 }
 
-NXRouterType::NavigationResult
-NXRouter::removeRoute(const QString &path)
+NXRouterType::NavigationResult NXRouter::removeRoute(const QString &path)
 {
   Q_D(NXRouter);
   QString normalizedPath = NXRouterPrivate::normalizePath(path);
-  if (!d->_pathIndex.contains(normalizedPath))
-  {
+  if (!d->_pathIndex.contains(normalizedPath)) {
     return NXRouterType::RouteNotFound;
   }
   NXRouteNode *node = d->_pathIndex[normalizedPath];
 
   QVector<QString> pathsToRemove;
-  std::function<void(NXRouteNode *)> collectPaths = [&](NXRouteNode *n)
-  {
+  std::function<void(NXRouteNode *)> collectPaths = [&](NXRouteNode *n) {
     pathsToRemove.append(n->path);
-    for (auto *child : n->children)
-    {
+    for (auto *child : n->children) {
       collectPaths(child);
     }
   };
   collectPaths(node);
 
-  for (const auto &p : pathsToRemove)
-  {
+  for (const auto &p : pathsToRemove) {
     d->_pathIndex.remove(p);
   }
 
-  if (node->isRegisteredInWindow && d->_window)
-  {
+  if (node->isRegisteredInWindow && d->_window) {
     d->_window->removeNavigationNode(node->pageKey);
   }
 
-  if (node->parent)
-  {
+  if (node->parent) {
     node->parent->children.removeOne(node);
-  }
-  else
-  {
+  } else {
     d->_rootNodes.removeOne(node);
   }
   delete node;
@@ -130,55 +109,46 @@ NXRouter::removeRoute(const QString &path)
   return NXRouterType::Success;
 }
 
-bool
-NXRouter::hasRoute(const QString &path) const
+bool NXRouter::hasRoute(const QString &path) const
 {
   return d_ptr->_pathIndex.contains(NXRouterPrivate::normalizePath(path));
 }
 
-QStringList
-NXRouter::getRoutePaths() const
+QStringList NXRouter::getRoutePaths() const
 {
   return d_ptr->_pathIndex.keys();
 }
 
-QVariantMap
-NXRouter::getRouteMeta(const QString &path) const
+QVariantMap NXRouter::getRouteMeta(const QString &path) const
 {
   QString normalizedPath = NXRouterPrivate::normalizePath(path);
-  if (d_ptr->_pathIndex.contains(normalizedPath))
-  {
+  if (d_ptr->_pathIndex.contains(normalizedPath)) {
     return d_ptr->_pathIndex[normalizedPath]->meta;
   }
   return {};
 }
 
-NXRouterType::NavigationResult
-NXRouter::push(const QString &path, const QVariantMap &params)
+NXRouterType::NavigationResult NXRouter::push(const QString &path, const QVariantMap &params)
 {
   Q_D(NXRouter);
   return d->doNavigation(path, params, true);
 }
 
-NXRouterType::NavigationResult
-NXRouter::replace(const QString &path, const QVariantMap &params)
+NXRouterType::NavigationResult NXRouter::replace(const QString &path, const QVariantMap &params)
 {
   Q_D(NXRouter);
   return d->doNavigation(path, params, false);
 }
 
-void
-NXRouter::back()
+void NXRouter::back()
 {
   Q_D(NXRouter);
-  if (d->_history.isEmpty())
-  {
+  if (d->_history.isEmpty()) {
     return;
   }
   bool isOffRoute = !d->_isOnRouterPage();
   int targetIndex = isOffRoute ? d->_historyIndex : d->_historyIndex - 1;
-  if (targetIndex < 0)
-  {
+  if (targetIndex < 0) {
     return;
   }
   d->_historyIndex        = targetIndex;
@@ -188,18 +158,15 @@ NXRouter::back()
   d->_isNavigatingHistory = false;
 }
 
-void
-NXRouter::forward()
+void NXRouter::forward()
 {
   Q_D(NXRouter);
-  if (d->_history.isEmpty())
-  {
+  if (d->_history.isEmpty()) {
     return;
   }
   bool isOffRoute = !d->_isOnRouterPage();
   int targetIndex = isOffRoute ? d->_historyIndex : d->_historyIndex + 1;
-  if (targetIndex >= d->_history.size())
-  {
+  if (targetIndex >= d->_history.size()) {
     return;
   }
   d->_historyIndex        = targetIndex;
@@ -209,20 +176,17 @@ NXRouter::forward()
   d->_isNavigatingHistory = false;
 }
 
-QString
-NXRouter::getCurrentPath() const
+QString NXRouter::getCurrentPath() const
 {
   return d_ptr->_currentPath;
 }
 
-QVariantMap
-NXRouter::getCurrentParams() const
+QVariantMap NXRouter::getCurrentParams() const
 {
   return d_ptr->_currentParams;
 }
 
-int
-NXRouter::beforeEach(const NXRouteGuard &guard)
+int NXRouter::beforeEach(const NXRouteGuard &guard)
 {
   Q_D(NXRouter);
   int id = d->_nextGuardId++;
@@ -230,8 +194,7 @@ NXRouter::beforeEach(const NXRouteGuard &guard)
   return id;
 }
 
-int
-NXRouter::afterEach(const NXRouteAfterHook &hook)
+int NXRouter::afterEach(const NXRouteAfterHook &hook)
 {
   Q_D(NXRouter);
   int id = d->_nextGuardId++;
@@ -239,61 +202,49 @@ NXRouter::afterEach(const NXRouteAfterHook &hook)
   return id;
 }
 
-void
-NXRouter::removeBeforeGuard(int guardId)
+void NXRouter::removeBeforeGuard(int guardId)
 {
   Q_D(NXRouter);
-  for (int i = 0; i < d->_beforeGuards.size(); ++i)
-  {
-    if (d->_beforeGuards[i].id == guardId)
-    {
+  for (int i = 0; i < d->_beforeGuards.size(); ++i) {
+    if (d->_beforeGuards[i].id == guardId) {
       d->_beforeGuards.removeAt(i);
       return;
     }
   }
 }
 
-void
-NXRouter::removeAfterHook(int hookId)
+void NXRouter::removeAfterHook(int hookId)
 {
   Q_D(NXRouter);
-  for (int i = 0; i < d->_afterHooks.size(); ++i)
-  {
-    if (d->_afterHooks[i].id == hookId)
-    {
+  for (int i = 0; i < d->_afterHooks.size(); ++i) {
+    if (d->_afterHooks[i].id == hookId) {
       d->_afterHooks.removeAt(i);
       return;
     }
   }
 }
 
-void
-NXRouter::setRouteBeforeEnter(const QString &path, const NXRouteGuard &guard)
+void NXRouter::setRouteBeforeEnter(const QString &path, const NXRouteGuard &guard)
 {
   Q_D(NXRouter);
   QString normalizedPath = NXRouterPrivate::normalizePath(path);
-  if (d->_pathIndex.contains(normalizedPath))
-  {
+  if (d->_pathIndex.contains(normalizedPath)) {
     d->_pathIndex[normalizedPath]->beforeEnter = guard;
   }
 }
 
-void
-NXRouter::installRoutes()
+void NXRouter::installRoutes()
 {
   Q_D(NXRouter);
-  if (!d->_window)
-  {
+  if (!d->_window) {
     return;
   }
-  for (auto *node : d->_rootNodes)
-  {
+  for (auto *node : d->_rootNodes) {
     d->installNodeTree(node);
   }
 }
 
-void
-NXRouter::resetRouter()
+void NXRouter::resetRouter()
 {
   Q_D(NXRouter);
   qDeleteAll(d->_rootNodes);

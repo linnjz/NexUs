@@ -34,131 +34,112 @@ NXTableView::~NXTableView()
   delete d->_tableViewStyle;
 }
 
-void
-NXTableView::setBorderRadius(int radius)
+void NXTableView::setBorderRadius(int radius)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->setBorderRadius(radius);
   update();
 }
 
-int
-NXTableView::getBorderRadius() const
+int NXTableView::getBorderRadius() const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getBorderRadius();
 }
 
-void
-NXTableView::setCheckIndicatorWidth(int width)
+void NXTableView::setCheckIndicatorWidth(int width)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->setCheckIndicatorWidth(width);
   update();
 }
 
-int
-NXTableView::getCheckIndicatorWidth() const
+int NXTableView::getCheckIndicatorWidth() const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getCheckIndicatorWidth();
 }
 
-void
-NXTableView::setHeaderMargin(int headerMargin)
+void NXTableView::setHeaderMargin(int headerMargin)
 {
   Q_D(NXTableView);
-  if (headerMargin >= 0)
-  {
+  if (headerMargin >= 0) {
     d->_tableViewStyle->setHeaderMargin(headerMargin);
     doItemsLayout();
   }
 }
 
-int
-NXTableView::getHeaderMargin() const
+int NXTableView::getHeaderMargin() const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getHeaderMargin();
 }
 
-void
-NXTableView::setIsHoverRowEffectEnable(bool enable)
+void NXTableView::setIsHoverRowEffectEnable(bool enable)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->setIsHoverRowEffectEnable(enable);
   update();
 }
 
-bool
-NXTableView::getIsHoverRowEffectEnable() const
+bool NXTableView::getIsHoverRowEffectEnable() const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getIsHoverRowEffectEnable();
 }
 
-void
-NXTableView::setDefaultPadding(int padding)
+void NXTableView::setDefaultPadding(int padding)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->setDefaultPadding(padding);
   update();
 }
 
-int
-NXTableView::getDefaultPadding() const
+int NXTableView::getDefaultPadding() const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getDefaultPadding();
 }
 
-void
-NXTableView::setColumnPadding(int column, int padding)
+void NXTableView::setColumnPadding(int column, int padding)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->setColumnPadding(column, padding);
   update();
 }
 
-int
-NXTableView::getColumnPadding(int column) const
+int NXTableView::getColumnPadding(int column) const
 {
   Q_D(const NXTableView);
   return d->_tableViewStyle->getColumnPadding(column);
 }
 
-void
-NXTableView::clearColumnPadding(int column)
+void NXTableView::clearColumnPadding(int column)
 {
   Q_D(NXTableView);
   d->_tableViewStyle->clearColumnPadding(column);
   update();
 }
 
-QRect
-NXTableView::headerCheckIndicatorRect(int section) const
+QRect NXTableView::headerCheckIndicatorRect(int section) const
 {
   Q_D(const NXTableView);
-  if (!model())
-  {
+  if (!model()) {
     qWarning() << Q_FUNC_INFO << ": { model is nullptr }";
     return QRect {};
   }
-  if (!model()->headerData(section, Qt::Horizontal, Qt::CheckStateRole).isValid())
-  {
+  if (!model()->headerData(section, Qt::Horizontal, Qt::CheckStateRole).isValid()) {
     qWarning()
         << Q_FUNC_INFO
         << ": { model headerData() function did not set orientation<Qt::Horizontal> and role<Qt::CheckStateRole> up}";
     return QRect {};
   }
   QHeaderView *header = horizontalHeader();
-  if (!header)
-  {
+  if (!header) {
     qWarning() << Q_FUNC_INFO << ": { horizontalHeader is nullptr }";
     return QRect {};
   }
-  if (section < 0 || section >= header->count()) [[unlikely]]
-  {
+  if (section < 0 || section >= header->count()) [[unlikely]] {
     qWarning() << Q_FUNC_INFO << ": { section is out of range }";
     return QRect {};
   }
@@ -179,37 +160,31 @@ NXTableView::headerCheckIndicatorRect(int section) const
   return checkRect;
 }
 
-QRect
-NXTableView::checkIndicatorRect(int row, int column) const
+QRect NXTableView::checkIndicatorRect(int row, int column) const
 {
   Q_D(const NXTableView);
-  if (!model())
-  {
+  if (!model()) {
     qWarning() << Q_FUNC_INFO << ": { model is nullptr }";
     return QRect {};
   }
-  if (row < 0 || column < 0 || row >= model()->rowCount() || column >= model()->columnCount()) [[unlikely]]
-  {
+  if (row < 0 || column < 0 || row >= model()->rowCount() || column >= model()->columnCount()) [[unlikely]] {
     qWarning() << Q_FUNC_INFO << ": { row or column is out of range }";
     return QRect {};
   }
 
   QModelIndex index = model()->index(row, column);
-  if (!index.isValid()) [[unlikely]]
-  {
+  if (!index.isValid()) [[unlikely]] {
     return QRect {};
   }
 
   QVariant checkStateData = model()->data(index, Qt::CheckStateRole);
-  if (!checkStateData.isValid()) [[unlikely]]
-  {
+  if (!checkStateData.isValid()) [[unlikely]] {
     qWarning() << Q_FUNC_INFO << ": { model data() function did not set Qt::CheckStateRole up }";
     return QRect {};
   }
 
   QRect cellRect = visualRect(index);
-  if (!cellRect.isValid()) [[unlikely]]
-  {
+  if (!cellRect.isValid()) [[unlikely]] {
     return QRect {};
   }
 
@@ -234,30 +209,25 @@ NXTableView::checkIndicatorRect(int row, int column) const
   return checkRect;
 }
 
-void
-NXTableView::showEvent(QShowEvent *event)
+void NXTableView::showEvent(QShowEvent *event)
 {
   Q_EMIT tableViewShow();
   QTableView::showEvent(event);
 }
 
-void
-NXTableView::hideEvent(QHideEvent *event)
+void NXTableView::hideEvent(QHideEvent *event)
 {
   Q_EMIT tableViewHide();
   QTableView::hideEvent(event);
 }
 
-void
-NXTableView::mouseMoveEvent(QMouseEvent *event)
+void NXTableView::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXTableView);
-  if (selectionBehavior() == QAbstractItemView::SelectRows)
-  {
+  if (selectionBehavior() == QAbstractItemView::SelectRows) {
     const QModelIndex &currentIndex  = indexAt(event->pos());
     const QModelIndex &oldHoverIndex = d->_tableViewStyle->getCurrentHoverIndex();
-    if (currentIndex.isValid() && currentIndex.row() != oldHoverIndex.row())
-    {
+    if (currentIndex.isValid() && currentIndex.row() != oldHoverIndex.row()) {
       QRect rowRect = visualRect(currentIndex);
       rowRect.setX(0);
       rowRect.setWidth(viewport()->width());
@@ -269,12 +239,10 @@ NXTableView::mouseMoveEvent(QMouseEvent *event)
   QTableView::mouseMoveEvent(event);
 }
 
-void
-NXTableView::leaveEvent(QEvent *event)
+void NXTableView::leaveEvent(QEvent *event)
 {
   Q_D(NXTableView);
-  if (selectionBehavior() == QAbstractItemView::SelectRows)
-  {
+  if (selectionBehavior() == QAbstractItemView::SelectRows) {
     d->_tableViewStyle->setCurrentHoverIndex(QModelIndex {});
     update();
     Q_EMIT hoverIndexChanged(QModelIndex {});

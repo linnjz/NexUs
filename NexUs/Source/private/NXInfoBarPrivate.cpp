@@ -14,11 +14,9 @@ NXInfoBarPrivate::~NXInfoBarPrivate()
 {
 }
 
-QColor
-NXInfoBarPrivate::_getSeverityColor() const
+QColor NXInfoBarPrivate::_getSeverityColor() const
 {
-  switch (_pSeverity)
-  {
+  switch (_pSeverity) {
   case NXInfoBarType::Success       : return QColor(0x0F, 0x7B, 0x0F);
   case NXInfoBarType::Warning       : return QColor(0x9D, 0x5D, 0x00);
   case NXInfoBarType::Error         : return QColor(0xC4, 0x2B, 0x1C);
@@ -27,15 +25,12 @@ NXInfoBarPrivate::_getSeverityColor() const
   }
 }
 
-NXIconType::IconName
-NXInfoBarPrivate::_getSeverityIcon() const
+NXIconType::IconName NXInfoBarPrivate::_getSeverityIcon() const
 {
-  if (_pInfoBarIcon != NXIconType::None)
-  {
+  if (_pInfoBarIcon != NXIconType::None) {
     return _pInfoBarIcon;
   }
-  switch (_pSeverity)
-  {
+  switch (_pSeverity) {
   case NXInfoBarType::Success       : return NXIconType::CircleCheck;
   case NXInfoBarType::Warning       : return NXIconType::TriangleExclamation;
   case NXInfoBarType::Error         : return NXIconType::CircleXmark;
@@ -44,12 +39,10 @@ NXInfoBarPrivate::_getSeverityIcon() const
   }
 }
 
-void
-NXInfoBarPrivate::_doCloseAnimation()
+void NXInfoBarPrivate::_doCloseAnimation()
 {
   Q_Q(NXInfoBar);
-  if (_isClosing)
-  {
+  if (_isClosing) {
     return;
   }
   _isClosing = true;
@@ -60,8 +53,7 @@ NXInfoBarPrivate::_doCloseAnimation()
   heightAnimation->setEndValue(0);
   heightAnimation->setEasingCurve(QEasingCurve::InCubic);
 
-  QObject::connect(heightAnimation, &QPropertyAnimation::finished, q, [=]()
-  {
+  QObject::connect(heightAnimation, &QPropertyAnimation::finished, q, [=]() {
     q->hide();
     q->setMaximumHeight(QWIDGETSIZE_MAX);
     Q_EMIT q->closed();

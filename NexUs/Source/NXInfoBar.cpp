@@ -32,8 +32,7 @@ NXInfoBar::NXInfoBar(QWidget *parent)
   setMinimumHeight(48);
   setFrameShape(QFrame::NoFrame);
 
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     d->_themeMode = themeMode;
     update();
   });
@@ -50,16 +49,14 @@ NXInfoBar::~NXInfoBar()
 {
 }
 
-void
-NXInfoBar::addAction(const QString &text, const std::function<void()> &callback)
+void NXInfoBar::addAction(const QString &text, const std::function<void()> &callback)
 {
   Q_D(NXInfoBar);
   d->_actions.append({ text, callback });
   update();
 }
 
-void
-NXInfoBar::clearActions()
+void NXInfoBar::clearActions()
 {
   Q_D(NXInfoBar);
   d->_actions.clear();
@@ -67,16 +64,14 @@ NXInfoBar::clearActions()
   update();
 }
 
-void
-NXInfoBar::closeInfoBar()
+void NXInfoBar::closeInfoBar()
 {
   Q_D(NXInfoBar);
   Q_EMIT closeButtonClicked();
   d->_doCloseAnimation();
 }
 
-void
-NXInfoBar::paintEvent(QPaintEvent *event)
+void NXInfoBar::paintEvent(QPaintEvent *event)
 {
   Q_UNUSED(event);
   Q_D(NXInfoBar);
@@ -87,21 +82,16 @@ NXInfoBar::paintEvent(QPaintEvent *event)
   NXIconType::IconName severityIcon = d->_getSeverityIcon();
 
   QColor bgColor;
-  if (d->_themeMode == NXThemeType::Light)
-  {
-    switch (d->_pSeverity)
-    {
+  if (d->_themeMode == NXThemeType::Light) {
+    switch (d->_pSeverity) {
     case NXInfoBarType::Success       : bgColor = QColor(0xDF, 0xF6, 0xDD); break;
     case NXInfoBarType::Warning       : bgColor = QColor(0xFE, 0xF7, 0xE1); break;
     case NXInfoBarType::Error         : bgColor = QColor(0xFD, 0xE7, 0xE9); break;
     case NXInfoBarType::Informational :
     default                           : bgColor = QColor(0xF6, 0xF6, 0xF6); break;
     }
-  }
-  else
-  {
-    switch (d->_pSeverity)
-    {
+  } else {
+    switch (d->_pSeverity) {
     case NXInfoBarType::Success       : bgColor = QColor(0x39, 0x3D, 0x1B); break;
     case NXInfoBarType::Warning       : bgColor = QColor(0x43, 0x3D, 0x19); break;
     case NXInfoBarType::Error         : bgColor = QColor(0x44, 0x21, 0x26); break;
@@ -142,14 +132,11 @@ NXInfoBar::paintEvent(QPaintEvent *event)
   int closeButtonSize = 20;
   int rightContentEnd = width() - rightPadding;
 
-  if (d->_pIsClosable)
-  {
-    d->_closeButtonRect = QRect(rightContentEnd - closeButtonSize, contentCenterY - closeButtonSize / 2,
-                                closeButtonSize, closeButtonSize);
+  if (d->_pIsClosable) {
+    d->_closeButtonRect = QRect(rightContentEnd - closeButtonSize, contentCenterY - closeButtonSize / 2, closeButtonSize, closeButtonSize);
     rightContentEnd     = d->_closeButtonRect.left() - 8;
 
-    if (d->_closeButtonHover)
-    {
+    if (d->_closeButtonHover) {
       painter.setPen(Qt::NoPen);
       painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
       painter.drawRoundedRect(d->_closeButtonRect.adjusted(-2, -2, 2, 2), 3, 3);
@@ -163,8 +150,7 @@ NXInfoBar::paintEvent(QPaintEvent *event)
   }
 
   d->_actionButtonRects.clear();
-  if (!d->_actions.isEmpty())
-  {
+  if (!d->_actions.isEmpty()) {
     QFont buttonFont = font();
     buttonFont.setPixelSize(12);
     QFontMetrics buttonFm(buttonFont);
@@ -173,8 +159,7 @@ NXInfoBar::paintEvent(QPaintEvent *event)
     int buttonPaddingH = 14;
 
     int buttonX = rightContentEnd;
-    for (int i = d->_actions.size() - 1; i >= 0; --i)
-    {
+    for (int i = d->_actions.size() - 1; i >= 0; --i) {
       int textWidth   = buttonFm.horizontalAdvance(d->_actions[i].text);
       int buttonWidth = textWidth + buttonPaddingH * 2;
       buttonX -= buttonWidth;
@@ -183,12 +168,9 @@ NXInfoBar::paintEvent(QPaintEvent *event)
       buttonX -= buttonSpacing;
 
       painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
-      if (d->_hoverActionIndex == i)
-      {
+      if (d->_hoverActionIndex == i) {
         painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
-      }
-      else
-      {
+      } else {
         painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
       }
       painter.drawRoundedRect(btnRect, 4, 4);
@@ -212,63 +194,47 @@ NXInfoBar::paintEvent(QPaintEvent *event)
 
   painter.setPen(NXThemeColor(d->_themeMode, BasicText));
 
-  if (!d->_pTitle.isEmpty() && !d->_pMessage.isEmpty())
-  {
+  if (!d->_pTitle.isEmpty() && !d->_pMessage.isEmpty()) {
     QString elidedTitle = titleFm.elidedText(d->_pTitle, Qt::ElideRight, textAreaWidth);
     painter.setFont(titleFont);
     int titleWidth = titleFm.horizontalAdvance(elidedTitle);
-    painter.drawText(QRect(contentLeft, contentCenterY - 10, titleWidth, 20), Qt::AlignVCenter | Qt::AlignLeft,
-                     elidedTitle);
+    painter.drawText(QRect(contentLeft, contentCenterY - 10, titleWidth, 20), Qt::AlignVCenter | Qt::AlignLeft, elidedTitle);
 
     int messageLeft  = contentLeft + titleWidth + 8;
     int messageWidth = rightContentEnd - messageLeft;
-    if (messageWidth > 0)
-    {
+    if (messageWidth > 0) {
       painter.setFont(messageFont);
       painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
       QString elidedMessage = messageFm.elidedText(d->_pMessage, Qt::ElideRight, messageWidth);
-      painter.drawText(QRect(messageLeft, contentCenterY - 10, messageWidth, 20), Qt::AlignVCenter | Qt::AlignLeft,
-                       elidedMessage);
+      painter.drawText(QRect(messageLeft, contentCenterY - 10, messageWidth, 20), Qt::AlignVCenter | Qt::AlignLeft, elidedMessage);
     }
-  }
-  else if (!d->_pTitle.isEmpty())
-  {
+  } else if (!d->_pTitle.isEmpty()) {
     painter.setFont(titleFont);
     QString elidedTitle = titleFm.elidedText(d->_pTitle, Qt::ElideRight, textAreaWidth);
-    painter.drawText(QRect(contentLeft, contentCenterY - 10, textAreaWidth, 20), Qt::AlignVCenter | Qt::AlignLeft,
-                     elidedTitle);
-  }
-  else if (!d->_pMessage.isEmpty())
-  {
+    painter.drawText(QRect(contentLeft, contentCenterY - 10, textAreaWidth, 20), Qt::AlignVCenter | Qt::AlignLeft, elidedTitle);
+  } else if (!d->_pMessage.isEmpty()) {
     painter.setFont(messageFont);
     QString elidedMessage = messageFm.elidedText(d->_pMessage, Qt::ElideRight, textAreaWidth);
-    painter.drawText(QRect(contentLeft, contentCenterY - 10, textAreaWidth, 20), Qt::AlignVCenter | Qt::AlignLeft,
-                     elidedMessage);
+    painter.drawText(QRect(contentLeft, contentCenterY - 10, textAreaWidth, 20), Qt::AlignVCenter | Qt::AlignLeft, elidedMessage);
   }
 }
 
-void
-NXInfoBar::mousePressEvent(QMouseEvent *event)
+void NXInfoBar::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXInfoBar);
-  if (event->button() != Qt::LeftButton)
-  {
+  if (event->button() != Qt::LeftButton) {
     QFrame::mousePressEvent(event);
     return;
   }
 
-  if (d->_pIsClosable && d->_closeButtonRect.contains(event->pos()))
-  {
+  if (d->_pIsClosable && d->_closeButtonRect.contains(event->pos())) {
     closeInfoBar();
     return;
   }
 
-  for (int i = 0; i < d->_actionButtonRects.size(); ++i)
-  {
-    if (d->_actionButtonRects[i].contains(event->pos()))
-    {
-      if (d->_actions[i].callback)
-      {
+  for (int i = 0; i < d->_actionButtonRects.size(); ++i) {
+    if (d->_actionButtonRects[i].contains(event->pos())) {
+      if (d->_actions[i].callback) {
         d->_actions[i].callback();
       }
       return;
@@ -277,62 +243,51 @@ NXInfoBar::mousePressEvent(QMouseEvent *event)
   QFrame::mousePressEvent(event);
 }
 
-void
-NXInfoBar::mouseMoveEvent(QMouseEvent *event)
+void NXInfoBar::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXInfoBar);
   bool needUpdate = false;
 
-  if (d->_pIsClosable)
-  {
+  if (d->_pIsClosable) {
     bool hover = d->_closeButtonRect.contains(event->pos());
-    if (hover != d->_closeButtonHover)
-    {
+    if (hover != d->_closeButtonHover) {
       d->_closeButtonHover = hover;
       needUpdate           = true;
     }
   }
 
   int hoverIndex = -1;
-  for (int i = 0; i < d->_actionButtonRects.size(); ++i)
-  {
-    if (d->_actionButtonRects[i].contains(event->pos()))
-    {
+  for (int i = 0; i < d->_actionButtonRects.size(); ++i) {
+    if (d->_actionButtonRects[i].contains(event->pos())) {
       hoverIndex = i;
       break;
     }
   }
-  if (hoverIndex != d->_hoverActionIndex)
-  {
+  if (hoverIndex != d->_hoverActionIndex) {
     d->_hoverActionIndex = hoverIndex;
     needUpdate           = true;
   }
 
-  if (needUpdate)
-  {
+  if (needUpdate) {
     setCursor(d->_closeButtonHover || hoverIndex >= 0 ? Qt::PointingHandCursor : Qt::ArrowCursor);
     update();
   }
   QFrame::mouseMoveEvent(event);
 }
 
-void
-NXInfoBar::leaveEvent(QEvent *event)
+void NXInfoBar::leaveEvent(QEvent *event)
 {
   Q_D(NXInfoBar);
   bool needUpdate = false;
-  if (d->_closeButtonHover)
-  {
+  if (d->_closeButtonHover) {
     d->_closeButtonHover = false;
     needUpdate           = true;
   }
-  if (d->_hoverActionIndex != -1)
-  {
+  if (d->_hoverActionIndex != -1) {
     d->_hoverActionIndex = -1;
     needUpdate           = true;
   }
-  if (needUpdate)
-  {
+  if (needUpdate) {
     setCursor(Qt::ArrowCursor);
     update();
   }

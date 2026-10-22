@@ -29,8 +29,7 @@ NXEvent::NXEvent(QString eventName, QString functionName, QObject *parent)
   d->_pFunctionName   = functionName;
 }
 
-NXEventBusType::EventBusReturnType
-NXEvent::registerAndInit()
+NXEventBusType::EventBusReturnType NXEvent::registerAndInit()
 {
   return NXEventBus::getInstance()->d_ptr->registerEvent(this);
 }
@@ -52,35 +51,28 @@ NXEventBus::~NXEventBus()
 {
 }
 
-NXEventBusType::EventBusReturnType
-NXEventBus::post(const QString &eventName, const QVariantMap &data)
+NXEventBusType::EventBusReturnType NXEventBus::post(const QString &eventName, const QVariantMap &data)
 {
   Q_D(NXEventBus);
-  if (eventName.isEmpty())
-  {
+  if (eventName.isEmpty()) {
     return NXEventBusType::EventBusReturnType::EventNameInvalid;
   }
-  if (d->_eventMap.contains(eventName))
-  {
+  if (d->_eventMap.contains(eventName)) {
     QList<NXEvent *> eventList = d->_eventMap.value(eventName);
     foreach(auto event, eventList)
     {
-      if (event->parent())
-      {
-        QMetaObject::invokeMethod(event->parent(), event->getFunctionName().toLocal8Bit().constData(),
-                                  event->getConnectionType(), Q_ARG(QVariantMap, data));
+      if (event->parent()) {
+        QMetaObject::invokeMethod(event->parent(), event->getFunctionName().toLocal8Bit().constData(), event->getConnectionType(), Q_ARG(QVariantMap, data));
       }
     }
   }
   return NXEventBusType::EventBusReturnType::Success;
 }
 
-QStringList
-NXEventBus::getRegisteredEventsName() const
+QStringList NXEventBus::getRegisteredEventsName() const
 {
   Q_D(const NXEventBus);
-  if (d->_eventMap.count() == 0)
-  {
+  if (d->_eventMap.count() == 0) {
     return QStringList();
   }
   QStringList eventsNameList = d->_eventMap.keys();

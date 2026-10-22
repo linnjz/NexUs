@@ -1,36 +1,60 @@
 ﻿#ifndef LINN_UTILS_H_
 #define LINN_UTILS_H_
 
-#ifdef __GNUC__
-#  define UNREACHABLE() __builtin_unreachable()
+#if defined(__clang__)
+#  define LINN_ALWAYS_INLINE inline __attribute__((always_inline))
+#  define LINN_RESTRICT      __restrict__
+#  define LINN_UNREACHABLE() __builtin_unreachable()
+#elif defined(__GNUC__)
+#  define LINN_ALWAYS_INLINE inline __attribute__((always_inline))
+#  define LINN_RESTRICT      __restrict__
+#  define LINN_UNREACHABLE() __builtin_unreachable()
 #elif defined(_MSC_VER)
-#  define UNREACHABLE() __assume(false)
+#  define LINN_ALWAYS_INLINE inline __forceinline
+#  define LINN_RESTRICT      __restrict
+#  define LINN_UNREACHABLE() __assume(false)
 #else
-#  define UNREACHABLE() std::abort()
+#  define LINN_ALWAYS_INLINE inline
+#  define LINN_RESTRICT
+#  define LINN_UNREACHABLE() std::abort()
+#endif
+
+#if defined(__has_attribute)
+#  if __has_attribute(flatten)
+#    define LINN_FLATTEN __attribute__((flatten))
+#  endif
+#endif
+
+#if !defined(LINN_FLATTEN)
+#  if defined(_MSC_VER)
+#    if _MSC_VER >= 1930 // VS 2022 17.0+
+#      define LINN_FLATTEN [[msvc::flatten]]
+#    else
+#      define LINN_FLATTEN
+#    endif
+#  else
+#    define LINN_FLATTEN
+#  endif
 #endif
 
 #if defined(__clang__)
 // Clang support clang loop unroll_count or unroll
-#  define LOOP_UNROLL(n) _Pragma(EXPAND_AND_STRINGIFY(clang loop unroll_count(n)))
-#  define ALWAYS_INLINE  inline __attribute__((always_inline))
+#  define LINN_LOOP_UNROLL(n) _Pragma(LINN_EXPAND_AND_STRINGIFY(clang loop unroll_count(n)))
 #elif defined(__GNUC__) && !defined(__INTEL_COMPILER) && __GNUC__ >= 8
 // GCC 8+ support #pragma GCC unroll
-#  define LOOP_UNROLL(n) _Pragma(EXPAND_AND_STRINGIFY(GCC unroll n))
-#  define ALWAYS_INLINE  inline __attribute__((always_inline))
+#  define LINN_LOOP_UNROLL(n) _Pragma(LINN_EXPAND_AND_STRINGIFY(GCC unroll n))
 #elif defined(_MSC_VER) && _MSC_VER >= 1920
 // MSVC 2019+ support __pragma(unroll)
-#  define LOOP_UNROLL(n) //__pragma(unroll(n))
-#  define ALWAYS_INLINE  inline __forceinline
+#  define LINN_LOOP_UNROLL(n) //__pragma(unroll(n))
 #else
-#  define LOOP_UNROLL(n)
-#  define ALWAYS_INLINE inline
+#  define LINN_LOOP_UNROLL(n)
 #endif
 
 #define LINN_EXPAND(x) x
 
-#define LINN_STRINGIFY_I(x)     #x
-#define LINN_STRINGIFY(x)       LINN_STRINGIFY_I(x)
-#define EXPAND_AND_STRINGIFY(x) LINN_STRINGIFY(x)
+#define LINN_STRINGIFY_I(x)          #x
+#define LINN_STRINGIFY(x)            LINN_STRINGIFY_I(x)
+#define LINN_EXPAND_AND_STRINGIFY(x) LINN_STRINGIFY(x)
 
 #define LINN_CAT_I(a, b)      a##b
 #define LINN_CAT(a, b)        LINN_CAT_I(a, b)
@@ -60,17 +84,17 @@
 #define LINN_OR_10    1
 #define LINN_OR_11    1
 
-#define LINN_NARGS_SEQ()                                                                                               \
-  256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234,   \
-      233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212,    \
-      211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190,    \
-      189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168,    \
-      167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146,    \
-      145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124,    \
-      123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102,    \
-      101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75,    \
-      74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47,  \
-      46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19,  \
+#define LINN_NARGS_SEQ()                                                                                              \
+  256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234,  \
+      233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212,   \
+      211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190,   \
+      189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168,   \
+      167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146,   \
+      145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124,   \
+      123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102,   \
+      101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75,   \
+      74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, \
+      46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, \
       18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
 #define LINN_NARGS_I(                                                                                                  \
@@ -132,16 +156,16 @@
 #  endif
 #endif
 
-#define LINN_DISABLE_COPY(CLASS)                                                                                       \
-  CLASS(const CLASS &)             = delete;                                                                           \
+#define LINN_DISABLE_COPY(CLASS)             \
+  CLASS(const CLASS &)             = delete; \
   CLASS &operator= (const CLASS &) = delete;
 
-#define LINN_DISABLE_MOVE(CLASS)                                                                                       \
-  CLASS(CLASS &&)             = delete;                                                                                \
+#define LINN_DISABLE_MOVE(CLASS)        \
+  CLASS(CLASS &&)             = delete; \
   CLASS &operator= (CLASS &&) = delete;
 
-#define LINN_DISABLE_COPY_MOVE(CLASS)                                                                                  \
-  LINN_DISABLE_COPY(CLASS)                                                                                             \
+#define LINN_DISABLE_COPY_MOVE(CLASS) \
+  LINN_DISABLE_COPY(CLASS)            \
   LINN_DISABLE_MOVE(CLASS)
 
 #endif // !LINN_UTILS_H_

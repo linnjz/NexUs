@@ -19,8 +19,7 @@ NXCodeEditorPrivate::~NXCodeEditorPrivate()
 {
 }
 
-void
-NXCodeEditorPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
+void NXCodeEditorPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXCodeEditor);
   _themeMode = themeMode;
@@ -33,8 +32,7 @@ NXCodeEditorPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
   _lineArea->update();
 
   QList<QTextEdit::ExtraSelection> extraSelections;
-  if (!_editor->isReadOnly())
-  {
+  if (!_editor->isReadOnly()) {
     QTextEdit::ExtraSelection selection;
     selection.format.setBackground(NXThemeColor(_themeMode, BasicHover));
     selection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -45,8 +43,7 @@ NXCodeEditorPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
   _editor->setExtraSelections(extraSelections);
 
   NXCodeHighlighter *highlighter = static_cast<NXCodeHighlighter *>(_highlighter);
-  if (highlighter)
-  {
+  if (highlighter) {
     highlighter->setThemeMode(_themeMode);
   }
 
@@ -62,38 +59,32 @@ NXCodeEditorPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 Q_PROPERTY_CREATE_CPP(NXCodeEditor, int, TabSize)
 Q_PROPERTY_CREATE_CPP(NXCodeEditor, bool, IsReadOnly)
 
-void
-NXCodeEditor::setCode(const QString &Code)
+void NXCodeEditor::setCode(const QString &Code)
 {
   Q_D(NXCodeEditor);
-  if (d->_pCode != Code)
-  {
+  if (d->_pCode != Code) {
     d->_pCode = Code;
     d->_editor->setPlainText(Code);
     Q_EMIT pCodeChanged();
   }
 }
 
-QString
-NXCodeEditor::getCode() const
+QString NXCodeEditor::getCode() const
 {
   return d_ptr->_pCode;
 }
 
-void
-NXCodeEditor::setLanguage(Language lang)
+void NXCodeEditor::setLanguage(Language lang)
 {
   Q_D(NXCodeEditor);
   d->_language                   = static_cast<int>(lang);
   NXCodeHighlighter *highlighter = static_cast<NXCodeHighlighter *>(d->_highlighter);
-  if (highlighter)
-  {
+  if (highlighter) {
     highlighter->setLanguage(d->_language);
   }
 }
 
-NXCodeEditor::Language
-NXCodeEditor::getLanguage() const
+NXCodeEditor::Language NXCodeEditor::getLanguage() const
 {
   return static_cast<Language>(d_ptr->_language);
 }
@@ -141,30 +132,25 @@ NXCodeEditor::NXCodeEditor(QWidget *parent)
   d->onThemeChanged(d->_themeMode);
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXCodeEditorPrivate::onThemeChanged);
 
-  auto updateLineAreaWidth = [d, lineArea]()
-  {
+  auto updateLineAreaWidth = [d, lineArea]() {
     d->_lineArea->setFixedWidth(lineArea->lineAreaWidth());
   };
   updateLineAreaWidth();
 
-  connect(d->_editor, &QPlainTextEdit::blockCountChanged, this, [updateLineAreaWidth]()
-  {
+  connect(d->_editor, &QPlainTextEdit::blockCountChanged, this, [updateLineAreaWidth]() {
     updateLineAreaWidth();
   });
 
-  connect(d->_editor, &QPlainTextEdit::updateRequest, this, [d](const QRect &rect, int dy)
-  {
+  connect(d->_editor, &QPlainTextEdit::updateRequest, this, [d](const QRect &rect, int dy) {
     if (dy)
       d->_lineArea->scroll(0, dy);
     else
       d->_lineArea->update(0, rect.y(), d->_lineArea->width(), rect.height());
   });
 
-  connect(d->_editor, &QPlainTextEdit::cursorPositionChanged, this, [d]()
-  {
+  connect(d->_editor, &QPlainTextEdit::cursorPositionChanged, this, [d]() {
     QList<QTextEdit::ExtraSelection> extraSelections;
-    if (!d->_editor->isReadOnly())
-    {
+    if (!d->_editor->isReadOnly()) {
       QTextEdit::ExtraSelection selection;
       selection.format.setBackground(NXThemeColor(d->_themeMode, BasicHover));
       selection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -176,18 +162,15 @@ NXCodeEditor::NXCodeEditor(QWidget *parent)
     d->_lineArea->update();
   });
 
-  connect(d->_editor, &QPlainTextEdit::textChanged, this, [d]()
-  {
+  connect(d->_editor, &QPlainTextEdit::textChanged, this, [d]() {
     d->_pCode = d->_editor->toPlainText();
   });
 
-  connect(this, &NXCodeEditor::pIsReadOnlyChanged, this, [d]()
-  {
+  connect(this, &NXCodeEditor::pIsReadOnlyChanged, this, [d]() {
     d->_editor->setReadOnly(d->_pIsReadOnly);
   });
 
-  connect(this, &NXCodeEditor::pTabSizeChanged, this, [d]()
-  {
+  connect(this, &NXCodeEditor::pTabSizeChanged, this, [d]() {
     d->_editor->setTabStopDistance(d->_pTabSize * d->_editor->fontMetrics().horizontalAdvance(' '));
   });
 }
