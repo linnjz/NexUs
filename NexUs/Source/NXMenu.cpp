@@ -23,12 +23,12 @@ NXMenu::NXMenu(QWidget *parent)
   setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
   setObjectName("NXMenu");
-  d->_menuStyle = new NXMenuStyle(style());
-  setStyle(d->_menuStyle);
-  d->_pAnimationImagePosY = 0;
+  d->m_MenuStyle = new NXMenuStyle(style());
+  setStyle(d->m_MenuStyle);
+  d->m_AnimationImagePosY = 0;
 }
 
-NXMenu::NXMenu(const QString &title, QWidget *parent)
+NXMenu::NXMenu(QString const &title, QWidget *parent)
     : NXMenu(parent)
 {
   setTitle(title);
@@ -37,46 +37,46 @@ NXMenu::NXMenu(const QString &title, QWidget *parent)
 NXMenu::~NXMenu()
 {
   Q_D(NXMenu);
-  delete d->_menuStyle;
+  delete d->m_MenuStyle;
 }
 
 void NXMenu::setMenuItemHeight(int menuItemHeight)
 {
   Q_D(NXMenu);
-  d->_menuStyle->setMenuItemHeight(menuItemHeight);
+  d->m_MenuStyle->setMenuItemHeight(menuItemHeight);
 }
 
-int NXMenu::getMenuItemHeight() const
+int NXMenu::getMenuItemHeight() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXMenu);
-  return d->_menuStyle->getMenuItemHeight();
+  Q_CONST_D(NXMenu);
+  return d->m_MenuStyle->getMenuItemHeight();
 }
 
 void NXMenu::setBorderRadius(int borderRadius)
 {
   Q_D(NXMenu);
-  d->_menuStyle->setBorderRadius(borderRadius);
+  d->m_MenuStyle->setBorderRadius(borderRadius);
 }
 
-int NXMenu::getBorderRadius() const
+int NXMenu::getBorderRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXMenu);
-  return d->_menuStyle->getBorderRadius();
+  Q_CONST_D(NXMenu);
+  return d->m_MenuStyle->getBorderRadius();
 }
 
-QAction * NXMenu::addMenu(QMenu *menu)
+QAction *NXMenu::addMenu(QMenu *menu)
 {
   return QMenu::addMenu(menu);
 }
 
-NXMenu * NXMenu::addMenu(const QString &title)
+NXMenu *NXMenu::addMenu(QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   QMenu::addAction(menu->menuAction());
   return menu;
 }
 
-NXMenu * NXMenu::addMenu(const QIcon &icon, const QString &title)
+NXMenu *NXMenu::addMenu(QIcon const &icon, QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   menu->setIcon(icon);
@@ -84,7 +84,7 @@ NXMenu * NXMenu::addMenu(const QIcon &icon, const QString &title)
   return menu;
 }
 
-NXMenu * NXMenu::addMenu(NXIconType::IconName icon, const QString &title)
+NXMenu *NXMenu::addMenu(NXIconType::IconName icon, QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   QMenu::addAction(menu->menuAction());
@@ -92,7 +92,7 @@ NXMenu * NXMenu::addMenu(NXIconType::IconName icon, const QString &title)
   return menu;
 }
 
-QAction * NXMenu::addNXIconAction(NXIconType::IconName icon, const QString &text)
+QAction *NXMenu::addNXIconAction(NXIconType::IconName icon, QString const &text)
 {
   QAction *action = new QAction(text, this);
   action->setProperty("NXIconType", QChar((unsigned short) icon));
@@ -100,7 +100,7 @@ QAction * NXMenu::addNXIconAction(NXIconType::IconName icon, const QString &text
   return action;
 }
 
-QAction * NXMenu::addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut)
+QAction *NXMenu::addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut)
 {
   QAction *action = new QAction(text, this);
   action->setShortcut(shortcut);
@@ -162,16 +162,16 @@ void NXMenu::showEvent(QShowEvent *event)
     move(this->pos().x() - 6, this->pos().y());
   }
   updateGeometry();
-  if (!d->_animationPix.isNull()) {
-    d->_animationPix = QPixmap();
+  if (!d->m_AnimationPix.isNull()) {
+    d->m_AnimationPix = QPixmap();
   }
-  d->_animationPix                 = this->grab(this->rect());
-  QPropertyAnimation *posAnimation = new QPropertyAnimation(d, "pAnimationImagePosY");
+  d->m_AnimationPix                 = this->grab(this->rect());
+  QPropertyAnimation *posAnimation = new QPropertyAnimation(d, "AnimationImagePosY");
   connect(posAnimation, &QPropertyAnimation::finished, this, [=]() {
-    d->_animationPix = QPixmap();
+    d->m_AnimationPix = QPixmap();
     update();
   });
-  connect(posAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  connect(posAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     update();
   });
   posAnimation->setEasingCurve(QEasingCurve::OutCubic);
@@ -185,7 +185,7 @@ void NXMenu::showEvent(QShowEvent *event)
     }
   }
 
-  if (pos().y() + d->_menuStyle->getMenuItemHeight() + 9 >= QCursor::pos().y()) {
+  if (pos().y() + d->m_MenuStyle->getMenuItemHeight() + 9 >= QCursor::pos().y()) {
     posAnimation->setStartValue(-targetPosY);
   } else {
     posAnimation->setStartValue(targetPosY);
@@ -201,8 +201,8 @@ void NXMenu::paintEvent(QPaintEvent *event)
   Q_D(NXMenu);
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing);
-  if (!d->_animationPix.isNull()) {
-    painter.drawPixmap(QRect(0, d->_pAnimationImagePosY, width(), height()), d->_animationPix);
+  if (!d->m_AnimationPix.isNull()) {
+    painter.drawPixmap(QRect(0, d->m_AnimationImagePosY, width(), height()), d->m_AnimationPix);
   } else {
     QMenu::paintEvent(event);
   }

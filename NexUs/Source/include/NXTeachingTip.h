@@ -1,4 +1,4 @@
-#ifndef NXTEACHINGTIP_H
+﻿#ifndef NXTEACHINGTIP_H
 #define NXTEACHINGTIP_H
 
 #include <QWidget>
@@ -11,10 +11,10 @@ class NX_EXPORT NXTeachingTip : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXTeachingTip)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Content)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QPixmap), HeroImage)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Content)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QPixmap), HeroImage)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, TipIcon)
   Q_PROPERTY_CREATE_H(bool, IsLightDismiss)
@@ -41,7 +41,7 @@ public:
 
   void setCloseButtonVisible(bool visible);
 
-  void addAction(const QString &text, const std::function<void()> &callback);
+  void addAction(QString const &text, std::function<void()> const &callback);
   void clearActions();
 
   void showTip();

@@ -1,4 +1,4 @@
-#ifndef NXMICABASEINITOBJECT_H
+﻿#ifndef NXMICABASEINITOBJECT_H
 #define NXMICABASEINITOBJECT_H
 
 #include <QImage>
@@ -12,11 +12,11 @@ class NXMicaBaseInitObject : public QObject
 public:
   explicit NXMicaBaseInitObject(NXApplicationPrivate *appPrivate, QObject *parent = nullptr);
   ~NXMicaBaseInitObject();
-  Q_SLOT void onInitMicaBase(const QImage &img);
+  Q_SLOT void onInitMicaBase(QImage const &img);
   Q_SIGNAL void initFinished();
 
 private:
-  NXApplicationPrivate *_appPrivate { nullptr };
+  NXApplicationPrivate *m_AppPrivate { nullptr };
 };
 
 #endif // NXMICABASEINITOBJECT_H

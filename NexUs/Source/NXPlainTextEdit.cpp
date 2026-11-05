@@ -26,16 +26,16 @@ NXPlainTextEdit::NXPlainTextEdit(QWidget *parent)
   setVerticalScrollBar(new NXScrollBar(this));
   setMouseTracking(true);
   // 事件总线
-  d->_focusEvent = new NXEvent(QStringLiteral("WMWindowClicked"), QStringLiteral("onWMWindowClickedEvent"), d);
-  d->_focusEvent->registerAndInit();
+  d->m_FocusEvent = new NXEvent(QStringLiteral("WMWindowClicked"), QStringLiteral("onWMWindowClickedEvent"), d);
+  d->m_FocusEvent->registerAndInit();
 
-  d->_style = new NXPlainTextEditStyle(style());
-  setStyle(d->_style);
+  d->m_Style = new NXPlainTextEditStyle(style());
+  setStyle(d->m_Style);
   d->onThemeChanged(nxTheme->getThemeMode());
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXPlainTextEditPrivate::onThemeChanged);
 }
 
-NXPlainTextEdit::NXPlainTextEdit(const QString &text, QWidget *parent)
+NXPlainTextEdit::NXPlainTextEdit(QString const &text, QWidget *parent)
     : NXPlainTextEdit(parent)
 {
   setPlainText(text);
@@ -44,20 +44,20 @@ NXPlainTextEdit::NXPlainTextEdit(const QString &text, QWidget *parent)
 NXPlainTextEdit::~NXPlainTextEdit()
 {
   Q_D(NXPlainTextEdit);
-  delete d->_style;
+  delete d->m_Style;
 }
 
 void NXPlainTextEdit::focusInEvent(QFocusEvent *event)
 {
   Q_D(NXPlainTextEdit);
   if (event->reason() == Qt::MouseFocusReason) {
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d->_style, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d->m_Style, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_style->getExpandMarkWidth());
+    markAnimation->setStartValue(d->m_Style->getExpandMarkWidth());
     markAnimation->setEndValue(width() / 2 - 3);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   }
@@ -68,13 +68,13 @@ void NXPlainTextEdit::focusOutEvent(QFocusEvent *event)
 {
   Q_D(NXPlainTextEdit);
   if (event->reason() != Qt::PopupFocusReason) {
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d->_style, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d->m_Style, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_style->getExpandMarkWidth());
+    markAnimation->setStartValue(d->m_Style->getExpandMarkWidth());
     markAnimation->setEndValue(0);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   }
@@ -137,8 +137,8 @@ void NXPlainTextEdit::contextMenuEvent(QContextMenuEvent *event)
 void NXPlainTextEdit::paintEvent(QPaintEvent *event)
 {
   Q_D(NXPlainTextEdit);
-  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText)) {
-    d->onThemeChanged(d->_themeMode);
+  if (palette().color(QPalette::Text) != NXThemeColor(d->m_ThemeMode, BasicText)) {
+    d->onThemeChanged(d->m_ThemeMode);
   }
   QPlainTextEdit::paintEvent(event);
 }
@@ -147,8 +147,8 @@ void NXPlainTextEdit::resizeEvent(QResizeEvent *event)
 {
   Q_D(NXPlainTextEdit);
   QPlainTextEdit::resizeEvent(event);
-  if (d->_style->getExpandMarkWidth() > 0) {
-    d->_style->setExpandMarkWidth(width() / 2 - 3);
+  if (d->m_Style->getExpandMarkWidth() > 0) {
+    d->m_Style->setExpandMarkWidth(width() / 2 - 3);
     update();
   }
 }

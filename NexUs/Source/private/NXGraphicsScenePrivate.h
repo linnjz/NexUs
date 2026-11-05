@@ -18,22 +18,22 @@ class NXGraphicsScenePrivate : public QObject
   Q_PROPERTY_CREATE_D(bool, IsCheckLinkPort)
 
 public:
-  friend QDataStream &operator<< (QDataStream &stream, const NXGraphicsScenePrivate *data);
+  friend QDataStream &operator<< (QDataStream &stream, NXGraphicsScenePrivate const *data);
   friend QDataStream &operator>> (QDataStream &stream, NXGraphicsScenePrivate *data);
   explicit NXGraphicsScenePrivate(QObject *parent = nullptr);
   ~NXGraphicsScenePrivate();
 
 
 private:
-  bool _isLeftButtonPress { false };
-  NXGraphicsSceneType::SceneMode _sceneMode;
-  QMap<QString, NXGraphicsItem *> _items; // 存储所有item
-  qreal _currentZ { 1 };
-  QPointF _lastPos;
-  QPointF _lastLeftPressPos;
-  QList<QVariantMap> _itemsLink; // item连接状态
-  QList<NXGraphicsLineItem *> _lineItemsList;
-  NXGraphicsLineItem *_linkLineItem { nullptr };
+  bool m_IsLeftButtonPress { false };
+  NXGraphicsSceneType::SceneMode m_SceneMode;
+  QMap<QString, NXGraphicsItem *> m_Items; // 存储所有item
+  qreal m_CurrentZ { 1 };
+  QPointF m_LastPos;
+  QPointF m_LastLeftPressPos;
+  QList<QVariantMap> m_ItemsLink; // item连接状态
+  QList<NXGraphicsLineItem *> m_LineItemsList;
+  NXGraphicsLineItem *m_LinkLineItem { nullptr };
   QList<NXGraphicsItem *> _serializeItem(int count);
   void _removeLinkLineItem();
   void _deserializeLink();

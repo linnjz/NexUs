@@ -8,19 +8,19 @@
 class NXListViewStyle : public QProxyStyle
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(int, ItemHeight)
-  Q_PROPERTY_CREATE(bool, IsTransparent)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), ItemHeight)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(bool), IsTransparent)
 
 public:
   explicit NXListViewStyle(QStyle *style = nullptr);
   ~NXListViewStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _leftPadding { 11 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_LeftPadding { 11 };
 };
 
 #endif // NXLISTVIEWSTYLE_H

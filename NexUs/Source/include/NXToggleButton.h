@@ -10,12 +10,12 @@ class NX_EXPORT NXToggleButton : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXToggleButton)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Text)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Text)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
 
 public:
   explicit NXToggleButton(QWidget *parent = nullptr);
-  explicit NXToggleButton(const QString &text, QWidget *parent = nullptr);
+  explicit NXToggleButton(QString const &text, QWidget *parent = nullptr);
   ~NXToggleButton();
 
   void setNXIcon(NXIconType::IconName icon);

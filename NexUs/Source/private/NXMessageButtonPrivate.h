@@ -23,10 +23,10 @@ public:
   ~NXMessageButtonPrivate();
 
 private:
-  bool _isLeftButtonPress { false };
-  int _shadowBorderWidth { 3 };
-  int _penBorderWidth { 1 };
-  NXThemeType::ThemeMode _themeMode;
+  bool m_IsLeftButtonPress { false };
+  int m_ShadowBorderWidth { 3 };
+  int m_PenBorderWidth { 1 };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXMESSAGEBUTTONPRIVATE_H

@@ -22,18 +22,18 @@ public:
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
   Q_SLOT void onSystemPaletteChanged();
   void syncSystemTheme();
-  Q_SIGNAL void initMicaBase(const QImage &img);
+  Q_SIGNAL void initMicaBase(QImage const &img);
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
   friend class NXMicaBaseInitObject;
-  NXThemeType::ThemeMode _themeMode;
-  QList<QWidget *> _micaWidgetList;
-  QImage _lightBaseImage;
-  QImage _darkBaseImage;
-  void _initMicaBaseImage(const QImage &img);
+  NXThemeType::ThemeMode m_ThemeMode;
+  QList<QWidget *> m_MicaWidgetList;
+  QImage m_LightBaseImage;
+  QImage m_DarkBaseImage;
+  void _initMicaBaseImage(QImage const &img);
   QRect _calculateWindowVirtualGeometry(QWidget *widget);
   void _updateMica(QWidget *widget, bool isProcessEvent = true);
   void _updateAllMicaWidget();

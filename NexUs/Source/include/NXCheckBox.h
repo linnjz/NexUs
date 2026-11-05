@@ -19,7 +19,7 @@ class NX_EXPORT NXCheckBox : public QCheckBox
 
 public:
   explicit NXCheckBox(QWidget *parent = nullptr);
-  explicit NXCheckBox(const QString &text, QWidget *parent = nullptr);
+  explicit NXCheckBox(QString const &text, QWidget *parent = nullptr);
   ~NXCheckBox();
 };
 

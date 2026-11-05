@@ -35,7 +35,7 @@ NXRibbonBar::NXRibbonBar(QWidget *parent)
 {
   Q_D(NXRibbonBar);
   d->q_ptr          = this;
-  d->_pCurrentIndex = 0;
+  d->m_CurrentIndex = 0;
 
   setObjectName("NXRibbonBar");
   setAttribute(Qt::WA_StyledBackground, false);
@@ -44,61 +44,61 @@ NXRibbonBar::NXRibbonBar(QWidget *parent)
   mainLayout->setContentsMargins(0, 0, 0, 0);
   mainLayout->setSpacing(0);
 
-  d->_internalTabBar = new NXRibbonTabBar(this);
-  mainLayout->addWidget(d->_internalTabBar);
+  d->m_InternalTabBar = new NXRibbonTabBar(this);
+  mainLayout->addWidget(d->m_InternalTabBar);
 
-  d->_stack = new QStackedWidget(this);
-  d->_stack->setContentsMargins(0, 0, 0, 0);
+  d->m_Stack = new QStackedWidget(this);
+  d->m_Stack->setContentsMargins(0, 0, 0, 0);
   // 页签内容超出宽度时整体横向滚动
   QScrollArea *pageScrollArea = new QScrollArea(this);
   pageScrollArea->setWidgetResizable(true);
   pageScrollArea->setFrameShape(QFrame::NoFrame);
   pageScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
   pageScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  pageScrollArea->setWidget(d->_stack);
+  pageScrollArea->setWidget(d->m_Stack);
   mainLayout->addWidget(pageScrollArea, 1);
 
-  connect(d->_internalTabBar, &NXRibbonTabBar::pCurrentIndexChanged, this, [=]() {
-    if (d->_externalTabBar) {
+  connect(d->m_InternalTabBar, &NXRibbonTabBar::signalCurrentIndexChanged, this, [=]() {
+    if (d->m_ExternalTabBar) {
       return;
     }
-    int idx = d->_internalTabBar->getCurrentIndex();
-    if (idx != d->_pCurrentIndex) {
-      d->_pCurrentIndex = idx;
-      d->_stack->setCurrentIndex(idx);
-      if (d->_isCollapsed) {
+    int idx = d->m_InternalTabBar->getCurrentIndex();
+    if (idx != d->m_CurrentIndex) {
+      d->m_CurrentIndex = idx;
+      d->m_Stack->setCurrentIndex(idx);
+      if (d->m_IsCollapsed) {
         setCollapsed(false);
       }
-      Q_EMIT pCurrentIndexChanged();
+      Q_EMIT signalCurrentIndexChanged();
     }
   });
-  connect(d->_internalTabBar, &NXRibbonTabBar::tabClicked, this, [=](int idx) {
-    if (!d->_externalTabBar) {
+  connect(d->m_InternalTabBar, &NXRibbonTabBar::tabClicked, this, [=](int idx) {
+    if (!d->m_ExternalTabBar) {
       Q_EMIT tabClicked(idx);
     }
   });
-  connect(d->_internalTabBar, &NXRibbonTabBar::tabReclicked, this, [=](int) {
-    if (!d->_externalTabBar) {
-      setCollapsed(!d->_isCollapsed);
+  connect(d->m_InternalTabBar, &NXRibbonTabBar::tabReclicked, this, [=](int) {
+    if (!d->m_ExternalTabBar) {
+      setCollapsed(!d->m_IsCollapsed);
     }
   });
 
-  setFixedHeight(d->_internalTabBar->height() + ribbonContentHeight());
+  setFixedHeight(d->m_InternalTabBar->height() + ribbonContentHeight());
 
-  d->_autoHideTimer = new QTimer(this);
-  d->_autoHideTimer->setSingleShot(true);
-  d->_autoHideTimer->setInterval(150);
-  connect(d->_autoHideTimer, &QTimer::timeout, this, [=]() {
-    if (d->_isPinned || d->_isCollapsed) {
+  d->m_AutoHideTimer = new QTimer(this);
+  d->m_AutoHideTimer->setSingleShot(true);
+  d->m_AutoHideTimer->setInterval(150);
+  connect(d->m_AutoHideTimer, &QTimer::timeout, this, [=]() {
+    if (d->m_IsPinned || d->m_IsCollapsed) {
       return;
     }
-    const QPoint cursor = QCursor::pos();
+    QPoint const cursor = QCursor::pos();
     bool over           = this->rect().contains(this->mapFromGlobal(cursor));
-    if (!over && d->_internalTabBar && d->_internalTabBar->isVisible()) {
-      over = d->_internalTabBar->rect().contains(d->_internalTabBar->mapFromGlobal(cursor));
+    if (!over && d->m_InternalTabBar && d->m_InternalTabBar->isVisible()) {
+      over = d->m_InternalTabBar->rect().contains(d->m_InternalTabBar->mapFromGlobal(cursor));
     }
-    if (!over && d->_externalTabBar) {
-      over = d->_externalTabBar->rect().contains(d->_externalTabBar->mapFromGlobal(cursor));
+    if (!over && d->m_ExternalTabBar) {
+      over = d->m_ExternalTabBar->rect().contains(d->m_ExternalTabBar->mapFromGlobal(cursor));
     }
     if (!over) {
       setCollapsed(true);
@@ -107,20 +107,20 @@ NXRibbonBar::NXRibbonBar(QWidget *parent)
 
   this->installEventFilter(this);
   this->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(this, &QWidget::customContextMenuRequested, this, [=](const QPoint &pos) {
+  connect(this, &QWidget::customContextMenuRequested, this, [=](QPoint const &pos) {
     showPinContextMenu(this->mapToGlobal(pos));
   });
-  d->_internalTabBar->installEventFilter(this);
-  d->_internalTabBar->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(d->_internalTabBar, &QWidget::customContextMenuRequested, this, [=](const QPoint &pos) {
-    if (!d->_externalTabBar) {
-      showPinContextMenu(d->_internalTabBar->mapToGlobal(pos));
+  d->m_InternalTabBar->installEventFilter(this);
+  d->m_InternalTabBar->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(d->m_InternalTabBar, &QWidget::customContextMenuRequested, this, [=](QPoint const &pos) {
+    if (!d->m_ExternalTabBar) {
+      showPinContextMenu(d->m_InternalTabBar->mapToGlobal(pos));
     }
   });
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -132,69 +132,69 @@ NXRibbonBar::~NXRibbonBar()
 void NXRibbonBar::bindTabBar(NXRibbonTabBar *tabBar)
 {
   Q_D(NXRibbonBar);
-  if (d->_externalTabBar.data() == tabBar) {
+  if (d->m_ExternalTabBar.data() == tabBar) {
     return;
   }
 
-  if (d->_externalTabBar) {
-    disconnect(d->_externalTabBar.data(), nullptr, this, nullptr);
+  if (d->m_ExternalTabBar) {
+    disconnect(d->m_ExternalTabBar.data(), nullptr, this, nullptr);
   }
 
-  d->_externalTabBar = tabBar;
+  d->m_ExternalTabBar = tabBar;
 
   if (tabBar) {
-    d->_internalTabBar->hide();
+    d->m_InternalTabBar->hide();
     setFixedHeight(ribbonContentHeight());
 
     tabBar->clear();
-    for (int i = 0; i < d->_internalTabBar->tabCount(); ++i) {
-      tabBar->appendTab(d->_internalTabBar->tabText(i));
+    for (int i = 0; i < d->m_InternalTabBar->tabCount(); ++i) {
+      tabBar->appendTab(d->m_InternalTabBar->tabText(i));
     }
-    if (d->_pCurrentIndex >= 0 && d->_pCurrentIndex < tabBar->tabCount()) {
-      tabBar->setCurrentIndex(d->_pCurrentIndex);
+    if (d->m_CurrentIndex >= 0 && d->m_CurrentIndex < tabBar->tabCount()) {
+      tabBar->setCurrentIndex(d->m_CurrentIndex);
     }
 
-    connect(tabBar, &NXRibbonTabBar::pCurrentIndexChanged, this, [=]() {
-      if (!d->_externalTabBar) {
+    connect(tabBar, &NXRibbonTabBar::signalCurrentIndexChanged, this, [=]() {
+      if (!d->m_ExternalTabBar) {
         return;
       }
-      int idx = d->_externalTabBar->getCurrentIndex();
-      if (idx != d->_pCurrentIndex) {
-        d->_pCurrentIndex = idx;
-        d->_stack->setCurrentIndex(idx);
-        if (d->_isCollapsed) {
+      int idx = d->m_ExternalTabBar->getCurrentIndex();
+      if (idx != d->m_CurrentIndex) {
+        d->m_CurrentIndex = idx;
+        d->m_Stack->setCurrentIndex(idx);
+        if (d->m_IsCollapsed) {
           setCollapsed(false);
         }
-        Q_EMIT pCurrentIndexChanged();
+        Q_EMIT signalCurrentIndexChanged();
       }
     });
     connect(tabBar, &NXRibbonTabBar::tabClicked, this, [=](int idx) {
       Q_EMIT tabClicked(idx);
     });
     connect(tabBar, &NXRibbonTabBar::tabReclicked, this, [=](int) {
-      setCollapsed(!d->_isCollapsed);
+      setCollapsed(!d->m_IsCollapsed);
     });
 
     tabBar->installEventFilter(this);
     tabBar->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(tabBar, &QWidget::customContextMenuRequested, this, [=](const QPoint &pos) {
-      if (d->_externalTabBar) {
-        showPinContextMenu(d->_externalTabBar->mapToGlobal(pos));
+    connect(tabBar, &QWidget::customContextMenuRequested, this, [=](QPoint const &pos) {
+      if (d->m_ExternalTabBar) {
+        showPinContextMenu(d->m_ExternalTabBar->mapToGlobal(pos));
       }
     });
   } else {
-    d->_internalTabBar->show();
-    setFixedHeight(d->_internalTabBar->height() + ribbonContentHeight());
+    d->m_InternalTabBar->show();
+    setFixedHeight(d->m_InternalTabBar->height() + ribbonContentHeight());
   }
 }
 
-NXRibbonTabBar * NXRibbonBar::tabBar() const
+NXRibbonTabBar *NXRibbonBar::tabBar() const
 {
-  Q_D(const NXRibbonBar);
+  Q_CONST_D(NXRibbonBar);
   return d->activeTabBar();
 }
 
-QWidget * NXRibbonBar::addTab(const QString &title)
+QWidget *NXRibbonBar::addTab(QString const &title)
 {
   Q_D(NXRibbonBar);
   QWidget *page = new QWidget(this);
@@ -203,21 +203,21 @@ QWidget * NXRibbonBar::addTab(const QString &title)
   pageLayout->setContentsMargins(6, 4, 6, 6);
   pageLayout->setSpacing(0);
   pageLayout->addStretch();
-  d->_stack->addWidget(page);
+  d->m_Stack->addWidget(page);
 
   NXRibbonTabBar *active = d->activeTabBar();
   if (active) {
     active->appendTab(title);
-    if (d->_stack->count() == 1) {
-      d->_pCurrentIndex = 0;
-      d->_stack->setCurrentIndex(0);
+    if (d->m_Stack->count() == 1) {
+      d->m_CurrentIndex = 0;
+      d->m_Stack->setCurrentIndex(0);
       active->setCurrentIndex(0);
     }
   }
   return page;
 }
 
-NXRibbonGroup * NXRibbonBar::addGroup(QWidget *page, const QString &title)
+NXRibbonGroup *NXRibbonBar::addGroup(QWidget *page, QString const &title)
 {
   if (!page) {
     return nullptr;
@@ -232,7 +232,7 @@ NXRibbonGroup * NXRibbonBar::addGroup(QWidget *page, const QString &title)
   connect(group, &NXRibbonGroup::ribbonButtonTriggered, this, [this, group](NXToolButton *button) {
     QString pageTitle;
     if (NXRibbonTabBar *active = d_func()->activeTabBar()) {
-      pageTitle = active->tabText(d_func()->_pCurrentIndex);
+      pageTitle = active->tabText(d_func()->m_CurrentIndex);
     }
     Q_EMIT ribbonActionTriggered(pageTitle, group, button ? button->defaultAction() : nullptr);
   });
@@ -242,11 +242,11 @@ NXRibbonGroup * NXRibbonBar::addGroup(QWidget *page, const QString &title)
 void NXRibbonBar::removePage(int index)
 {
   Q_D(NXRibbonBar);
-  if (index < 0 || index >= d->_stack->count()) {
+  if (index < 0 || index >= d->m_Stack->count()) {
     return;
   }
-  QWidget *page = d->_stack->widget(index);
-  d->_stack->removeWidget(page);
+  QWidget *page = d->m_Stack->widget(index);
+  d->m_Stack->removeWidget(page);
   page->deleteLater();
   if (NXRibbonTabBar *active = d->activeTabBar()) {
     active->removeTab(index);
@@ -259,7 +259,7 @@ void NXRibbonBar::removePage(QWidget *page)
   if (!page) {
     return;
   }
-  removePage(d->_stack->indexOf(page));
+  removePage(d->m_Stack->indexOf(page));
 }
 
 void NXRibbonBar::removeGroup(QWidget *page, NXRibbonGroup *group)
@@ -276,7 +276,7 @@ void NXRibbonBar::removeGroup(QWidget *page, NXRibbonGroup *group)
 QList<NXRibbonGroup *> NXRibbonBar::getGroups(QWidget *page) const
 {
   QList<NXRibbonGroup *> groups;
-  const QHBoxLayout *layout = page ? qobject_cast<const QHBoxLayout *>(page->layout()) : nullptr;
+  QHBoxLayout const *layout = page ? qobject_cast<QHBoxLayout const *>(page->layout()) : nullptr;
   if (!layout) {
     return groups;
   }
@@ -291,10 +291,10 @@ QList<NXRibbonGroup *> NXRibbonBar::getGroups(QWidget *page) const
 void NXRibbonBar::setRibbonPageEnable(int index, bool isEnable)
 {
   Q_D(NXRibbonBar);
-  if (index < 0 || index >= d->_stack->count()) {
+  if (index < 0 || index >= d->m_Stack->count()) {
     return;
   }
-  d->_stack->widget(index)->setEnabled(isEnable);
+  d->m_Stack->widget(index)->setEnabled(isEnable);
   if (NXRibbonTabBar *active = d->activeTabBar()) {
     active->setTabEnabled(index, isEnable);
   }
@@ -306,27 +306,27 @@ void NXRibbonBar::setRibbonPageEnable(QWidget *page, bool isEnable)
   if (!page) {
     return;
   }
-  setRibbonPageEnable(d->_stack->indexOf(page), isEnable);
+  setRibbonPageEnable(d->m_Stack->indexOf(page), isEnable);
 }
 
 bool NXRibbonBar::isRibbonPageEnable(int index) const
 {
-  Q_D(const NXRibbonBar);
-  if (index < 0 || index >= d->_stack->count()) {
+  Q_CONST_D(NXRibbonBar);
+  if (index < 0 || index >= d->m_Stack->count()) {
     return false;
   }
-  return d->_stack->widget(index)->isEnabled();
+  return d->m_Stack->widget(index)->isEnabled();
 }
 
 int NXRibbonBar::tabCount() const
 {
-  Q_D(const NXRibbonBar);
-  return d->_stack->count();
+  Q_CONST_D(NXRibbonBar);
+  return d->m_Stack->count();
 }
 
 QString NXRibbonBar::tabText(int index) const
 {
-  Q_D(const NXRibbonBar);
+  Q_CONST_D(NXRibbonBar);
   NXRibbonTabBar *active = d->activeTabBar();
   return active ? active->tabText(index) : QString();
 }
@@ -334,109 +334,109 @@ QString NXRibbonBar::tabText(int index) const
 void NXRibbonBar::setCurrentIndex(int currentIndex)
 {
   Q_D(NXRibbonBar);
-  if (currentIndex < 0 || currentIndex >= d->_stack->count()) {
+  if (currentIndex < 0 || currentIndex >= d->m_Stack->count()) {
     return;
   }
-  if (d->_pCurrentIndex == currentIndex) {
+  if (d->m_CurrentIndex == currentIndex) {
     return;
   }
-  d->_pCurrentIndex = currentIndex;
-  d->_stack->setCurrentIndex(currentIndex);
+  d->m_CurrentIndex = currentIndex;
+  d->m_Stack->setCurrentIndex(currentIndex);
   if (NXRibbonTabBar *active = d->activeTabBar()) {
     active->setCurrentIndex(currentIndex);
   }
-  Q_EMIT pCurrentIndexChanged();
+  Q_EMIT signalCurrentIndexChanged();
 }
 
-int NXRibbonBar::getCurrentIndex() const
+int NXRibbonBar::getCurrentIndex() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXRibbonBar);
-  return d->_pCurrentIndex;
+  Q_CONST_D(NXRibbonBar);
+  return d->m_CurrentIndex;
 }
 
 void NXRibbonBar::setCollapsed(bool collapsed)
 {
   Q_D(NXRibbonBar);
-  if (d->_isCollapsed == collapsed) {
+  if (d->m_IsCollapsed == collapsed) {
     return;
   }
-  d->_isCollapsed = collapsed;
+  d->m_IsCollapsed = collapsed;
 
-  const int normalH    = d->_externalTabBar ? ribbonContentHeight() : ((d->_internalTabBar ? d->_internalTabBar->height() : 0) + ribbonContentHeight());
-  const int collapsedH = d->_externalTabBar ? 0 : (d->_internalTabBar ? d->_internalTabBar->height() : 0);
-  const int targetH    = collapsed ? collapsedH : normalH;
+  int const normalH    = d->m_ExternalTabBar ? ribbonContentHeight() : ((d->m_InternalTabBar ? d->m_InternalTabBar->height() : 0) + ribbonContentHeight());
+  int const collapsedH = d->m_ExternalTabBar ? 0 : (d->m_InternalTabBar ? d->m_InternalTabBar->height() : 0);
+  int const targetH    = collapsed ? collapsedH : normalH;
 
-  if (!d->_heightAnim) {
-    d->_heightAnim = new QVariantAnimation(this);
-    d->_heightAnim->setEasingCurve(QEasingCurve::OutCubic);
-    connect(d->_heightAnim, &QVariantAnimation::valueChanged, this, [this](const QVariant &v) {
-      const int h = v.toInt();
+  if (!d->m_HeightAnim) {
+    d->m_HeightAnim = new QVariantAnimation(this);
+    d->m_HeightAnim->setEasingCurve(QEasingCurve::OutCubic);
+    connect(d->m_HeightAnim, &QVariantAnimation::valueChanged, this, [this](QVariant const &v) {
+      int const h = v.toInt();
       this->setMinimumHeight(h);
       this->setMaximumHeight(h);
     });
-    connect(d->_heightAnim, &QVariantAnimation::finished, this, [d]() {
-      d->_stack->setVisible(!d->_isCollapsed);
+    connect(d->m_HeightAnim, &QVariantAnimation::finished, this, [d]() {
+      d->m_Stack->setVisible(!d->m_IsCollapsed);
     });
   }
-  d->_heightAnim->stop();
+  d->m_HeightAnim->stop();
 
   if (!collapsed) {
-    d->_stack->setVisible(true);
+    d->m_Stack->setVisible(true);
   }
-  d->_heightAnim->setStartValue(this->height());
-  d->_heightAnim->setEndValue(targetH);
-  d->_heightAnim->setDuration(d->_animationDuration);
-  d->_heightAnim->start();
+  d->m_HeightAnim->setStartValue(this->height());
+  d->m_HeightAnim->setEndValue(targetH);
+  d->m_HeightAnim->setDuration(d->m_AnimationDuration);
+  d->m_HeightAnim->start();
 
   Q_EMIT collapsedChanged(collapsed);
 }
 
 bool NXRibbonBar::isCollapsed() const
 {
-  Q_D(const NXRibbonBar);
-  return d->_isCollapsed;
+  Q_CONST_D(NXRibbonBar);
+  return d->m_IsCollapsed;
 }
 
 void NXRibbonBar::setPinned(bool pinned)
 {
   Q_D(NXRibbonBar);
-  if (d->_isPinned == pinned) {
+  if (d->m_IsPinned == pinned) {
     return;
   }
-  d->_isPinned = pinned;
+  d->m_IsPinned = pinned;
   if (pinned) {
-    d->_autoHideTimer->stop();
+    d->m_AutoHideTimer->stop();
   }
   Q_EMIT pinnedChanged(pinned);
 }
 
 bool NXRibbonBar::isPinned() const
 {
-  Q_D(const NXRibbonBar);
-  return d->_isPinned;
+  Q_CONST_D(NXRibbonBar);
+  return d->m_IsPinned;
 }
 
 void NXRibbonBar::setAnimationDuration(int durationMs)
 {
   Q_D(NXRibbonBar);
-  d->_animationDuration = qMax(0, durationMs);
+  d->m_AnimationDuration = qMax(0, durationMs);
 }
 
 int NXRibbonBar::getAnimationDuration() const
 {
-  Q_D(const NXRibbonBar);
-  return d->_animationDuration;
+  Q_CONST_D(NXRibbonBar);
+  return d->m_AnimationDuration;
 }
 
 bool NXRibbonBar::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXRibbonBar);
-  if (watched == this || watched == d->_internalTabBar || watched == d->_externalTabBar.data()) {
+  if (watched == this || watched == d->m_InternalTabBar || watched == d->m_ExternalTabBar.data()) {
     if (event->type() == QEvent::Enter) {
-      d->_autoHideTimer->stop();
+      d->m_AutoHideTimer->stop();
     } else if (event->type() == QEvent::Leave) {
-      if (!d->_isPinned && !d->_isCollapsed) {
-        d->_autoHideTimer->start();
+      if (!d->m_IsPinned && !d->m_IsCollapsed) {
+        d->m_AutoHideTimer->start();
       }
     }
   }
@@ -448,19 +448,19 @@ void NXRibbonBar::showPinContextMenu(QPoint globalPos)
   Q_D(NXRibbonBar);
   NXMenu menu(this);
   menu.setMenuItemHeight(27);
-  QAction *pinAction = menu.addAction(d->_isPinned ? QStringLiteral("取消固定") : QStringLiteral("固定 Ribbon"));
+  QAction *pinAction = menu.addAction(d->m_IsPinned ? QStringLiteral("取消固定") : QStringLiteral("固定 Ribbon"));
   pinAction->setCheckable(true);
-  pinAction->setChecked(d->_isPinned);
+  pinAction->setChecked(d->m_IsPinned);
   QAction *collapseAction =
-      menu.addAction(d->_isCollapsed ? QStringLiteral("展开 Ribbon") : QStringLiteral("折叠 Ribbon"));
+      menu.addAction(d->m_IsCollapsed ? QStringLiteral("展开 Ribbon") : QStringLiteral("折叠 Ribbon"));
   QAction *selected = menu.exec(globalPos);
   if (!selected) {
     return;
   }
   if (selected == pinAction) {
-    setPinned(!d->_isPinned);
+    setPinned(!d->m_IsPinned);
   } else if (selected == collapseAction) {
-    setCollapsed(!d->_isCollapsed);
+    setCollapsed(!d->m_IsCollapsed);
   }
 }
 
@@ -471,23 +471,23 @@ void NXRibbonBar::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, WindowBase));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, WindowBase));
   painter.drawRect(rect());
-  if (d->_externalTabBar) {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
+  if (d->m_ExternalTabBar) {
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
     painter.drawLine(0, 0, width(), 0);
   }
 }
 
 QSize NXRibbonBar::sizeHint() const
 {
-  Q_D(const NXRibbonBar);
-  const int tabH = d->_internalTabBar ? d->_internalTabBar->height() : 0;
+  Q_CONST_D(NXRibbonBar);
+  int const tabH = d->m_InternalTabBar ? d->m_InternalTabBar->height() : 0;
   int h;
-  if (d->_isCollapsed) {
-    h = d->_externalTabBar ? 0 : tabH;
+  if (d->m_IsCollapsed) {
+    h = d->m_ExternalTabBar ? 0 : tabH;
   } else {
-    h = d->_externalTabBar ? ribbonContentHeight() : (tabH + ribbonContentHeight());
+    h = d->m_ExternalTabBar ? ribbonContentHeight() : (tabH + ribbonContentHeight());
   }
   return QSize(800, h);
 }
@@ -501,10 +501,10 @@ NXRibbonBarPrivate::~NXRibbonBarPrivate()
 {
 }
 
-NXRibbonTabBar * NXRibbonBarPrivate::activeTabBar() const
+NXRibbonTabBar *NXRibbonBarPrivate::activeTabBar() const
 {
-  if (_externalTabBar) {
-    return _externalTabBar.data();
+  if (m_ExternalTabBar) {
+    return m_ExternalTabBar.data();
   }
-  return _internalTabBar;
+  return m_InternalTabBar;
 }

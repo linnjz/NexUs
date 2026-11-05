@@ -8,10 +8,10 @@
 class NXThemeAnimationWidget : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(QS_SET_CREF(QImage), OldWindowBackground)
-  Q_PROPERTY_CREATE(qreal, Radius)
-  Q_PROPERTY_CREATE(qreal, EndRadius)
-  Q_PROPERTY_CREATE(QPoint, Center)
+  Q_PROPERTY_CREATE(QPS_SCREF_PAEMIT(QImage), OldWindowBackground)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), Radius)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), EndRadius)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(QPoint), Center)
 
 public:
   explicit NXThemeAnimationWidget(QWidget *parent = nullptr);

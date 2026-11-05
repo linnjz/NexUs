@@ -9,17 +9,17 @@
 #include "NXTheme.h"
 
 NXTableViewStyle::NXTableViewStyle(QStyle *style)
+    : m_CurrentHoverIndex {}
+    , m_HeaderMargin { 6 }
+    , m_BorderRadius { 3 }
+    , m_CheckIndicatorWidth { 18 }
+    , m_DefaultPadding { 11 }
+    , m_IsHoverRowEffectEnable { true }
+    , m_IsSelectedRowEffectEnable { true }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pCurrentHoverIndex         = QModelIndex();
-  _pHeaderMargin              = 6;
-  _pBorderRadius              = 3;
-  _pCheckIndicatorWidth       = 18;
-  _pDefaultPadding            = 11;
-  _pIsHoverRowEffectEnable    = true;
-  _pIsSelectedRowEffectEnable = true;
-  _themeMode                  = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -27,7 +27,7 @@ NXTableViewStyle::~NXTableViewStyle()
 {
 }
 
-void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXTableViewStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   //qDebug() << element << option->rect << widget->objectName();
   switch (element) {
@@ -36,7 +36,7 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
       return;
 
     QPen pen;
-    pen.setColor(NXThemeColor(_themeMode, PrimaryNormal));
+    pen.setColor(NXThemeColor(m_ThemeMode, PrimaryNormal));
     pen.setWidth(2);
     painter->save();
     painter->setPen(pen);
@@ -50,8 +50,8 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
   }
   case QStyle::PE_PanelItemViewItem : {
     // 行覆盖绘制
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
-      const NXTableView *tabView = dynamic_cast<const NXTableView *>(widget);
+    if (QStyleOptionViewItem const *vopt = qstyleoption_cast<QStyleOptionViewItem const *>(option)) {
+      NXTableView const *tabView = dynamic_cast<NXTableView const *>(widget);
       if (!tabView) {
         return;
       }
@@ -59,16 +59,16 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
       painter->setRenderHint(QPainter::Antialiasing);
       QAbstractItemView::SelectionBehavior selectionBehavior = tabView->selectionBehavior();
       if (selectionBehavior == QAbstractItemView::SelectRows) {
-        if (_pIsHoverRowEffectEnable && vopt->index.row() == _pCurrentHoverIndex.row()) {
+        if (m_IsHoverRowEffectEnable && vopt->index.row() == m_CurrentHoverIndex.row()) {
           painter->setPen(Qt::NoPen);
-          painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
           painter->drawRect(vopt->rect);
         }
       } else {
-        if (_pIsHoverRowEffectEnable &&
+        if (m_IsHoverRowEffectEnable &&
             (vopt->state.testFlag(QStyle::State_Selected) || vopt->state.testFlag(QStyle::State_MouseOver))) {
           painter->setPen(Qt::NoPen);
-          painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
           painter->drawRect(vopt->rect);
         }
       }
@@ -77,8 +77,8 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
     return;
   }
   case QStyle::PE_PanelItemViewRow : {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
-      const NXTableView *tabView = dynamic_cast<const NXTableView *>(widget);
+    if (QStyleOptionViewItem const *vopt = qstyleoption_cast<QStyleOptionViewItem const *>(option)) {
+      NXTableView const *tabView = dynamic_cast<NXTableView const *>(widget);
       if (!tabView) {
         return;
       }
@@ -88,13 +88,13 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
       painter->setPen(Qt::NoPen);
       if (vopt->state & QStyle::State_Selected) {
         // 选中
-        painter->setBrush(NXThemeColor(_themeMode, BasicSelectedAlpha));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicSelectedAlpha));
         painter->drawRect(itemRect);
       } else {
         if (vopt->features.testFlag(QStyleOptionViewItem::Alternate)) {
           // Item背景隔行变色
           painter->setPen(Qt::NoPen);
-          painter->setBrush(NXThemeColor(_themeMode, BasicAlternating));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicAlternating));
           painter->drawRect(vopt->rect);
         }
       }
@@ -112,7 +112,7 @@ void NXTableViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXTableViewStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   //qDebug() << element << option->rect;
   switch (element) {
@@ -122,20 +122,20 @@ void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *o
     frameRect.adjust(1, 1, -1, -1);
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
-    painter->setPen(NXThemeColor(_themeMode, PopupBorder));
-    painter->setBrush(NXThemeColor(_themeMode, BasicBaseAlpha));
-    painter->drawRoundedRect(frameRect, _pBorderRadius, _pBorderRadius);
+    painter->setPen(NXThemeColor(m_ThemeMode, PopupBorder));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicBaseAlpha));
+    painter->drawRoundedRect(frameRect, m_BorderRadius, m_BorderRadius);
     painter->restore();
     return;
   }
   case QStyle::CE_HeaderLabel : {
     // 表头文字绘制
-    if (const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+    if (QStyleOptionHeader const *hopt = qstyleoption_cast<QStyleOptionHeader const *>(option)) {
       QRect headerRect = option->rect;
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
       if (!hopt->text.isEmpty()) {
-        painter->setPen(NXThemeColor(_themeMode, BasicText));
+        painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
         painter->drawText(headerRect, hopt->textAlignment, hopt->text);
       }
       if (!hopt->icon.isNull()) {
@@ -153,27 +153,27 @@ void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *o
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, BasicBaseDeepAlpha));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicBaseDeepAlpha));
     painter->drawRect(option->rect);
     if (option->state.testFlag(QStyle::State_Sunken)) {
-      painter->setBrush(NXThemeColor(_themeMode, BasicPressAlpha));
+      painter->setBrush(NXThemeColor(m_ThemeMode, BasicPressAlpha));
     } else {
       if (option->state.testFlag(QStyle::State_MouseOver)) {
-        painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
       }
     }
     painter->drawRect(option->rect);
-    if (const QStyleOptionHeader *hopt = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
-      const QHeaderView *header = qobject_cast<const QHeaderView *>(widget);
-      if (const QAbstractItemModel *model = header ? header->model() : nullptr) {
+    if (QStyleOptionHeader const *hopt = qstyleoption_cast<QStyleOptionHeader const *>(option)) {
+      QHeaderView const *header = qobject_cast<QHeaderView const *>(widget);
+      if (QAbstractItemModel const *model = header ? header->model() : nullptr) {
         if (QVariant value = model->headerData(hopt->section, header->orientation(), Qt::CheckStateRole);
             value.isValid()) {
           Qt::CheckState checkState = value.value<Qt::CheckState>();
           QRect checkRect           = option->rect;
-          checkRect.setSize(QSize(_pCheckIndicatorWidth, _pCheckIndicatorWidth));
+          checkRect.setSize(QSize(m_CheckIndicatorWidth, m_CheckIndicatorWidth));
           int padding = getColumnPadding(hopt->section);
           checkRect.moveLeft(option->rect.left() + padding + 3);
-          checkRect.moveTop(option->rect.center().y() - _pCheckIndicatorWidth / 2 + 1);
+          checkRect.moveTop(option->rect.center().y() - m_CheckIndicatorWidth / 2 + 1);
           _drawCheckIndicator(painter, checkRect, checkState);
         }
       }
@@ -187,15 +187,15 @@ void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *o
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, BasicBaseDeep));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicBaseDeep));
     painter->drawRect(frameRect);
     painter->restore();
     return;
   }
   case QStyle::CE_ItemViewItem : {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+    if (QStyleOptionViewItem const *vopt = qstyleoption_cast<QStyleOptionViewItem const *>(option)) {
       // 背景绘制
-      const NXTableView *tabView = dynamic_cast<const NXTableView *>(widget);
+      NXTableView const *tabView = dynamic_cast<NXTableView const *>(widget);
       if (!tabView) {
         return;
       }
@@ -233,15 +233,15 @@ void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *o
         QRect textRect = proxy()->subElementRect(SE_ItemViewItemText, vopt, widget);
         int padding    = getColumnPadding(vopt->index.column());
         textRect.adjust(padding, 0, 0, 0);
-        painter->setPen(NXThemeColor(_themeMode, BasicText));
+        painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
         painter->drawText(textRect, vopt->displayAlignment, vopt->text);
       }
-      if (_pIsSelectedRowEffectEnable) {
+      if (m_IsSelectedRowEffectEnable) {
         // 选中特效
         QRect itemRect   = option->rect;
         int heightOffset = itemRect.height() / 4;
         painter->setPen(Qt::NoPen);
-        painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+        painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
         if (vopt->state.testFlag(QStyle::State_Selected)) {
           if (selectionBehavior == QAbstractItemView::SelectRows && vopt->index.column() == 0) {
             painter->drawRoundedRect(
@@ -264,14 +264,14 @@ void NXTableViewStyle::drawControl(ControlElement element, const QStyleOption *o
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-int NXTableViewStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXTableViewStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   //qDebug() << metric << QProxyStyle::pixelMetric(metric, option, widget);
   switch (metric) {
   case QStyle::PM_IndicatorWidth :
-  case QStyle::PM_IndicatorHeight : return _pCheckIndicatorWidth;
+  case QStyle::PM_IndicatorHeight : return m_CheckIndicatorWidth;
   case QStyle::PM_HeaderMargin    : {
-    return _pHeaderMargin;
+    return m_HeaderMargin;
   }
   default : {
     break;
@@ -282,17 +282,17 @@ int NXTableViewStyle::pixelMetric(PixelMetric metric, const QStyleOption *option
 
 void NXTableViewStyle::setColumnPadding(int column, int padding)
 {
-  _columnPaddingMap[column] = padding;
+  m_ColumnPaddingMap[column] = padding;
 }
 
 int NXTableViewStyle::getColumnPadding(int column) const
 {
-  return _columnPaddingMap.value(column, _pDefaultPadding);
+  return m_ColumnPaddingMap.value(column, m_DefaultPadding);
 }
 
 void NXTableViewStyle::clearColumnPadding(int column)
 {
-  _columnPaddingMap.remove(column);
+  m_ColumnPaddingMap.remove(column);
 }
 
 void NXTableViewStyle::_drawCheckIndicator(QPainter *painter, QRect rect, Qt::CheckState state) const
@@ -301,7 +301,7 @@ void NXTableViewStyle::_drawCheckIndicator(QPainter *painter, QRect rect, Qt::Ch
 
   if (state == Qt::Checked) {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
     painter->drawRoundedRect(rect, 2, 2);
 
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
@@ -311,7 +311,7 @@ void NXTableViewStyle::_drawCheckIndicator(QPainter *painter, QRect rect, Qt::Ch
     painter->drawText(rect, Qt::AlignCenter, QChar(NXIconType::Check));
   } else if (state == Qt::PartiallyChecked) {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
     painter->drawRoundedRect(rect, 2, 2);
 
     painter->setPen(NXThemeColor(NXThemeType::Dark, BasicText));
@@ -319,7 +319,7 @@ void NXTableViewStyle::_drawCheckIndicator(QPainter *painter, QRect rect, Qt::Ch
     painter->drawLine(line);
   } else // Qt::Unchecked
   {
-    painter->setPen(QPen(NXThemeColor(_themeMode, BasicBorderDeep), 1.2));
+    painter->setPen(QPen(NXThemeColor(m_ThemeMode, BasicBorderDeep), 1.2));
     painter->setBrush(Qt::transparent);
     painter->drawRoundedRect(rect, 2, 2);
   }

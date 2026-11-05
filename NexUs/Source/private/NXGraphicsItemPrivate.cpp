@@ -1,4 +1,4 @@
-#include "NXGraphicsItemPrivate.h"
+﻿#include "NXGraphicsItemPrivate.h"
 
 NXGraphicsItemPrivate::NXGraphicsItemPrivate(QObject *parent)
     : QObject(parent)
@@ -9,28 +9,26 @@ NXGraphicsItemPrivate::~NXGraphicsItemPrivate()
 {
 }
 
-QDataStream &
-operator<< (QDataStream &stream, const NXGraphicsItemPrivate *data)
+QDataStream & operator<< (QDataStream &stream, NXGraphicsItemPrivate const *data)
 {
-  stream << data->_itemUID;
-  stream << data->_pItemName;
-  stream << data->_pMaxLinkPortCount;
-  stream << data->_currentLinkPortState;
-  stream << data->_pDataRoutes;
-  stream << data->_pItemImage;
-  stream << data->_pItemSelectedImage;
+  stream << data->m_ItemUID;
+  stream << data->m_ItemName;
+  stream << data->m_MaxLinkPortCount;
+  stream << data->m_CurrentLinkPortState;
+  stream << data->m_DataRoutes;
+  stream << data->m_ItemImage;
+  stream << data->m_ItemSelectedImage;
   return stream;
 }
 
-QDataStream &
-operator>> (QDataStream &stream, NXGraphicsItemPrivate *data)
+QDataStream & operator>> (QDataStream &stream, NXGraphicsItemPrivate *data)
 {
-  stream >> data->_itemUID;
-  stream >> data->_pItemName;
-  stream >> data->_pMaxLinkPortCount;
-  stream >> data->_currentLinkPortState;
-  stream >> data->_pDataRoutes;
-  stream >> data->_pItemImage;
-  stream >> data->_pItemSelectedImage;
+  stream >> data->m_ItemUID;
+  stream >> data->m_ItemName;
+  stream >> data->m_MaxLinkPortCount;
+  stream >> data->m_CurrentLinkPortState;
+  stream >> data->m_DataRoutes;
+  stream >> data->m_ItemImage;
+  stream >> data->m_ItemSelectedImage;
   return stream;
 }

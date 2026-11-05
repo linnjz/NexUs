@@ -1,4 +1,4 @@
-#ifndef NXUPLOADAREA_H
+﻿#ifndef NXUPLOADAREA_H
 #define NXUPLOADAREA_H
 
 #include <QWidget>
@@ -12,10 +12,10 @@ class NX_EXPORT NXUploadArea : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXUploadArea)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), DialogTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QStringList), AcceptedSuffixes)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), DialogTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QStringList), AcceptedSuffixes)
   Q_PROPERTY_CREATE_H(qint64, MaxFileSize)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, MaxFileCount)
@@ -28,12 +28,12 @@ public:
   QStringList getSelectedFiles() const;
   void clearFiles();
 
-  void setAcceptedMimeFilter(const QString &filter);
+  void setAcceptedMimeFilter(QString const &filter);
   QString getAcceptedMimeFilter() const;
-  Q_SIGNAL void filesSelected(const QStringList &filePaths);
-  Q_SIGNAL void fileAdded(const QString &filePath);
-  Q_SIGNAL void fileRemoved(const QString &filePath);
-  Q_SIGNAL void fileRejected(const QString &filePath, const QString &reason);
+  Q_SIGNAL void filesSelected(QStringList const &filePaths);
+  Q_SIGNAL void fileAdded(QString const &filePath);
+  Q_SIGNAL void fileRemoved(QString const &filePath);
+  Q_SIGNAL void fileRejected(QString const &filePath, QString const &reason);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

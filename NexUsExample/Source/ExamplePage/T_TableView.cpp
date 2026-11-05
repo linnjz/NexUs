@@ -35,8 +35,7 @@ T_TableView::T_TableView(QWidget *parent)
   _tableView->horizontalHeader()->setMinimumSectionSize(60);
   _tableView->verticalHeader()->setMinimumSectionSize(46);
   _tableView->setFixedHeight(450);
-  connect(_tableView, &NXTableView::tableViewShow, this, [=]()
-  {
+  connect(_tableView, &NXTableView::tableViewShow, this, [=]() {
     _tableView->setColumnWidth(0, 60);
     _tableView->setColumnWidth(1, 205);
     _tableView->setColumnWidth(2, 170);

@@ -30,10 +30,10 @@ public:
   static void setMaxCount(int count);
   static int getMaxCount();
 
-  static NXSnackbar *success(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
-  static NXSnackbar *info(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
-  static NXSnackbar *warning(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
-  static NXSnackbar *error(const QString &text, const QString &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *success(QString const &text, QString const &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *info(QString const &text, QString const &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *warning(QString const &text, QString const &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
+  static NXSnackbar *error(QString const &text, QString const &actionText = QStringLiteral(""), int displayMsec = 4000, QWidget *parent = nullptr);
   Q_SIGNAL void actionClicked();
   Q_SIGNAL void closed();
 
@@ -45,7 +45,7 @@ protected:
 
 private:
   explicit NXSnackbar(
-      SnackbarType type, const QString &text, const QString &actionText, int displayMsec, QWidget *parent = nullptr);
+      SnackbarType type, QString const &text, QString const &actionText, int displayMsec, QWidget *parent = nullptr);
   ~NXSnackbar();
   static void _reflowAll();
 };

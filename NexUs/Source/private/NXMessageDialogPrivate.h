@@ -35,10 +35,10 @@ protected:
   void leaveEvent(QEvent *event) override;
 
 private:
-  ButtonType _buttonType;
-  bool _isPressed { false };
-  bool _isHovered { false };
-  NXThemeType::ThemeMode _themeMode;
+  ButtonType m_ButtonType;
+  bool m_IsPressed { false };
+  bool m_IsHovered { false };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 class NXMessageDialogPrivate : public QObject
@@ -53,13 +53,13 @@ class NXMessageDialogPrivate : public QObject
   Q_PROPERTY_CREATE_D(int, ContentPixelSize)
 
 public:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
   explicit NXMessageDialogPrivate(QObject *parent = nullptr);
 
   ~NXMessageDialogPrivate();
 
-  NXMessageDialogButton *_confirmButton { nullptr };
-  NXMessageDialogButton *_cancelButton { nullptr };
+  NXMessageDialogButton *m_ConfirmButton { nullptr };
+  NXMessageDialogButton *m_CancelButton { nullptr };
 };
 
 #endif // NXMESSAGEDIALOGPRIVATE_H

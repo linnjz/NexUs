@@ -1,4 +1,4 @@
-#ifndef NXSCREENCAPTUREMANAGERPRIVATE_H
+﻿#ifndef NXSCREENCAPTUREMANAGERPRIVATE_H
 #define NXSCREENCAPTUREMANAGERPRIVATE_H
 #include <QObject>
 #ifdef Q_OS_MAC
@@ -18,9 +18,9 @@ public:
 
 private:
   Q_SIGNAL void grabScreen();
-  bool _isAllowedGrabScreen { false };
-  NXScreenCapture *_screenCapture { nullptr };
-  QThread *_captureThread { nullptr };
+  bool m_IsAllowedGrabScreen { false };
+  NXScreenCapture *m_ScreenCapture { nullptr };
+  QThread *m_CaptureThread { nullptr };
 };
 
 class NXScreenCaptureScreen;
@@ -36,9 +36,9 @@ public:
   ~NXScreenCaptureScreenPrivate();
 
 private:
-  bool _isSyncGrabSize { false };
-  QImage _img;
-  NXScreenCaptureManager *_captureManager { nullptr };
+  bool m_IsSyncGrabSize { false };
+  QImage m_Img;
+  NXScreenCaptureManager *m_CaptureManager { nullptr };
 };
 #endif
 #endif // NXSCREENCAPTUREMANAGERPRIVATE_H

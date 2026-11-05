@@ -27,50 +27,50 @@
 #include "NXWidget.h"
 #include "private/NXChatBubblePrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXChatBubble, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXChatBubble, int, AvatarSize)
-Q_PROPERTY_CREATE_CPP(NXChatBubble, int, MaxBubbleWidth)
+Q_PROPERTY_CREATE_CPP(NXChatBubble, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXChatBubble, QPS_PAEMIT(int), AvatarSize)
+Q_PROPERTY_CREATE_CPP(NXChatBubble, QPS_PAEMIT(int), MaxBubbleWidth)
 
-void NXChatBubble::setMessageText(const QString &text)
+void NXChatBubble::setMessageText(QString const &text)
 {
   Q_D(NXChatBubble);
-  d->_pMessageText = text;
+  d->m_MessageText = text;
   setFixedHeight(sizeHint().height());
   update();
-  Q_EMIT pMessageTextChanged();
+  Q_EMIT signalMessageTextChanged();
 }
 
-QString NXChatBubble::getMessageText() const
+QString NXChatBubble::getMessageText() const noexcept(std::is_nothrow_copy_constructible_v<QString>)
 {
-  return d_ptr->_pMessageText;
+  return d_ptr->m_MessageText;
 }
 
-void NXChatBubble::setSenderName(const QString &name)
+void NXChatBubble::setSenderName(QString const &name)
 {
   Q_D(NXChatBubble);
-  d->_pSenderName = name;
+  d->m_SenderName = name;
   setFixedHeight(sizeHint().height());
   update();
-  Q_EMIT pSenderNameChanged();
+  Q_EMIT signalSenderNameChanged();
 }
 
-QString NXChatBubble::getSenderName() const
+QString NXChatBubble::getSenderName() const noexcept(std::is_nothrow_copy_constructible_v<QString>)
 {
-  return d_ptr->_pSenderName;
+  return d_ptr->m_SenderName;
 }
 
-void NXChatBubble::setTimestamp(const QString &ts)
+void NXChatBubble::setTimestamp(QString const &ts)
 {
   Q_D(NXChatBubble);
-  d->_pTimestamp = ts;
+  d->m_Timestamp = ts;
   setFixedHeight(sizeHint().height());
   update();
-  Q_EMIT pTimestampChanged();
+  Q_EMIT signalTimestampChanged();
 }
 
-QString NXChatBubble::getTimestamp() const
+QString NXChatBubble::getTimestamp() const noexcept(std::is_nothrow_copy_constructible_v<QString>)
 {
-  return d_ptr->_pTimestamp;
+  return d_ptr->m_Timestamp;
 }
 
 NXChatBubble::NXChatBubble(QWidget *parent)
@@ -79,15 +79,15 @@ NXChatBubble::NXChatBubble(QWidget *parent)
 {
   Q_D(NXChatBubble);
   d->q_ptr            = this;
-  d->_pBorderRadius   = 12;
-  d->_pAvatarSize     = 40;
-  d->_pMaxBubbleWidth = 320;
+  d->m_BorderRadius   = 12;
+  d->m_AvatarSize     = 40;
+  d->m_MaxBubbleWidth = 320;
   setObjectName("NXChatBubble");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -99,64 +99,64 @@ NXChatBubble::~NXChatBubble()
 void NXChatBubble::setDirection(BubbleDirection direction)
 {
   Q_D(NXChatBubble);
-  d->_direction = direction;
+  d->m_Direction = direction;
   update();
 }
 
 NXChatBubble::BubbleDirection NXChatBubble::getDirection() const
 {
-  return d_ptr->_direction;
+  return d_ptr->m_Direction;
 }
 
 void NXChatBubble::setStatus(MessageStatus status)
 {
   Q_D(NXChatBubble);
-  d->_status = status;
+  d->m_Status = status;
   update();
 }
 
 NXChatBubble::MessageStatus NXChatBubble::getStatus() const
 {
-  return d_ptr->_status;
+  return d_ptr->m_Status;
 }
 
-void NXChatBubble::setAvatar(const QPixmap &avatar)
+void NXChatBubble::setAvatar(QPixmap const &avatar)
 {
   Q_D(NXChatBubble);
-  d->_avatar = avatar;
+  d->m_Avatar = avatar;
   update();
 }
 
 QPixmap NXChatBubble::getAvatar() const
 {
-  return d_ptr->_avatar;
+  return d_ptr->m_Avatar;
 }
 
-void NXChatBubble::setBubbleColor(const QColor &color)
+void NXChatBubble::setBubbleColor(QColor const &color)
 {
   Q_D(NXChatBubble);
-  d->_bubbleColor = color;
+  d->m_BubbleColor = color;
   update();
 }
 
 QColor NXChatBubble::getBubbleColor() const
 {
-  return d_ptr->_bubbleColor;
+  return d_ptr->m_BubbleColor;
 }
 
-void NXChatBubble::setMessageImage(const QPixmap &image)
+void NXChatBubble::setMessageImage(QPixmap const &image)
 {
   Q_D(NXChatBubble);
-  d->_messageImage = image;
+  d->m_MessageImage = image;
   if (!image.isNull()) {
-    int maxW = d->_imageMaxWidth;
+    int maxW = d->m_ImageMaxWidth;
     if (image.width() > maxW) {
-      d->_scaledImage = image.scaledToWidth(maxW, Qt::SmoothTransformation);
+      d->m_ScaledImage = image.scaledToWidth(maxW, Qt::SmoothTransformation);
     } else {
-      d->_scaledImage = image;
+      d->m_ScaledImage = image;
     }
   } else {
-    d->_scaledImage = QPixmap();
+    d->m_ScaledImage = QPixmap();
   }
   setFixedHeight(sizeHint().height());
   update();
@@ -164,54 +164,54 @@ void NXChatBubble::setMessageImage(const QPixmap &image)
 
 QPixmap NXChatBubble::getMessageImage() const
 {
-  return d_ptr->_messageImage;
+  return d_ptr->m_MessageImage;
 }
 
 void NXChatBubble::setImageMaxWidth(int width)
 {
   Q_D(NXChatBubble);
-  d->_imageMaxWidth = width;
-  if (!d->_messageImage.isNull()) {
-    setMessageImage(d->_messageImage);
+  d->m_ImageMaxWidth = width;
+  if (!d->m_MessageImage.isNull()) {
+    setMessageImage(d->m_MessageImage);
   }
 }
 
 int NXChatBubble::getImageMaxWidth() const
 {
-  return d_ptr->_imageMaxWidth;
+  return d_ptr->m_ImageMaxWidth;
 }
 
 QSize NXChatBubble::sizeHint() const
 {
-  Q_D(const NXChatBubble);
+  Q_CONST_D(NXChatBubble);
   int padding         = 10;
-  int avatarSpace     = d->_pAvatarSize + 10;
-  int nameHeight      = d->_pSenderName.isEmpty() ? 0 : 20;
-  int timestampHeight = d->_pTimestamp.isEmpty() ? 0 : 16;
+  int avatarSpace     = d->m_AvatarSize + 10;
+  int nameHeight      = d->m_SenderName.isEmpty() ? 0 : 20;
+  int timestampHeight = d->m_Timestamp.isEmpty() ? 0 : 16;
   int textPadding     = 12;
 
   int bubbleContentHeight = 0;
   int bubbleContentWidth  = 0;
 
-  if (!d->_scaledImage.isNull()) {
-    bubbleContentWidth  = d->_scaledImage.width() + textPadding * 2;
-    bubbleContentHeight = d->_scaledImage.height() + textPadding * 2;
+  if (!d->m_ScaledImage.isNull()) {
+    bubbleContentWidth  = d->m_ScaledImage.width() + textPadding * 2;
+    bubbleContentHeight = d->m_ScaledImage.height() + textPadding * 2;
 
-    if (!d->_pMessageText.isEmpty()) {
+    if (!d->m_MessageText.isEmpty()) {
       QFont msgFont = font();
       msgFont.setPixelSize(14);
       QFontMetrics fm(msgFont);
       int maxTextW   = bubbleContentWidth - textPadding * 2;
-      QRect textRect = fm.boundingRect(0, 0, maxTextW, 10000, Qt::TextWordWrap, d->_pMessageText);
+      QRect textRect = fm.boundingRect(0, 0, maxTextW, 10000, Qt::TextWordWrap, d->m_MessageText);
       bubbleContentHeight += textRect.height() + 6;
     }
   } else {
     QFont msgFont = font();
     msgFont.setPixelSize(14);
     QFontMetrics fm(msgFont);
-    bubbleContentWidth = qMin(fm.horizontalAdvance(d->_pMessageText) + textPadding * 2, d->_pMaxBubbleWidth);
+    bubbleContentWidth = qMin(fm.horizontalAdvance(d->m_MessageText) + textPadding * 2, d->m_MaxBubbleWidth);
     QRect textRect =
-        fm.boundingRect(0, 0, bubbleContentWidth - textPadding * 2, 10000, Qt::TextWordWrap, d->_pMessageText);
+        fm.boundingRect(0, 0, bubbleContentWidth - textPadding * 2, 10000, Qt::TextWordWrap, d->m_MessageText);
     bubbleContentHeight = textRect.height() + textPadding * 2;
   }
 
@@ -229,45 +229,45 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 
   int padding     = 10;
-  int avatarSpace = d->_pAvatarSize + 10;
-  bool isRight    = (d->_direction == Right);
+  int avatarSpace = d->m_AvatarSize + 10;
+  bool isRight    = (d->m_Direction == Right);
 
-  int avatarX = isRight ? (width() - padding - d->_pAvatarSize) : padding;
+  int avatarX = isRight ? (width() - padding - d->m_AvatarSize) : padding;
   int avatarY = padding;
-  if (!d->_avatar.isNull()) {
+  if (!d->m_Avatar.isNull()) {
     QPainterPath clipPath;
-    clipPath.addEllipse(avatarX, avatarY, d->_pAvatarSize, d->_pAvatarSize);
+    clipPath.addEllipse(avatarX, avatarY, d->m_AvatarSize, d->m_AvatarSize);
     painter.save();
     painter.setClipPath(clipPath);
-    painter.drawPixmap(avatarX, avatarY, d->_pAvatarSize, d->_pAvatarSize, d->_avatar);
+    painter.drawPixmap(avatarX, avatarY, d->m_AvatarSize, d->m_AvatarSize, d->m_Avatar);
     painter.restore();
   } else {
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(d->_themeMode, BasicBaseDeep));
-    painter.drawEllipse(avatarX, avatarY, d->_pAvatarSize, d->_pAvatarSize);
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBaseDeep));
+    painter.drawEllipse(avatarX, avatarY, d->m_AvatarSize, d->m_AvatarSize);
     QFont iconFont(QStringLiteral("NXAwesome"));
-    iconFont.setPixelSize(d->_pAvatarSize / 2);
+    iconFont.setPixelSize(d->m_AvatarSize / 2);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
-    painter.drawText(QRect(avatarX, avatarY, d->_pAvatarSize, d->_pAvatarSize), Qt::AlignCenter, QChar(static_cast<int>(NXIconType::User)));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
+    painter.drawText(QRect(avatarX, avatarY, d->m_AvatarSize, d->m_AvatarSize), Qt::AlignCenter, QChar(static_cast<int>(NXIconType::User)));
   }
 
   int bubbleX        = isRight ? padding : (padding + avatarSpace);
   int bubbleMaxWidth = width() - padding * 2 - avatarSpace;
   int currentY       = padding;
 
-  if (!d->_pSenderName.isEmpty()) {
+  if (!d->m_SenderName.isEmpty()) {
     QFont nameFont = font();
     nameFont.setPixelSize(12);
     nameFont.setBold(true);
     painter.setFont(nameFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
     int nameX = bubbleX;
     if (isRight) {
       QFontMetrics nameFm(nameFont);
-      nameX = bubbleX + bubbleMaxWidth - nameFm.horizontalAdvance(d->_pSenderName);
+      nameX = bubbleX + bubbleMaxWidth - nameFm.horizontalAdvance(d->m_SenderName);
     }
-    painter.drawText(nameX, currentY + 12, d->_pSenderName);
+    painter.drawText(nameX, currentY + 12, d->m_SenderName);
     currentY += 20;
   }
 
@@ -282,20 +282,20 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
   int captionH     = 0;
   QRect textBound;
 
-  if (!d->_scaledImage.isNull()) {
-    bubbleWidth  = d->_scaledImage.width() + textPadding * 2;
-    imageH       = d->_scaledImage.height();
+  if (!d->m_ScaledImage.isNull()) {
+    bubbleWidth  = d->m_ScaledImage.width() + textPadding * 2;
+    imageH       = d->m_ScaledImage.height();
     bubbleHeight = imageH + textPadding * 2;
 
-    if (!d->_pMessageText.isEmpty()) {
+    if (!d->m_MessageText.isEmpty()) {
       int maxTextW = bubbleWidth - textPadding * 2;
-      textBound    = fm.boundingRect(0, 0, maxTextW, 10000, Qt::TextWordWrap, d->_pMessageText);
+      textBound    = fm.boundingRect(0, 0, maxTextW, 10000, Qt::TextWordWrap, d->m_MessageText);
       captionH     = textBound.height() + 6;
       bubbleHeight += captionH;
     }
   } else {
-    int maxTextWidth = qMin(d->_pMaxBubbleWidth - textPadding * 2, bubbleMaxWidth - textPadding * 2);
-    textBound        = fm.boundingRect(0, 0, maxTextWidth, 10000, Qt::TextWordWrap, d->_pMessageText);
+    int maxTextWidth = qMin(d->m_MaxBubbleWidth - textPadding * 2, bubbleMaxWidth - textPadding * 2);
+    textBound        = fm.boundingRect(0, 0, maxTextWidth, 10000, Qt::TextWordWrap, d->m_MessageText);
     bubbleWidth      = textBound.width() + textPadding * 2;
     bubbleHeight     = textBound.height() + textPadding * 2;
   }
@@ -303,57 +303,57 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
   int bx = isRight ? (bubbleX + bubbleMaxWidth - bubbleWidth) : bubbleX;
 
   QColor bgColor;
-  if (d->_bubbleColor.isValid()) {
-    bgColor = d->_bubbleColor;
+  if (d->m_BubbleColor.isValid()) {
+    bgColor = d->m_BubbleColor;
   } else if (isRight) {
-    bgColor = NXThemeColor(d->_themeMode, PrimaryNormal);
+    bgColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
   } else {
-    bgColor = NXThemeColor(d->_themeMode, BasicBase);
+    bgColor = NXThemeColor(d->m_ThemeMode, BasicBase);
   }
 
   QPainterPath bubblePath;
-  bubblePath.addRoundedRect(QRectF(bx, currentY, bubbleWidth, bubbleHeight), d->_pBorderRadius, d->_pBorderRadius);
+  bubblePath.addRoundedRect(QRectF(bx, currentY, bubbleWidth, bubbleHeight), d->m_BorderRadius, d->m_BorderRadius);
   painter.setPen(Qt::NoPen);
   painter.fillPath(bubblePath, bgColor);
 
   if (!isRight) {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
     painter.drawPath(bubblePath);
   }
 
-  if (!d->_scaledImage.isNull()) {
+  if (!d->m_ScaledImage.isNull()) {
     int imgX = bx + textPadding;
     int imgY = currentY + textPadding;
 
-    d->_imageRect = QRect(imgX, imgY, d->_scaledImage.width(), imageH);
+    d->m_ImageRect = QRect(imgX, imgY, d->m_ScaledImage.width(), imageH);
 
     painter.save();
     QPainterPath imgClip;
-    int imgRadius = qMax(d->_pBorderRadius - 4, 0);
-    imgClip.addRoundedRect(QRectF(imgX, imgY, d->_scaledImage.width(), imageH), imgRadius, imgRadius);
+    int imgRadius = qMax(d->m_BorderRadius - 4, 0);
+    imgClip.addRoundedRect(QRectF(imgX, imgY, d->m_ScaledImage.width(), imageH), imgRadius, imgRadius);
     painter.setClipPath(imgClip);
-    painter.drawPixmap(imgX, imgY, d->_scaledImage);
+    painter.drawPixmap(imgX, imgY, d->m_ScaledImage);
     painter.restore();
 
-    if (!d->_pMessageText.isEmpty()) {
+    if (!d->m_MessageText.isEmpty()) {
       painter.setFont(msgFont);
       if (isRight) {
-        painter.setPen(NXThemeColor(d->_themeMode, BasicTextInvert));
+        painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextInvert));
       } else {
-        painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+        painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
       }
       int captionY = imgY + imageH + 6;
-      painter.drawText(QRect(imgX, captionY, bubbleWidth - textPadding * 2, textBound.height()), Qt::TextWordWrap, d->_pMessageText);
+      painter.drawText(QRect(imgX, captionY, bubbleWidth - textPadding * 2, textBound.height()), Qt::TextWordWrap, d->m_MessageText);
     }
   } else {
-    int maxTextWidth = qMin(d->_pMaxBubbleWidth - textPadding * 2, bubbleMaxWidth - textPadding * 2);
+    int maxTextWidth = qMin(d->m_MaxBubbleWidth - textPadding * 2, bubbleMaxWidth - textPadding * 2);
     painter.setFont(msgFont);
     if (isRight) {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicTextInvert));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextInvert));
     } else {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     }
-    painter.drawText(QRect(bx + textPadding, currentY + textPadding, maxTextWidth, textBound.height()), Qt::TextWordWrap, d->_pMessageText);
+    painter.drawText(QRect(bx + textPadding, currentY + textPadding, maxTextWidth, textBound.height()), Qt::TextWordWrap, d->m_MessageText);
   }
 
   currentY += bubbleHeight + 4;
@@ -361,16 +361,16 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
   QFont timeFont = font();
   timeFont.setPixelSize(11);
   painter.setFont(timeFont);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
 
   QString bottomText;
-  if (!d->_pTimestamp.isEmpty()) {
-    bottomText = d->_pTimestamp;
+  if (!d->m_Timestamp.isEmpty()) {
+    bottomText = d->m_Timestamp;
   }
 
-  if (d->_status != None) {
+  if (d->m_Status != None) {
     QString statusText;
-    switch (d->_status) {
+    switch (d->m_Status) {
     case Sending : statusText = QStringLiteral("发送中..."); break;
     case Sent    : statusText = QStringLiteral("已发送"); break;
     case Read    : statusText = QStringLiteral("已读"); break;
@@ -392,8 +392,8 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
       painter.drawText(bx, currentY + 12, bottomText);
     }
 
-    if (d->_status == Failed) {
-      painter.setPen(NXThemeColor(d->_themeMode, StatusDanger));
+    if (d->m_Status == Failed) {
+      painter.setPen(NXThemeColor(d->m_ThemeMode, StatusDanger));
       QString failText = QStringLiteral("发送失败");
       if (isRight) {
         int failW = timeFm.horizontalAdvance(failText);
@@ -409,8 +409,8 @@ void NXChatBubble::paintEvent(QPaintEvent *event)
 void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
 {
   Q_D(NXChatBubble);
-  if (!d->_messageImage.isNull() && d->_imageRect.contains(event->pos())) {
-    Q_EMIT imageDoubleClicked(d->_messageImage);
+  if (!d->m_MessageImage.isNull() && d->m_ImageRect.contains(event->pos())) {
+    Q_EMIT imageDoubleClicked(d->m_MessageImage);
 
     NXWidget *previewWindow = new NXWidget();
     previewWindow->setAttribute(Qt::WA_DeleteOnClose);
@@ -420,7 +420,7 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
 
     QScreen *screen  = QApplication::primaryScreen();
     QSize screenSize = screen->availableSize();
-    QSize imgSize    = d->_messageImage.size();
+    QSize imgSize    = d->m_MessageImage.size();
     int appBarH      = previewWindow->getAppBarHeight();
     int bottomBarH   = 40;
 
@@ -442,7 +442,7 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
     imageLabel->setMinimumSize(1, 1);
     imageLabel->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    QPixmap *currentImage = new QPixmap(d->_messageImage);
+    QPixmap *currentImage = new QPixmap(d->m_MessageImage);
     qreal *currentScale   = new qreal(initScale);
     NXText *scaleLabel    = new NXText(previewWindow);
     scaleLabel->setTextPixelSize(13);
@@ -519,7 +519,7 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
       }
     });
 
-    connect(imageLabel, &QLabel::customContextMenuRequested, previewWindow, [currentImage, previewWindow](const QPoint &pos) {
+    connect(imageLabel, &QLabel::customContextMenuRequested, previewWindow, [currentImage, previewWindow](QPoint const &pos) {
       NXMenu *menu        = new NXMenu(previewWindow);
       QAction *copyAction = menu->addNXIconAction(NXIconType::Copy, QStringLiteral("复制图片"));
       QAction *saveAction = menu->addNXIconAction(NXIconType::Download, QStringLiteral("保存图片"));
@@ -573,21 +573,21 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
     {
     public:
       using ZoomFunc = std::function<void(qreal)>;
-      ZoomFunc _doZoom;
-      qreal *_scale;
-      std::function<void(qreal)> _updateImage;
-      NXScrollArea *_scrollArea;
-      bool _dragging { false };
-      QPoint _dragStartPos;
-      int _dragStartHBar { 0 };
-      int _dragStartVBar { 0 };
+      ZoomFunc m_DoZoom;
+      qreal *m_Scale;
+      std::function<void(qreal)> m_UpdateImage;
+      NXScrollArea *m_ScrollArea;
+      bool m_Dragging { false };
+      QPoint m_DragStartPos;
+      int m_DragStartHBar { 0 };
+      int m_DragStartVBar { 0 };
 
       ZoomEventFilter(ZoomFunc doZoom, qreal *scale, std::function<void(qreal)> updateImage, NXScrollArea *scrollArea, QObject *parent)
           : QObject(parent)
-          , _doZoom(std::move(doZoom))
-          , _scale(scale)
-          , _updateImage(std::move(updateImage))
-          , _scrollArea(scrollArea)
+          , m_DoZoom(std::move(doZoom))
+          , m_Scale(scale)
+          , m_UpdateImage(std::move(updateImage))
+          , m_ScrollArea(scrollArea)
       {
       }
 
@@ -600,57 +600,57 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
             qreal pixelDelta = we->pixelDelta().y();
             if (qAbs(pixelDelta) > 0) {
               qreal step = pixelDelta / 600.0;
-              *_scale    = qBound(0.1, *_scale + step, 10.0);
-              _updateImage(*_scale);
+              *m_Scale    = qBound(0.1, *m_Scale + step, 10.0);
+              m_UpdateImage(*m_Scale);
               return true;
             }
           }
 #endif
           {
             qreal delta = we->angleDelta().y() > 0 ? 0.1 : -0.1;
-            *_scale     = qBound(0.1, *_scale + delta, 10.0);
-            _updateImage(*_scale);
+            *m_Scale     = qBound(0.1, *m_Scale + delta, 10.0);
+            m_UpdateImage(*m_Scale);
             return true;
           }
         } else if (ev->type() == QEvent::NativeGesture) {
           QNativeGestureEvent *nge = static_cast<QNativeGestureEvent *>(ev);
           if (nge->gestureType() == Qt::ZoomNativeGesture) {
             qreal factor = nge->value();
-            *_scale      = qBound(0.1, *_scale * (1.0 + factor), 10.0);
-            _updateImage(*_scale);
+            *m_Scale      = qBound(0.1, *m_Scale * (1.0 + factor), 10.0);
+            m_UpdateImage(*m_Scale);
             return true;
           }
         } else if (ev->type() == QEvent::MouseButtonPress) {
           QMouseEvent *me = static_cast<QMouseEvent *>(ev);
           if (me->button() == Qt::LeftButton) {
-            _dragging = true;
+            m_Dragging = true;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            _dragStartPos = me->globalPosition().toPoint();
+            m_DragStartPos = me->globalPosition().toPoint();
 #else
-            _dragStartPos = me->globalPos();
+            m_DragStartPos = me->globalPos();
 #endif
-            _dragStartHBar = _scrollArea->horizontalScrollBar()->value();
-            _dragStartVBar = _scrollArea->verticalScrollBar()->value();
-            _scrollArea->viewport()->setCursor(Qt::ClosedHandCursor);
+            m_DragStartHBar = m_ScrollArea->horizontalScrollBar()->value();
+            m_DragStartVBar = m_ScrollArea->verticalScrollBar()->value();
+            m_ScrollArea->viewport()->setCursor(Qt::ClosedHandCursor);
             return true;
           }
         } else if (ev->type() == QEvent::MouseMove) {
-          if (_dragging) {
+          if (m_Dragging) {
             QMouseEvent *me = static_cast<QMouseEvent *>(ev);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            QPoint delta = me->globalPosition().toPoint() - _dragStartPos;
+            QPoint delta = me->globalPosition().toPoint() - m_DragStartPos;
 #else
-            QPoint delta = me->globalPos() - _dragStartPos;
+            QPoint delta = me->globalPos() - m_DragStartPos;
 
 #endif
-            _scrollArea->horizontalScrollBar()->setValue(_dragStartHBar - delta.x());
-            _scrollArea->verticalScrollBar()->setValue(_dragStartVBar - delta.y());
+            m_ScrollArea->horizontalScrollBar()->setValue(m_DragStartHBar - delta.x());
+            m_ScrollArea->verticalScrollBar()->setValue(m_DragStartVBar - delta.y());
             return true;
           }
         } else if (ev->type() == QEvent::MouseButtonRelease) {
-          if (_dragging) {
-            _dragging = false;
-            _scrollArea->viewport()->setCursor(Qt::OpenHandCursor);
+          if (m_Dragging) {
+            m_Dragging = false;
+            m_ScrollArea->viewport()->setCursor(Qt::OpenHandCursor);
             return true;
           }
         }
@@ -672,7 +672,7 @@ void NXChatBubble::mouseDoubleClickEvent(QMouseEvent *event)
     });
 
     scrollArea->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(scrollArea, &QWidget::customContextMenuRequested, previewWindow, [currentImage, scrollArea](const QPoint &pos) {
+    connect(scrollArea, &QWidget::customContextMenuRequested, previewWindow, [currentImage, scrollArea](QPoint const &pos) {
       NXMenu contextMenu;
       QAction *copyAction = contextMenu.addNXIconAction(NXIconType::Copy, QStringLiteral("复制图片"));
       connect(copyAction, &QAction::triggered, [currentImage]() {

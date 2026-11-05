@@ -25,15 +25,15 @@ protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  int _shadowBorderWidth { 0 };
+  int m_ShadowBorderWidth { 0 };
 #else
-  int _shadowBorderWidth { 8 };
+  int m_ShadowBorderWidth { 8 };
 #endif
-  QVBoxLayout *_mainLayout { nullptr };
-  QWidget *_contentWidget { nullptr };
-  QGraphicsOpacityEffect *_opacityEffect { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QWidget *m_ContentWidget { nullptr };
+  QGraphicsOpacityEffect *m_OpacityEffect { nullptr };
   void _doShowAnimation();
 };
 

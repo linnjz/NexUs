@@ -12,12 +12,12 @@ class NXGroupBoxStyle : public QProxyStyle
 public:
   explicit NXGroupBoxStyle(QStyle *style = nullptr);
   ~NXGroupBoxStyle();
-  void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  void drawComplexControl(ComplexControl control, QStyleOptionComplex const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXGROUPBOXSTYLE_H

@@ -20,7 +20,7 @@ public:
 
   void setCentralWidget(QWidget *widget);
 
-  NXPushButton *addButton(const QString &text);
+  NXPushButton *addButton(QString const &text);
   void removeButton(NXPushButton *button);
   QList<NXPushButton *> buttons() const;
 

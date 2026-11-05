@@ -10,7 +10,7 @@ class NXComboBoxView : public QListView
 public:
   explicit NXComboBoxView(QWidget *parent = nullptr);
   ~NXComboBoxView();
-  Q_SIGNAL void itemPressed(const QModelIndex &index);
+  Q_SIGNAL void itemPressed(QModelIndex const &index);
 
 protected:
   void mousePressEvent(QMouseEvent *event) override;

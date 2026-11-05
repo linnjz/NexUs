@@ -1,14 +1,14 @@
-#include "NXMaskWidget.h"
+﻿#include "NXMaskWidget.h"
 
 #include <QPainter>
 #include <QPropertyAnimation>
 
 NXMaskWidget::NXMaskWidget(QWidget *parent)
     : QWidget { parent }
+    , m_MaskAlpha { 0 }
 {
   setObjectName("NXMaskWidget");
   setStyleSheet(QStringLiteral("#NXMaskWidget{background-color:transparent;}"));
-  _pMaskAlpha = 0;
 }
 
 NXMaskWidget::~NXMaskWidget()
@@ -17,8 +17,8 @@ NXMaskWidget::~NXMaskWidget()
 
 void NXMaskWidget::doMaskAnimation(int endValue)
 {
-  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pMaskAlpha");
-  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "MaskAlpha");
+  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     update();
   });
   connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
@@ -29,7 +29,7 @@ void NXMaskWidget::doMaskAnimation(int endValue)
   });
   opacityAnimation->setEasingCurve(QEasingCurve::InOutSine);
   opacityAnimation->setDuration(250);
-  opacityAnimation->setStartValue(_pMaskAlpha);
+  opacityAnimation->setStartValue(m_MaskAlpha);
   opacityAnimation->setEndValue(endValue);
   opacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
@@ -40,7 +40,7 @@ void NXMaskWidget::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setPen(Qt::NoPen);
   painter.setRenderHint(QPainter::Antialiasing);
-  painter.setBrush(QColor(0x00, 0x00, 0x00, _pMaskAlpha));
+  painter.setBrush(QColor(0x00, 0x00, 0x00, m_MaskAlpha));
   painter.drawRect(rect());
   painter.restore();
 }

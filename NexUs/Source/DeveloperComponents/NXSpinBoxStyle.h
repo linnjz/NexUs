@@ -13,11 +13,11 @@ class NXSpinBoxStyle : public QProxyStyle
 public:
   explicit NXSpinBoxStyle(QStyle *style = nullptr);
   ~NXSpinBoxStyle();
-  void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  QRect subControlRect(ComplexControl cc, const QStyleOptionComplex *opt, SubControl sc, const QWidget *widget) const override;
+  void drawComplexControl(ComplexControl control, QStyleOptionComplex const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  QRect subControlRect(ComplexControl cc, QStyleOptionComplex const *opt, SubControl sc, QWidget const *widget) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXSPINBOXSTYLE_H

@@ -12,21 +12,21 @@ class NXRadioButtonStyle : public QProxyStyle
 {
   Q_OBJECT
   // 动画保存半径比例，字体或指示器尺寸变化时仍按当前绘制区域缩放。
-  Q_PROPERTY_CREATE(qreal, CircleScale)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), CircleScale)
 
 public:
   explicit NXRadioButtonStyle(QStyle *style = nullptr);
   ~NXRadioButtonStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  qreal _targetCircleScale { 2.0 / 3.8 };
-  QPropertyAnimation *_circleScaleAnimation { nullptr };
-  QPointer<QWidget> _animationWidget;
+  NXThemeType::ThemeMode m_ThemeMode;
+  qreal m_TargetCircleScale { 2.0 / 3.8 };
+  QPropertyAnimation *m_CircleScaleAnimation { nullptr };
+  QPointer<QWidget> m_AnimationWidget;
 
-  void _updateCircleScale(QStyle::State state, const QWidget *widget);
+  void _updateCircleScale(QStyle::State state, QWidget const *widget);
 };
 
 #endif // NXRADIOBUTTONSTYLE_H

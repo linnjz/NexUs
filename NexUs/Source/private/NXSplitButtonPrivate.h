@@ -21,13 +21,13 @@ public:
   ~NXSplitButtonPrivate();
 
 private:
-  bool _isLeftHovered { false };
-  bool _isRightHovered { false };
-  bool _isLeftPressed { false };
-  bool _isRightPressed { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXMenu *_menu { nullptr };
-  static const int _dropdownWidth = 30;
+  bool m_IsLeftHovered { false };
+  bool m_IsRightHovered { false };
+  bool m_IsLeftPressed { false };
+  bool m_IsRightPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXMenu *m_Menu { nullptr };
+  static int const m_DropdownWidth = 30;
 };
 
 #endif // NXSPLITBUTTONPRIVATE_H

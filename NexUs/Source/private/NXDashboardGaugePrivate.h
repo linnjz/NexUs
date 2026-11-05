@@ -25,18 +25,18 @@ class NXDashboardGaugePrivate : public QObject
   Q_PROPERTY_CREATE_D(int, ValuePixelSize)
   Q_PROPERTY_CREATE_D(int, Decimals)
   Q_PROPERTY_CREATE_D(bool, IsAnimated)
-  Q_PROPERTY(qreal pAnimatedValue MEMBER _animatedValue)
+  Q_PROPERTY(qreal AnimatedValue MEMBER m_AnimatedValue)
 
 public:
   explicit NXDashboardGaugePrivate(QObject *parent = nullptr);
   ~NXDashboardGaugePrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  qreal _dangerPercent { 0.85 };
-  qreal _warningPercent { 0.65 };
-  qreal _tickWarningPercent { 0.7 };
-  qreal _animatedValue { 0 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  qreal m_DangerPercent { 0.85 };
+  qreal m_WarningPercent { 0.65 };
+  qreal m_TickWarningPercent { 0.7 };
+  qreal m_AnimatedValue { 0 };
 };
 
 #endif // NXDASHBOARDGAUGEPRIVATE_H

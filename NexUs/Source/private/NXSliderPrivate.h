@@ -18,9 +18,9 @@ public:
   ~NXSliderPrivate();
 
 private:
-  bool _mousePressed { false };
-  NXToolTip *_valueToolTip { nullptr };
-  NXSliderStyle *_sliderStyle { nullptr };
+  bool m_MousePressed { false };
+  NXToolTip *m_ValueToolTip { nullptr };
+  NXSliderStyle *m_SliderStyle { nullptr };
 };
 
 

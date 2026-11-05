@@ -23,7 +23,7 @@ NXRadioButton::NXRadioButton(QWidget *parent)
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXRadioButtonPrivate::onThemeChanged);
 }
 
-NXRadioButton::NXRadioButton(const QString &text, QWidget *parent)
+NXRadioButton::NXRadioButton(QString const &text, QWidget *parent)
     : NXRadioButton(parent)
 {
   setText(text);
@@ -41,7 +41,7 @@ void NXRadioButton::setTextPixelSize(int size)
   setFont(font);
 }
 
-int NXRadioButton::getTextPixelSize() const
+int NXRadioButton::getTextPixelSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
   return this->font().pixelSize();
 }
@@ -53,7 +53,7 @@ void NXRadioButton::setTextPointSize(int size)
   setFont(font);
 }
 
-int NXRadioButton::getTextPointSize() const
+int NXRadioButton::getTextPointSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
   return this->font().pointSize();
 }
@@ -62,7 +62,7 @@ void NXRadioButton::setTextStyle(NXTextType::TextStyle textStyle)
 {
   Q_D(NXRadioButton);
   QFont textFont = font();
-  d->_textStyle  = textStyle;
+  d->m_TextStyle  = textStyle;
   switch (textStyle) {
   case NXTextType::NoStyle : {
     break;
@@ -107,17 +107,17 @@ void NXRadioButton::setTextStyle(NXTextType::TextStyle textStyle)
   setFont(textFont);
 }
 
-NXTextType::TextStyle NXRadioButton::getTextStyle() const
+NXTextType::TextStyle NXRadioButton::getTextStyle() const noexcept(std::is_nothrow_copy_constructible_v<NXTextType::TextStyle>)
 {
-  Q_D(const NXRadioButton);
-  return d->_textStyle;
+  Q_CONST_D(NXRadioButton);
+  return d->m_TextStyle;
 }
 
 void NXRadioButton::paintEvent(QPaintEvent *event)
 {
   Q_D(NXRadioButton);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
-    d->onThemeChanged(d->_themeMode);
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->m_ThemeMode, BasicText)) {
+    d->onThemeChanged(d->m_ThemeMode);
   }
   QRadioButton::paintEvent(event);
 }

@@ -5,37 +5,42 @@
 
 NXActionCommanderNode::NXActionCommanderNode(NXActionCommanderNode *parent)
     : QObject(nullptr)
+    , m_NodeName {}
+    , m_NodeIndexText {}
+    , m_NodeCreateTime {}
+    , m_ModelIndex {}
+    , m_ChildNodes {}
+    , m_ParentNode { parent }
+    , m_MessageMode { NXMessageBarType::Success }
+    , m_NodeIndex { 1 }
+    , m_IsRootNode { false }
+    , m_IsCommandNode { false }
+    , m_IsCurrentNode { false }
 {
-  _pIsRootNode    = false;
-  _pIsCommandNode = false;
-  _pParentNode    = parent;
-  _pIsCurrentNode = false;
-  _pNodeIndex     = 1;
-  _pMessageMode   = NXMessageBarType::Success;
 }
 
 NXActionCommanderNode::~NXActionCommanderNode()
 {
-  // 不使用QT的继承链删除 手动释放 一般情况下此时_pChildNodes已经为空
-  for (const auto childNode : _pChildNodes) {
+  // 不使用QT的继承链删除 手动释放 一般情况下此时m_ChildNodes已经为空
+  for (auto const childNode : m_ChildNodes) {
     delete childNode;
   }
 }
 
 void NXActionCommanderNode::appendChildNode(NXActionCommanderNode *childNode)
 {
-  _pChildNodes.append(childNode);
+  m_ChildNodes.append(childNode);
 }
 
 void NXActionCommanderNode::removeChildNode(NXActionCommanderNode *childNode)
 {
-  _pChildNodes.removeOne(childNode);
+  m_ChildNodes.removeOne(childNode);
 }
 
 int NXActionCommanderNode::getRow() const
 {
-  if (_pParentNode) {
-    return _pParentNode->getChildNodes().indexOf(const_cast<NXActionCommanderNode *>(this));
+  if (m_ParentNode) {
+    return m_ParentNode->getChildNodes().indexOf(const_cast<NXActionCommanderNode *>(this));
   }
   return 0;
 }

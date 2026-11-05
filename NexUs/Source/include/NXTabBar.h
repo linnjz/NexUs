@@ -16,7 +16,7 @@ class NX_EXPORT NXTabBar : public QTabBar
   Q_PROPERTY_CREATE_H(int, TabCornerRadius)
   Q_PROPERTY_CREATE_H(bool, IsSelectedIndicatorVisible)
 
-  void setTabText(int index, const QString &text);
+  void setTabText(int index, QString const &text);
 
 public:
   explicit NXTabBar(QWidget *parent = nullptr);
@@ -25,7 +25,7 @@ public:
   // 将内部滚动平滑定位到当前选中Tab 使其位于最左侧
   void locateCurrentTab();
 
-  Q_SIGNAL void tabBarTextChanged(int tabIndex, const QString &tabText);
+  Q_SIGNAL void tabBarTextChanged(int tabIndex, QString const &tabText);
   Q_SIGNAL void tabDragCreate(QMimeData *mimeData);
   Q_SIGNAL void tabDragEnter(QMimeData *mimeData);
   Q_SIGNAL void tabDragLeave(QMimeData *mimeData);

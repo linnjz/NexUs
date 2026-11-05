@@ -77,12 +77,12 @@ namespace tl
 {
 namespace detail
 {
-template<class T>
+template <class T>
 struct is_trivially_copy_constructible : std::is_trivially_copy_constructible<T>
 {
 };
 #      ifdef _GLIBCXX_VECTOR
-template<class T, class A>
+template <class T, class A>
 struct is_trivially_copy_constructible<std::vector<T, A>> : std::false_type
 {
 };
@@ -122,7 +122,7 @@ struct is_trivially_copy_constructible<std::vector<T, A>> : std::false_type
 
 namespace tl
 {
-template<class T, class E>
+template <class T, class E>
 class expected;
 
 class monostate
@@ -136,7 +136,7 @@ struct in_place_t
 
 static TL_EXPECTED_11_CONSTEXPR in_place_t in_place {};
 
-template<class E>
+template <class E>
 class unexpected
 {
 public:
@@ -144,20 +144,20 @@ public:
 
   unexpected() = delete;
 
-  template<class _UError = E>
+  template <class _UError = E>
   TL_EXPECTED_11_CONSTEXPR explicit unexpected(_UError &&e) noexcept(std::is_nothrow_constructible<E, _UError>::value)
       : m_val(std::forward<_UError>(e))
   {
   }
 
-  template<class... _Args>
+  template <class... _Args>
   TL_EXPECTED_11_CONSTEXPR explicit unexpected(in_place_t, _Args &&...vals) noexcept(
       std::is_nothrow_constructible<E, _Args...>::value)
       : m_val(std::forward<_Args>(vals)...)
   {
   }
 
-  template<class _Uty, class... _Args>
+  template <class _Uty, class... _Args>
   TL_EXPECTED_11_CONSTEXPR explicit unexpected(in_place_t, std::initializer_list<_Uty> ilist, _Args &&...vals) noexcept(
       std::is_nothrow_constructible<E, std::initializer_list<_Uty> &, _Args...>::value)
       : m_val(ilist, std::forward<_Args>(vals)...)
@@ -183,14 +183,14 @@ private:
   E m_val;
 };
 
-template<class _UErr>
+template <class _UErr>
 TL_EXPECTED_11_CONSTEXPR bool
-operator== (const unexpected<_UErr> &lhs, const unexpected<_UErr> &rhs) noexcept(noexcept(lhs.error() == rhs.error()))
+operator== (unexpected<_UErr> const &lhs, unexpected<_UErr> const &rhs) noexcept(noexcept(lhs.error() == rhs.error()))
 {
   return lhs.error() == rhs.error();
 }
 
-template<class _UErr>
+template <class _UErr>
 TL_EXPECTED_11_CONSTEXPR void
 swap(unexpected<_UErr> &lhs, unexpected<_UErr> &rhs) noexcept(detail::is_nothrow_swappable<_UErr>::value)
 {
@@ -206,7 +206,7 @@ static TL_EXPECTED_11_CONSTEXPR unexpect_t unexpect {};
 
 namespace detail
 {
-template<typename E>
+template <typename E>
 [[noreturn]] TL_EXPECTED_11_CONSTEXPR void
 throw_exception(E &&e)
 {
@@ -224,29 +224,29 @@ throw_exception(E &&e)
 #  ifndef TL_TRAITS_MUTEX
 #    define TL_TRAITS_MUTEX
 // C++14-style aliases for brevity
-template<class T>
+template <class T>
 using remove_const_t = typename std::remove_const<T>::type;
-template<class T>
+template <class T>
 using remove_reference_t = typename std::remove_reference<T>::type;
-template<class T>
+template <class T>
 using decay_t = typename std::decay<T>::type;
-template<bool E, class T = void>
+template <bool E, class T = void>
 using enable_if_t = typename std::enable_if<E, T>::type;
-template<bool B, class T, class F>
+template <bool B, class T, class F>
 using conditional_t = typename std::conditional<B, T, F>::type;
 
 // std::conjunction from C++17
-template<class...>
+template <class...>
 struct conjunction : std::true_type
 {
 };
 
-template<class B>
+template <class B>
 struct conjunction<B> : B
 {
 };
 
-template<class B, class... Bs>
+template <class B, class... Bs>
 struct conjunction<B, Bs...> : std::conditional<bool(B::value), conjunction<Bs...>, B>::type
 {
 };
@@ -259,52 +259,52 @@ struct conjunction<B, Bs...> : std::conditional<bool(B::value), conjunction<Bs..
 // which results in a hard-error when using it in a noexcept expression
 // in some cases. This is a check to workaround the common failing case.
 #    ifdef TL_TRAITS_LIBCXX_MEM_FN_WORKAROUND
-template<class T>
+template <class T>
 struct is_pointer_to_non_const_member_func : std::false_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...)> : std::true_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...) &> : std::true_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...) &&> : std::true_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...) volatile> : std::true_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...) volatile &> : std::true_type
 {
 };
 
-template<class T, class Ret, class... Args>
+template <class T, class Ret, class... Args>
 struct is_pointer_to_non_const_member_func<Ret (T::*)(Args...) volatile &&> : std::true_type
 {
 };
 
-template<class T>
+template <class T>
 struct is_const_or_const_ref : std::false_type
 {
 };
 
-template<class T>
+template <class T>
 struct is_const_or_const_ref<T const &> : std::true_type
 {
 };
 
-template<class T>
+template <class T>
 struct is_const_or_const_ref<T const> : std::true_type
 {
 };
@@ -312,7 +312,7 @@ struct is_const_or_const_ref<T const> : std::true_type
 
 // std::invoke from C++17
 // https://stackoverflow.com/questions/38288042/c11-14-invoke-workaround
-template<
+template <
     typename Fn,
     typename... Args,
 #    ifdef TL_TRAITS_LIBCXX_MEM_FN_WORKAROUND
@@ -327,7 +327,7 @@ invoke(Fn &&f, Args &&...args) noexcept(noexcept(std::mem_fn(f)(std::forward<Arg
   return std::mem_fn(f)(std::forward<Args>(args)...);
 }
 
-template<typename Fn, typename... Args, typename = enable_if_t<!std::is_member_pointer<decay_t<Fn>>::value>>
+template <typename Fn, typename... Args, typename = enable_if_t<!std::is_member_pointer<decay_t<Fn>>::value>>
 TL_EXPECTED_11_CONSTEXPR auto
 invoke(Fn &&f, Args &&...args) noexcept(noexcept(std::forward<Fn>(f)(std::forward<Args>(args)...)))
     -> decltype(std::forward<Fn>(f)(std::forward<Args>(args)...))
@@ -336,29 +336,29 @@ invoke(Fn &&f, Args &&...args) noexcept(noexcept(std::forward<Fn>(f)(std::forwar
 }
 
 // std::invoke_result from C++17
-template<class F, class, class... Us>
+template <class F, class, class... Us>
 struct invoke_result_impl;
 
-template<class F, class... Us>
+template <class F, class... Us>
 struct invoke_result_impl<F, decltype(detail::invoke(std::declval<F>(), std::declval<Us>()...), void()), Us...>
 {
   using type = decltype(detail::invoke(std::declval<F>(), std::declval<Us>()...));
 };
 
-template<class F, class... Us>
+template <class F, class... Us>
 using invoke_result = invoke_result_impl<F, void, Us...>;
 
-template<class F, class... Us>
+template <class F, class... Us>
 using invoke_result_t = typename invoke_result<F, Us...>::type;
 
 #    if defined(_MSC_VER) && _MSC_VER <= 1900
 // TODO make a version which works with MSVC 2015
-template<class T, class U = T>
+template <class T, class U = T>
 struct is_swappable : std::true_type
 {
 };
 
-template<class T, class U = T>
+template <class T, class U = T>
 struct is_nothrow_swappable : std::true_type
 {
 };
@@ -372,113 +372,99 @@ struct tag
 {
 };
 
-template<class T>
+template <class T>
 tag swap(T &, T &);
-template<class T, std::size_t N>
+template <class T, std::size_t N>
 tag swap(T (&a)[N], T (&b)[N]);
 
 // helper functions to test if an unqualified swap is possible, and if it
 // becomes std::swap
-template<class, class>
+template <class, class>
 std::false_type can_swap(...) noexcept(false);
-template<class T, class U, class = decltype(swap(std::declval<T &>(), std::declval<U &>()))>
+template <class T, class U, class = decltype(swap(std::declval<T &>(), std::declval<U &>()))>
 std::true_type can_swap(int) noexcept(noexcept(swap(std::declval<T &>(), std::declval<U &>())));
 
-template<class, class>
+template <class, class>
 std::false_type uses_std(...);
-template<class T, class U>
+template <class T, class U>
 std::is_same<decltype(swap(std::declval<T &>(), std::declval<U &>())), tag> uses_std(int);
 
-template<class T>
+template <class T>
 struct is_std_swap_noexcept
-    : std::integral_constant<bool,
-                             std::is_nothrow_move_constructible<T>::value && std::is_nothrow_move_assignable<T>::value>
+    : std::integral_constant<bool, std::is_nothrow_move_constructible<T>::value && std::is_nothrow_move_assignable<T>::value>
 {
 };
 
-template<class T, std::size_t N>
+template <class T, std::size_t N>
 struct is_std_swap_noexcept<T[N]> : is_std_swap_noexcept<T>
 {
 };
 
-template<class T, class U>
+template <class T, class U>
 struct is_adl_swap_noexcept : std::integral_constant<bool, noexcept(can_swap<T, U>(0))>
 {
 };
 } // namespace swap_adl_tests
 
-template<class T, class U = T>
+template <class T, class U = T>
 struct is_swappable
-    : std::integral_constant<bool,
-                             decltype(detail::swap_adl_tests::can_swap<T, U>(0))::value &&
-                                 (!decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value ||
-                                  (std::is_move_assignable<T>::value && std::is_move_constructible<T>::value))>
+    : std::integral_constant<bool, decltype(detail::swap_adl_tests::can_swap<T, U>(0))::value && (!decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value || (std::is_move_assignable<T>::value && std::is_move_constructible<T>::value))>
 {
 };
 
-template<class T, std::size_t N>
+template <class T, std::size_t N>
 struct is_swappable<T[N], T[N]>
-    : std::integral_constant<bool,
-                             decltype(detail::swap_adl_tests::can_swap<T[N], T[N]>(0))::value &&
-                                 (!decltype(detail::swap_adl_tests::uses_std<T[N], T[N]>(0))::value ||
-                                  is_swappable<T, T>::value)>
+    : std::integral_constant<bool, decltype(detail::swap_adl_tests::can_swap<T[N], T[N]>(0))::value && (!decltype(detail::swap_adl_tests::uses_std<T[N], T[N]>(0))::value || is_swappable<T, T>::value)>
 {
 };
 
-template<class T, class U = T>
+template <class T, class U = T>
 struct is_nothrow_swappable
-    : std::integral_constant<bool,
-                             is_swappable<T, U>::value &&
-                                 ((decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value &&
-                                   detail::swap_adl_tests::is_std_swap_noexcept<T>::value) ||
-                                  (!decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value &&
-                                   detail::swap_adl_tests::is_adl_swap_noexcept<T, U>::value))>
+    : std::integral_constant<bool, is_swappable<T, U>::value && ((decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value && detail::swap_adl_tests::is_std_swap_noexcept<T>::value) || (!decltype(detail::swap_adl_tests::uses_std<T, U>(0))::value && detail::swap_adl_tests::is_adl_swap_noexcept<T, U>::value))>
 {
 };
 #    endif
 #  endif
 
 // Trait for checking if a type is a tl::expected
-template<class T>
+template <class T>
 struct is_expected_impl : std::false_type
 {
 };
 
-template<class T, class E>
+template <class T, class E>
 struct is_expected_impl<expected<T, E>> : std::true_type
 {
 };
-template<class T>
+template <class T>
 using is_expected = is_expected_impl<decay_t<T>>;
 
-template<class T, class E, class U>
+template <class T, class E, class U>
 using expected_enable_forward_value =
-    detail::enable_if_t<std::is_constructible<T, U &&>::value && !std::is_same<detail::decay_t<U>, in_place_t>::value &&
-                        !std::is_same<expected<T, E>, detail::decay_t<U>>::value &&
-                        !std::is_same<unexpected<E>, detail::decay_t<U>>::value>;
+    detail::enable_if_t<std::is_constructible<T, U &&>::value && !std::is_same<detail::decay_t<U>, in_place_t>::value && !std::is_same<expected<T, E>, detail::decay_t<U>>::value && !std::is_same<unexpected<E>, detail::decay_t<U>>::value>;
 
-template<class T, class E, class U, class G, class UR, class GR>
+template <class T, class E, class U, class G, class UR, class GR>
 using expected_enable_from_other = detail::enable_if_t<
     std::is_constructible<T, UR>::value && std::is_constructible<E, GR>::value &&
     !std::is_constructible<T, expected<U, G> &>::value && !std::is_constructible<T, expected<U, G> &&>::value &&
-    !std::is_constructible<T, const expected<U, G> &>::value &&
-    !std::is_constructible<T, const expected<U, G> &&>::value && !std::is_convertible<expected<U, G> &, T>::value &&
-    !std::is_convertible<expected<U, G> &&, T>::value && !std::is_convertible<const expected<U, G> &, T>::value &&
-    !std::is_convertible<const expected<U, G> &&, T>::value>;
+    !std::is_constructible<T, expected<U, G> const &>::value &&
+    !std::is_constructible<T, expected<U, G> const &&>::value && !std::is_convertible<expected<U, G> &, T>::value &&
+    !std::is_convertible<expected<U, G> &&, T>::value && !std::is_convertible<expected<U, G> const &, T>::value &&
+    !std::is_convertible<expected<U, G> const &&, T>::value>;
 
-template<class T, class U>
+template <class T, class U>
 using is_void_or = conditional_t<std::is_void<T>::value, std::true_type, U>;
 
-template<class T>
+template <class T>
 using is_copy_constructible_or_void = is_void_or<T, std::is_copy_constructible<T>>;
 
-template<class T>
+template <class T>
 using is_move_constructible_or_void = is_void_or<T, std::is_move_constructible<T>>;
 
-template<class T>
+template <class T>
 using is_copy_assignable_or_void = is_void_or<T, std::is_copy_assignable<T>>;
 
-template<class T>
+template <class T>
 using is_move_assignable_or_void = is_void_or<T, std::is_move_assignable<T>>;
 
 } // namespace detail
@@ -497,10 +483,7 @@ static TL_EXPECTED_11_CONSTEXPR no_init_t no_init {};
 // This specialization is for where neither `T` or `E` is trivially
 // destructible, so the destructors must be called on destruction of the
 // `expected`
-template<class T,
-         class E,
-         bool = std::is_trivially_destructible<T>::value,
-         bool = std::is_trivially_destructible<E>::value>
+template <class T, class E, bool = std::is_trivially_destructible<T>::value, bool = std::is_trivially_destructible<E>::value>
 struct expected_storage_base
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -515,32 +498,28 @@ struct expected_storage_base
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, Args &&...args)
       : m_val(std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, std::initializer_list<U> il, Args &&...args)
       : m_val(il, std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -549,12 +528,9 @@ struct expected_storage_base
 
   ~expected_storage_base()
   {
-    if (m_has_val)
-    {
+    if (m_has_val) {
       m_val.~T();
-    }
-    else
-    {
+    } else {
       m_unexpect.~unexpected<E>();
     }
   }
@@ -571,7 +547,7 @@ struct expected_storage_base
 
 // This specialization is for when both `T` and `E` are trivially-destructible,
 // so the destructor of the `expected` can be trivial.
-template<class T, class E>
+template <class T, class E>
 struct expected_storage_base<T, E, true, true>
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -586,32 +562,28 @@ struct expected_storage_base<T, E, true, true>
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, Args &&...args)
       : m_val(std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, std::initializer_list<U> il, Args &&...args)
       : m_val(il, std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -631,7 +603,7 @@ struct expected_storage_base<T, E, true, true>
 };
 
 // T is trivial, E is not.
-template<class T, class E>
+template <class T, class E>
 struct expected_storage_base<T, E, true, false>
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -646,32 +618,28 @@ struct expected_storage_base<T, E, true, false>
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, Args &&...args)
       : m_val(std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, std::initializer_list<U> il, Args &&...args)
       : m_val(il, std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -680,8 +648,7 @@ struct expected_storage_base<T, E, true, false>
 
   ~expected_storage_base()
   {
-    if (!m_has_val)
-    {
+    if (!m_has_val) {
       m_unexpect.~unexpected<E>();
     }
   }
@@ -697,7 +664,7 @@ struct expected_storage_base<T, E, true, false>
 };
 
 // E is trivial, T is not.
-template<class T, class E>
+template <class T, class E>
 struct expected_storage_base<T, E, false, true>
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -712,32 +679,28 @@ struct expected_storage_base<T, E, false, true>
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, Args &&...args)
       : m_val(std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected_storage_base(in_place_t, std::initializer_list<U> il, Args &&...args)
       : m_val(il, std::forward<Args>(args)...)
       , m_has_val(true)
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -746,8 +709,7 @@ struct expected_storage_base<T, E, false, true>
 
   ~expected_storage_base()
   {
-    if (m_has_val)
-    {
+    if (m_has_val) {
       m_val.~T();
     }
   }
@@ -763,7 +725,7 @@ struct expected_storage_base<T, E, false, true>
 };
 
 // `T` is `void`, `E` is trivially-destructible
-template<class E>
+template <class E>
 struct expected_storage_base<void, E, false, true>
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -782,16 +744,14 @@ struct expected_storage_base<void, E, false, true>
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -814,7 +774,7 @@ struct expected_storage_base<void, E, false, true>
 };
 
 // `T` is `void`, `E` is not trivially-destructible
-template<class E>
+template <class E>
 struct expected_storage_base<void, E, false, false>
 {
   TL_EXPECTED_11_CONSTEXPR expected_storage_base()
@@ -835,16 +795,14 @@ struct expected_storage_base<void, E, false, false>
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, Args &&...args)
       : m_unexpect(in_place, std::forward<Args>(args)...)
       , m_has_val(false)
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected_storage_base(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : m_unexpect(in_place, il, std::forward<Args>(args)...)
       , m_has_val(false)
@@ -853,8 +811,7 @@ struct expected_storage_base<void, E, false, false>
 
   ~expected_storage_base()
   {
-    if (!m_has_val)
-    {
+    if (!m_has_val) {
       m_unexpect.~unexpected<E>();
     }
   }
@@ -870,26 +827,26 @@ struct expected_storage_base<void, E, false, false>
 
 // This base class provides some handy member functions which can be used in
 // further derived classes
-template<class T, class E>
+template <class T, class E>
 struct expected_operations_base : expected_storage_base<T, E>
 {
   using expected_storage_base<T, E>::expected_storage_base;
 
-  template<class... Args>
+  template <class... Args>
   void construct(Args &&...args) noexcept
   {
     new (std::addressof(this->m_val)) T(std::forward<Args>(args)...);
     this->m_has_val = true;
   }
 
-  template<class Rhs>
+  template <class Rhs>
   void construct_with(Rhs &&rhs) noexcept
   {
     new (std::addressof(this->m_val)) T(std::forward<Rhs>(rhs).get());
     this->m_has_val = true;
   }
 
-  template<class... Args>
+  template <class... Args>
   void construct_error(Args &&...args) noexcept
   {
     new (std::addressof(this->m_unexpect)) unexpected<E>(in_place, std::forward<Args>(args)...);
@@ -904,35 +861,27 @@ struct expected_operations_base : expected_storage_base<T, E>
   //
   // This overload handles the case where we can just copy-construct `T`
   // directly into place without throwing.
-  template<class U = T, detail::enable_if_t<std::is_nothrow_copy_constructible<U>::value> * = nullptr>
-  void assign(const expected_operations_base &rhs) noexcept
+  template <class U = T, detail::enable_if_t<std::is_nothrow_copy_constructible<U>::value> * = nullptr>
+  void assign(expected_operations_base const &rhs) noexcept
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       geterr().~unexpected<E>();
       construct(rhs.get());
-    }
-    else
-    {
+    } else {
       assign_common(rhs);
     }
   }
 
   // This overload handles the case where we can attempt to create a copy of
   // `T`, then no-throw move it into place if the copy was successful.
-  template<class U                                                             = T,
-           detail::enable_if_t<!std::is_nothrow_copy_constructible<U>::value &&
-                               std::is_nothrow_move_constructible<U>::value> * = nullptr>
-  void assign(const expected_operations_base &rhs) noexcept
+  template <class U = T, detail::enable_if_t<!std::is_nothrow_copy_constructible<U>::value && std::is_nothrow_move_constructible<U>::value> * = nullptr>
+  void assign(expected_operations_base const &rhs) noexcept
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       T tmp = rhs.get();
       geterr().~unexpected<E>();
       construct(std::move(tmp));
-    }
-    else
-    {
+    } else {
       assign_common(rhs);
     }
   }
@@ -942,74 +891,57 @@ struct expected_operations_base : expected_storage_base<T, E>
   // If the construction succeeds, then everything is fine, but if it throws,
   // then we move the old unexpected value back into place before rethrowing the
   // exception.
-  template<class U                                                              = T,
-           detail::enable_if_t<!std::is_nothrow_copy_constructible<U>::value &&
-                               !std::is_nothrow_move_constructible<U>::value> * = nullptr>
-  void assign(const expected_operations_base &rhs)
+  template <class U = T, detail::enable_if_t<!std::is_nothrow_copy_constructible<U>::value && !std::is_nothrow_move_constructible<U>::value> * = nullptr>
+  void assign(expected_operations_base const &rhs)
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       auto tmp = std::move(geterr());
       geterr().~unexpected<E>();
 
 #    ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-      try
-      {
+      try {
         construct(rhs.get());
-      }
-      catch (...)
-      {
+      } catch (...) {
         geterr() = std::move(tmp);
         throw;
       }
 #    else
       construct(rhs.get());
 #    endif
-    }
-    else
-    {
+    } else {
       assign_common(rhs);
     }
   }
 
   // These overloads do the same as above, but for rvalues
-  template<class U = T, detail::enable_if_t<std::is_nothrow_move_constructible<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<std::is_nothrow_move_constructible<U>::value> * = nullptr>
   void assign(expected_operations_base &&rhs) noexcept
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       geterr().~unexpected<E>();
       construct(std::move(rhs).get());
-    }
-    else
-    {
+    } else {
       assign_common(std::move(rhs));
     }
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_nothrow_move_constructible<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_nothrow_move_constructible<U>::value> * = nullptr>
   void assign(expected_operations_base &&rhs)
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       auto tmp = std::move(geterr());
       geterr().~unexpected<E>();
 #    ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-      try
-      {
+      try {
         construct(std::move(rhs).get());
-      }
-      catch (...)
-      {
+      } catch (...) {
         geterr() = std::move(tmp);
         throw;
       }
 #    else
       construct(std::move(rhs).get());
 #    endif
-    }
-    else
-    {
+    } else {
       assign_common(std::move(rhs));
     }
   }
@@ -1017,28 +949,22 @@ struct expected_operations_base : expected_storage_base<T, E>
 #  else
 
   // If exceptions are disabled then we can just copy-construct
-  void assign(const expected_operations_base &rhs) noexcept
+  void assign(expected_operations_base const &rhs) noexcept
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       geterr().~unexpected<E>();
       construct(rhs.get());
-    }
-    else
-    {
+    } else {
       assign_common(rhs);
     }
   }
 
   void assign(expected_operations_base &&rhs) noexcept
   {
-    if (!this->m_has_val && rhs.m_has_val)
-    {
+    if (!this->m_has_val && rhs.m_has_val) {
       geterr().~unexpected<E>();
       construct(std::move(rhs).get());
-    }
-    else
-    {
+    } else {
       assign_common(rhs);
     }
   }
@@ -1046,25 +972,18 @@ struct expected_operations_base : expected_storage_base<T, E>
 #  endif
 
   // The common part of move/copy assigning
-  template<class Rhs>
+  template <class Rhs>
   void assign_common(Rhs &&rhs)
   {
-    if (this->m_has_val)
-    {
-      if (rhs.m_has_val)
-      {
+    if (this->m_has_val) {
+      if (rhs.m_has_val) {
         get() = std::forward<Rhs>(rhs).get();
-      }
-      else
-      {
+      } else {
         destroy_val();
         construct_error(std::forward<Rhs>(rhs).geterr());
       }
-    }
-    else
-    {
-      if (!rhs.m_has_val)
-      {
+    } else {
+      if (!rhs.m_has_val) {
         geterr() = std::forward<Rhs>(rhs).geterr();
       }
     }
@@ -1106,12 +1025,12 @@ struct expected_operations_base : expected_storage_base<T, E>
 
 // This base class provides some handy member functions which can be used in
 // further derived classes
-template<class E>
+template <class E>
 struct expected_operations_base<void, E> : expected_storage_base<void, E>
 {
   using expected_storage_base<void, E>::expected_storage_base;
 
-  template<class... Args>
+  template <class... Args>
   void construct() noexcept
   {
     this->m_has_val = true;
@@ -1119,38 +1038,31 @@ struct expected_operations_base<void, E> : expected_storage_base<void, E>
 
   // This function doesn't use its argument, but needs it so that code in
   // levels above this can work independently of whether T is void
-  template<class Rhs>
+  template <class Rhs>
   void construct_with(Rhs &&) noexcept
   {
     this->m_has_val = true;
   }
 
-  template<class... Args>
+  template <class... Args>
   void construct_error(Args &&...args) noexcept
   {
     new (std::addressof(this->m_unexpect)) unexpected<E>(in_place, std::forward<Args>(args)...);
     this->m_has_val = false;
   }
 
-  template<class Rhs>
+  template <class Rhs>
   void assign(Rhs &&rhs) noexcept
   {
-    if (!this->m_has_val)
-    {
-      if (rhs.m_has_val)
-      {
+    if (!this->m_has_val) {
+      if (rhs.m_has_val) {
         geterr().~unexpected<E>();
         construct();
-      }
-      else
-      {
+      } else {
         geterr() = std::forward<Rhs>(rhs).geterr();
       }
-    }
-    else
-    {
-      if (!rhs.m_has_val)
-      {
+    } else {
+      if (!rhs.m_has_val) {
         construct_error(std::forward<Rhs>(rhs).geterr());
       }
     }
@@ -1186,38 +1098,32 @@ struct expected_operations_base<void, E> : expected_storage_base<void, E>
 
 // This class manages conditionally having a trivial copy constructor
 // This specialization is for when T and E are trivially copy constructible
-template<class T,
-         class E,
-         bool = is_void_or<T, TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(T)>::value &&
-                TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(E)::value>
+template <class T, class E, bool = is_void_or<T, TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(T)>::value && TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(E)::value>
 struct expected_copy_base : expected_operations_base<T, E>
 {
   using expected_operations_base<T, E>::expected_operations_base;
 };
 
 // This specialization is for when T or E are not trivially copy constructible
-template<class T, class E>
+template <class T, class E>
 struct expected_copy_base<T, E, false> : expected_operations_base<T, E>
 {
   using expected_operations_base<T, E>::expected_operations_base;
 
   expected_copy_base() = default;
 
-  expected_copy_base(const expected_copy_base &rhs)
+  expected_copy_base(expected_copy_base const &rhs)
       : expected_operations_base<T, E>(no_init)
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct_with(rhs);
-    }
-    else
-    {
+    } else {
       this->construct_error(rhs.geterr());
     }
   }
 
   expected_copy_base(expected_copy_base &&rhs)                  = default;
-  expected_copy_base &operator= (const expected_copy_base &rhs) = default;
+  expected_copy_base &operator= (expected_copy_base const &rhs) = default;
   expected_copy_base &operator= (expected_copy_base &&rhs)      = default;
 };
 
@@ -1227,69 +1133,55 @@ struct expected_copy_base<T, E, false> : expected_operations_base<T, E>
 // have to make do with a non-trivial move constructor even if T is trivially
 // move constructible
 #  ifndef TL_EXPECTED_GCC49
-template<class T,
-         class E,
-         bool = is_void_or<T, std::is_trivially_move_constructible<T>>::value &&
-                std::is_trivially_move_constructible<E>::value>
+template <class T, class E, bool = is_void_or<T, std::is_trivially_move_constructible<T>>::value && std::is_trivially_move_constructible<E>::value>
 struct expected_move_base : expected_copy_base<T, E>
 {
   using expected_copy_base<T, E>::expected_copy_base;
 };
 #  else
-template<class T, class E, bool = false>
+template <class T, class E, bool = false>
 struct expected_move_base;
 #  endif
-template<class T, class E>
+template <class T, class E>
 struct expected_move_base<T, E, false> : expected_copy_base<T, E>
 {
   using expected_copy_base<T, E>::expected_copy_base;
 
   expected_move_base()                              = default;
-  expected_move_base(const expected_move_base &rhs) = default;
+  expected_move_base(expected_move_base const &rhs) = default;
 
   expected_move_base(expected_move_base &&rhs) noexcept(std::is_nothrow_move_constructible<T>::value)
       : expected_copy_base<T, E>(no_init)
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct_with(std::move(rhs));
-    }
-    else
-    {
+    } else {
       this->construct_error(std::move(rhs.geterr()));
     }
   }
 
-  expected_move_base &operator= (const expected_move_base &rhs) = default;
+  expected_move_base &operator= (expected_move_base const &rhs) = default;
   expected_move_base &operator= (expected_move_base &&rhs)      = default;
 };
 
 // This class manages conditionally having a trivial copy assignment operator
-template<class T,
-         class E,
-         bool = is_void_or<T,
-                           conjunction<TL_EXPECTED_IS_TRIVIALLY_COPY_ASSIGNABLE(T),
-                                       TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(T),
-                                       TL_EXPECTED_IS_TRIVIALLY_DESTRUCTIBLE(T)>>::value &&
-                TL_EXPECTED_IS_TRIVIALLY_COPY_ASSIGNABLE(E)::value &&
-                TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(E)::value &&
-                TL_EXPECTED_IS_TRIVIALLY_DESTRUCTIBLE(E)::value>
+template <class T, class E, bool = is_void_or<T, conjunction<TL_EXPECTED_IS_TRIVIALLY_COPY_ASSIGNABLE(T), TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(T), TL_EXPECTED_IS_TRIVIALLY_DESTRUCTIBLE(T)>>::value && TL_EXPECTED_IS_TRIVIALLY_COPY_ASSIGNABLE(E)::value && TL_EXPECTED_IS_TRIVIALLY_COPY_CONSTRUCTIBLE(E)::value && TL_EXPECTED_IS_TRIVIALLY_DESTRUCTIBLE(E)::value>
 struct expected_copy_assign_base : expected_move_base<T, E>
 {
   using expected_move_base<T, E>::expected_move_base;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_copy_assign_base<T, E, false> : expected_move_base<T, E>
 {
   using expected_move_base<T, E>::expected_move_base;
 
   expected_copy_assign_base()                                     = default;
-  expected_copy_assign_base(const expected_copy_assign_base &rhs) = default;
+  expected_copy_assign_base(expected_copy_assign_base const &rhs) = default;
 
   expected_copy_assign_base(expected_copy_assign_base &&rhs) = default;
 
-  expected_copy_assign_base &operator= (const expected_copy_assign_base &rhs)
+  expected_copy_assign_base &operator= (expected_copy_assign_base const &rhs)
   {
     this->assign(rhs);
     return *this;
@@ -1304,38 +1196,30 @@ struct expected_copy_assign_base<T, E, false> : expected_move_base<T, E>
 // to make do with a non-trivial move assignment operator even if T is trivially
 // move assignable
 #  ifndef TL_EXPECTED_GCC49
-template<class T,
-         class E,
-         bool = is_void_or<T,
-                           conjunction<std::is_trivially_destructible<T>,
-                                       std::is_trivially_move_constructible<T>,
-                                       std::is_trivially_move_assignable<T>>>::value &&
-                std::is_trivially_destructible<E>::value && std::is_trivially_move_constructible<E>::value &&
-                std::is_trivially_move_assignable<E>::value>
+template <class T, class E, bool = is_void_or<T, conjunction<std::is_trivially_destructible<T>, std::is_trivially_move_constructible<T>, std::is_trivially_move_assignable<T>>>::value && std::is_trivially_destructible<E>::value && std::is_trivially_move_constructible<E>::value && std::is_trivially_move_assignable<E>::value>
 struct expected_move_assign_base : expected_copy_assign_base<T, E>
 {
   using expected_copy_assign_base<T, E>::expected_copy_assign_base;
 };
 #  else
-template<class T, class E, bool = false>
+template <class T, class E, bool = false>
 struct expected_move_assign_base;
 #  endif
 
-template<class T, class E>
+template <class T, class E>
 struct expected_move_assign_base<T, E, false> : expected_copy_assign_base<T, E>
 {
   using expected_copy_assign_base<T, E>::expected_copy_assign_base;
 
   expected_move_assign_base()                                     = default;
-  expected_move_assign_base(const expected_move_assign_base &rhs) = default;
+  expected_move_assign_base(expected_move_assign_base const &rhs) = default;
 
   expected_move_assign_base(expected_move_assign_base &&rhs) = default;
 
-  expected_move_assign_base &operator= (const expected_move_assign_base &rhs) = default;
+  expected_move_assign_base &operator= (expected_move_assign_base const &rhs) = default;
 
   expected_move_assign_base &
-  operator= (expected_move_assign_base &&rhs) noexcept(std::is_nothrow_move_constructible<T>::value &&
-                                                       std::is_nothrow_move_assignable<T>::value)
+  operator= (expected_move_assign_base &&rhs) noexcept(std::is_nothrow_move_constructible<T>::value && std::is_nothrow_move_assignable<T>::value)
   {
     this->assign(std::move(rhs));
     return *this;
@@ -1344,94 +1228,86 @@ struct expected_move_assign_base<T, E, false> : expected_copy_assign_base<T, E>
 
 // expected_delete_ctor_base will conditionally delete copy and move
 // constructors depending on whether T is copy/move constructible
-template<class T,
-         class E,
-         bool EnableCopy = (is_copy_constructible_or_void<T>::value && std::is_copy_constructible<E>::value),
-         bool EnableMove = (is_move_constructible_or_void<T>::value && std::is_move_constructible<E>::value)>
+template <class T, class E, bool EnableCopy = (is_copy_constructible_or_void<T>::value && std::is_copy_constructible<E>::value), bool EnableMove = (is_move_constructible_or_void<T>::value && std::is_move_constructible<E>::value)>
 struct expected_delete_ctor_base
 {
   expected_delete_ctor_base()                                                  = default;
-  expected_delete_ctor_base(const expected_delete_ctor_base &)                 = default;
+  expected_delete_ctor_base(expected_delete_ctor_base const &)                 = default;
   expected_delete_ctor_base(expected_delete_ctor_base &&) noexcept             = default;
-  expected_delete_ctor_base &operator= (const expected_delete_ctor_base &)     = default;
+  expected_delete_ctor_base &operator= (expected_delete_ctor_base const &)     = default;
   expected_delete_ctor_base &operator= (expected_delete_ctor_base &&) noexcept = default;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_ctor_base<T, E, true, false>
 {
   expected_delete_ctor_base()                                                  = default;
-  expected_delete_ctor_base(const expected_delete_ctor_base &)                 = default;
+  expected_delete_ctor_base(expected_delete_ctor_base const &)                 = default;
   expected_delete_ctor_base(expected_delete_ctor_base &&) noexcept             = delete;
-  expected_delete_ctor_base &operator= (const expected_delete_ctor_base &)     = default;
+  expected_delete_ctor_base &operator= (expected_delete_ctor_base const &)     = default;
   expected_delete_ctor_base &operator= (expected_delete_ctor_base &&) noexcept = default;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_ctor_base<T, E, false, true>
 {
   expected_delete_ctor_base()                                                  = default;
-  expected_delete_ctor_base(const expected_delete_ctor_base &)                 = delete;
+  expected_delete_ctor_base(expected_delete_ctor_base const &)                 = delete;
   expected_delete_ctor_base(expected_delete_ctor_base &&) noexcept             = default;
-  expected_delete_ctor_base &operator= (const expected_delete_ctor_base &)     = default;
+  expected_delete_ctor_base &operator= (expected_delete_ctor_base const &)     = default;
   expected_delete_ctor_base &operator= (expected_delete_ctor_base &&) noexcept = default;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_ctor_base<T, E, false, false>
 {
   expected_delete_ctor_base()                                                  = default;
-  expected_delete_ctor_base(const expected_delete_ctor_base &)                 = delete;
+  expected_delete_ctor_base(expected_delete_ctor_base const &)                 = delete;
   expected_delete_ctor_base(expected_delete_ctor_base &&) noexcept             = delete;
-  expected_delete_ctor_base &operator= (const expected_delete_ctor_base &)     = default;
+  expected_delete_ctor_base &operator= (expected_delete_ctor_base const &)     = default;
   expected_delete_ctor_base &operator= (expected_delete_ctor_base &&) noexcept = default;
 };
 
 // expected_delete_assign_base will conditionally delete copy and move
 // constructors depending on whether T and E are copy/move constructible +
 // assignable
-template<class T,
-         class E,
-         bool EnableCopy = (is_copy_constructible_or_void<T>::value && std::is_copy_constructible<E>::value &&
-                            is_copy_assignable_or_void<T>::value && std::is_copy_assignable<E>::value),
-         bool EnableMove = (is_move_constructible_or_void<T>::value && std::is_move_constructible<E>::value &&
-                            is_move_assignable_or_void<T>::value && std::is_move_assignable<E>::value)>
+template <class T, class E, bool EnableCopy = (is_copy_constructible_or_void<T>::value && std::is_copy_constructible<E>::value && is_copy_assignable_or_void<T>::value && std::is_copy_assignable<E>::value), bool EnableMove = (is_move_constructible_or_void<T>::value && std::is_move_constructible<E>::value && is_move_assignable_or_void<T>::value && std::is_move_assignable<E>::value)>
 struct expected_delete_assign_base
 {
   expected_delete_assign_base()                                                    = default;
-  expected_delete_assign_base(const expected_delete_assign_base &)                 = default;
+  expected_delete_assign_base(expected_delete_assign_base const &)                 = default;
   expected_delete_assign_base(expected_delete_assign_base &&) noexcept             = default;
-  expected_delete_assign_base &operator= (const expected_delete_assign_base &)     = default;
+  expected_delete_assign_base &operator= (expected_delete_assign_base const &)     = default;
   expected_delete_assign_base &operator= (expected_delete_assign_base &&) noexcept = default;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_assign_base<T, E, true, false>
 {
   expected_delete_assign_base()                                                    = default;
-  expected_delete_assign_base(const expected_delete_assign_base &)                 = default;
+  expected_delete_assign_base(expected_delete_assign_base const &)                 = default;
   expected_delete_assign_base(expected_delete_assign_base &&) noexcept             = default;
-  expected_delete_assign_base &operator= (const expected_delete_assign_base &)     = default;
+  expected_delete_assign_base &operator= (expected_delete_assign_base const &)     = default;
   expected_delete_assign_base &operator= (expected_delete_assign_base &&) noexcept = delete;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_assign_base<T, E, false, true>
 {
   expected_delete_assign_base()                                                    = default;
-  expected_delete_assign_base(const expected_delete_assign_base &)                 = default;
+  expected_delete_assign_base(expected_delete_assign_base const &)                 = default;
   expected_delete_assign_base(expected_delete_assign_base &&) noexcept             = default;
-  expected_delete_assign_base &operator= (const expected_delete_assign_base &)     = delete;
+  expected_delete_assign_base &operator= (expected_delete_assign_base const &)     = delete;
   expected_delete_assign_base &operator= (expected_delete_assign_base &&) noexcept = default;
 };
 
-template<class T, class E>
+template <class T, class E>
 struct expected_delete_assign_base<T, E, false, false>
 {
   expected_delete_assign_base()                                                    = default;
-  expected_delete_assign_base(const expected_delete_assign_base &)                 = default;
+  expected_delete_assign_base(expected_delete_assign_base const &)                 = default;
   expected_delete_assign_base(expected_delete_assign_base &&) noexcept             = default;
-  expected_delete_assign_base &operator= (const expected_delete_assign_base &)     = delete;
+  expected_delete_assign_base &operator= (expected_delete_assign_base const &)     = delete;
   expected_delete_assign_base &operator= (expected_delete_assign_base &&) noexcept = delete;
 };
 
@@ -1445,7 +1321,7 @@ struct default_constructor_tag
 // expected_default_ctor_base will ensure that expected has a deleted default
 // consturctor if T is not default constructible.
 // This specialization is for when T is default constructible
-template<class T, class E, bool Enable = std::is_default_constructible<T>::value || std::is_void<T>::value>
+template <class T, class E, bool Enable = std::is_default_constructible<T>::value || std::is_void<T>::value>
 struct expected_default_ctor_base
 {
   TL_EXPECTED_11_CONSTEXPR expected_default_ctor_base() noexcept                                   = default;
@@ -1459,7 +1335,7 @@ struct expected_default_ctor_base
 };
 
 // This specialization is for when T is not default constructible
-template<class T, class E>
+template <class T, class E>
 struct expected_default_ctor_base<T, E, false>
 {
   TL_EXPECTED_11_CONSTEXPR expected_default_ctor_base() noexcept                                   = delete;
@@ -1473,7 +1349,7 @@ struct expected_default_ctor_base<T, E, false>
 };
 } // namespace detail
 
-template<class E>
+template <class E>
 class bad_expected_access : public std::exception
 {
 public:
@@ -1482,7 +1358,7 @@ public:
   {
   }
 
-  const char *what() const noexcept override { return QStringLiteral("Bad expected access"); }
+  char const *what() const noexcept override { return QStringLiteral("Bad expected access"); }
 
   E error() const & { return m_val; }
 
@@ -1503,7 +1379,7 @@ private:
 /// has been initialized, and may not be destroyed before the expected object
 /// has been destroyed. The initialization state of the contained object is
 /// tracked by the expected object.
-template<class T, class E>
+template <class T, class E>
 class expected
     : private detail::expected_move_assign_base<T, E>
     , private detail::expected_delete_ctor_base<T, E>
@@ -1513,23 +1389,22 @@ class expected
   static_assert(!std::is_reference<T>::value, QStringLiteral("T must not be a reference"));
   static_assert(!std::is_same<T, std::remove_cv<in_place_t>::type>::value, QStringLiteral("T must not be in_place_t"));
   static_assert(!std::is_same<T, std::remove_cv<unexpect_t>::type>::value, QStringLiteral("T must not be unexpect_t"));
-  static_assert(!std::is_same<T, typename std::remove_cv<unexpected<E>>::type>::value,
-                QStringLiteral("T must not be unexpected<E>"));
+  static_assert(!std::is_same<T, typename std::remove_cv<unexpected<E>>::type>::value, QStringLiteral("T must not be unexpected<E>"));
   static_assert(!std::is_reference<E>::value, QStringLiteral("E must not be a reference"));
 
   T *valptr() { return std::addressof(this->m_val); }
 
-  const T *valptr() const { return std::addressof(this->m_val); }
+  T const *valptr() const { return std::addressof(this->m_val); }
 
   unexpected<E> *errptr() { return std::addressof(this->m_unexpect); }
 
-  const unexpected<E> *errptr() const { return std::addressof(this->m_unexpect); }
+  unexpected<E> const *errptr() const { return std::addressof(this->m_unexpect); }
 
   E *errvalueptr() { return std::addressof(this->m_unexpect.m_val); }
 
-  const E *errvalueptr() const { return std::addressof(this->m_unexpect.m_val); }
+  E const *errvalueptr() const { return std::addressof(this->m_unexpect.m_val); }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR U &val()
   {
     return this->m_val;
@@ -1537,7 +1412,7 @@ class expected
 
   TL_EXPECTED_11_CONSTEXPR unexpected<E> &err() { return this->m_unexpect; }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR const U &val() const
   {
     return this->m_val;
@@ -1577,31 +1452,31 @@ public:
   using error_type      = E;
   using unexpected_type = unexpected<E>;
 
-  template<class _Uty>
+  template <class _Uty>
   using rebind = expected<_Uty, error_type>;
 
-#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) &&                      \
+#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) && \
       !defined(TL_EXPECTED_GCC55)
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) &
   {
     return and_then_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) &&
   {
     return and_then_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const &
   {
     return and_then_impl(*this, std::forward<F>(f));
   }
 
 #    ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const &&
   {
     return and_then_impl(std::move(*this), std::forward<F>(f));
@@ -1609,341 +1484,306 @@ public:
 #    endif
 
 #  else
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) & -> decltype(and_then_impl(std::declval<expected &>(),
-                                                                            std::forward<F>(f)))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) & -> decltype(and_then_impl(std::declval<expected &>(), std::forward<F>(f)))
   {
     return and_then_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) && -> decltype(and_then_impl(std::declval<expected &&>(),
-                                                                             std::forward<F>(f)))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) && -> decltype(and_then_impl(std::declval<expected &&>(), std::forward<F>(f)))
   {
     return and_then_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const & -> decltype(and_then_impl(std::declval<expected const &>(),
-                                                                                  std::forward<F>(f)))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const & -> decltype(and_then_impl(std::declval<expected const &>(), std::forward<F>(f)))
   {
     return and_then_impl(*this, std::forward<F>(f));
   }
 
 #    ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const && -> decltype(and_then_impl(std::declval<expected const &&>(),
-                                                                                   std::forward<F>(f)))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR auto and_then(F &&f) const && -> decltype(and_then_impl(std::declval<expected const &&>(), std::forward<F>(f)))
   {
     return and_then_impl(std::move(*this), std::forward<F>(f));
   }
 #    endif
 #  endif
 
-#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) &&                      \
+#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) && \
       !defined(TL_EXPECTED_GCC55)
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto map(F &&f) &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto map(F &&f) &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto map(F &&f) const &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto map(F &&f) const &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 #  else
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected &>(), std::declval<F &&>())) map(F &&f) &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected>(), std::declval<F &&>())) map(F &&f) &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<const expected &>(), std::declval<F &&>()))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected const &>(), std::declval<F &&>()))
   map(F &&f) const &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
 #    ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<const expected &&>(),
-                                                      std::declval<F &&>())) map(F &&f) const &&
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected const &&>(), std::declval<F &&>())) map(F &&f) const &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 #    endif
 #  endif
 
-#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) &&                      \
+#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) && \
       !defined(TL_EXPECTED_GCC55)
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform(F &&f) &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform(F &&f) &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform(F &&f) const &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform(F &&f) const &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 #  else
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected &>(),
-                                                      std::declval<F &&>())) transform(F &&f) &
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected &>(), std::declval<F &&>())) transform(F &&f) &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected>(), std::declval<F &&>()))
   transform(F &&f) &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<const expected &>(), std::declval<F &&>()))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected const &>(), std::declval<F &&>()))
   transform(F &&f) const &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
 #    ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<const expected &&>(),
-                                                      std::declval<F &&>())) transform(F &&f) const &&
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(expected_map_impl(std::declval<expected const &&>(), std::declval<F &&>())) transform(F &&f) const &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 #    endif
 #  endif
 
-#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) &&                      \
+#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) && \
       !defined(TL_EXPECTED_GCC55)
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform_error(F &&f) &
   {
     return transform_error_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform_error(F &&f) &&
   {
     return transform_error_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform_error(F &&f) const &
   {
     return transform_error_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR auto transform_error(F &&f) const &&
   {
     return transform_error_impl(std::move(*this), std::forward<F>(f));
   }
 #  else
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<expected &>(),
-                                                         std::declval<F &&>())) transform_error(F &&f) &
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<expected &>(), std::declval<F &&>())) transform_error(F &&f) &
   {
     return transform_error_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<expected &&>(), std::declval<F &&>()))
   transform_error(F &&f) &&
   {
     return transform_error_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<const expected &>(), std::declval<F &&>()))
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<expected const &>(), std::declval<F &&>()))
   transform_error(F &&f) const &
   {
     return transform_error_impl(*this, std::forward<F>(f));
   }
 
 #    ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
-  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<const expected &&>(),
-                                                         std::declval<F &&>())) transform_error(F &&f) const &&
+  template <class F>
+  TL_EXPECTED_11_CONSTEXPR decltype(transform_error_impl(std::declval<expected const &&>(), std::declval<F &&>())) transform_error(F &&f) const &&
   {
     return transform_error_impl(std::move(*this), std::forward<F>(f));
   }
 #    endif
 #  endif
-  template<class F>
+  template <class F>
   expected TL_EXPECTED_11_CONSTEXPR or_else(F &&f) &
   {
     return or_else_impl(*this, std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   expected TL_EXPECTED_11_CONSTEXPR or_else(F &&f) &&
   {
     return or_else_impl(std::move(*this), std::forward<F>(f));
   }
 
-  template<class F>
+  template <class F>
   expected TL_EXPECTED_11_CONSTEXPR or_else(F &&f) const &
   {
     return or_else_impl(*this, std::forward<F>(f));
   }
 
 #  ifndef TL_EXPECTED_NO_CONSTRR
-  template<class F>
+  template <class F>
   expected TL_EXPECTED_11_CONSTEXPR or_else(F &&f) const &&
   {
     return or_else_impl(std::move(*this), std::forward<F>(f));
   }
 #  endif
   TL_EXPECTED_11_CONSTEXPR expected()                    = default;
-  TL_EXPECTED_11_CONSTEXPR expected(const expected &rhs) = default;
+  TL_EXPECTED_11_CONSTEXPR expected(expected const &rhs) = default;
   TL_EXPECTED_11_CONSTEXPR expected(expected &&rhs)      = default;
-  expected &operator= (const expected &rhs)              = default;
+  expected &operator= (expected const &rhs)              = default;
   expected &operator= (expected &&rhs)                   = default;
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<T, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected(in_place_t, Args &&...args)
       : impl_base(in_place, std::forward<Args>(args)...)
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected(in_place_t, std::initializer_list<U> il, Args &&...args)
       : impl_base(in_place, il, std::forward<Args>(args)...)
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class G                                                           = E,
-           detail::enable_if_t<std::is_constructible<E, const G &>::value> * = nullptr,
-           detail::enable_if_t<!std::is_convertible<const G &, E>::value> *  = nullptr>
-  explicit TL_EXPECTED_11_CONSTEXPR expected(const unexpected<G> &e)
+  template <class G = E, detail::enable_if_t<std::is_constructible<E, G const &>::value> * = nullptr, detail::enable_if_t<!std::is_convertible<G const &, E>::value> * = nullptr>
+  explicit TL_EXPECTED_11_CONSTEXPR expected(unexpected<G> const &e)
       : impl_base(unexpect, e.error())
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class G                                                           = E,
-           detail::enable_if_t<std::is_constructible<E, const G &>::value> * = nullptr,
-           detail::enable_if_t<std::is_convertible<const G &, E>::value> *   = nullptr>
+  template <class G = E, detail::enable_if_t<std::is_constructible<E, G const &>::value> * = nullptr, detail::enable_if_t<std::is_convertible<G const &, E>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected(unexpected<G> const &e)
       : impl_base(unexpect, e.error())
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class G                                                      = E,
-           detail::enable_if_t<std::is_constructible<E, G &&>::value> * = nullptr,
-           detail::enable_if_t<!std::is_convertible<G &&, E>::value> *  = nullptr>
+  template <class G = E, detail::enable_if_t<std::is_constructible<E, G &&>::value> * = nullptr, detail::enable_if_t<!std::is_convertible<G &&, E>::value> * = nullptr>
   explicit TL_EXPECTED_11_CONSTEXPR expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible<E, G &&>::value)
       : impl_base(unexpect, std::move(e.error()))
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class G                                                      = E,
-           detail::enable_if_t<std::is_constructible<E, G &&>::value> * = nullptr,
-           detail::enable_if_t<std::is_convertible<G &&, E>::value> *   = nullptr>
+  template <class G = E, detail::enable_if_t<std::is_constructible<E, G &&>::value> * = nullptr, detail::enable_if_t<std::is_convertible<G &&, E>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected(unexpected<G> &&e) noexcept(std::is_nothrow_constructible<E, G &&>::value)
       : impl_base(unexpect, std::move(e.error()))
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_constructible<E, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected(unexpect_t, Args &&...args)
       : impl_base(unexpect, std::forward<Args>(args)...)
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class U,
-           class... Args,
-           detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
+  template <class U, class... Args, detail::enable_if_t<std::is_constructible<E, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR explicit expected(unexpect_t, std::initializer_list<U> il, Args &&...args)
       : impl_base(unexpect, il, std::forward<Args>(args)...)
       , ctor_base(detail::default_constructor_tag {})
   {
   }
 
-  template<class U,
-           class G,
-           detail::enable_if_t<!(std::is_convertible<U const &, T>::value && std::is_convertible<G const &, E>::value)>
-               *                                                                  = nullptr,
-           detail::expected_enable_from_other<T, E, U, G, const U &, const G &> * = nullptr>
-  explicit TL_EXPECTED_11_CONSTEXPR expected(const expected<U, G> &rhs)
+  template <class U, class G, detail::enable_if_t<!(std::is_convertible<U const &, T>::value && std::is_convertible<G const &, E>::value)> * = nullptr, detail::expected_enable_from_other<T, E, U, G, U const &, G const &> * = nullptr>
+  explicit TL_EXPECTED_11_CONSTEXPR expected(expected<U, G> const &rhs)
       : ctor_base(detail::default_constructor_tag {})
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct(*rhs);
-    }
-    else
-    {
+    } else {
       this->construct_error(rhs.error());
     }
   }
 
-  template<class U,
-           class G,
-           detail::enable_if_t<(std::is_convertible<U const &, T>::value && std::is_convertible<G const &, E>::value)>
-               *                                                                  = nullptr,
-           detail::expected_enable_from_other<T, E, U, G, const U &, const G &> * = nullptr>
-  TL_EXPECTED_11_CONSTEXPR expected(const expected<U, G> &rhs)
+  template <class U, class G, detail::enable_if_t<(std::is_convertible<U const &, T>::value && std::is_convertible<G const &, E>::value)> * = nullptr, detail::expected_enable_from_other<T, E, U, G, U const &, G const &> * = nullptr>
+  TL_EXPECTED_11_CONSTEXPR expected(expected<U, G> const &rhs)
       : ctor_base(detail::default_constructor_tag {})
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct(*rhs);
-    }
-    else
-    {
+    } else {
       this->construct_error(rhs.error());
     }
   }
 
-  template<
+  template <
       class U,
       class G,
       detail::enable_if_t<!(std::is_convertible<U &&, T>::value && std::is_convertible<G &&, E>::value)> * = nullptr,
@@ -1951,17 +1791,14 @@ public:
   explicit TL_EXPECTED_11_CONSTEXPR expected(expected<U, G> &&rhs)
       : ctor_base(detail::default_constructor_tag {})
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct(std::move(*rhs));
-    }
-    else
-    {
+    } else {
       this->construct_error(std::move(rhs.error()));
     }
   }
 
-  template<
+  template <
       class U,
       class G,
       detail::enable_if_t<(std::is_convertible<U &&, T>::value && std::is_convertible<G &&, E>::value)> * = nullptr,
@@ -1969,48 +1806,31 @@ public:
   TL_EXPECTED_11_CONSTEXPR expected(expected<U, G> &&rhs)
       : ctor_base(detail::default_constructor_tag {})
   {
-    if (rhs.has_value())
-    {
+    if (rhs.has_value()) {
       this->construct(std::move(*rhs));
-    }
-    else
-    {
+    } else {
       this->construct_error(std::move(rhs.error()));
     }
   }
 
-  template<class U                                                     = T,
-           detail::enable_if_t<!std::is_convertible<U &&, T>::value> * = nullptr,
-           detail::expected_enable_forward_value<T, E, U> *            = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_convertible<U &&, T>::value> * = nullptr, detail::expected_enable_forward_value<T, E, U> * = nullptr>
   explicit TL_EXPECTED_11_CONSTEXPR expected(U &&v)
       : expected(in_place, std::forward<U>(v))
   {
   }
 
-  template<class U                                                    = T,
-           detail::enable_if_t<std::is_convertible<U &&, T>::value> * = nullptr,
-           detail::expected_enable_forward_value<T, E, U> *           = nullptr>
+  template <class U = T, detail::enable_if_t<std::is_convertible<U &&, T>::value> * = nullptr, detail::expected_enable_forward_value<T, E, U> * = nullptr>
   TL_EXPECTED_11_CONSTEXPR expected(U &&v)
       : expected(in_place, std::forward<U>(v))
   {
   }
 
-  template<class U                                                               = T,
-           class G                                                               = T,
-           detail::enable_if_t<std::is_nothrow_constructible<T, U &&>::value> *  = nullptr,
-           detail::enable_if_t<!std::is_void<G>::value> *                        = nullptr,
-           detail::enable_if_t<(!std::is_same<expected<T, E>, detail::decay_t<U>>::value &&
-                                !detail::conjunction<std::is_scalar<T>, std::is_same<T, detail::decay_t<U>>>::value &&
-                                std::is_constructible<T, U>::value && std::is_assignable<G &, U>::value &&
-                                std::is_nothrow_move_constructible<E>::value)> * = nullptr>
+  template <class U = T, class G = T, detail::enable_if_t<std::is_nothrow_constructible<T, U &&>::value> * = nullptr, detail::enable_if_t<!std::is_void<G>::value> * = nullptr, detail::enable_if_t<(!std::is_same<expected<T, E>, detail::decay_t<U>>::value && !detail::conjunction<std::is_scalar<T>, std::is_same<T, detail::decay_t<U>>>::value && std::is_constructible<T, U>::value && std::is_assignable<G &, U>::value && std::is_nothrow_move_constructible<E>::value)> * = nullptr>
   expected &operator= (U &&v)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       val() = std::forward<U>(v);
-    }
-    else
-    {
+    } else {
       err().~unexpected<E>();
       ::new (valptr()) T(std::forward<U>(v));
       this->m_has_val = true;
@@ -2019,33 +1839,20 @@ public:
     return *this;
   }
 
-  template<class U                                                               = T,
-           class G                                                               = T,
-           detail::enable_if_t<!std::is_nothrow_constructible<T, U &&>::value> * = nullptr,
-           detail::enable_if_t<!std::is_void<U>::value> *                        = nullptr,
-           detail::enable_if_t<(!std::is_same<expected<T, E>, detail::decay_t<U>>::value &&
-                                !detail::conjunction<std::is_scalar<T>, std::is_same<T, detail::decay_t<U>>>::value &&
-                                std::is_constructible<T, U>::value && std::is_assignable<G &, U>::value &&
-                                std::is_nothrow_move_constructible<E>::value)> * = nullptr>
+  template <class U = T, class G = T, detail::enable_if_t<!std::is_nothrow_constructible<T, U &&>::value> * = nullptr, detail::enable_if_t<!std::is_void<U>::value> * = nullptr, detail::enable_if_t<(!std::is_same<expected<T, E>, detail::decay_t<U>>::value && !detail::conjunction<std::is_scalar<T>, std::is_same<T, detail::decay_t<U>>>::value && std::is_constructible<T, U>::value && std::is_assignable<G &, U>::value && std::is_nothrow_move_constructible<E>::value)> * = nullptr>
   expected &operator= (U &&v)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       val() = std::forward<U>(v);
-    }
-    else
-    {
+    } else {
       auto tmp = std::move(err());
       err().~unexpected<E>();
 
 #  ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-      try
-      {
+      try {
         ::new (valptr()) T(std::forward<U>(v));
         this->m_has_val = true;
-      }
-      catch (...)
-      {
+      } catch (...) {
         err() = std::move(tmp);
         throw;
       }
@@ -2058,17 +1865,12 @@ public:
     return *this;
   }
 
-  template<class G = E,
-           detail::enable_if_t<std::is_nothrow_copy_constructible<G>::value && std::is_assignable<G &, G>::value> * =
-               nullptr>
-  expected &operator= (const unexpected<G> &rhs)
+  template <class G = E, detail::enable_if_t<std::is_nothrow_copy_constructible<G>::value && std::is_assignable<G &, G>::value> * = nullptr>
+  expected &operator= (unexpected<G> const &rhs)
   {
-    if (!has_value())
-    {
+    if (!has_value()) {
       err() = rhs;
-    }
-    else
-    {
+    } else {
       this->destroy_val();
       ::new (errptr()) unexpected<E>(rhs);
       this->m_has_val = false;
@@ -2077,17 +1879,12 @@ public:
     return *this;
   }
 
-  template<class G = E,
-           detail::enable_if_t<std::is_nothrow_move_constructible<G>::value && std::is_move_assignable<G>::value> * =
-               nullptr>
+  template <class G = E, detail::enable_if_t<std::is_nothrow_move_constructible<G>::value && std::is_move_assignable<G>::value> * = nullptr>
   expected &operator= (unexpected<G> &&rhs) noexcept
   {
-    if (!has_value())
-    {
+    if (!has_value()) {
       err() = std::move(rhs);
-    }
-    else
-    {
+    } else {
       this->destroy_val();
       ::new (errptr()) unexpected<E>(std::move(rhs));
       this->m_has_val = false;
@@ -2096,41 +1893,32 @@ public:
     return *this;
   }
 
-  template<class... Args, detail::enable_if_t<std::is_nothrow_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<std::is_nothrow_constructible<T, Args &&...>::value> * = nullptr>
   void emplace(Args &&...args)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       val() = T(std::forward<Args>(args)...);
-    }
-    else
-    {
+    } else {
       err().~unexpected<E>();
       ::new (valptr()) T(std::forward<Args>(args)...);
       this->m_has_val = true;
     }
   }
 
-  template<class... Args, detail::enable_if_t<!std::is_nothrow_constructible<T, Args &&...>::value> * = nullptr>
+  template <class... Args, detail::enable_if_t<!std::is_nothrow_constructible<T, Args &&...>::value> * = nullptr>
   void emplace(Args &&...args)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       val() = T(std::forward<Args>(args)...);
-    }
-    else
-    {
+    } else {
       auto tmp = std::move(err());
       err().~unexpected<E>();
 
 #  ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-      try
-      {
+      try {
         ::new (valptr()) T(std::forward<Args>(args)...);
         this->m_has_val = true;
-      }
-      catch (...)
-      {
+      } catch (...) {
         err() = std::move(tmp);
         throw;
       }
@@ -2141,49 +1929,40 @@ public:
     }
   }
 
-  template<
+  template <
       class U,
       class... Args,
       detail::enable_if_t<std::is_nothrow_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   void emplace(std::initializer_list<U> il, Args &&...args)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       T t(il, std::forward<Args>(args)...);
       val() = std::move(t);
-    }
-    else
-    {
+    } else {
       err().~unexpected<E>();
       ::new (valptr()) T(il, std::forward<Args>(args)...);
       this->m_has_val = true;
     }
   }
 
-  template<
+  template <
       class U,
       class... Args,
       detail::enable_if_t<!std::is_nothrow_constructible<T, std::initializer_list<U> &, Args &&...>::value> * = nullptr>
   void emplace(std::initializer_list<U> il, Args &&...args)
   {
-    if (has_value())
-    {
+    if (has_value()) {
       T t(il, std::forward<Args>(args)...);
       val() = std::move(t);
-    }
-    else
-    {
+    } else {
       auto tmp = std::move(err());
       err().~unexpected<E>();
 
 #  ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-      try
-      {
+      try {
         ::new (valptr()) T(il, std::forward<Args>(args)...);
         this->m_has_val = true;
-      }
-      catch (...)
-      {
+      } catch (...) {
         err() = std::move(tmp);
         throw;
       }
@@ -2222,13 +2001,10 @@ private:
 
   void swap_where_only_one_has_value(expected &rhs, t_is_not_void)
   {
-    swap_where_only_one_has_value_and_t_is_not_void(rhs, typename std::is_nothrow_move_constructible<T>::type {},
-                                                    typename std::is_nothrow_move_constructible<E>::type {});
+    swap_where_only_one_has_value_and_t_is_not_void(rhs, typename std::is_nothrow_move_constructible<T>::type {}, typename std::is_nothrow_move_constructible<E>::type {});
   }
 
-  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs,
-                                                       t_is_nothrow_move_constructible,
-                                                       e_is_nothrow_move_constructible) noexcept
+  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs, t_is_nothrow_move_constructible, e_is_nothrow_move_constructible) noexcept
   {
     auto temp = std::move(val());
     val().~T();
@@ -2238,22 +2014,17 @@ private:
     std::swap(this->m_has_val, rhs.m_has_val);
   }
 
-  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs,
-                                                       t_is_nothrow_move_constructible,
-                                                       move_constructing_e_can_throw)
+  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs, t_is_nothrow_move_constructible, move_constructing_e_can_throw)
   {
     auto temp = std::move(val());
     val().~T();
 #  ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-    try
-    {
+    try {
       ::new (errptr()) unexpected_type(std::move(rhs.err()));
       rhs.err().~unexpected_type();
       ::new (rhs.valptr()) T(std::move(temp));
       std::swap(this->m_has_val, rhs.m_has_val);
-    }
-    catch (...)
-    {
+    } catch (...) {
       val() = std::move(temp);
       throw;
     }
@@ -2265,22 +2036,17 @@ private:
 #  endif
   }
 
-  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs,
-                                                       move_constructing_t_can_throw,
-                                                       t_is_nothrow_move_constructible)
+  void swap_where_only_one_has_value_and_t_is_not_void(expected &rhs, move_constructing_t_can_throw, t_is_nothrow_move_constructible)
   {
     auto temp = std::move(rhs.err());
     rhs.err().~unexpected_type();
 #  ifdef TL_EXPECTED_EXCEPTIONS_ENABLED
-    try
-    {
+    try {
       ::new (rhs.valptr()) T(val());
       val().~T();
       ::new (errptr()) unexpected_type(std::move(temp));
       std::swap(this->m_has_val, rhs.m_has_val);
-    }
-    catch (...)
-    {
+    } catch (...) {
       rhs.err() = std::move(temp);
       throw;
     }
@@ -2293,26 +2059,17 @@ private:
   }
 
 public:
-  template<class OT = T, class OE = E>
-  detail::enable_if_t<detail::is_swappable<OT>::value && detail::is_swappable<OE>::value &&
-                      (std::is_nothrow_move_constructible<OT>::value || std::is_nothrow_move_constructible<OE>::value)>
-  swap(expected &rhs) noexcept(std::is_nothrow_move_constructible<T>::value && detail::is_nothrow_swappable<T>::value &&
-                               std::is_nothrow_move_constructible<E>::value && detail::is_nothrow_swappable<E>::value)
+  template <class OT = T, class OE = E>
+  detail::enable_if_t<detail::is_swappable<OT>::value && detail::is_swappable<OE>::value && (std::is_nothrow_move_constructible<OT>::value || std::is_nothrow_move_constructible<OE>::value)>
+  swap(expected &rhs) noexcept(std::is_nothrow_move_constructible<T>::value && detail::is_nothrow_swappable<T>::value && std::is_nothrow_move_constructible<E>::value && detail::is_nothrow_swappable<E>::value)
   {
-    if (has_value() && rhs.has_value())
-    {
+    if (has_value() && rhs.has_value()) {
       swap_where_both_have_value(rhs, typename std::is_void<T>::type {});
-    }
-    else if (!has_value() && rhs.has_value())
-    {
+    } else if (!has_value() && rhs.has_value()) {
       rhs.swap(*this);
-    }
-    else if (has_value())
-    {
+    } else if (has_value()) {
       swap_where_only_one_has_value(rhs, typename std::is_void<T>::type {});
-    }
-    else
-    {
+    } else {
       using std::swap;
       swap(err(), rhs.err());
     }
@@ -2330,28 +2087,28 @@ public:
     return valptr();
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR const U &operator* () const & noexcept
   {
     assert(has_value());
     return val();
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR U &operator* () & noexcept
   {
     assert(has_value());
     return val();
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR const U &&operator* () const && noexcept
   {
     assert(has_value());
     return std::move(val());
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR U &&operator* () && noexcept
   {
     assert(has_value());
@@ -2362,7 +2119,7 @@ public:
 
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR explicit operator bool() const noexcept { return this->m_has_val; }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR const U &value() const &
   {
     if (!has_value())
@@ -2370,7 +2127,7 @@ public:
     return val();
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR U &value() &
   {
     if (!has_value())
@@ -2378,7 +2135,7 @@ public:
     return val();
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR const U &&value() const &&
   {
     if (!has_value())
@@ -2386,7 +2143,7 @@ public:
     return std::move(val());
   }
 
-  template<class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
+  template <class U = T, detail::enable_if_t<!std::is_void<U>::value> * = nullptr>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR U &&value() &&
   {
     if (!has_value())
@@ -2394,57 +2151,50 @@ public:
     return std::move(val());
   }
 
-  template<class U>
+  template <class U>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR T value_or(U &&v) const & noexcept(
-      std::is_nothrow_convertible<const T &, T>::value && std::is_nothrow_convertible<U, T>::value)
+      std::is_nothrow_convertible<T const &, T>::value && std::is_nothrow_convertible<U, T>::value)
   {
-    static_assert(std::is_copy_constructible<T>::value && std::is_convertible<U &&, T>::value,
-                  QStringLiteral("T must be copy-constructible and convertible to from U&&"));
+    static_assert(std::is_copy_constructible<T>::value && std::is_convertible<U &&, T>::value, QStringLiteral("T must be copy-constructible and convertible to from U&&"));
     return bool(*this) ? **this : static_cast<T>(std::forward<U>(v));
   }
 
-  template<class U>
+  template <class U>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR T
   value_or(U &&v) && noexcept(std::is_nothrow_convertible<T, T>::value && std::is_nothrow_convertible<U, T>::value)
   {
-    static_assert(std::is_move_constructible<T>::value && std::is_convertible<U &&, T>::value,
-                  QStringLiteral("T must be move-constructible and convertible to from U&&"));
+    static_assert(std::is_move_constructible<T>::value && std::is_convertible<U &&, T>::value, QStringLiteral("T must be move-constructible and convertible to from U&&"));
     return bool(*this) ? std::move(**this) : static_cast<T>(std::forward<U>(v));
   }
 
-  template<class _Uty = E>
+  template <class _Uty = E>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR E error_or(_Uty &&v) const & noexcept(
       std::is_nothrow_copy_constructible<E>::value && std::is_nothrow_convertible<_Uty, E>::value)
   {
-    static_assert(std::is_copy_constructible<E>::value && std::is_convertible<_Uty, E>::value,
-                  QStringLiteral("E must be copy-constructible and convertible to from U&&"));
+    static_assert(std::is_copy_constructible<E>::value && std::is_convertible<_Uty, E>::value, QStringLiteral("E must be copy-constructible and convertible to from U&&"));
     return bool(*this) ? static_cast<E>(std::forward<_Uty>(v)) : error();
   }
 
-  template<class _Uty = E>
+  template <class _Uty = E>
   TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR E error_or(_Uty &&v) && noexcept(
       std::is_nothrow_move_constructible<E>::value && std::is_nothrow_convertible<_Uty, E>::value)
   {
-    static_assert(std::is_move_constructible<E>::value && std::is_convertible<_Uty, E>::value,
-                  QStringLiteral("E must be move-constructible and convertible to from U&&"));
+    static_assert(std::is_move_constructible<E>::value && std::is_convertible<_Uty, E>::value, QStringLiteral("E must be move-constructible and convertible to from U&&"));
     return bool(*this) ? static_cast<E>(std::forward<_Uty>(v)) : std::move(error());
   }
 };
 
 namespace detail
 {
-template<class Exp>
+template <class Exp>
 using exp_t = typename detail::decay_t<Exp>::value_type;
-template<class Exp>
+template <class Exp>
 using err_t = typename detail::decay_t<Exp>::error_type;
-template<class Exp, class Ret>
+template <class Exp, class Ret>
 using ret_t = expected<Ret, err_t<Exp>>;
 
 #  ifdef TL_EXPECTED_CXX14
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>()))>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>()))>
 TL_EXPECTED_11_CONSTEXPR auto
 and_then_impl(Exp &&exp, F &&f)
 {
@@ -2454,10 +2204,7 @@ and_then_impl(Exp &&exp, F &&f)
                          : Ret(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>()))>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>()))>
 TL_EXPECTED_11_CONSTEXPR auto
 and_then_impl(Exp &&exp, F &&f)
 {
@@ -2466,15 +2213,11 @@ and_then_impl(Exp &&exp, F &&f)
   return exp.has_value() ? detail::invoke(std::forward<F>(f)) : Ret(unexpect, std::forward<Exp>(exp).error());
 }
 #  else
-template<class>
+template <class>
 struct TC;
 
-template<class Exp,
-         class F,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())),
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr>
-auto
-and_then_impl(Exp &&exp, F &&f) -> Ret
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())), detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr>
+auto and_then_impl(Exp &&exp, F &&f) -> Ret
 {
   static_assert(detail::is_expected<Ret>::value, QStringLiteral("F must return an expected"));
 
@@ -2482,10 +2225,7 @@ and_then_impl(Exp &&exp, F &&f) -> Ret
                          : Ret(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>())),
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr>
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>())), detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 and_then_impl(Exp &&exp, F &&f) -> Ret
 {
@@ -2496,11 +2236,7 @@ and_then_impl(Exp &&exp, F &&f) -> Ret
 #  endif
 
 #  ifdef TL_EXPECTED_CXX14
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 expected_map_impl(Exp &&exp, F &&f)
 {
@@ -2509,17 +2245,11 @@ expected_map_impl(Exp &&exp, F &&f)
                          : result(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
-auto
-expected_map_impl(Exp &&exp, F &&f)
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto expected_map_impl(Exp &&exp, F &&f)
 {
   using result = expected<void, err_t<Exp>>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     detail::invoke(std::forward<F>(f), *std::forward<Exp>(exp));
     return result();
   }
@@ -2527,11 +2257,7 @@ expected_map_impl(Exp &&exp, F &&f)
   return result(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>())),
-         detail::enable_if_t<!std::is_void<Ret>::value> *       = nullptr>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 expected_map_impl(Exp &&exp, F &&f)
 {
@@ -2540,17 +2266,11 @@ expected_map_impl(Exp &&exp, F &&f)
                          : result(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>())),
-         detail::enable_if_t<std::is_void<Ret>::value> *        = nullptr>
-auto
-expected_map_impl(Exp &&exp, F &&f)
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto expected_map_impl(Exp &&exp, F &&f)
 {
   using result = expected<void, err_t<Exp>>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     detail::invoke(std::forward<F>(f));
     return result();
   }
@@ -2558,11 +2278,7 @@ expected_map_impl(Exp &&exp, F &&f)
   return result(unexpect, std::forward<Exp>(exp).error());
 }
 #  else
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 
 TL_EXPECTED_11_CONSTEXPR auto
 expected_map_impl(Exp &&exp, F &&f) -> ret_t<Exp, detail::decay_t<Ret>>
@@ -2573,17 +2289,11 @@ expected_map_impl(Exp &&exp, F &&f) -> ret_t<Exp, detail::decay_t<Ret>>
                          : result(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), *std::declval<Exp>())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
 
-auto
-expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
+auto expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
 {
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     detail::invoke(std::forward<F>(f), *std::forward<Exp>(exp));
     return {};
   }
@@ -2591,11 +2301,7 @@ expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
   return unexpected<err_t<Exp>>(std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>())),
-         detail::enable_if_t<!std::is_void<Ret>::value> *       = nullptr>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 
 TL_EXPECTED_11_CONSTEXPR auto
 expected_map_impl(Exp &&exp, F &&f) -> ret_t<Exp, detail::decay_t<Ret>>
@@ -2606,17 +2312,11 @@ expected_map_impl(Exp &&exp, F &&f) -> ret_t<Exp, detail::decay_t<Ret>>
                          : result(unexpect, std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret                                              = decltype(detail::invoke(std::declval<F>())),
-         detail::enable_if_t<std::is_void<Ret>::value> *        = nullptr>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
 
-auto
-expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
+auto expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
 {
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     detail::invoke(std::forward<F>(f));
     return {};
   }
@@ -2625,13 +2325,9 @@ expected_map_impl(Exp &&exp, F &&f) -> expected<void, err_t<Exp>>
 }
 #  endif
 
-#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) &&                      \
+#  if defined(TL_EXPECTED_CXX14) && !defined(TL_EXPECTED_GCC49) && !defined(TL_EXPECTED_GCC54) && \
       !defined(TL_EXPECTED_GCC55)
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 transform_error_impl(Exp &&exp, F &&f)
 {
@@ -2640,17 +2336,11 @@ transform_error_impl(Exp &&exp, F &&f)
                          : result(unexpect, detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()));
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
-auto
-transform_error_impl(Exp &&exp, F &&f)
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto transform_error_impl(Exp &&exp, F &&f)
 {
   using result = expected<exp_t<Exp>, monostate>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     return result(*std::forward<Exp>(exp));
   }
 
@@ -2658,11 +2348,7 @@ transform_error_impl(Exp &&exp, F &&f)
   return result(unexpect, monostate {});
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 transform_error_impl(Exp &&exp, F &&f)
 {
@@ -2671,17 +2357,11 @@ transform_error_impl(Exp &&exp, F &&f)
                          : result(unexpect, detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()));
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
-auto
-transform_error_impl(Exp &&exp, F &&f)
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto transform_error_impl(Exp &&exp, F &&f)
 {
   using result = expected<exp_t<Exp>, monostate>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     return result();
   }
 
@@ -2689,11 +2369,7 @@ transform_error_impl(Exp &&exp, F &&f)
   return result(unexpect, monostate {});
 }
 #  else
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, detail::decay_t<Ret>>
 {
@@ -2703,17 +2379,11 @@ transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, detail::decay_t<R
                          : result(unexpect, detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()));
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
-auto
-transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
+template <class Exp, class F, detail::enable_if_t<!std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
 {
   using result = expected<exp_t<Exp>, monostate>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     return result(*std::forward<Exp>(exp));
   }
 
@@ -2721,11 +2391,7 @@ transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
   return result(unexpect, monostate {});
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, detail::decay_t<Ret>>
 {
@@ -2735,17 +2401,11 @@ transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, detail::decay_t<R
                          : result(unexpect, detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()));
 }
 
-template<class Exp,
-         class F,
-         detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
-auto
-transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
+template <class Exp, class F, detail::enable_if_t<std::is_void<exp_t<Exp>>::value> * = nullptr, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+auto transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
 {
   using result = expected<exp_t<Exp>, monostate>;
-  if (exp.has_value())
-  {
+  if (exp.has_value()) {
     return result();
   }
 
@@ -2755,10 +2415,7 @@ transform_error_impl(Exp &&exp, F &&f) -> expected<exp_t<Exp>, monostate>
 #  endif
 
 #  ifdef TL_EXPECTED_CXX14
-template<class Exp,
-         class F,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
 TL_EXPECTED_11_CONSTEXPR auto
 or_else_impl(Exp &&exp, F &&f)
 {
@@ -2766,10 +2423,7 @@ or_else_impl(Exp &&exp, F &&f)
   return exp.has_value() ? std::forward<Exp>(exp) : detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
 detail::decay_t<Exp>
 or_else_impl(Exp &&exp, F &&f)
 {
@@ -2777,21 +2431,14 @@ or_else_impl(Exp &&exp, F &&f)
                          : (detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error()), std::forward<Exp>(exp));
 }
 #  else
-template<class Exp,
-         class F,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
-auto
-or_else_impl(Exp &&exp, F &&f) -> Ret
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<!std::is_void<Ret>::value> * = nullptr>
+auto or_else_impl(Exp &&exp, F &&f) -> Ret
 {
   static_assert(detail::is_expected<Ret>::value, QStringLiteral("F must return an expected"));
   return exp.has_value() ? std::forward<Exp>(exp) : detail::invoke(std::forward<F>(f), std::forward<Exp>(exp).error());
 }
 
-template<class Exp,
-         class F,
-         class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())),
-         detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
+template <class Exp, class F, class Ret = decltype(detail::invoke(std::declval<F>(), std::declval<Exp>().error())), detail::enable_if_t<std::is_void<Ret>::value> * = nullptr>
 detail::decay_t<Exp>
 or_else_impl(Exp &&exp, F &&f)
 {
@@ -2801,49 +2448,43 @@ or_else_impl(Exp &&exp, F &&f)
 #  endif
 } // namespace detail
 
-template<class T, class E, class U, class F>
+template <class T, class E, class U, class F>
 TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR bool
-operator== (const expected<T, E> &lhs,
-            const expected<U, F> &rhs) noexcept(noexcept(lhs.error() == rhs.error()) && noexcept(*lhs == *rhs))
+operator== (expected<T, E> const &lhs, expected<U, F> const &rhs) noexcept(noexcept(lhs.error() == rhs.error()) && noexcept(*lhs == *rhs))
 {
   return (lhs.has_value() != rhs.has_value()) ? false : (!lhs.has_value() ? lhs.error() == rhs.error() : *lhs == *rhs);
 }
 
-template<class T, class E, class U>
+template <class T, class E, class U>
 TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR bool
-operator== (const expected<T, E> &x, const U &v) noexcept(noexcept(*x == v))
+operator== (expected<T, E> const &x, U const &v) noexcept(noexcept(*x == v))
 {
   return x.has_value() ? *x == v : false;
 }
 
-template<class T, class E, class U>
+template <class T, class E, class U>
 TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR bool
-operator== (const U &v, const expected<T, E> &x) noexcept(noexcept(*x == v))
+operator== (U const &v, expected<T, E> const &x) noexcept(noexcept(*x == v))
 {
   return x.has_value() ? *x == v : false;
 }
 
-template<class T, class E>
+template <class T, class E>
 TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR bool
-operator== (const expected<T, E> &x, const unexpected<E> &e) noexcept(noexcept(x.error() == e.error()))
+operator== (expected<T, E> const &x, unexpected<E> const &e) noexcept(noexcept(x.error() == e.error()))
 {
   return x.has_value() ? false : x.error() == e.error();
 }
 
-template<class T, class E>
+template <class T, class E>
 TL_EXPECTED_NODISCARD TL_EXPECTED_11_CONSTEXPR bool
-operator== (const unexpected<E> &e, const expected<T, E> &x) noexcept(noexcept(x.error() == e.error()))
+operator== (unexpected<E> const &e, expected<T, E> const &x) noexcept(noexcept(x.error() == e.error()))
 {
   return x.has_value() ? false : x.error() == e.error();
 }
 
-template<class T,
-         class E,
-         detail::enable_if_t<(std::is_void<T>::value || std::is_move_constructible<T>::value) &&
-                             detail::is_swappable<T>::value && std::is_move_constructible<E>::value &&
-                             detail::is_swappable<E>::value> * = nullptr>
-void
-swap(expected<T, E> &lhs, expected<T, E> &rhs) noexcept(noexcept(lhs.swap(rhs)))
+template <class T, class E, detail::enable_if_t<(std::is_void<T>::value || std::is_move_constructible<T>::value) && detail::is_swappable<T>::value && std::is_move_constructible<E>::value && detail::is_swappable<E>::value> * = nullptr>
+void swap(expected<T, E> &lhs, expected<T, E> &rhs) noexcept(noexcept(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }

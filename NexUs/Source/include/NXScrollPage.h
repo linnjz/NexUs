@@ -26,7 +26,7 @@ public:
 
   void addCentralWidget(QWidget *centralWidget, bool isWidgetResizeable = true, bool isVerticalGrabGesture = true, qreal mousePressEventDelay = 0.0, Qt::ScrollBarPolicy vScrollBarPolicy = Qt::ScrollBarAsNeeded, Qt::ScrollBarPolicy hScrollBarPolicy = Qt::ScrollBarAlwaysOff);
 
-  void setPageTitle(const QString &title);
+  void setPageTitle(QString const &title);
 
   void navigation(int widgetIndex, bool isLogRoute = true);
 

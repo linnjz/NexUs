@@ -26,21 +26,21 @@ public:
     QStringList emojis;
   };
 
-  int _currentCategory { 0 };
-  NXThemeType::ThemeMode _themeMode;
-  QVector<EmojiCategory> _categories;
-  QStringList _recentEmojis;
+  int m_CurrentCategory { 0 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QVector<EmojiCategory> m_Categories;
+  QStringList m_RecentEmojis;
 
-  QGridLayout *_gridLayout { nullptr };
-  NXLineEdit *_searchEdit { nullptr };
-  QWidget *_gridContainer { nullptr };
+  QGridLayout *m_GridLayout { nullptr };
+  NXLineEdit *m_SearchEdit { nullptr };
+  QWidget *m_GridContainer { nullptr };
   explicit NXEmojiPickerPrivate(QObject *parent = nullptr);
   ~NXEmojiPickerPrivate();
 
 
   void initEmojis();
   void buildGrid(int categoryIndex);
-  void filterEmojis(const QString &text);
+  void filterEmojis(QString const &text);
 };
 
 #endif // NXEMOJIPICKERPRIVATE_H

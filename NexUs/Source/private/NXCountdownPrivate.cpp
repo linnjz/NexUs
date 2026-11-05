@@ -18,28 +18,28 @@ NXCountdownPrivate::~NXCountdownPrivate()
 void NXCountdownPrivate::onTimerTick()
 {
   Q_Q(NXCountdown);
-  if (_useTargetMode) {
-    qint64 secs       = QDateTime::currentDateTime().secsTo(_targetDateTime);
-    _remainingSeconds = qMax(static_cast<qint64>(0), secs);
+  if (m_UseTargetMode) {
+    qint64 secs       = QDateTime::currentDateTime().secsTo(m_TargetDateTime);
+    m_RemainingSeconds = qMax(static_cast<qint64>(0), secs);
   } else {
-    _remainingSeconds = qMax(static_cast<qint64>(0), _remainingSeconds - 1);
+    m_RemainingSeconds = qMax(static_cast<qint64>(0), m_RemainingSeconds - 1);
   }
 
-  int curSeconds = static_cast<int>(_remainingSeconds % 60);
-  if (_prevSeconds != curSeconds) {
+  int curSeconds = static_cast<int>(m_RemainingSeconds % 60);
+  if (m_PrevSeconds != curSeconds) {
     _startFlipAnimation();
-    _prevSeconds = curSeconds;
+    m_PrevSeconds = curSeconds;
   }
-  _prevMinutes = static_cast<int>((_remainingSeconds % 3600) / 60);
-  _prevHours   = static_cast<int>((_remainingSeconds % 86400) / 3600);
-  _prevDays    = static_cast<int>(_remainingSeconds / 86400);
+  m_PrevMinutes = static_cast<int>((m_RemainingSeconds % 3600) / 60);
+  m_PrevHours   = static_cast<int>((m_RemainingSeconds % 86400) / 3600);
+  m_PrevDays    = static_cast<int>(m_RemainingSeconds / 86400);
 
-  Q_EMIT q->tick(_remainingSeconds);
+  Q_EMIT q->tick(m_RemainingSeconds);
   q->update();
 
-  if (_remainingSeconds <= 0) {
-    _isRunning = false;
-    _timer->stop();
+  if (m_RemainingSeconds <= 0) {
+    m_IsRunning = false;
+    m_Timer->stop();
     Q_EMIT q->timeout();
   }
 }
@@ -47,8 +47,8 @@ void NXCountdownPrivate::onTimerTick()
 void NXCountdownPrivate::_startFlipAnimation()
 {
   Q_Q(NXCountdown);
-  _pFlipAngle                  = 0;
-  QPropertyAnimation *flipAnim = new QPropertyAnimation(this, "pFlipAngle");
+  m_FlipAngle                  = 0;
+  QPropertyAnimation *flipAnim = new QPropertyAnimation(this, "FlipAngle");
   connect(flipAnim, &QPropertyAnimation::valueChanged, q, [=]() {
     q->update();
   });

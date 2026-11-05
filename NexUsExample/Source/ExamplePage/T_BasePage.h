@@ -14,7 +14,7 @@ public:
   ~T_BasePage();
 
 protected:
-  void createCustomWidget(const QString &desText);
+  void createCustomWidget(QString const &desText);
 };
 
 #endif // T_BASEPAGE_H

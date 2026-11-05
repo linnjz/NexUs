@@ -48,17 +48,15 @@ T_ListViewModel::~T_ListViewModel()
 {
 }
 
-int
-T_ListViewModel::rowCount(const QModelIndex &parent) const
+int T_ListViewModel::rowCount(QModelIndex const &parent) const
 {
   return this->_dataList.count();
 }
 
 QVariant
-T_ListViewModel::data(const QModelIndex &index, int role) const
+T_ListViewModel::data(QModelIndex const &index, int role) const
 {
-  if (role == Qt::DisplayRole)
-  {
+  if (role == Qt::DisplayRole) {
     return _dataList[index.row()];
   }
   return QVariant();

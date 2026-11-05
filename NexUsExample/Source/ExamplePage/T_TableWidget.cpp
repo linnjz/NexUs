@@ -80,8 +80,7 @@ T_TableWidget::T_TableWidget(QWidget *parent)
                            QStringLiteral(":/Resource/Image/Model/LASTSTARDUST.jpg"),
                            QStringLiteral(":/Resource/Image/Model/RunningInTheDark.jpg") };
 
-  for (int row = 0; row < 9; ++row)
-  {
+  for (int row = 0; row < 9; ++row) {
     // 预览列 - 图标
     QTableWidgetItem *previewItem = new QTableWidgetItem();
     QIcon icon(QPixmap(iconPaths[row]).scaled(38, 38, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -90,11 +89,9 @@ T_TableWidget::T_TableWidget(QWidget *parent)
     _tableWidget->setItem(row, 0, previewItem);
 
     // 歌曲数据列
-    for (int col = 0; col < 4; ++col)
-    {
+    for (int col = 0; col < 4; ++col) {
       QTableWidgetItem *item = new QTableWidgetItem(songData[row][col]);
-      if (col == 3)
-      {
+      if (col == 3) {
         // 时长列居中对齐
         item->setTextAlignment(Qt::AlignCenter);
       }
@@ -102,35 +99,26 @@ T_TableWidget::T_TableWidget(QWidget *parent)
     }
 
     // 为前三行设置不同的颜色
-    if (row == 0)
-    {
+    if (row == 0) {
       // 第一行 - 红色背景
-      for (int col = 0; col < 5; ++col)
-      {
+      for (int col = 0; col < 5; ++col) {
         _tableWidget->item(row, col)->setBackground(QColor(255, 150, 150));
       }
-    }
-    else if (row == 1)
-    {
+    } else if (row == 1) {
       // 第二行 - 绿色背景
-      for (int col = 0; col < 5; ++col)
-      {
+      for (int col = 0; col < 5; ++col) {
         _tableWidget->item(row, col)->setBackground(QColor(150, 255, 150));
       }
-    }
-    else if (row == 2)
-    {
+    } else if (row == 2) {
       // 第三行 - 蓝色文字（不改变背景）
-      for (int col = 0; col < 5; ++col)
-      {
+      for (int col = 0; col < 5; ++col) {
         _tableWidget->item(row, col)->setForeground(QColor(50, 50, 255));
       }
     }
   }
 
   // 设置列宽
-  connect(_tableWidget, &NXTableWidget::tableWidgetShow, this, [=]()
-  {
+  connect(_tableWidget, &NXTableWidget::tableWidgetShow, this, [=]() {
     _tableWidget->setColumnWidth(0, 60);
     _tableWidget->setColumnWidth(1, 205);
     _tableWidget->setColumnWidth(2, 170);

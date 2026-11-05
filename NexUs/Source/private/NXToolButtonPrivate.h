@@ -17,7 +17,7 @@ public:
   ~NXToolButtonPrivate();
 
 private:
-  NXToolButtonStyle *_toolButtonStyle { nullptr };
+  NXToolButtonStyle *m_ToolButtonStyle { nullptr };
 };
 
 #endif // NXTOOLBUTTONPRIVATE_H

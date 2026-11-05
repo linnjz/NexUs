@@ -28,12 +28,12 @@ public:
 
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _hoveredIndex { -1 };
-  qreal _indicatorX { 0 };
-  qreal _indicatorWidth { 0 };
-  QList<SelectorItem> _items;
-  QVariantAnimation *_indicatorAnimation { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_HoveredIndex { -1 };
+  qreal m_IndicatorX { 0 };
+  qreal m_IndicatorWidth { 0 };
+  QList<SelectorItem> m_Items;
+  QVariantAnimation *m_IndicatorAnimation { nullptr };
   void _startIndicatorAnimation(qreal targetX, qreal targetWidth);
   int _itemIndexAtPos(QPoint pos) const;
 };

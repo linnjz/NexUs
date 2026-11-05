@@ -11,11 +11,11 @@
 #include "NXTheme.h"
 
 NXSpinBoxStyle::NXSpinBoxStyle(QStyle *style)
+    : m_ButtonMode { NXSpinBoxType::Inline }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pButtonMode = NXSpinBoxType::Inline;
-  _themeMode   = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -23,11 +23,11 @@ NXSpinBoxStyle::~NXSpinBoxStyle()
 {
 }
 
-void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+void NXSpinBoxStyle::drawComplexControl(ComplexControl control, QStyleOptionComplex const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (control) {
   case QStyle::CC_SpinBox : {
-    const QStyleOptionSpinBox *sopt = qstyleoption_cast<const QStyleOptionSpinBox *>(option);
+    QStyleOptionSpinBox const *sopt = qstyleoption_cast<QStyleOptionSpinBox const *>(option);
     if (!sopt) {
       break;
     }
@@ -35,16 +35,16 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     //背景
     QRect spinBoxRect = sopt->rect.adjusted(1, 1, -1, -1);
-    painter->setPen(NXThemeColor(_themeMode, BasicBorder));
+    painter->setPen(NXThemeColor(m_ThemeMode, BasicBorder));
     bool isEnable = sopt->state.testFlag(QStyle::State_Enabled);
     if (isEnable) {
       if (sopt->state & QStyle::State_MouseOver) {
-        painter->setBrush(NXThemeColor(_themeMode, BasicHover));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicHover));
       } else {
-        painter->setBrush(NXThemeColor(_themeMode, BasicBase));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicBase));
       }
     } else {
-      painter->setBrush(NXThemeColor(_themeMode, BasicDisable));
+      painter->setBrush(NXThemeColor(m_ThemeMode, BasicDisable));
     }
     painter->drawRoundedRect(spinBoxRect, 4, 4);
     //添加按钮
@@ -56,10 +56,10 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
       if (sopt->activeSubControls == SC_ScrollBarAddLine) {
         painter->setPen(Qt::NoPen);
         if (sopt->state & QStyle::State_Sunken && sopt->state & QStyle::State_MouseOver) {
-          painter->setBrush(NXThemeColor(_themeMode, BasicPressAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicPressAlpha));
         } else {
           if (sopt->state & QStyle::State_MouseOver) {
-            painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+            painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
           }
         }
         painter->drawRoundedRect(addLineRect, 4, 4);
@@ -68,10 +68,10 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
       if (sopt->activeSubControls == SC_ScrollBarSubLine) {
         painter->setPen(Qt::NoPen);
         if (sopt->state & QStyle::State_Sunken && sopt->state & QStyle::State_MouseOver) {
-          painter->setBrush(NXThemeColor(_themeMode, BasicPressAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicPressAlpha));
         } else {
           if (sopt->state & QStyle::State_MouseOver) {
-            painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+            painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
           }
         }
         painter->drawRoundedRect(subLineRect, 4, 4);
@@ -79,7 +79,7 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
     }
     //底边线
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, BasicHemline));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicHemline));
     QPainterPath path;
     path.moveTo(4, spinBoxRect.y() + spinBoxRect.height());
     path.lineTo(spinBoxRect.width() - 4, spinBoxRect.y() + spinBoxRect.height());
@@ -93,10 +93,10 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(nxApp->getFontPixelSize() + 4);
     painter->setFont(iconFont);
-    painter->setPen(isEnable ? NXThemeColor(_themeMode, BasicText) : NXThemeColor(_themeMode, BasicTextDisable));
-    painter->drawText(addLineRect, Qt::AlignCenter, _pButtonMode == NXSpinBoxType::PMSide ? QChar((unsigned short) NXIconType::Plus) : QChar((unsigned short) NXIconType::AngleUp));
+    painter->setPen(isEnable ? NXThemeColor(m_ThemeMode, BasicText) : NXThemeColor(m_ThemeMode, BasicTextDisable));
+    painter->drawText(addLineRect, Qt::AlignCenter, m_ButtonMode == NXSpinBoxType::PMSide ? QChar((unsigned short) NXIconType::Plus) : QChar((unsigned short) NXIconType::AngleUp));
     //减小图标
-    painter->drawText(subLineRect, Qt::AlignCenter, _pButtonMode == NXSpinBoxType::PMSide ? QChar((unsigned short) NXIconType::Minus) : QChar((unsigned short) NXIconType::AngleDown));
+    painter->drawText(subLineRect, Qt::AlignCenter, m_ButtonMode == NXSpinBoxType::PMSide ? QChar((unsigned short) NXIconType::Minus) : QChar((unsigned short) NXIconType::AngleDown));
     painter->restore();
     return;
   }
@@ -107,7 +107,7 @@ void NXSpinBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpti
   QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-QRect NXSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComplex *opt, SubControl sc, const QWidget *widget) const
+QRect NXSpinBoxStyle::subControlRect(ComplexControl cc, QStyleOptionComplex const *opt, SubControl sc, QWidget const *widget) const
 {
   QRect rect = QProxyStyle::subControlRect(cc, opt, sc, widget);
   switch (cc) {
@@ -116,7 +116,7 @@ QRect NXSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComple
     case SC_ScrollBarAddLine : {
       //增加按钮
       QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget).adjusted(1, 1, -1, -1);
-      switch (_pButtonMode) {
+      switch (m_ButtonMode) {
       case NXSpinBoxType::Inline : {
         return QRect(spinBoxRect.width() - spinBoxRect.height(), spinBoxRect.y(), spinBoxRect.height(), spinBoxRect.height())
             .adjusted(3, 4, -3, -5);
@@ -135,7 +135,7 @@ QRect NXSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComple
     case SC_ScrollBarSubLine : {
       //减少按钮
       QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget).adjusted(1, 1, -1, -1);
-      switch (_pButtonMode) {
+      switch (m_ButtonMode) {
       case NXSpinBoxType::Inline : {
         return QRect(spinBoxRect.width() - 2 * spinBoxRect.height(), spinBoxRect.y(), spinBoxRect.height(), spinBoxRect.height())
             .adjusted(6, 4, 0, -5);
@@ -153,7 +153,7 @@ QRect NXSpinBoxStyle::subControlRect(ComplexControl cc, const QStyleOptionComple
     }
     case SC_SpinBoxEditField : {
       QRect spinBoxRect = QProxyStyle::subControlRect(cc, opt, SC_SpinBoxFrame, widget);
-      switch (_pButtonMode) {
+      switch (m_ButtonMode) {
       case NXSpinBoxType::Inline : {
         return { spinBoxRect.x(), spinBoxRect.y(), spinBoxRect.width() - 2 * spinBoxRect.height() + 6,
                  spinBoxRect.height() };

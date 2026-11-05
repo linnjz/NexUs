@@ -20,9 +20,9 @@ public:
   ~NXRibbonGroupPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QHBoxLayout *_contentLayout { nullptr };
-  QString _title;
+  NXThemeType::ThemeMode m_ThemeMode;
+  QHBoxLayout *m_ContentLayout { nullptr };
+  QString m_Title;
 };
 
 #endif // NXRIBBONGROUPPRIVATE_H

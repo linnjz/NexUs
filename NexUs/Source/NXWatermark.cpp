@@ -7,16 +7,16 @@
 #include "NXTheme.h"
 #include "private/NXWatermarkPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXWatermark, QS_SET_CREF(QString), Text)
-Q_PROPERTY_CREATE_CPP(NXWatermark, QS_SET_CREF(QImage), Image)
-Q_PROPERTY_CREATE_CPP(NXWatermark, QS_SET_CREF(QColor), TextColor)
-Q_PROPERTY_CREATE_CPP(NXWatermark, qreal, Opacity)
-Q_PROPERTY_CREATE_CPP(NXWatermark, qreal, Rotation)
-Q_PROPERTY_CREATE_CPP(NXWatermark, int, FontPixelSize)
-Q_PROPERTY_CREATE_CPP(NXWatermark, int, GapX)
-Q_PROPERTY_CREATE_CPP(NXWatermark, int, GapY)
-Q_PROPERTY_CREATE_CPP(NXWatermark, int, ImageWidth)
-Q_PROPERTY_CREATE_CPP(NXWatermark, int, ImageHeight)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_SCREF_PAEMIT(QString), Text)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_SCREF_PAEMIT(QImage), Image)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_SCREF_PAEMIT(QColor), TextColor)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(qreal), Opacity)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(qreal), Rotation)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(int), FontPixelSize)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(int), GapX)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(int), GapY)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(int), ImageWidth)
+Q_PROPERTY_CREATE_CPP(NXWatermark, QPS_PAEMIT(int), ImageHeight)
 
 NXWatermarkPrivate::NXWatermarkPrivate(QObject *parent)
     : QObject(parent)
@@ -30,28 +30,28 @@ NXWatermarkPrivate::~NXWatermarkPrivate()
 void NXWatermarkPrivate::rebuildPattern()
 {
   Q_Q(NXWatermark);
-  _patternDirty = false;
+  m_PatternDirty = false;
 
-  bool hasText  = !_pText.isEmpty();
-  bool hasImage = !_pImage.isNull();
+  bool hasText  = !m_Text.isEmpty();
+  bool hasImage = !m_Image.isNull();
   if (!hasText && !hasImage) {
-    _patternPixmap = QPixmap();
+    m_PatternPixmap = QPixmap();
     return;
   }
 
   QFont font;
-  font.setPixelSize(_pFontPixelSize);
+  font.setPixelSize(m_FontPixelSize);
   QFontMetrics fm(font);
 
   int contentWidth  = 0;
   int contentHeight = 0;
   if (hasText) {
-    contentWidth  = fm.horizontalAdvance(_pText);
+    contentWidth  = fm.horizontalAdvance(m_Text);
     contentHeight = fm.height();
   }
   if (hasImage) {
-    int imgW = _pImageWidth > 0 ? _pImageWidth : _pImage.width();
-    int imgH = _pImageHeight > 0 ? _pImageHeight : _pImage.height();
+    int imgW = m_ImageWidth > 0 ? m_ImageWidth : m_Image.width();
+    int imgH = m_ImageHeight > 0 ? m_ImageHeight : m_Image.height();
     if (hasText) {
       contentWidth = qMax(contentWidth, imgW);
       contentHeight += 4 + imgH;
@@ -62,14 +62,14 @@ void NXWatermarkPrivate::rebuildPattern()
   }
 
   if (contentWidth <= 0 || contentHeight <= 0) {
-    _patternPixmap = QPixmap();
+    m_PatternPixmap = QPixmap();
     return;
   }
 
-  int cellWidth  = contentWidth + _pGapX;
-  int cellHeight = contentHeight + _pGapY;
+  int cellWidth  = contentWidth + m_GapX;
+  int cellHeight = contentHeight + m_GapY;
 
-  qreal radians     = qDegreesToRadians(_pRotation);
+  qreal radians     = qDegreesToRadians(m_Rotation);
   int rotatedWidth  = qCeil(qAbs(cellWidth * qCos(radians)) + qAbs(cellHeight * qSin(radians)));
   int rotatedHeight = qCeil(qAbs(cellWidth * qSin(radians)) + qAbs(cellHeight * qCos(radians)));
 
@@ -81,30 +81,30 @@ void NXWatermarkPrivate::rebuildPattern()
   QPainter painter(&tile);
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
   painter.translate(rotatedWidth / 2.0, rotatedHeight / 2.0);
-  painter.rotate(_pRotation);
+  painter.rotate(m_Rotation);
   painter.translate(-cellWidth / 2.0, -cellHeight / 2.0);
 
   int yOffset = 0;
   if (hasImage) {
-    int imgW = _pImageWidth > 0 ? _pImageWidth : _pImage.width();
-    int imgH = _pImageHeight > 0 ? _pImageHeight : _pImage.height();
+    int imgW = m_ImageWidth > 0 ? m_ImageWidth : m_Image.width();
+    int imgH = m_ImageHeight > 0 ? m_ImageHeight : m_Image.height();
     int imgX = (contentWidth - imgW) / 2;
-    painter.setOpacity(_pOpacity);
-    painter.drawImage(QRect(imgX, 0, imgW, imgH), _pImage);
+    painter.setOpacity(m_Opacity);
+    painter.drawImage(QRect(imgX, 0, imgW, imgH), m_Image);
     yOffset = imgH + 4;
   }
 
   if (hasText) {
-    QColor color = _pTextColor.isValid() ? _pTextColor : NXThemeColor(_themeMode, BasicText);
-    color.setAlphaF(color.alphaF() * _pOpacity);
+    QColor color = m_TextColor.isValid() ? m_TextColor : NXThemeColor(m_ThemeMode, BasicText);
+    color.setAlphaF(color.alphaF() * m_Opacity);
     painter.setOpacity(1.0);
     painter.setFont(font);
     painter.setPen(color);
-    painter.drawText(QRect(0, yOffset, contentWidth, fm.height()), Qt::AlignCenter, _pText);
+    painter.drawText(QRect(0, yOffset, contentWidth, fm.height()), Qt::AlignCenter, m_Text);
   }
 
   painter.end();
-  _patternPixmap = tile;
+  m_PatternPixmap = tile;
 }
 
 NXWatermark::NXWatermark(QWidget *parent)
@@ -113,16 +113,16 @@ NXWatermark::NXWatermark(QWidget *parent)
 {
   Q_D(NXWatermark);
   d->q_ptr           = this;
-  d->_pText          = QStringLiteral("");
-  d->_pFontPixelSize = 14;
-  d->_pOpacity       = 0.12;
-  d->_pRotation      = -22;
-  d->_pGapX          = 80;
-  d->_pGapY          = 60;
-  d->_pTextColor     = QColor();
-  d->_pImage         = QImage();
-  d->_pImageWidth    = 0;
-  d->_pImageHeight   = 0;
+  d->m_Text          = QStringLiteral("");
+  d->m_FontPixelSize = 14;
+  d->m_Opacity       = 0.12;
+  d->m_Rotation      = -22;
+  d->m_GapX          = 80;
+  d->m_GapY          = 60;
+  d->m_TextColor     = QColor();
+  d->m_Image         = QImage();
+  d->m_ImageWidth    = 0;
+  d->m_ImageHeight   = 0;
   setObjectName("NXWatermark");
 
   setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -135,35 +135,35 @@ NXWatermark::NXWatermark(QWidget *parent)
     raise();
   }
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode    = themeMode;
-    d->_patternDirty = true;
+    d->m_ThemeMode    = themeMode;
+    d->m_PatternDirty = true;
     update();
   });
 
   auto markDirty = [=]() {
-    d->_patternDirty = true;
+    d->m_PatternDirty = true;
     update();
   };
-  connect(this, &NXWatermark::pTextChanged, this, markDirty);
-  connect(this, &NXWatermark::pFontPixelSizeChanged, this, markDirty);
-  connect(this, &NXWatermark::pOpacityChanged, this, markDirty);
-  connect(this, &NXWatermark::pRotationChanged, this, markDirty);
-  connect(this, &NXWatermark::pGapXChanged, this, markDirty);
-  connect(this, &NXWatermark::pGapYChanged, this, markDirty);
-  connect(this, &NXWatermark::pTextColorChanged, this, markDirty);
-  connect(this, &NXWatermark::pImageChanged, this, markDirty);
-  connect(this, &NXWatermark::pImageWidthChanged, this, markDirty);
-  connect(this, &NXWatermark::pImageHeightChanged, this, markDirty);
+  connect(this, &NXWatermark::signalTextChanged, this, markDirty);
+  connect(this, &NXWatermark::signalFontPixelSizeChanged, this, markDirty);
+  connect(this, &NXWatermark::signalOpacityChanged, this, markDirty);
+  connect(this, &NXWatermark::signalRotationChanged, this, markDirty);
+  connect(this, &NXWatermark::signalGapXChanged, this, markDirty);
+  connect(this, &NXWatermark::signalGapYChanged, this, markDirty);
+  connect(this, &NXWatermark::signalTextColorChanged, this, markDirty);
+  connect(this, &NXWatermark::signalImageChanged, this, markDirty);
+  connect(this, &NXWatermark::signalImageWidthChanged, this, markDirty);
+  connect(this, &NXWatermark::signalImageHeightChanged, this, markDirty);
 }
 
-NXWatermark::NXWatermark(const QString &text, QWidget *parent)
+NXWatermark::NXWatermark(QString const &text, QWidget *parent)
     : NXWatermark(parent)
 {
   Q_D(NXWatermark);
-  d->_pText        = text;
-  d->_patternDirty = true;
+  d->m_Text        = text;
+  d->m_PatternDirty = true;
 }
 
 NXWatermark::~NXWatermark()
@@ -184,14 +184,14 @@ void NXWatermark::paintEvent(QPaintEvent *event)
   Q_UNUSED(event);
   Q_D(NXWatermark);
 
-  if (d->_patternDirty) {
+  if (d->m_PatternDirty) {
     d->rebuildPattern();
   }
 
-  if (d->_patternPixmap.isNull()) {
+  if (d->m_PatternPixmap.isNull()) {
     return;
   }
 
   QPainter painter(this);
-  painter.drawTiledPixmap(rect(), d->_patternPixmap);
+  painter.drawTiledPixmap(rect(), d->m_PatternPixmap);
 }

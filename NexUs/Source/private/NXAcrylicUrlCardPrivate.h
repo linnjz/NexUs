@@ -33,9 +33,9 @@ public:
   ~NXAcrylicUrlCardPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  qreal _borderWidth { 1.5 };
-  QPixmap _noisePix;
+  NXThemeType::ThemeMode m_ThemeMode;
+  qreal m_BorderWidth { 1.5 };
+  QPixmap m_NoisePix;
 };
 
 #endif // NXACRYLICURLCARDPRIVATE_H

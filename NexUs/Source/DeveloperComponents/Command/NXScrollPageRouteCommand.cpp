@@ -6,8 +6,8 @@
 
 NXScrollPageRouteCommand::NXScrollPageRouteCommand(QObject *parent)
     : NXActionCommand(parent)
+    , m_IsBreadcrumbClicked { false }
 {
-  _pIsBreadcrumbClicked = false;
 }
 
 NXScrollPageRouteCommand::~NXScrollPageRouteCommand()
@@ -16,26 +16,26 @@ NXScrollPageRouteCommand::~NXScrollPageRouteCommand()
 
 void NXScrollPageRouteCommand::undo()
 {
-  if (_pIsBreadcrumbClicked) {
-    int widgetIndex = _pScrollPagePrivate->_centralWidgetMap.value(_pUndoBreadcrumbList.last());
-    _pScrollPagePrivate->_switchCentralStackIndex(widgetIndex, _pScrollPagePrivate->_navigationTargetIndex);
-    _pScrollPagePrivate->_navigationTargetIndex = widgetIndex;
-    _pScrollPagePrivate->_breadcrumbBar->setBreadcrumbList(_pUndoBreadcrumbList);
+  if (m_IsBreadcrumbClicked) {
+    int widgetIndex = m_ScrollPagePrivate->m_CentralWidgetMap.value(m_UndoBreadcrumbList.last());
+    m_ScrollPagePrivate->_switchCentralStackIndex(widgetIndex, m_ScrollPagePrivate->m_NavigationTargetIndex);
+    m_ScrollPagePrivate->m_NavigationTargetIndex = widgetIndex;
+    m_ScrollPagePrivate->m_BreadcrumbBar->setBreadcrumbList(m_UndoBreadcrumbList);
   } else {
-    _pScrollPagePrivate->q_ptr->navigation(_pUndoPageIndex, false);
+    m_ScrollPagePrivate->q_ptr->navigation(m_UndoPageIndex, false);
   }
   setCommandDesc(QStringLiteral("撤销页面切换操作"));
 }
 
 void NXScrollPageRouteCommand::redo()
 {
-  if (_pIsBreadcrumbClicked) {
-    int widgetIndex = _pScrollPagePrivate->_centralWidgetMap.value(_pRedoBreadcrumbList.last());
-    _pScrollPagePrivate->_switchCentralStackIndex(widgetIndex, _pScrollPagePrivate->_navigationTargetIndex);
-    _pScrollPagePrivate->_navigationTargetIndex = widgetIndex;
-    _pScrollPagePrivate->_breadcrumbBar->setBreadcrumbList(_pRedoBreadcrumbList);
+  if (m_IsBreadcrumbClicked) {
+    int widgetIndex = m_ScrollPagePrivate->m_CentralWidgetMap.value(m_RedoBreadcrumbList.last());
+    m_ScrollPagePrivate->_switchCentralStackIndex(widgetIndex, m_ScrollPagePrivate->m_NavigationTargetIndex);
+    m_ScrollPagePrivate->m_NavigationTargetIndex = widgetIndex;
+    m_ScrollPagePrivate->m_BreadcrumbBar->setBreadcrumbList(m_RedoBreadcrumbList);
   } else {
-    _pScrollPagePrivate->q_ptr->navigation(_pRedoPageIndex, false);
+    m_ScrollPagePrivate->q_ptr->navigation(m_RedoPageIndex, false);
   }
   setCommandDesc(QStringLiteral("执行页面切换操作"));
 }

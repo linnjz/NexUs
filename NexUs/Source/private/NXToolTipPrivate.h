@@ -15,7 +15,7 @@ class NXToolTipPrivate : public QObject
   Q_OBJECT
   Q_D_CREATE(NXToolTip)
   Q_PROPERTY_CREATE_D(QWidget *, CustomWidget)
-  Q_PROPERTY_CREATE(qreal, Opacity)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), Opacity)
   Q_PROPERTY_CREATE_D(int, BorderRadius)
   Q_PROPERTY_CREATE_D(int, DisplayMsec)
   Q_PROPERTY_CREATE_D(int, ShowDelayMsec)
@@ -37,14 +37,14 @@ private Q_SLOTS:
   void onAutoHideTimeout();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _shadowBorderWidth { 6 };
-  NXText *_toolTipText { nullptr };
-  QVBoxLayout *_mainLayout { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_ShadowBorderWidth { 6 };
+  NXText *m_ToolTipText { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
 
-  QTimer *_showTimer;
-  QTimer *_hideTimer;
-  QTimer *_autoHideTimer;
+  QTimer *m_ShowTimer;
+  QTimer *m_HideTimer;
+  QTimer *m_AutoHideTimer;
 
   void _doShowAnimation();
   void _updatePos();

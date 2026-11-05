@@ -15,11 +15,10 @@ NXLineEditPrivate::~NXLineEditPrivate()
 {
 }
 
-void NXLineEditPrivate::onWMWindowClickedEvent(const QVariantMap &data)
+void NXLineEditPrivate::onWMWindowClickedEvent(QVariantMap const &data)
 {
   Q_Q(NXLineEdit);
-  NXAppBarType::WMMouseActionType actionType =
-      data.value(QStringLiteral("WMClickType")).value<NXAppBarType::WMMouseActionType>();
+  NXAppBarType::WMMouseActionType actionType = data.value(QStringLiteral("WMClickType")).value<NXAppBarType::WMMouseActionType>();
   if (actionType == NXAppBarType::WMLBUTTONDOWN) {
     if (NXApplication::containsCursorToItem(q)) {
       return;
@@ -40,9 +39,9 @@ void NXLineEditPrivate::onWMWindowClickedEvent(const QVariantMap &data)
 void NXLineEditPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXLineEdit);
-  _themeMode       = themeMode;
+  m_ThemeMode       = themeMode;
   QPalette palette = q->palette();
-  palette.setColor(QPalette::Text, NXThemeColor(_themeMode, BasicText));
-  palette.setColor(QPalette::PlaceholderText, _themeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
+  palette.setColor(QPalette::Text, NXThemeColor(m_ThemeMode, BasicText));
+  palette.setColor(QPalette::PlaceholderText, m_ThemeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
   q->setPalette(palette);
 }

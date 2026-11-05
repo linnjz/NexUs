@@ -8,7 +8,7 @@
 #include "NXTheme.h"
 #include "private/NXCommandBarPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXCommandBar, int, ButtonSize)
+Q_PROPERTY_CREATE_CPP(NXCommandBar, QPS_PAEMIT(int), ButtonSize)
 
 NXCommandBar::NXCommandBar(QWidget *parent)
     : QWidget { parent }
@@ -16,14 +16,14 @@ NXCommandBar::NXCommandBar(QWidget *parent)
 {
   Q_D(NXCommandBar);
   d->q_ptr        = this;
-  d->_pButtonSize = 36;
+  d->m_ButtonSize = 36;
   setFixedHeight(40);
   setObjectName("NXCommandBar");
   setMouseTracking(true);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -32,10 +32,10 @@ NXCommandBar::~NXCommandBar()
 {
 }
 
-void NXCommandBar::addItem(const CommandItem &item)
+void NXCommandBar::addItem(CommandItem const &item)
 {
   Q_D(NXCommandBar);
-  d->_items.append(item);
+  d->m_Items.append(item);
   update();
 }
 
@@ -44,16 +44,16 @@ void NXCommandBar::addSeparator()
   CommandItem sep;
   sep.isSeparator = true;
   Q_D(NXCommandBar);
-  d->_items.append(sep);
+  d->m_Items.append(sep);
   update();
 }
 
 void NXCommandBar::clearItems()
 {
   Q_D(NXCommandBar);
-  d->_items.clear();
-  d->_hoveredIndex = -1;
-  d->_pressedIndex = -1;
+  d->m_Items.clear();
+  d->m_HoveredIndex = -1;
+  d->m_PressedIndex = -1;
   update();
 }
 
@@ -66,31 +66,31 @@ void NXCommandBar::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   QList<QRect> rects = d->_getVisibleItemRects();
-  bool hasOverflow   = (d->_visibleCount < d->_items.count());
+  bool hasOverflow   = (d->m_VisibleCount < d->m_Items.count());
   int totalVisible   = rects.count();
   if (hasOverflow) {
     totalVisible -= 1; // last rect is the overflow button
   }
 
   for (int i = 0; i < totalVisible; ++i) {
-    const NXCommandBar::CommandItem &item = d->_items[i];
+    NXCommandBar::CommandItem const &item = d->m_Items[i];
     QRect itemRect                        = rects[i];
 
     if (item.isSeparator) {
-      painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
+      painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
       int x  = itemRect.center().x();
       int y1 = itemRect.top() + 8;
       int y2 = itemRect.bottom() - 8;
       painter.drawLine(x, y1, x, y2);
     } else {
       // Hover / Press background
-      if (d->_pressedIndex == i) {
+      if (d->m_PressedIndex == i) {
         painter.setPen(Qt::NoPen);
-        painter.setBrush(NXThemeColor(d->_themeMode, BasicPress));
+        painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicPress));
         painter.drawRoundedRect(itemRect, 4, 4);
-      } else if (d->_hoveredIndex == i) {
+      } else if (d->m_HoveredIndex == i) {
         painter.setPen(Qt::NoPen);
-        painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
+        painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicHover));
         painter.drawRoundedRect(itemRect, 4, 4);
       }
 
@@ -101,7 +101,7 @@ void NXCommandBar::paintEvent(QPaintEvent *event)
         QFont iconFont = QFont(QStringLiteral("NXAwesome"));
         iconFont.setPixelSize(16);
         painter.setFont(iconFont);
-        painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+        painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
         if (item.text.isEmpty()) {
           painter.drawText(itemRect, Qt::AlignCenter, QChar((unsigned short) item.icon));
         } else {
@@ -116,7 +116,7 @@ void NXCommandBar::paintEvent(QPaintEvent *event)
         QFont textFont = this->font();
         textFont.setPixelSize(12);
         painter.setFont(textFont);
-        painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+        painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
         int textX = (item.icon != NXIconType::None) ? xOffset : itemRect.x() + 6;
         QRect textRect(textX, itemRect.y(), itemRect.right() - textX - 6, itemRect.height());
         painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, item.text);
@@ -128,19 +128,19 @@ void NXCommandBar::paintEvent(QPaintEvent *event)
   if (hasOverflow && !rects.isEmpty()) {
     QRect overflowRect = rects.last();
     int overflowIndex  = -2; // special index for overflow
-    if (d->_pressedIndex == overflowIndex) {
+    if (d->m_PressedIndex == overflowIndex) {
       painter.setPen(Qt::NoPen);
-      painter.setBrush(NXThemeColor(d->_themeMode, BasicPress));
+      painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicPress));
       painter.drawRoundedRect(overflowRect, 4, 4);
-    } else if (d->_hoveredIndex == overflowIndex) {
+    } else if (d->m_HoveredIndex == overflowIndex) {
       painter.setPen(Qt::NoPen);
-      painter.setBrush(NXThemeColor(d->_themeMode, BasicHover));
+      painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicHover));
       painter.drawRoundedRect(overflowRect, 4, 4);
     }
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     painter.drawText(overflowRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Ellipsis));
   }
 
@@ -151,30 +151,30 @@ void NXCommandBar::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXCommandBar);
   QList<QRect> rects = d->_getVisibleItemRects();
-  bool hasOverflow   = (d->_visibleCount < d->_items.count());
+  bool hasOverflow   = (d->m_VisibleCount < d->m_Items.count());
   int totalVisible   = rects.count();
 
-  int oldHovered   = d->_hoveredIndex;
-  d->_hoveredIndex = -1;
+  int oldHovered   = d->m_HoveredIndex;
+  d->m_HoveredIndex = -1;
 
   if (hasOverflow && !rects.isEmpty()) {
     QRect overflowRect = rects.last();
     if (overflowRect.contains(event->pos())) {
-      d->_hoveredIndex = -2;
+      d->m_HoveredIndex = -2;
     }
     totalVisible -= 1;
   }
 
-  if (d->_hoveredIndex == -1) {
+  if (d->m_HoveredIndex == -1) {
     for (int i = 0; i < totalVisible; ++i) {
-      if (!d->_items[i].isSeparator && rects[i].contains(event->pos())) {
-        d->_hoveredIndex = i;
+      if (!d->m_Items[i].isSeparator && rects[i].contains(event->pos())) {
+        d->m_HoveredIndex = i;
         break;
       }
     }
   }
 
-  if (oldHovered != d->_hoveredIndex) {
+  if (oldHovered != d->m_HoveredIndex) {
     update();
   }
   QWidget::mouseMoveEvent(event);
@@ -184,7 +184,7 @@ void NXCommandBar::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXCommandBar);
   if (event->button() == Qt::LeftButton) {
-    d->_pressedIndex = d->_hoveredIndex;
+    d->m_PressedIndex = d->m_HoveredIndex;
     update();
   }
   QWidget::mousePressEvent(event);
@@ -194,23 +194,23 @@ void NXCommandBar::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXCommandBar);
   if (event->button() == Qt::LeftButton) {
-    if (d->_pressedIndex != -1 && d->_pressedIndex == d->_hoveredIndex) {
-      if (d->_pressedIndex == -2) {
+    if (d->m_PressedIndex != -1 && d->m_PressedIndex == d->m_HoveredIndex) {
+      if (d->m_PressedIndex == -2) {
         // Overflow menu
-        if (!d->_overflowMenu) {
-          d->_overflowMenu = new NXMenu(this);
+        if (!d->m_OverflowMenu) {
+          d->m_OverflowMenu = new NXMenu(this);
         }
-        d->_overflowMenu->clear();
-        for (int i = d->_visibleCount; i < d->_items.count(); ++i) {
-          const CommandItem &item = d->_items[i];
+        d->m_OverflowMenu->clear();
+        for (int i = d->m_VisibleCount; i < d->m_Items.count(); ++i) {
+          CommandItem const &item = d->m_Items[i];
           if (item.isSeparator) {
-            d->_overflowMenu->addSeparator();
+            d->m_OverflowMenu->addSeparator();
           } else {
             QAction *action = nullptr;
             if (item.icon != NXIconType::None) {
-              action = d->_overflowMenu->addNXIconAction(item.icon, item.text);
+              action = d->m_OverflowMenu->addNXIconAction(item.icon, item.text);
             } else {
-              action = d->_overflowMenu->addAction(item.text);
+              action = d->m_OverflowMenu->addAction(item.text);
             }
             int index = i;
             connect(action, &QAction::triggered, this, [=]() {
@@ -221,13 +221,13 @@ void NXCommandBar::mouseReleaseEvent(QMouseEvent *event)
         QList<QRect> rects = d->_getVisibleItemRects();
         if (!rects.isEmpty()) {
           QRect overflowRect = rects.last();
-          d->_overflowMenu->popup(mapToGlobal(overflowRect.bottomLeft()));
+          d->m_OverflowMenu->popup(mapToGlobal(overflowRect.bottomLeft()));
         }
       } else {
-        Q_EMIT itemClicked(d->_pressedIndex);
+        Q_EMIT itemClicked(d->m_PressedIndex);
       }
     }
-    d->_pressedIndex = -1;
+    d->m_PressedIndex = -1;
     update();
   }
   QWidget::mouseReleaseEvent(event);
@@ -236,16 +236,16 @@ void NXCommandBar::mouseReleaseEvent(QMouseEvent *event)
 void NXCommandBar::leaveEvent(QEvent *event)
 {
   Q_D(NXCommandBar);
-  d->_hoveredIndex = -1;
+  d->m_HoveredIndex = -1;
   update();
   QWidget::leaveEvent(event);
 }
 
 QSize NXCommandBar::sizeHint() const
 {
-  Q_D(const NXCommandBar);
+  Q_CONST_D(NXCommandBar);
   int totalWidth = 0;
-  for (const auto &item : d->_items) {
+  for (auto const &item : d->m_Items) {
     totalWidth += d->_getItemWidth(item);
   }
   return QSize(qMax(totalWidth, 50), 40);
@@ -260,13 +260,13 @@ NXCommandBarPrivate::~NXCommandBarPrivate()
 {
 }
 
-int NXCommandBarPrivate::_getItemWidth(const NXCommandBar::CommandItem &item) const
+int NXCommandBarPrivate::_getItemWidth(NXCommandBar::CommandItem const &item) const
 {
   if (item.isSeparator) {
     return 8;
   }
   if (item.icon != NXIconType::None && item.text.isEmpty()) {
-    return _pButtonSize;
+    return m_ButtonSize;
   }
   int w = 12; // padding
   if (item.icon != NXIconType::None) {
@@ -276,8 +276,8 @@ int NXCommandBarPrivate::_getItemWidth(const NXCommandBar::CommandItem &item) co
   textFont.setPixelSize(12);
   QFontMetrics fm(textFont);
   w += fm.horizontalAdvance(item.text);
-  if (w < _pButtonSize) {
-    w = _pButtonSize;
+  if (w < m_ButtonSize) {
+    w = m_ButtonSize;
   }
   return w;
 }
@@ -286,13 +286,13 @@ QList<QRect> NXCommandBarPrivate::_getVisibleItemRects() const
 {
   QList<QRect> rects;
   int availableWidth = q_ptr->width();
-  int overflowWidth  = _pButtonSize; // width for the "..." button
-  int yOffset        = (q_ptr->height() - _pButtonSize) / 2;
+  int overflowWidth  = m_ButtonSize; // width for the "..." button
+  int yOffset        = (q_ptr->height() - m_ButtonSize) / 2;
   int x              = 0;
 
   // First pass: check if all items fit
   int totalWidth = 0;
-  for (const auto &item : _items) {
+  for (auto const &item : m_Items) {
     totalWidth += _getItemWidth(item);
   }
 
@@ -300,22 +300,22 @@ QList<QRect> NXCommandBarPrivate::_getVisibleItemRects() const
   int maxWidth       = needsOverflow ? (availableWidth - overflowWidth) : availableWidth;
 
   int visibleCount = 0;
-  for (int i = 0; i < _items.count(); ++i) {
-    int itemWidth = _getItemWidth(_items[i]);
+  for (int i = 0; i < m_Items.count(); ++i) {
+    int itemWidth = _getItemWidth(m_Items[i]);
     if (x + itemWidth > maxWidth) {
       break;
     }
-    int itemHeight = _items[i].isSeparator ? q_ptr->height() - 16 : _pButtonSize;
-    int itemY      = _items[i].isSeparator ? 8 : yOffset;
+    int itemHeight = m_Items[i].isSeparator ? q_ptr->height() - 16 : m_ButtonSize;
+    int itemY      = m_Items[i].isSeparator ? 8 : yOffset;
     rects.append(QRect(x, itemY, itemWidth, itemHeight));
     x += itemWidth;
     visibleCount++;
   }
 
-  const_cast<NXCommandBarPrivate *>(this)->_visibleCount = visibleCount;
+  const_cast<NXCommandBarPrivate *>(this)->m_VisibleCount = visibleCount;
 
   if (needsOverflow) {
-    rects.append(QRect(x, yOffset, overflowWidth, _pButtonSize));
+    rects.append(QRect(x, yOffset, overflowWidth, m_ButtonSize));
   }
 
   return rects;

@@ -14,17 +14,17 @@ public:
   explicit NXAutoCompleteDelegate(QObject *parent = nullptr);
   ~NXAutoCompleteDelegate();
 
-  void setHighlightText(const QString &text);
+  void setHighlightText(QString const &text);
   void setMatchMode(NXAutoComplete::MatchMode mode);
 
 protected:
-  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-  QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+  void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const override;
+  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QString _highlightText;
-  NXAutoComplete::MatchMode _matchMode { NXAutoComplete::Contains };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QString m_HighlightText;
+  NXAutoComplete::MatchMode m_MatchMode { NXAutoComplete::Contains };
 };
 
 #endif // NXUTOCOMPLETEDELEGATE_H

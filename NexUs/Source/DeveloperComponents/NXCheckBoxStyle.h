@@ -14,13 +14,12 @@ class NXCheckBoxStyle : public QProxyStyle
 public:
   explicit NXCheckBoxStyle(QStyle *style = nullptr);
   ~NXCheckBoxStyle();
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
-  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget = nullptr) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
+  QRect subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget = nullptr) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  static constexpr int _labelSpacing { 10 };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXCHECKBOXSTYLE_H

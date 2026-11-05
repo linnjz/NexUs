@@ -35,17 +35,17 @@ public:
 
 private:
   friend class NXSheetPanel;
-  bool _isOpened { false };
-  bool _isDragging { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXSheetPanelType::DetentLevel _currentDetent { NXSheetPanelType::Half };
-  int _dragStartSize { 0 };
-  QPoint _dragStartPos;
-  NXMaskWidget *_maskWidget { nullptr };
-  QWidget *_panelWidget { nullptr };
-  QWidget *_centralWidget { nullptr };
-  QWidget *_dragHandle { nullptr };
-  QVBoxLayout *_panelLayout { nullptr };
+  bool m_IsOpened { false };
+  bool m_IsDragging { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXSheetPanelType::DetentLevel m_CurrentDetent { NXSheetPanelType::Half };
+  int m_DragStartSize { 0 };
+  QPoint m_DragStartPos;
+  NXMaskWidget *m_MaskWidget { nullptr };
+  QWidget *m_PanelWidget { nullptr };
+  QWidget *m_CentralWidget { nullptr };
+  QWidget *m_DragHandle { nullptr };
+  QVBoxLayout *m_PanelLayout { nullptr };
 };
 
 #endif // NXSHEETPANELPRIVATE_H

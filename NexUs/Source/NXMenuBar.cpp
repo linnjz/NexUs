@@ -36,7 +36,7 @@ NXMenuBar::~NXMenuBar()
   delete this->style();
 }
 
-QAction * NXMenuBar::addMenu(QMenu *qmenu)
+QAction *NXMenuBar::addMenu(QMenu *qmenu)
 {
   NXMenu *menu = dynamic_cast<NXMenu *>(qmenu);
   if (menu) {
@@ -45,7 +45,7 @@ QAction * NXMenuBar::addMenu(QMenu *qmenu)
   return QMenuBar::addMenu(qmenu);
 }
 
-NXMenu * NXMenuBar::addMenu(const QString &title)
+NXMenu *NXMenuBar::addMenu(QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   menu->setMenuItemHeight(27);
@@ -53,7 +53,7 @@ NXMenu * NXMenuBar::addMenu(const QString &title)
   return menu;
 }
 
-NXMenu * NXMenuBar::addMenu(const QIcon &icon, const QString &title)
+NXMenu *NXMenuBar::addMenu(QIcon const &icon, QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   menu->setMenuItemHeight(27);
@@ -62,7 +62,7 @@ NXMenu * NXMenuBar::addMenu(const QIcon &icon, const QString &title)
   return menu;
 }
 
-NXMenu * NXMenuBar::addMenu(NXIconType::IconName icon, const QString &title)
+NXMenu *NXMenuBar::addMenu(NXIconType::IconName icon, QString const &title)
 {
   NXMenu *menu = new NXMenu(title, this);
   menu->setMenuItemHeight(27);
@@ -72,7 +72,7 @@ NXMenu * NXMenuBar::addMenu(NXIconType::IconName icon, const QString &title)
   return menu;
 }
 
-QAction * NXMenuBar::addNXIconAction(NXIconType::IconName icon, const QString &text)
+QAction *NXMenuBar::addNXIconAction(NXIconType::IconName icon, QString const &text)
 {
   QAction *action = new QAction(text, this);
   action->setProperty("NXIconType", QChar((unsigned short) icon));
@@ -81,7 +81,7 @@ QAction * NXMenuBar::addNXIconAction(NXIconType::IconName icon, const QString &t
   return action;
 }
 
-QAction * NXMenuBar::addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut)
+QAction *NXMenuBar::addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut)
 {
   QAction *action = new QAction(text, this);
   action->setShortcut(shortcut);

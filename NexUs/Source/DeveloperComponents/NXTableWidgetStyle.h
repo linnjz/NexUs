@@ -11,22 +11,22 @@ class QStyleOptionViewItem;
 class NXTableWidgetStyle : public QProxyStyle
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(int, ItemHeight)
-  Q_PROPERTY_CREATE(int, HeaderMargin)
-  Q_PROPERTY_CREATE(int, CurrentHoverRow)
-  Q_PROPERTY_CREATE(bool, IsTransparent)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), ItemHeight)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), HeaderMargin)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), CurrentHoverRow)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(bool), IsTransparent)
 
 public:
   explicit NXTableWidgetStyle(QStyle *style = nullptr);
   ~NXTableWidgetStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _horizontalPadding { 8 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_HorizontalPadding { 8 };
 };
 
 #endif // NXTABLEWIDGETSTYLE_H

@@ -11,39 +11,39 @@ class QPropertyAnimation;
 class NXNavigationStyle : public QProxyStyle
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), PressIndex)
-  Q_PROPERTY_CREATE(qreal, Opacity)
-  Q_PROPERTY_CREATE(qreal, Rotate)
-  Q_PROPERTY_CREATE(qreal, LastSelectMarkTop)
-  Q_PROPERTY_CREATE(qreal, LastSelectMarkBottom)
-  Q_PROPERTY_CREATE(qreal, SelectMarkTop)
-  Q_PROPERTY_CREATE(qreal, SelectMarkBottom)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), PressIndex)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), Opacity)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), Rotate)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), LastSelectMarkTop)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), LastSelectMarkBottom)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), SelectMarkTop)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), SelectMarkBottom)
   Q_PRIVATE_CREATE(NXNavigationView *, NavigationView)
-  Q_PROPERTY_CREATE(int, ItemHeight)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), ItemHeight)
 
 public:
   explicit NXNavigationStyle(QStyle *style = nullptr);
   ~NXNavigationStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const override;
 
-  void navigationNodeStateChange(const QVariantMap &data);
+  void navigationNodeStateChange(QVariantMap const &data);
 
 private:
-  bool _isSelectMarkDisplay { true };
-  NXThemeType::ThemeMode _themeMode;
-  int _leftPadding { 11 };
-  int _iconAreaWidth { 40 };
-  int _textRightSpacing { 3 };
-  int _indicatorIconAreaWidth { 34 };
-  NXNavigationNode *_opacityAnimationTargetNode { nullptr };
-  NXNavigationNode *_expandAnimationTargetNode { nullptr };
-  NXNavigationNode *_lastSelectedNode { nullptr };
-  QPropertyAnimation *_lastSelectMarkTopAnimation { nullptr };
-  QPropertyAnimation *_lastSelectMarkBottomAnimation { nullptr };
-  QPropertyAnimation *_selectMarkTopAnimation { nullptr };
-  QPropertyAnimation *_selectMarkBottomAnimation { nullptr };
+  bool m_IsSelectMarkDisplay { true };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_LeftPadding { 11 };
+  int m_IconAreaWidth { 40 };
+  int m_TextRightSpacing { 3 };
+  int m_IndicatorIconAreaWidth { 34 };
+  NXNavigationNode *m_OpacityAnimationTargetNode { nullptr };
+  NXNavigationNode *m_ExpandAnimationTargetNode { nullptr };
+  NXNavigationNode *m_LastSelectedNode { nullptr };
+  QPropertyAnimation *m_LastSelectMarkTopAnimation { nullptr };
+  QPropertyAnimation *m_LastSelectMarkBottomAnimation { nullptr };
+  QPropertyAnimation *m_SelectMarkTopAnimation { nullptr };
+  QPropertyAnimation *m_SelectMarkBottomAnimation { nullptr };
   bool _compareItemY(NXNavigationNode *node1, NXNavigationNode *node2);
 };
 

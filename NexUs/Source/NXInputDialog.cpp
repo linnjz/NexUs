@@ -22,18 +22,18 @@
 #include "NXTheme.h"
 #include "private/NXInputDialogPrivate.h"
 
-Q_TAKEOVER_NATIVEEVENT_CPP(NXInputDialog, d_func()->_appBar);
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), TitleText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), SubTitleText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), LabelText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), TextValue)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), OkButtonText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), CancelButtonText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, QS_SET_CREF(QString), PlaceholderText)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, double, DoubleValue)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, int, IntValue)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, int, InputMinimumWidth)
-Q_PROPERTY_CREATE_CPP(NXInputDialog, int, InputMaximumWidth)
+Q_TAKEOVER_NATIVEEVENT_CPP(NXInputDialog, d_func()->m_AppBar);
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), TitleText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), SubTitleText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), LabelText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), TextValue)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), OkButtonText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), CancelButtonText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_SCREF_PAEMIT(QString), PlaceholderText)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_PAEMIT(double), DoubleValue)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_PAEMIT(int), IntValue)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_PAEMIT(int), InputMinimumWidth)
+Q_PROPERTY_CREATE_CPP(NXInputDialog, QPS_PAEMIT(int), InputMaximumWidth)
 
 NXInputDialog::NXInputDialog(QWidget *parent)
     : QDialog { parent }
@@ -42,127 +42,127 @@ NXInputDialog::NXInputDialog(QWidget *parent)
   Q_D(NXInputDialog);
   d->q_ptr = this;
 
-  d->_maskWidget = new NXMaskWidget(parent);
-  d->_maskWidget->move(0, 0);
-  d->_maskWidget->setFixedSize(parent->size());
-  d->_maskWidget->setVisible(false);
+  d->m_MaskWidget = new NXMaskWidget(parent);
+  d->m_MaskWidget->move(0, 0);
+  d->m_MaskWidget->setFixedSize(parent->size());
+  d->m_MaskWidget->setVisible(false);
 
   resize(400, 250);
   setWindowModality(Qt::ApplicationModal);
 
-  d->_appBar = new NXAppBar(this);
-  d->_appBar->setWindowButtonFlags(NXAppBarType::NoneButtonHint);
-  d->_appBar->setIsFixedSize(true);
-  d->_appBar->setAppBarHeight(0);
+  d->m_AppBar = new NXAppBar(this);
+  d->m_AppBar->setWindowButtonFlags(NXAppBarType::NoneButtonHint);
+  d->m_AppBar->setIsFixedSize(true);
+  d->m_AppBar->setAppBarHeight(0);
 #ifdef Q_OS_WIN
   createWinId();
 #endif
 
-  d->_pTitleText         = QStringLiteral("");
-  d->_pSubTitleText      = QStringLiteral("");
-  d->_pLabelText         = QStringLiteral("");
-  d->_pTextValue         = QStringLiteral("");
-  d->_pIntValue          = 0;
-  d->_pDoubleValue       = 0.0;
-  d->_pOkButtonText      = QStringLiteral("确定");
-  d->_pCancelButtonText  = QStringLiteral("取消");
-  d->_pPlaceholderText   = QStringLiteral("");
-  d->_pInputMinimumWidth = 100;
-  d->_pInputMaximumWidth = QWIDGETSIZE_MAX;
+  d->m_TitleText         = QStringLiteral("");
+  d->m_SubTitleText      = QStringLiteral("");
+  d->m_LabelText         = QStringLiteral("");
+  d->m_TextValue         = QStringLiteral("");
+  d->m_IntValue          = 0;
+  d->m_DoubleValue       = 0.0;
+  d->m_OkButtonText      = QStringLiteral("确定");
+  d->m_CancelButtonText  = QStringLiteral("取消");
+  d->m_PlaceholderText   = QStringLiteral("");
+  d->m_InputMinimumWidth = 100;
+  d->m_InputMaximumWidth = QWIDGETSIZE_MAX;
 
-  d->_titleLabel = new NXText(d->_pTitleText, this);
-  d->_titleLabel->setTextStyle(NXTextType::Title);
-  d->_subTitleLabel = new NXText(d->_pSubTitleText, this);
-  d->_subTitleLabel->setTextStyle(NXTextType::Body);
+  d->m_TitleLabel = new NXText(d->m_TitleText, this);
+  d->m_TitleLabel->setTextStyle(NXTextType::Title);
+  d->m_SubTitleLabel = new NXText(d->m_SubTitleText, this);
+  d->m_SubTitleLabel->setTextStyle(NXTextType::Body);
 
-  d->_inputLabel = new NXText(d->_pLabelText, this);
-  d->_inputLabel->setTextStyle(NXTextType::Body);
-  d->_lineEdit = new NXLineEdit(this);
-  d->_lineEdit->setText(d->_pTextValue);
-  d->_lineEdit->setPlaceholderText(d->_pPlaceholderText);
-  d->_lineEdit->setIsClearButtonEnable(true);
-  connect(d->_lineEdit, &NXLineEdit::textChanged, this, [=](const QString &text) {
-    d->_pTextValue = text;
+  d->m_InputLabel = new NXText(d->m_LabelText, this);
+  d->m_InputLabel->setTextStyle(NXTextType::Body);
+  d->m_LineEdit = new NXLineEdit(this);
+  d->m_LineEdit->setText(d->m_TextValue);
+  d->m_LineEdit->setPlaceholderText(d->m_PlaceholderText);
+  d->m_LineEdit->setIsClearButtonEnable(true);
+  connect(d->m_LineEdit, &NXLineEdit::textChanged, this, [=](QString const &text) {
+    d->m_TextValue = text;
     Q_EMIT textValueChanged(text);
     bool okInt;
     int intValue = text.toInt(&okInt);
     if (okInt) {
-      d->_pIntValue = intValue;
+      d->m_IntValue = intValue;
       Q_EMIT intValueChanged(intValue);
     }
     bool okDouble;
     double doubleValue = text.toDouble(&okDouble);
     if (okDouble) {
-      d->_pDoubleValue = doubleValue;
+      d->m_DoubleValue = doubleValue;
       Q_EMIT doubleValueChanged(doubleValue);
     }
   });
 
-  d->_cancelButton = new NXPushButton(d->_pCancelButtonText, this);
-  connect(d->_cancelButton, &NXPushButton::clicked, this, &NXInputDialog::onCancelButtonClicked);
-  d->_cancelButton->setMinimumSize(0, 0);
-  d->_cancelButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
-  d->_cancelButton->setFixedHeight(38);
-  d->_cancelButton->setBorderRadius(6);
+  d->m_CancelButton = new NXPushButton(d->m_CancelButtonText, this);
+  connect(d->m_CancelButton, &NXPushButton::clicked, this, &NXInputDialog::onCancelButtonClicked);
+  d->m_CancelButton->setMinimumSize(0, 0);
+  d->m_CancelButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+  d->m_CancelButton->setFixedHeight(38);
+  d->m_CancelButton->setBorderRadius(6);
 
-  d->_okButton = new NXPushButton(d->_pOkButtonText, this);
-  connect(d->_okButton, &NXPushButton::clicked, this, &NXInputDialog::onOkButtonClicked);
-  d->_okButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
-  d->_okButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
-  d->_okButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
-  d->_okButton->setLightTextColor(Qt::white);
-  d->_okButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
-  d->_okButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
-  d->_okButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
-  d->_okButton->setDarkTextColor(Qt::black);
-  d->_okButton->setMinimumSize(0, 0);
-  d->_okButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
-  d->_okButton->setFixedHeight(38);
-  d->_okButton->setBorderRadius(6);
+  d->m_OkButton = new NXPushButton(d->m_OkButtonText, this);
+  connect(d->m_OkButton, &NXPushButton::clicked, this, &NXInputDialog::onOkButtonClicked);
+  d->m_OkButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
+  d->m_OkButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
+  d->m_OkButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
+  d->m_OkButton->setLightTextColor(Qt::white);
+  d->m_OkButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
+  d->m_OkButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
+  d->m_OkButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
+  d->m_OkButton->setDarkTextColor(Qt::black);
+  d->m_OkButton->setMinimumSize(0, 0);
+  d->m_OkButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+  d->m_OkButton->setFixedHeight(38);
+  d->m_OkButton->setBorderRadius(6);
 
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->setContentsMargins(0, 0, 0, 0);
   mainLayout->setSpacing(0);
 
   QWidget *contentWidget = new QWidget(this);
-  d->_contentLayout      = new QVBoxLayout(contentWidget);
-  d->_contentLayout->setContentsMargins(15, 25, 15, 15);
-  d->_contentLayout->addWidget(d->_titleLabel);
-  d->_contentLayout->addSpacing(2);
-  d->_contentLayout->addWidget(d->_subTitleLabel);
-  d->_contentLayout->addSpacing(15);
-  d->_contentLayout->addWidget(d->_inputLabel);
-  d->_contentLayout->addSpacing(5);
-  d->_contentLayout->addWidget(d->_lineEdit);
-  d->_contentLayout->addStretch();
+  d->m_ContentLayout      = new QVBoxLayout(contentWidget);
+  d->m_ContentLayout->setContentsMargins(15, 25, 15, 15);
+  d->m_ContentLayout->addWidget(d->m_TitleLabel);
+  d->m_ContentLayout->addSpacing(2);
+  d->m_ContentLayout->addWidget(d->m_SubTitleLabel);
+  d->m_ContentLayout->addSpacing(15);
+  d->m_ContentLayout->addWidget(d->m_InputLabel);
+  d->m_ContentLayout->addSpacing(5);
+  d->m_ContentLayout->addWidget(d->m_LineEdit);
+  d->m_ContentLayout->addStretch();
 
-  d->_buttonWidget = new QWidget(this);
-  d->_buttonWidget->setFixedHeight(60);
-  QHBoxLayout *buttonLayout = new QHBoxLayout(d->_buttonWidget);
+  d->m_ButtonWidget = new QWidget(this);
+  d->m_ButtonWidget->setFixedHeight(60);
+  QHBoxLayout *buttonLayout = new QHBoxLayout(d->m_ButtonWidget);
   buttonLayout->setContentsMargins(15, 11, 15, 11);
-  buttonLayout->addWidget(d->_cancelButton);
-  buttonLayout->addWidget(d->_okButton);
+  buttonLayout->addWidget(d->m_CancelButton);
+  buttonLayout->addWidget(d->m_OkButton);
 
   mainLayout->addWidget(contentWidget);
-  mainLayout->addWidget(d->_buttonWidget);
+  mainLayout->addWidget(d->m_ButtonWidget);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 
-  QTimer::singleShot(0, d->_lineEdit, [=]() {
-    d->_lineEdit->setFocus();
+  QTimer::singleShot(0, d->m_LineEdit, [=]() {
+    d->m_LineEdit->setFocus();
   });
 }
 
 NXInputDialog::~NXInputDialog()
 {
   Q_D(NXInputDialog);
-  d->_maskWidget->deleteLater();
+  d->m_MaskWidget->deleteLater();
 }
 
-QString NXInputDialog::getText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
+QString NXInputDialog::getText(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, QString const &text, bool *ok, QString const &okButtonText, QString const &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -182,7 +182,7 @@ QString NXInputDialog::getText(QWidget *parent, const QString &title, const QStr
   return accepted ? dialog.getTextValue() : QString();
 }
 
-int NXInputDialog::getInt(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, int value, int minValue, int maxValue, int step, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
+int NXInputDialog::getInt(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, int value, int minValue, int maxValue, int step, bool *ok, QString const &okButtonText, QString const &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -204,7 +204,7 @@ int NXInputDialog::getInt(QWidget *parent, const QString &title, const QString &
   return accepted ? dialog.getIntValue() : value;
 }
 
-double NXInputDialog::getDouble(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, double value, double minValue, double maxValue, int decimals, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
+double NXInputDialog::getDouble(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, double value, double minValue, double maxValue, int decimals, bool *ok, QString const &okButtonText, QString const &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -226,7 +226,7 @@ double NXInputDialog::getDouble(QWidget *parent, const QString &title, const QSt
   return accepted ? dialog.getDoubleValue() : value;
 }
 
-QString NXInputDialog::getMultiLineText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text, bool *ok, const QString &okButtonText, const QString &cancelButtonText, int inputMinWidth, int inputMaxWidth)
+QString NXInputDialog::getMultiLineText(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, QString const &text, bool *ok, QString const &okButtonText, QString const &cancelButtonText, int inputMinWidth, int inputMaxWidth)
 {
   NXInputDialog dialog(parent);
   dialog.setTitleText(title);
@@ -250,52 +250,52 @@ QString NXInputDialog::getMultiLineText(QWidget *parent, const QString &title, c
 void NXInputDialog::setTextEchoMode(QLineEdit::EchoMode mode)
 {
   Q_D(NXInputDialog);
-  d->_lineEdit->setEchoMode(mode);
+  d->m_LineEdit->setEchoMode(mode);
 }
 
 QLineEdit::EchoMode NXInputDialog::textEchoMode() const
 {
-  Q_D(const NXInputDialog);
-  return d->_lineEdit->echoMode();
+  Q_CONST_D(NXInputDialog);
+  return d->m_LineEdit->echoMode();
 }
 
 void NXInputDialog::setIntRange(int minValue, int maxValue, int step)
 {
   Q_D(NXInputDialog);
 
-  if (d->_isIntMode)
+  if (d->m_IsIntMode)
     return;
 
-  d->_isIntMode = true;
+  d->m_IsIntMode = true;
 
-  if (!d->_spinBox) {
-    d->_spinBox = new NXSpinBox(this);
-    d->_spinBox->setButtonMode(NXSpinBoxType::PMSide);
-    d->_spinBox->setMinimumWidth(d->_pInputMinimumWidth);
-    d->_spinBox->setMaximumWidth(d->_pInputMaximumWidth);
-    d->_spinBox->setMinimum(minValue);
-    d->_spinBox->setMaximum(maxValue);
-    d->_spinBox->setSingleStep(step);
-    d->_spinBox->setValue(d->_pIntValue);
+  if (!d->m_SpinBox) {
+    d->m_SpinBox = new NXSpinBox(this);
+    d->m_SpinBox->setButtonMode(NXSpinBoxType::PMSide);
+    d->m_SpinBox->setMinimumWidth(d->m_InputMinimumWidth);
+    d->m_SpinBox->setMaximumWidth(d->m_InputMaximumWidth);
+    d->m_SpinBox->setMinimum(minValue);
+    d->m_SpinBox->setMaximum(maxValue);
+    d->m_SpinBox->setSingleStep(step);
+    d->m_SpinBox->setValue(d->m_IntValue);
 
-    connect(d->_spinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value) {
-      d->_pIntValue  = value;
-      d->_pTextValue = QString::number(value);
+    connect(d->m_SpinBox, QOverload<int>::of(&NXSpinBox::valueChanged), this, [=](int value) {
+      d->m_IntValue  = value;
+      d->m_TextValue = QString::number(value);
       Q_EMIT intValueChanged(value);
-      Q_EMIT textValueChanged(d->_pTextValue);
+      Q_EMIT textValueChanged(d->m_TextValue);
     });
   }
 
-  d->_lineEdit->setVisible(false);
-  d->_spinBox->setVisible(true);
-  d->_spinBox->setMinimum(minValue);
-  d->_spinBox->setMaximum(maxValue);
-  d->_spinBox->setSingleStep(step);
-  d->_spinBox->setValue(d->_pIntValue);
+  d->m_LineEdit->setVisible(false);
+  d->m_SpinBox->setVisible(true);
+  d->m_SpinBox->setMinimum(minValue);
+  d->m_SpinBox->setMaximum(maxValue);
+  d->m_SpinBox->setSingleStep(step);
+  d->m_SpinBox->setValue(d->m_IntValue);
 
-  if (d->_contentLayout) {
-    d->_contentLayout->removeWidget(d->_lineEdit);
-    d->_contentLayout->insertWidget(6, d->_spinBox);
+  if (d->m_ContentLayout) {
+    d->m_ContentLayout->removeWidget(d->m_LineEdit);
+    d->m_ContentLayout->insertWidget(6, d->m_SpinBox);
   }
 }
 
@@ -303,79 +303,79 @@ void NXInputDialog::setDoubleRange(double minValue, double maxValue, int decimal
 {
   Q_D(NXInputDialog);
 
-  if (d->_isDoubleMode)
+  if (d->m_IsDoubleMode)
     return;
 
-  d->_isDoubleMode = true;
+  d->m_IsDoubleMode = true;
 
-  if (!d->_doubleSpinBox) {
-    d->_doubleSpinBox = new NXDoubleSpinBox(this);
-    d->_doubleSpinBox->setButtonMode(NXSpinBoxType::PMSide);
-    d->_doubleSpinBox->setMinimumWidth(d->_pInputMinimumWidth);
-    d->_doubleSpinBox->setMaximumWidth(d->_pInputMaximumWidth);
-    d->_doubleSpinBox->setMinimum(minValue);
-    d->_doubleSpinBox->setMaximum(maxValue);
-    d->_doubleSpinBox->setDecimals(decimals);
-    d->_doubleSpinBox->setValue(d->_pDoubleValue);
+  if (!d->m_DoubleSpinBox) {
+    d->m_DoubleSpinBox = new NXDoubleSpinBox(this);
+    d->m_DoubleSpinBox->setButtonMode(NXSpinBoxType::PMSide);
+    d->m_DoubleSpinBox->setMinimumWidth(d->m_InputMinimumWidth);
+    d->m_DoubleSpinBox->setMaximumWidth(d->m_InputMaximumWidth);
+    d->m_DoubleSpinBox->setMinimum(minValue);
+    d->m_DoubleSpinBox->setMaximum(maxValue);
+    d->m_DoubleSpinBox->setDecimals(decimals);
+    d->m_DoubleSpinBox->setValue(d->m_DoubleValue);
 
-    connect(d->_doubleSpinBox, QOverload<double>::of(&NXDoubleSpinBox::valueChanged), this, [=](double value) {
-      d->_pDoubleValue = value;
-      d->_pTextValue   = QString::number(value, 'f', decimals);
+    connect(d->m_DoubleSpinBox, QOverload<double>::of(&NXDoubleSpinBox::valueChanged), this, [=](double value) {
+      d->m_DoubleValue = value;
+      d->m_TextValue   = QString::number(value, 'f', decimals);
       Q_EMIT doubleValueChanged(value);
-      Q_EMIT textValueChanged(d->_pTextValue);
+      Q_EMIT textValueChanged(d->m_TextValue);
     });
   }
 
-  d->_lineEdit->setVisible(false);
-  d->_doubleSpinBox->setVisible(true);
-  d->_doubleSpinBox->setMinimum(minValue);
-  d->_doubleSpinBox->setMaximum(maxValue);
-  d->_doubleSpinBox->setDecimals(decimals);
-  d->_doubleSpinBox->setValue(d->_pDoubleValue);
+  d->m_LineEdit->setVisible(false);
+  d->m_DoubleSpinBox->setVisible(true);
+  d->m_DoubleSpinBox->setMinimum(minValue);
+  d->m_DoubleSpinBox->setMaximum(maxValue);
+  d->m_DoubleSpinBox->setDecimals(decimals);
+  d->m_DoubleSpinBox->setValue(d->m_DoubleValue);
 
-  if (d->_contentLayout) {
-    d->_contentLayout->removeWidget(d->_lineEdit);
-    d->_contentLayout->insertWidget(6, d->_doubleSpinBox);
+  if (d->m_ContentLayout) {
+    d->m_ContentLayout->removeWidget(d->m_LineEdit);
+    d->m_ContentLayout->insertWidget(6, d->m_DoubleSpinBox);
   }
 }
 
 void NXInputDialog::setMultiLine(bool multiLine)
 {
   Q_D(NXInputDialog);
-  if (d->_isMultiLine == multiLine)
+  if (d->m_IsMultiLine == multiLine)
     return;
 
-  d->_isMultiLine = multiLine;
+  d->m_IsMultiLine = multiLine;
 
   if (multiLine) {
-    if (!d->_textEdit) {
-      d->_textEdit = new QTextEdit(this);
-      d->_textEdit->setPlainText(d->_pTextValue);
-      d->_textEdit->setMinimumHeight(150);
-      connect(d->_textEdit, &QTextEdit::textChanged, this, [=]() {
-        d->_pTextValue = d->_textEdit->toPlainText();
-        Q_EMIT textValueChanged(d->_pTextValue);
+    if (!d->m_TextEdit) {
+      d->m_TextEdit = new QTextEdit(this);
+      d->m_TextEdit->setPlainText(d->m_TextValue);
+      d->m_TextEdit->setMinimumHeight(150);
+      connect(d->m_TextEdit, &QTextEdit::textChanged, this, [=]() {
+        d->m_TextValue = d->m_TextEdit->toPlainText();
+        Q_EMIT textValueChanged(d->m_TextValue);
       });
     }
-    d->_lineEdit->setVisible(false);
-    d->_textEdit->setVisible(true);
-    d->_textEdit->setPlainText(d->_pTextValue);
+    d->m_LineEdit->setVisible(false);
+    d->m_TextEdit->setVisible(true);
+    d->m_TextEdit->setPlainText(d->m_TextValue);
 
-    if (d->_contentLayout) {
-      d->_contentLayout->removeWidget(d->_lineEdit);
-      d->_contentLayout->insertWidget(6, d->_textEdit);
+    if (d->m_ContentLayout) {
+      d->m_ContentLayout->removeWidget(d->m_LineEdit);
+      d->m_ContentLayout->insertWidget(6, d->m_TextEdit);
     }
     resize(400, 350);
   } else {
-    if (d->_textEdit) {
-      d->_textEdit->setVisible(false);
+    if (d->m_TextEdit) {
+      d->m_TextEdit->setVisible(false);
     }
-    d->_lineEdit->setVisible(true);
-    d->_lineEdit->setText(d->_pTextValue);
+    d->m_LineEdit->setVisible(true);
+    d->m_LineEdit->setText(d->m_TextValue);
 
-    if (d->_contentLayout && d->_textEdit) {
-      d->_contentLayout->removeWidget(d->_textEdit);
-      d->_contentLayout->insertWidget(4, d->_lineEdit);
+    if (d->m_ContentLayout && d->m_TextEdit) {
+      d->m_ContentLayout->removeWidget(d->m_TextEdit);
+      d->m_ContentLayout->insertWidget(4, d->m_LineEdit);
     }
     resize(400, 250);
   }
@@ -385,10 +385,10 @@ void NXInputDialog::showEvent(QShowEvent *event)
 {
   Q_D(NXInputDialog);
   if (parentWidget()) {
-    d->_maskWidget->setVisible(true);
-    d->_maskWidget->raise();
-    d->_maskWidget->setFixedSize(parentWidget()->size());
-    d->_maskWidget->doMaskAnimation(90);
+    d->m_MaskWidget->setVisible(true);
+    d->m_MaskWidget->raise();
+    d->m_MaskWidget->setFixedSize(parentWidget()->size());
+    d->m_MaskWidget->doMaskAnimation(90);
   }
   QDialog::showEvent(event);
 }
@@ -400,9 +400,9 @@ void NXInputDialog::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
   painter.drawRect(rect());
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogLayoutArea));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogLayoutArea));
   painter.drawRoundedRect(QRectF(0, height() - 60, width(), 60), 8, 8);
   painter.restore();
 }
@@ -436,9 +436,9 @@ void NXInputDialog::onCancelButtonClicked()
 void NXInputDialog::updateLabels()
 {
   Q_D(NXInputDialog);
-  d->_titleLabel->setText(d->_pTitleText);
-  d->_subTitleLabel->setText(d->_pSubTitleText);
-  d->_inputLabel->setText(d->_pLabelText);
-  d->_cancelButton->setText(d->_pCancelButtonText);
-  d->_okButton->setText(d->_pOkButtonText);
+  d->m_TitleLabel->setText(d->m_TitleText);
+  d->m_SubTitleLabel->setText(d->m_SubTitleText);
+  d->m_InputLabel->setText(d->m_LabelText);
+  d->m_CancelButton->setText(d->m_CancelButtonText);
+  d->m_OkButton->setText(d->m_OkButtonText);
 }

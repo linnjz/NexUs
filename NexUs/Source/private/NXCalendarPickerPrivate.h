@@ -21,9 +21,9 @@ public:
   Q_SLOT void onCalendarSelectedDateChanged();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXCalendar *_calendar { nullptr };
-  NXCalendarPickerContainer *_calendarPickerContainer { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXCalendar *m_Calendar { nullptr };
+  NXCalendarPickerContainer *m_CalendarPickerContainer { nullptr };
 };
 
 #endif // NXCALENDARPICKERPRIVATE_H

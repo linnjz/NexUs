@@ -15,7 +15,7 @@ public:
 
 private:
   NXPlainTextEdit *_logEdit { nullptr };
-  void appendLog(const QString &text);
+  void appendLog(QString const &text);
 };
 
 #endif // T_ROUTER_H

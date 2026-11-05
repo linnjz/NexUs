@@ -27,7 +27,7 @@ public:
   bool isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2, int port1, int port2) const;
 
 protected:
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+  void paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget = nullptr) override;
   QRectF boundingRect() const override;
 };
 

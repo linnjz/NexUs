@@ -10,7 +10,7 @@ class NXRoller;
 class NXRollerPickerContainer : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(int, AnimationPixOffsetY)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), AnimationPixOffsetY)
   Q_PRIVATE_CREATE(int, ButtonAreaHeight)
 
 public:
@@ -31,17 +31,17 @@ protected:
 private:
   friend class NXRollerPicker;
   friend class NXRollerPickerPrivate;
-  bool _isOverButtonHover { false };
-  bool _isCancelButtonHover { false };
-  bool _isOverButtonClicked { false };
-  int _buttonMargin { 5 };
-  int _buttonSpacing { 5 };
-  NXThemeType::ThemeMode _themeMode;
-  QRect _overButtonRect;
-  QRect _cancelButtonRect;
-  QPixmap _animationPix;
-  QList<NXRoller *> _rollerList;
-  QList<int> _historyIndexList;
+  bool m_IsOverButtonHover { false };
+  bool m_IsCancelButtonHover { false };
+  bool m_IsOverButtonClicked { false };
+  int m_ButtonMargin { 5 };
+  int m_ButtonSpacing { 5 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QRect m_OverButtonRect;
+  QRect m_CancelButtonRect;
+  QPixmap m_AnimationPix;
+  QList<NXRoller *> m_RollerList;
+  QList<int> m_HistoryIndexList;
   void _handleSaveOrReset(bool isSave);
 };
 

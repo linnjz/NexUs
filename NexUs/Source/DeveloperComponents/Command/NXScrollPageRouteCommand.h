@@ -8,8 +8,8 @@ class NXScrollPagePrivate;
 class NXScrollPageRouteCommand : public NXActionCommand
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QStringList), UndoBreadcrumbList)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QStringList), RedoBreadcrumbList)
+  Q_PRIVATE_CREATE(QPS_SCREF(QStringList), UndoBreadcrumbList)
+  Q_PRIVATE_CREATE(QPS_SCREF(QStringList), RedoBreadcrumbList)
   Q_PRIVATE_CREATE(NXScrollPagePrivate *, ScrollPagePrivate)
   Q_PRIVATE_CREATE(int, UndoPageIndex)
   Q_PRIVATE_CREATE(int, RedoPageIndex)

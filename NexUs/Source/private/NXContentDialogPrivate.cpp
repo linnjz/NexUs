@@ -19,23 +19,23 @@ NXContentDialogPrivate::~NXContentDialogPrivate()
 
 void NXContentDialogPrivate::startCloseAnimation(NXPushButton *triggeredButton)
 {
-  if (_isClosing) {
+  if (m_IsClosing) {
     return;
   }
-  _isClosing    = true;
-  _activeButton = triggeredButton;
+  m_IsClosing    = true;
+  m_ActiveButton = triggeredButton;
   Q_Q(NXContentDialog);
-  connect(_maskWidget, &NXMaskWidget::animationFinished, this, &NXContentDialogPrivate::_handleCloseAnimation);
-  _maskWidget->doMaskAnimation(0);
+  connect(m_MaskWidget, &NXMaskWidget::animationFinished, this, &NXContentDialogPrivate::_handleCloseAnimation);
+  m_MaskWidget->doMaskAnimation(0);
 }
 
 void NXContentDialogPrivate::_handleCloseAnimation()
 {
-  _isClosing = false;
+  m_IsClosing = false;
   Q_Q(NXContentDialog);
-  disconnect(_maskWidget, &NXMaskWidget::animationFinished, this, &NXContentDialogPrivate::_handleCloseAnimation);
-  if (_activeButton) {
-    Q_EMIT q->buttonClicked(_activeButton);
+  disconnect(m_MaskWidget, &NXMaskWidget::animationFinished, this, &NXContentDialogPrivate::_handleCloseAnimation);
+  if (m_ActiveButton) {
+    Q_EMIT q->buttonClicked(m_ActiveButton);
   }
   q->done(q->result());
 }
@@ -45,6 +45,6 @@ void NXContentDialogPrivate::_moveToCenter()
   Q_Q(NXContentDialog);
   int width      = q->width();
   int height     = q->height();
-  auto globalPos = _maskWidget->mapToGlobal(QPoint { 0, 0 });
-  q->setGeometry(globalPos.x() + (_maskWidget->width() - width) / 2, globalPos.y() + (_maskWidget->height() - height) / 2, width, height);
+  auto globalPos = m_MaskWidget->mapToGlobal(QPoint { 0, 0 });
+  q->setGeometry(globalPos.x() + (m_MaskWidget->width() - width) / 2, globalPos.y() + (m_MaskWidget->height() - height) / 2, width, height);
 }

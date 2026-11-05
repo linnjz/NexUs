@@ -14,7 +14,7 @@
 #include "NXTheme.h"
 #include "NXToolButton.h"
 #include "private/NXCalendarPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXCalendar, int, BorderRaiuds)
+Q_PROPERTY_CREATE_CPP(NXCalendar, QPS_PAEMIT(int), BorderRaiuds)
 
 NXCalendar::NXCalendar(QWidget *parent)
     : QWidget { parent }
@@ -24,79 +24,79 @@ NXCalendar::NXCalendar(QWidget *parent)
   setFixedSize(305, 340);
   setObjectName("NXCalendar");
   d->q_ptr          = this;
-  d->_pBorderRaiuds = 5;
+  d->m_BorderRaiuds = 5;
 
   // 日历标题
-  d->_calendarTitleView = new NXBaseListView(this);
-  d->_calendarTitleView->setFlow(QListView::LeftToRight);
-  d->_calendarTitleView->setViewMode(QListView::IconMode);
-  d->_calendarTitleView->setResizeMode(QListView::Adjust);
-  d->_calendarTitleView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  d->_calendarTitleView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  d->_calendarTitleView->setModel(new NXCalendarTitleModel(this));
-  d->_calendarTitleView->setItemDelegate(new NXCalendarTitleDelegate(this));
-  d->_calendarTitleView->setFixedHeight(30);
+  d->m_CalendarTitleView = new NXBaseListView(this);
+  d->m_CalendarTitleView->setFlow(QListView::LeftToRight);
+  d->m_CalendarTitleView->setViewMode(QListView::IconMode);
+  d->m_CalendarTitleView->setResizeMode(QListView::Adjust);
+  d->m_CalendarTitleView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  d->m_CalendarTitleView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  d->m_CalendarTitleView->setModel(new NXCalendarTitleModel(this));
+  d->m_CalendarTitleView->setItemDelegate(new NXCalendarTitleDelegate(this));
+  d->m_CalendarTitleView->setFixedHeight(30);
 
   // 日历内容
-  d->_calendarView = new NXBaseListView(this);
-  d->_calendarView->setFlow(QListView::LeftToRight);
-  d->_calendarView->setViewMode(QListView::IconMode);
-  d->_calendarView->setResizeMode(QListView::Adjust);
-  NXScrollBar *vScrollBar = dynamic_cast<NXScrollBar *>(d->_calendarView->verticalScrollBar());
+  d->m_CalendarView = new NXBaseListView(this);
+  d->m_CalendarView->setFlow(QListView::LeftToRight);
+  d->m_CalendarView->setViewMode(QListView::IconMode);
+  d->m_CalendarView->setResizeMode(QListView::Adjust);
+  NXScrollBar *vScrollBar = dynamic_cast<NXScrollBar *>(d->m_CalendarView->verticalScrollBar());
   vScrollBar->setSpeedLimit(6);
-  d->_calendarView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  d->_calendarView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  d->_calendarView->setSelectionMode(QAbstractItemView::NoSelection);
-  d->_calendarModel = new NXCalendarModel(this);
-  d->_calendarView->setModel(d->_calendarModel);
-  d->_calendarDelegate = new NXCalendarDelegate(d->_calendarModel, this);
-  d->_calendarView->setItemDelegate(d->_calendarDelegate);
-  connect(d->_calendarView, &NXBaseListView::clicked, d, &NXCalendarPrivate::onCalendarViewClicked);
+  d->m_CalendarView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  d->m_CalendarView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  d->m_CalendarView->setSelectionMode(QAbstractItemView::NoSelection);
+  d->m_CalendarModel = new NXCalendarModel(this);
+  d->m_CalendarView->setModel(d->m_CalendarModel);
+  d->m_CalendarDelegate = new NXCalendarDelegate(d->m_CalendarModel, this);
+  d->m_CalendarView->setItemDelegate(d->m_CalendarDelegate);
+  connect(d->m_CalendarView, &NXBaseListView::clicked, d, &NXCalendarPrivate::onCalendarViewClicked);
 
   // 模式切换按钮
-  d->_modeSwitchButton = new NXToolButton(this);
-  d->_modeSwitchButton->setText(QStringLiteral("1924年1月"));
-  QFont switchButtonFont = d->_modeSwitchButton->font();
+  d->m_ModeSwitchButton = new NXToolButton(this);
+  d->m_ModeSwitchButton->setText(QStringLiteral("1924年1月"));
+  QFont switchButtonFont = d->m_ModeSwitchButton->font();
   switchButtonFont.setWeight(QFont::Bold);
-  d->_modeSwitchButton->setFont(switchButtonFont);
-  d->_modeSwitchButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
-  d->_modeSwitchButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-  connect(d->_modeSwitchButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onSwitchButtonClicked);
-  connect(d->_calendarView->verticalScrollBar(), &QScrollBar::valueChanged, d, [=]() {
+  d->m_ModeSwitchButton->setFont(switchButtonFont);
+  d->m_ModeSwitchButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+  d->m_ModeSwitchButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  connect(d->m_ModeSwitchButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onSwitchButtonClicked);
+  connect(d->m_CalendarView->verticalScrollBar(), &QScrollBar::valueChanged, d, [=]() {
     d->_updateSwitchButtonText();
   });
 
   // 翻页按钮
-  d->_upButton = new NXToolButton(this);
-  d->_upButton->setFixedSize(36, 36);
-  d->_upButton->setNXIcon(NXIconType::CaretUp);
-  connect(d->_upButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onUpButtonClicked);
+  d->m_UpButton = new NXToolButton(this);
+  d->m_UpButton->setFixedSize(36, 36);
+  d->m_UpButton->setNXIcon(NXIconType::CaretUp);
+  connect(d->m_UpButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onUpButtonClicked);
 
-  d->_downButton = new NXToolButton(this);
-  d->_downButton->setFixedSize(36, 36);
-  d->_downButton->setNXIcon(NXIconType::CaretDown);
-  connect(d->_downButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onDownButtonClicked);
+  d->m_DownButton = new NXToolButton(this);
+  d->m_DownButton->setFixedSize(36, 36);
+  d->m_DownButton->setNXIcon(NXIconType::CaretDown);
+  connect(d->m_DownButton, &NXToolButton::clicked, d, &NXCalendarPrivate::onDownButtonClicked);
 
   QHBoxLayout *buttonLayout = new QHBoxLayout();
   buttonLayout->setContentsMargins(5, 5, 10, 0);
-  buttonLayout->addWidget(d->_modeSwitchButton);
-  buttonLayout->addWidget(d->_upButton);
-  buttonLayout->addWidget(d->_downButton);
+  buttonLayout->addWidget(d->m_ModeSwitchButton);
+  buttonLayout->addWidget(d->m_UpButton);
+  buttonLayout->addWidget(d->m_DownButton);
 
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->setContentsMargins(5, 0, 0, 0);
   mainLayout->addLayout(buttonLayout);
-  mainLayout->addWidget(d->_calendarTitleView);
-  mainLayout->addWidget(d->_calendarView);
+  mainLayout->addWidget(d->m_CalendarTitleView);
+  mainLayout->addWidget(d->m_CalendarView);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
   setVisible(true);
   QDate currentDate     = QDate::currentDate();
-  d->_lastSelectedYear  = currentDate.year();
-  d->_lastSelectedMonth = currentDate.month();
+  d->m_LastSelectedYear  = currentDate.year();
+  d->m_LastSelectedMonth = currentDate.month();
   d->_scrollToDate(currentDate);
 }
 
@@ -107,52 +107,52 @@ NXCalendar::~NXCalendar()
 void NXCalendar::setSelectedDate(QDate selectedDate)
 {
   Q_D(NXCalendar);
-  if (!selectedDate.isValid() || selectedDate.daysTo(d->_calendarModel->getMaximumDate()) < 0 ||
-      selectedDate.daysTo(d->_calendarModel->getMinimumDate()) > 0) {
+  if (!selectedDate.isValid() || selectedDate.daysTo(d->m_CalendarModel->getMaximumDate()) < 0 ||
+      selectedDate.daysTo(d->m_CalendarModel->getMinimumDate()) > 0) {
     return;
   }
-  d->_pSelectedDate = selectedDate;
-  d->_calendarView->selectionModel()->setCurrentIndex(d->_calendarModel->getIndexFromDate(selectedDate), QItemSelectionModel::Select);
-  Q_EMIT pSelectedDateChanged();
+  d->m_SelectedDate = selectedDate;
+  d->m_CalendarView->selectionModel()->setCurrentIndex(d->m_CalendarModel->getIndexFromDate(selectedDate), QItemSelectionModel::Select);
+  Q_EMIT signalSelectedDateChanged();
 }
 
-QDate NXCalendar::getSelectedDate() const
+QDate NXCalendar::getSelectedDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  Q_D(const NXCalendar);
-  return d->_pSelectedDate;
-  //return d->_calendarModel->getDateFromIndex(d->_calendarView->selectionModel()->currentIndex());
+  Q_CONST_D(NXCalendar);
+  return d->m_SelectedDate;
+  //return d->m_CalendarModel->getDateFromIndex(d->m_CalendarView->selectionModel()->currentIndex());
 }
 
 void NXCalendar::setMinimumDate(QDate minimudate)
 {
   Q_D(NXCalendar);
-  if (!minimudate.isValid() || minimudate.daysTo(d->_calendarModel->getMaximumDate()) < 0) {
+  if (!minimudate.isValid() || minimudate.daysTo(d->m_CalendarModel->getMaximumDate()) < 0) {
     return;
   }
-  d->_calendarModel->setMaximumDate(minimudate);
-  Q_EMIT pMinimumDateChanged();
+  d->m_CalendarModel->setMaximumDate(minimudate);
+  Q_EMIT signalMinimumDateChanged();
 }
 
-QDate NXCalendar::getMinimumDate() const
+QDate NXCalendar::getMinimumDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  Q_D(const NXCalendar);
-  return d->_calendarModel->getMinimumDate();
+  Q_CONST_D(NXCalendar);
+  return d->m_CalendarModel->getMinimumDate();
 }
 
 void NXCalendar::setMaximumDate(QDate maximumDate)
 {
   Q_D(NXCalendar);
-  if (!maximumDate.isValid() || maximumDate.daysTo(d->_calendarModel->getMinimumDate()) > 0) {
+  if (!maximumDate.isValid() || maximumDate.daysTo(d->m_CalendarModel->getMinimumDate()) > 0) {
     return;
   }
-  d->_calendarModel->setMaximumDate(maximumDate);
-  Q_EMIT pMaximumDateChanged();
+  d->m_CalendarModel->setMaximumDate(maximumDate);
+  Q_EMIT signalMaximumDateChanged();
 }
 
-QDate NXCalendar::getMaximumDate() const
+QDate NXCalendar::getMaximumDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  Q_D(const NXCalendar);
-  return d->_calendarModel->getMaximumDate();
+  Q_CONST_D(NXCalendar);
+  return d->m_CalendarModel->getMaximumDate();
 }
 
 void NXCalendar::paintEvent(QPaintEvent *event)
@@ -163,25 +163,25 @@ void NXCalendar::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   QRect baseRect = rect();
-  baseRect.adjust(d->_borderWidth, d->_borderWidth, -d->_borderWidth, -d->_borderWidth);
+  baseRect.adjust(d->m_BorderWidth, d->m_BorderWidth, -d->m_BorderWidth, -d->m_BorderWidth);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
-  painter.drawRoundedRect(baseRect, d->_pBorderRaiuds, d->_pBorderRaiuds);
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
+  painter.drawRoundedRect(baseRect, d->m_BorderRaiuds, d->m_BorderRaiuds);
   // 缩放动画
-  if (!d->_isSwitchAnimationFinished) {
+  if (!d->m_IsSwitchAnimationFinished) {
     painter.save();
-    QRect pixRect = QRect(baseRect.x(), d->_borderWidth + 45, baseRect.width(), baseRect.height() - 45);
-    painter.setOpacity(d->_pPixOpacity);
+    QRect pixRect = QRect(baseRect.x(), d->m_BorderWidth + 45, baseRect.width(), baseRect.height() - 45);
+    painter.setOpacity(d->m_PixOpacity);
     painter.translate(pixRect.center());
-    painter.scale(d->_pZoomRatio, d->_pZoomRatio);
+    painter.scale(d->m_ZoomRatio, d->m_ZoomRatio);
     painter.translate(-pixRect.center());
-    painter.drawPixmap(pixRect, d->_isDrawNewPix ? d->_newCalendarViewPix : d->_oldCalendarViewPix);
+    painter.drawPixmap(pixRect, d->m_IsDrawNewPix ? d->m_NewCalendarViewPix : d->m_OldCalendarViewPix);
     painter.restore();
   }
   // 分割线
-  painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), d->_borderWidth));
+  painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), d->m_BorderWidth));
   painter.setBrush(Qt::NoBrush);
-  painter.drawRoundedRect(baseRect, d->_pBorderRaiuds, d->_pBorderRaiuds);
+  painter.drawRoundedRect(baseRect, d->m_BorderRaiuds, d->m_BorderRaiuds);
   painter.drawLine(QPointF(baseRect.x(), 45), QPointF(baseRect.right(), 45));
   painter.restore();
 }

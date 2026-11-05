@@ -24,13 +24,13 @@ public:
     Small = 0x00'02,
   };
 
-  explicit NXRibbonGroup(const QString &title, QWidget *parent = nullptr);
+  explicit NXRibbonGroup(QString const &title, QWidget *parent = nullptr);
   ~NXRibbonGroup();
 
-  void setTitle(const QString &title);
+  void setTitle(QString const &title);
   QString getTitle() const;
 
-  NXToolButton *addToolButton(NXIconType::IconName icon, const QString &text, ButtonSize size = Large);
+  NXToolButton *addToolButton(NXIconType::IconName icon, QString const &text, ButtonSize size = Large);
   void addWidget(QWidget *widget);
 
   void removeButton(NXToolButton *button);

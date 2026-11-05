@@ -20,9 +20,9 @@ public:
   ~NXVirtualListPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _itemCount { 0 };
-  NXVirtualListStyle *_listViewStyle { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_ItemCount { 0 };
+  NXVirtualListStyle *m_ListViewStyle { nullptr };
 };
 
 #endif // NXVIRTUALLISTPRIVATE_H

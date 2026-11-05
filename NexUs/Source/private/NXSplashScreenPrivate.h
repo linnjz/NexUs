@@ -30,15 +30,15 @@ public:
   void _doCloseAnimation();
 
 private:
-  bool _isDragging { false };
-  NXThemeType::ThemeMode _themeMode;
-  QPoint _dragStartPos;
-  QPixmap _logo;
-  NXText *_titleText { nullptr };
-  NXText *_subTitleText { nullptr };
-  NXText *_statusText { nullptr };
-  NXProgressBar *_progressBar { nullptr };
-  NXProgressRing *_progressRing { nullptr };
+  bool m_IsDragging { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QPoint m_DragStartPos;
+  QPixmap m_Logo;
+  NXText *m_TitleText { nullptr };
+  NXText *m_SubTitleText { nullptr };
+  NXText *m_StatusText { nullptr };
+  NXProgressBar *m_ProgressBar { nullptr };
+  NXProgressRing *m_ProgressRing { nullptr };
 };
 
 #endif // NXSPLASHSCREENPRIVATE_H

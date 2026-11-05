@@ -10,7 +10,7 @@
 #include "NXApplication.h"
 #include "NXTheme.h"
 #include "private/NXDialogPrivate.h"
-Q_TAKEOVER_NATIVEEVENT_CPP(NXDialog, d_func()->_appBar);
+Q_TAKEOVER_NATIVEEVENT_CPP(NXDialog, d_func()->m_AppBar);
 
 NXDialog::NXDialog(QWidget *parent)
     : QDialog { parent }
@@ -28,24 +28,24 @@ NXDialog::NXDialog(QWidget *parent)
   setStyleSheet(QStringLiteral("#NXDialog{background-color:transparent;}"));
 #endif
   // 自定义AppBar
-  d->_appBar = new NXAppBar(this);
-  d->_appBar->setIsStayTop(true);
-  d->_appBar->setWindowButtonFlags(NXAppBarType::StayTopButtonHint | NXAppBarType::MinimizeButtonHint | NXAppBarType::MaximizeButtonHint | NXAppBarType::CloseButtonHint);
-  connect(d->_appBar, &NXAppBar::routeBackButtonClicked, this, &NXDialog::routeBackButtonClicked);
-  connect(d->_appBar, &NXAppBar::navigationButtonClicked, this, &NXDialog::navigationButtonClicked);
-  connect(d->_appBar, &NXAppBar::themeChangeButtonClicked, this, &NXDialog::themeChangeButtonClicked);
-  connect(d->_appBar, &NXAppBar::closeButtonClicked, this, &NXDialog::closeButtonClicked);
+  d->m_AppBar = new NXAppBar(this);
+  d->m_AppBar->setIsStayTop(true);
+  d->m_AppBar->setWindowButtonFlags(NXAppBarType::StayTopButtonHint | NXAppBarType::MinimizeButtonHint | NXAppBarType::MaximizeButtonHint | NXAppBarType::CloseButtonHint);
+  connect(d->m_AppBar, &NXAppBar::routeBackButtonClicked, this, &NXDialog::routeBackButtonClicked);
+  connect(d->m_AppBar, &NXAppBar::navigationButtonClicked, this, &NXDialog::navigationButtonClicked);
+  connect(d->m_AppBar, &NXAppBar::themeChangeButtonClicked, this, &NXDialog::themeChangeButtonClicked);
+  connect(d->m_AppBar, &NXAppBar::closeButtonClicked, this, &NXDialog::closeButtonClicked);
 
   // 主题
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 
-  d->_windowDisplayMode = nxApp->getWindowDisplayMode();
-  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]() {
-    d->_windowDisplayMode = nxApp->getWindowDisplayMode();
+  d->m_WindowDisplayMode = nxApp->getWindowDisplayMode();
+  connect(nxApp, &NXApplication::signalWindowDisplayModeChanged, this, [=]() {
+    d->m_WindowDisplayMode = nxApp->getWindowDisplayMode();
     update();
   });
   nxApp->syncWindowDisplayMode(this);
@@ -59,49 +59,49 @@ NXDialog::~NXDialog()
 void NXDialog::setIsStayTop(bool isStayTop)
 {
   Q_D(NXDialog);
-  d->_appBar->setIsStayTop(isStayTop);
+  d->m_AppBar->setIsStayTop(isStayTop);
 }
 
-bool NXDialog::getIsStayTop() const
+bool NXDialog::getIsStayTop() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  return d_ptr->_appBar->getIsStayTop();
+  return d_ptr->m_AppBar->getIsStayTop();
 }
 
 void NXDialog::setIsFixedSize(bool isFixedSize)
 {
   Q_D(NXDialog);
-  d->_appBar->setIsFixedSize(isFixedSize);
+  d->m_AppBar->setIsFixedSize(isFixedSize);
 }
 
-bool NXDialog::getIsFixedSize() const
+bool NXDialog::getIsFixedSize() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  return d_ptr->_appBar->getIsFixedSize();
+  return d_ptr->m_AppBar->getIsFixedSize();
 }
 
 void NXDialog::setIsDefaultClosed(bool isDefaultClosed)
 {
   Q_D(NXDialog);
-  d->_appBar->setIsDefaultClosed(isDefaultClosed);
-  Q_EMIT pIsDefaultClosedChanged();
+  d->m_AppBar->setIsDefaultClosed(isDefaultClosed);
+  Q_EMIT signalIsDefaultClosedChanged();
 }
 
-bool NXDialog::getIsDefaultClosed() const
+bool NXDialog::getIsDefaultClosed() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXDialog);
-  return d->_appBar->getIsDefaultClosed();
+  Q_CONST_D(NXDialog);
+  return d->m_AppBar->getIsDefaultClosed();
 }
 
 void NXDialog::setAppBarHeight(int appBarHeight)
 {
   Q_D(NXDialog);
-  d->_appBar->setAppBarHeight(appBarHeight);
-  Q_EMIT pAppBarHeightChanged();
+  d->m_AppBar->setAppBarHeight(appBarHeight);
+  Q_EMIT signalAppBarHeightChanged();
 }
 
-int NXDialog::getAppBarHeight() const
+int NXDialog::getAppBarHeight() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXDialog);
-  return d->_appBar->getAppBarHeight();
+  Q_CONST_D(NXDialog);
+  return d->m_AppBar->getAppBarHeight();
 }
 
 void NXDialog::moveToCenter()
@@ -120,34 +120,34 @@ void NXDialog::moveToCenter()
 void NXDialog::setWindowButtonFlag(NXAppBarType::ButtonType buttonFlag, bool isEnable)
 {
   Q_D(NXDialog);
-  d->_appBar->setWindowButtonFlag(buttonFlag, isEnable);
+  d->m_AppBar->setWindowButtonFlag(buttonFlag, isEnable);
 }
 
 void NXDialog::setWindowButtonFlags(NXAppBarType::ButtonFlags buttonFlags)
 {
   Q_D(NXDialog);
-  d->_appBar->setWindowButtonFlags(buttonFlags);
+  d->m_AppBar->setWindowButtonFlags(buttonFlags);
 }
 
 NXAppBarType::ButtonFlags NXDialog::getWindowButtonFlags() const
 {
-  return d_ptr->_appBar->getWindowButtonFlags();
+  return d_ptr->m_AppBar->getWindowButtonFlags();
 }
 
 void NXDialog::paintEvent(QPaintEvent *event)
 {
   Q_D(NXDialog);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
-  if (d->_windowDisplayMode != NXApplicationType::WindowDisplayMode::NXMica)
+  if (d->m_WindowDisplayMode != NXApplicationType::WindowDisplayMode::NXMica)
 #else
-  if (d->_windowDisplayMode == NXApplicationType::WindowDisplayMode::Normal)
+  if (d->m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::Normal)
 #endif
   {
     QPainter painter(this);
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
     painter.drawRect(rect());
     painter.restore();
   }

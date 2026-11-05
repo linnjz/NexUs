@@ -17,11 +17,11 @@ void NXRollerPickerPrivate::onRollerPickerClicked()
 {
   Q_Q(NXRollerPicker);
   QPoint targetPos(q->mapToGlobal(QPoint(
-      -6, (q->height() - _rollerPickerContainer->height() + _rollerPickerContainer->getButtonAreaHeight()) / 2)));
-  _rollerPickerContainer->show();
-  _rollerPickerContainer->setGeometry(
-      QRect(targetPos, QSize(_getRollerTotalWidth() + 16, _pickerRollerHeight + _rollerPickerContainer->getButtonAreaHeight())));
-  _rollerPickerContainer->doPickerAnimation();
+      -6, (q->height() - m_RollerPickerContainer->height() + m_RollerPickerContainer->getButtonAreaHeight()) / 2)));
+  m_RollerPickerContainer->show();
+  m_RollerPickerContainer->setGeometry(
+      QRect(targetPos, QSize(_getRollerTotalWidth() + 16, m_PickerRollerHeight + m_RollerPickerContainer->getButtonAreaHeight())));
+  m_RollerPickerContainer->doPickerAnimation();
 }
 
 void NXRollerPickerPrivate::onOverButtonClicked()
@@ -37,7 +37,7 @@ void NXRollerPickerPrivate::onCancelButtonClicked()
 int NXRollerPickerPrivate::_getRollerTotalWidth() const
 {
   int totalWidth = 0;
-  for (auto rollerItem : _rollerPickerContainer->_rollerList) {
+  for (auto rollerItem : m_RollerPickerContainer->m_RollerList) {
     totalWidth += rollerItem->width();
   }
   return totalWidth;

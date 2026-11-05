@@ -11,7 +11,7 @@
 class NXDragMonitor : public QObject
 {
   Q_OBJECT
-  Q_SINGLETON_CREATE(QS_S_UNIQUE(NXDragMonitor))
+  Q_SINGLETON_CREATE(QSS_UNIQUE(NXDragMonitor))
   Q_PRIVATE_CREATE(bool, IsInDrag)
 
 private:
@@ -42,11 +42,11 @@ public:
 
 private:
   friend class NXCustomTabWidget;
-  NXTabBar *_tabBar { nullptr };
-  NXTabBar *_customTabBar { nullptr };
+  NXTabBar *m_TabBar { nullptr };
+  NXTabBar *m_CustomTabBar { nullptr };
   // 页面拖出后仍可能被 customwidget 归还，因此跟随页面生命周期而非 tab 成员关系
-  QList<QPointer<QWidget>> _allTabWidgetList;
-  QList<QPointer<NXCustomTabWidget>> _customTabWidgetList;
+  QList<QPointer<QWidget>> m_AllTabWidgetList;
+  QList<QPointer<NXCustomTabWidget>> m_CustomTabWidgetList;
   void _addTabWidgetToList(QWidget *widget);
   void _removeTabWidgetFromList(QWidget *widget);
   void _registerCustomTabWidget(NXCustomTabWidget *customTabWidget);

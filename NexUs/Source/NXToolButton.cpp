@@ -24,53 +24,53 @@ NXToolButton::NXToolButton(QWidget *parent)
 #endif
   setIconSize(QSize(22, 22));
   setPopupMode(QToolButton::InstantPopup);
-  d->_toolButtonStyle = new NXToolButtonStyle(style());
-  setStyle(d->_toolButtonStyle);
+  d->m_ToolButtonStyle = new NXToolButtonStyle(style());
+  setStyle(d->m_ToolButtonStyle);
 }
 
 NXToolButton::~NXToolButton()
 {
   Q_D(NXToolButton);
-  delete d->_toolButtonStyle;
+  delete d->m_ToolButtonStyle;
 }
 
 void NXToolButton::setBorderRadius(int borderRadius)
 {
   Q_D(NXToolButton);
-  d->_toolButtonStyle->setBorderRadius(borderRadius);
-  Q_EMIT pBorderRadiusChanged();
+  d->m_ToolButtonStyle->setBorderRadius(borderRadius);
+  Q_EMIT signalBorderRadiusChanged();
 }
 
-int NXToolButton::getBorderRadius() const
+int NXToolButton::getBorderRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXToolButton);
-  return d->_toolButtonStyle->getBorderRadius();
+  Q_CONST_D(NXToolButton);
+  return d->m_ToolButtonStyle->getBorderRadius();
 }
 
 void NXToolButton::setIsSelected(bool isSelected)
 {
   Q_D(NXToolButton);
-  d->_toolButtonStyle->setIsSelected(isSelected);
-  Q_EMIT pIsSelectedChanged();
+  d->m_ToolButtonStyle->setIsSelected(isSelected);
+  Q_EMIT signalIsSelectedChanged();
 }
 
-bool NXToolButton::getIsSelected() const
+bool NXToolButton::getIsSelected() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXToolButton);
-  return d->_toolButtonStyle->getIsSelected();
+  Q_CONST_D(NXToolButton);
+  return d->m_ToolButtonStyle->getIsSelected();
 }
 
 void NXToolButton::setIsTransparent(bool isTransparent)
 {
   Q_D(NXToolButton);
-  d->_toolButtonStyle->setIsTransparent(isTransparent);
+  d->m_ToolButtonStyle->setIsTransparent(isTransparent);
   update();
 }
 
 bool NXToolButton::getIsTransparent() const
 {
-  Q_D(const NXToolButton);
-  return d->_toolButtonStyle->getIsTransparent();
+  Q_CONST_D(NXToolButton);
+  return d->m_ToolButtonStyle->getIsTransparent();
 }
 
 void NXToolButton::setMenu(NXMenu *menu)
@@ -102,26 +102,26 @@ bool NXToolButton::eventFilter(QObject *watched, QEvent *event)
     switch (event->type()) {
     case QEvent::Show : {
       //指示器动画
-      QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->_toolButtonStyle, "pExpandIconRotate");
-      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+      QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->m_ToolButtonStyle, "ExpandIconRotate");
+      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
         update();
       });
       rotateAnimation->setDuration(300);
       rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
-      rotateAnimation->setStartValue(d->_toolButtonStyle->getExpandIconRotate());
+      rotateAnimation->setStartValue(d->m_ToolButtonStyle->getExpandIconRotate());
       rotateAnimation->setEndValue(-180);
       rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
       break;
     }
     case QEvent::Hide : {
       //指示器动画
-      QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->_toolButtonStyle, "pExpandIconRotate");
-      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+      QPropertyAnimation *rotateAnimation = new QPropertyAnimation(d->m_ToolButtonStyle, "ExpandIconRotate");
+      connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
         update();
       });
       rotateAnimation->setDuration(300);
       rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
-      rotateAnimation->setStartValue(d->_toolButtonStyle->getExpandIconRotate());
+      rotateAnimation->setStartValue(d->m_ToolButtonStyle->getExpandIconRotate());
       rotateAnimation->setEndValue(0);
       rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
       QMouseEvent focusEvent(QEvent::MouseButtonPress, QPoint(-1, -1), QPoint(-1, -1), Qt::NoButton, Qt::NoButton, Qt::NoModifier);

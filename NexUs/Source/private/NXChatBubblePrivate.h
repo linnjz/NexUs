@@ -26,15 +26,15 @@ public:
   ~NXChatBubblePrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXChatBubble::BubbleDirection _direction { NXChatBubble::Left };
-  NXChatBubble::MessageStatus _status { NXChatBubble::None };
-  int _imageMaxWidth { 280 };
-  QRect _imageRect;
-  QColor _bubbleColor;
-  QPixmap _avatar;
-  QPixmap _messageImage;
-  QPixmap _scaledImage;
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXChatBubble::BubbleDirection m_Direction { NXChatBubble::Left };
+  NXChatBubble::MessageStatus m_Status { NXChatBubble::None };
+  int m_ImageMaxWidth { 280 };
+  QRect m_ImageRect;
+  QColor m_BubbleColor;
+  QPixmap m_Avatar;
+  QPixmap m_MessageImage;
+  QPixmap m_ScaledImage;
 };
 
 #endif // NXCHATBUBBLEPRIVATE_H

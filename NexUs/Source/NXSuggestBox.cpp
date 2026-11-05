@@ -20,17 +20,17 @@
 #include "NXTheme.h"
 #include "private/NXSuggestBoxPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXSuggestBox, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXSuggestBox, Qt::CaseSensitivity, CaseSensitivity)
+Q_PROPERTY_CREATE_CPP(NXSuggestBox, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXSuggestBox, QPS_PAEMIT(Qt::CaseSensitivity), CaseSensitivity)
 
 NXSuggestBox::SuggestData::SuggestData()
 {
 }
 
-NXSuggestBox::SuggestData::SuggestData(NXIconType::IconName icon, const QString &suggestText, const QVariantMap &suggestData)
-    : _pNXIcon(icon)
-    , _pSuggestText(suggestText)
-    , _pSuggestData(suggestData)
+NXSuggestBox::SuggestData::SuggestData(NXIconType::IconName icon, QString const &suggestText, QVariantMap const &suggestData)
+    : m_NXIcon(icon)
+    , m_SuggestText(suggestText)
+    , m_SuggestData(suggestData)
 {
 }
 
@@ -45,56 +45,56 @@ NXSuggestBox::NXSuggestBox(QWidget *parent)
   Q_D(NXSuggestBox);
   QWidget::setFixedSize(280, 35);
   d->q_ptr             = this;
-  d->_pBorderRadius    = 6;
-  d->_pCaseSensitivity = Qt::CaseInsensitive;
-  d->_searchEdit       = new NXLineEdit(this);
-  d->_searchEdit->setFixedHeight(35);
-  d->_searchEdit->setPlaceholderText(QStringLiteral("查找功能"));
-  d->_searchEdit->setClearButtonEnabled(true);
-  d->_lightSearchAction =
+  d->m_BorderRadius    = 6;
+  d->m_CaseSensitivity = Qt::CaseInsensitive;
+  d->m_SearchEdit       = new NXLineEdit(this);
+  d->m_SearchEdit->setFixedHeight(35);
+  d->m_SearchEdit->setPlaceholderText(QStringLiteral("查找功能"));
+  d->m_SearchEdit->setClearButtonEnabled(true);
+  d->m_LightSearchAction =
       new QAction(NXIcon::getInstance()->getNXIcon(NXIconType::MagnifyingGlass), QStringLiteral("Search"), this);
-  d->_darkSearchAction =
+  d->m_DarkSearchAction =
       new QAction(NXIcon::getInstance()->getNXIcon(NXIconType::MagnifyingGlass, QColor(0xFF, 0xFF, 0xFF)), QStringLiteral("Search"), this);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXSuggestBoxPrivate::onThemeModeChanged);
-  if (d->_themeMode == NXThemeType::Light) {
-    d->_searchEdit->addAction(d->_lightSearchAction, QLineEdit::TrailingPosition);
+  if (d->m_ThemeMode == NXThemeType::Light) {
+    d->m_SearchEdit->addAction(d->m_LightSearchAction, QLineEdit::TrailingPosition);
   } else {
-    d->_searchEdit->addAction(d->_darkSearchAction, QLineEdit::TrailingPosition);
+    d->m_SearchEdit->addAction(d->m_DarkSearchAction, QLineEdit::TrailingPosition);
   }
 
-  connect(d->_lightSearchAction, &QAction::triggered, this, [=](bool checked) {
+  connect(d->m_LightSearchAction, &QAction::triggered, this, [=](bool checked) {
     //qDebug() << "Search";
   });
 
-  connect(d->_darkSearchAction, &QAction::triggered, this, [=](bool checked) {
+  connect(d->m_DarkSearchAction, &QAction::triggered, this, [=](bool checked) {
     //qDebug() << "Search";
   });
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->setSpacing(0);
   mainLayout->setContentsMargins(0, 0, 0, 0);
-  mainLayout->addWidget(d->_searchEdit);
-  d->_searchViewBaseWidget = new NXSuggestBoxSearchViewContainer(window());
-  d->_shadowLayout         = new QVBoxLayout(d->_searchViewBaseWidget);
-  d->_shadowLayout->setContentsMargins(0, 0, 0, 0);
-  d->_searchView               = new NXBaseListView(d->_searchViewBaseWidget);
-  NXScrollBar *floatVScrollBar = new NXScrollBar(d->_searchView->verticalScrollBar(), d->_searchView);
+  mainLayout->addWidget(d->m_SearchEdit);
+  d->m_SearchViewBaseWidget = new NXSuggestBoxSearchViewContainer(window());
+  d->m_ShadowLayout         = new QVBoxLayout(d->m_SearchViewBaseWidget);
+  d->m_ShadowLayout->setContentsMargins(0, 0, 0, 0);
+  d->m_SearchView               = new NXBaseListView(d->m_SearchViewBaseWidget);
+  NXScrollBar *floatVScrollBar = new NXScrollBar(d->m_SearchView->verticalScrollBar(), d->m_SearchView);
   floatVScrollBar->setIsAnimation(true);
-  d->_searchViewBaseWidget->resize(292, 300);
-  d->_shadowLayout->addWidget(d->_searchView);
-  d->_searchModel    = new NXSuggestModel(this);
-  d->_searchDelegate = new NXSuggestDelegate(this);
-  d->_searchView->setModel(d->_searchModel);
-  d->_searchView->setItemDelegate(d->_searchDelegate);
-  d->_searchViewBaseWidget->hide();
-  connect(d->_searchEdit, &NXLineEdit::textEdited, d, &NXSuggestBoxPrivate::onSearchEditTextEdit);
-  connect(d->_searchEdit, &NXLineEdit::focusIn, d, &NXSuggestBoxPrivate::onSearchEditTextEdit);
-  connect(d->_searchView, &NXBaseListView::clicked, d, &NXSuggestBoxPrivate::onSearchViewClicked);
+  d->m_SearchViewBaseWidget->resize(292, 300);
+  d->m_ShadowLayout->addWidget(d->m_SearchView);
+  d->m_SearchModel    = new NXSuggestModel(this);
+  d->m_SearchDelegate = new NXSuggestDelegate(this);
+  d->m_SearchView->setModel(d->m_SearchModel);
+  d->m_SearchView->setItemDelegate(d->m_SearchDelegate);
+  d->m_SearchViewBaseWidget->hide();
+  connect(d->m_SearchEdit, &NXLineEdit::textEdited, d, &NXSuggestBoxPrivate::onSearchEditTextEdit);
+  connect(d->m_SearchEdit, &NXLineEdit::focusIn, d, &NXSuggestBoxPrivate::onSearchEditTextEdit);
+  connect(d->m_SearchView, &NXBaseListView::clicked, d, &NXSuggestBoxPrivate::onSearchViewClicked);
 
   // 焦点事件
-  connect(d->_searchEdit, &NXLineEdit::wmFocusOut, this, [=]() {
-    if (!d->_searchView->underMouse()) {
+  connect(d->m_SearchEdit, &NXLineEdit::wmFocusOut, this, [=]() {
+    if (!d->m_SearchView->underMouse()) {
       d->_startCloseAnimation();
     }
   });
@@ -104,87 +104,87 @@ NXSuggestBox::~NXSuggestBox()
 {
 }
 
-void NXSuggestBox::setPlaceholderText(const QString &placeholderText)
+void NXSuggestBox::setPlaceholderText(QString const &placeholderText)
 {
   Q_D(NXSuggestBox);
-  d->_searchEdit->setPlaceholderText(placeholderText);
+  d->m_SearchEdit->setPlaceholderText(placeholderText);
 }
 
 void NXSuggestBox::setFixedSize(QSize size)
 {
   Q_D(NXSuggestBox);
-  d->_searchEdit->setFixedHeight(size.height());
+  d->m_SearchEdit->setFixedHeight(size.height());
   QWidget::setFixedSize(size);
 }
 
 void NXSuggestBox::setFixedSize(int w, int h)
 {
   Q_D(NXSuggestBox);
-  d->_searchEdit->setFixedHeight(h);
+  d->m_SearchEdit->setFixedHeight(h);
   QWidget::setFixedSize(w, h);
 }
 
 void NXSuggestBox::setFixedHeight(int h)
 {
   Q_D(NXSuggestBox);
-  d->_searchEdit->setFixedHeight(h);
+  d->m_SearchEdit->setFixedHeight(h);
   QWidget::setFixedHeight(h);
 }
 
-QString NXSuggestBox::addSuggestion(const QString &suggestText, const QVariantMap &suggestData)
+QString NXSuggestBox::addSuggestion(QString const &suggestText, QVariantMap const &suggestData)
 {
   Q_D(NXSuggestBox);
   NXSuggestion *suggest = new NXSuggestion(this);
   suggest->setSuggestText(suggestText);
   suggest->setSuggestData(suggestData);
-  d->_suggestionVector.append(suggest);
+  d->m_SuggestionVector.append(suggest);
   return suggest->getSuggestKey();
 }
 
-QString NXSuggestBox::addSuggestion(NXIconType::IconName icon, const QString &suggestText, const QVariantMap &suggestData)
+QString NXSuggestBox::addSuggestion(NXIconType::IconName icon, QString const &suggestText, QVariantMap const &suggestData)
 {
   Q_D(NXSuggestBox);
   NXSuggestion *suggest = new NXSuggestion(this);
   suggest->setNXIcon(icon);
   suggest->setSuggestText(suggestText);
   suggest->setSuggestData(suggestData);
-  d->_suggestionVector.append(suggest);
+  d->m_SuggestionVector.append(suggest);
   return suggest->getSuggestKey();
 }
 
-QString NXSuggestBox::addSuggestion(const NXSuggestBox::SuggestData &suggestData)
+QString NXSuggestBox::addSuggestion(NXSuggestBox::SuggestData const &suggestData)
 {
   Q_D(NXSuggestBox);
   NXSuggestion *suggest = new NXSuggestion(this);
   suggest->setNXIcon(suggestData.getNXIcon());
   suggest->setSuggestText(suggestData.getSuggestText());
   suggest->setSuggestData(suggestData.getSuggestData());
-  d->_suggestionVector.append(suggest);
+  d->m_SuggestionVector.append(suggest);
   return suggest->getSuggestKey();
 }
 
-QStringList NXSuggestBox::addSuggestion(const QList<NXSuggestBox::SuggestData> &suggestDataList)
+QStringList NXSuggestBox::addSuggestion(QList<NXSuggestBox::SuggestData> const &suggestDataList)
 {
   Q_D(NXSuggestBox);
   QStringList suggestKeyList;
-  for (const auto &suggestData : suggestDataList) {
+  for (auto const &suggestData : suggestDataList) {
     NXSuggestion *suggest = new NXSuggestion(this);
     suggest->setNXIcon(suggestData.getNXIcon());
     suggest->setSuggestText(suggestData.getSuggestText());
     suggest->setSuggestData(suggestData.getSuggestData());
-    d->_suggestionVector.append(suggest);
+    d->m_SuggestionVector.append(suggest);
     suggestKeyList.append(suggest->getSuggestKey());
   }
   return suggestKeyList;
 }
 
-void NXSuggestBox::removeSuggestion(const QString &suggestKey)
+void NXSuggestBox::removeSuggestion(QString const &suggestKey)
 {
   Q_D(NXSuggestBox);
-  foreach(auto suggest, d->_suggestionVector)
+  foreach(auto suggest, d->m_SuggestionVector)
   {
     if (suggest->getSuggestKey() == suggestKey) {
-      d->_suggestionVector.removeOne(suggest);
+      d->m_SuggestionVector.removeOne(suggest);
       suggest->deleteLater();
     }
   }
@@ -193,20 +193,20 @@ void NXSuggestBox::removeSuggestion(const QString &suggestKey)
 void NXSuggestBox::removeSuggestion(int index)
 {
   Q_D(NXSuggestBox);
-  if (index >= d->_suggestionVector.count()) {
+  if (index >= d->m_SuggestionVector.count()) {
     return;
   }
-  NXSuggestion *suggest = d->_suggestionVector[index];
-  d->_suggestionVector.removeOne(suggest);
+  NXSuggestion *suggest = d->m_SuggestionVector[index];
+  d->m_SuggestionVector.removeOne(suggest);
   suggest->deleteLater();
 }
 
 void NXSuggestBox::clearSuggestion()
 {
   Q_D(NXSuggestBox);
-  foreach(auto suggest, d->_suggestionVector)
+  foreach(auto suggest, d->m_SuggestionVector)
   {
-    d->_suggestionVector.removeOne(suggest);
+    d->m_SuggestionVector.removeOne(suggest);
     suggest->deleteLater();
   }
 }

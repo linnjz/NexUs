@@ -7,8 +7,8 @@
 #include "NXTheme.h"
 #include "private/NXInfoBadgePrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXInfoBadge, int, Value)
-Q_PROPERTY_CREATE_CPP(NXInfoBadge, NXIconType::IconName, NXIcon)
+Q_PROPERTY_CREATE_CPP(NXInfoBadge, QPS_PAEMIT(int), Value)
+Q_PROPERTY_CREATE_CPP(NXInfoBadge, QPS_PAEMIT(NXIconType::IconName), NXIcon)
 
 NXInfoBadgePrivate::NXInfoBadgePrivate(QObject *parent)
     : QObject(parent)
@@ -22,25 +22,25 @@ NXInfoBadgePrivate::~NXInfoBadgePrivate()
 void NXInfoBadgePrivate::_updatePosition()
 {
   Q_Q(NXInfoBadge);
-  if (!_target) {
+  if (!m_Target) {
     return;
   }
   // Position at inner top-right corner of target
-  int x = _target->width() - q->width() - 2;
+  int x = m_Target->width() - q->width() - 2;
   int y = 2;
   q->move(x, y);
 }
 
 QColor NXInfoBadgePrivate::_getSeverityColor() const
 {
-  switch (_severity) {
-  case NXInfoBadge::Attention     : return NXThemeColor(_themeMode, StatusDanger);
-  case NXInfoBadge::Informational : return NXThemeColor(_themeMode, PrimaryNormal);
+  switch (m_Severity) {
+  case NXInfoBadge::Attention     : return NXThemeColor(m_ThemeMode, StatusDanger);
+  case NXInfoBadge::Informational : return NXThemeColor(m_ThemeMode, PrimaryNormal);
   case NXInfoBadge::Success       : return QColor(0x0F, 0x7B, 0x0F);
   case NXInfoBadge::Caution       : return QColor(0x9D, 0x5D, 0x00);
-  case NXInfoBadge::Critical      : return NXThemeColor(_themeMode, StatusDanger);
+  case NXInfoBadge::Critical      : return NXThemeColor(m_ThemeMode, StatusDanger);
   }
-  return NXThemeColor(_themeMode, StatusDanger);
+  return NXThemeColor(m_ThemeMode, StatusDanger);
 }
 
 NXInfoBadge::NXInfoBadge(QWidget *parent)
@@ -49,16 +49,16 @@ NXInfoBadge::NXInfoBadge(QWidget *parent)
 {
   Q_D(NXInfoBadge);
   d->q_ptr    = this;
-  d->_pValue  = 0;
-  d->_pNXIcon = NXIconType::None;
+  d->m_Value  = 0;
+  d->m_NXIcon = NXIconType::None;
   setObjectName("NXInfoBadge");
   setAttribute(Qt::WA_TransparentForMouseEvents);
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
-  connect(this, &NXInfoBadge::pValueChanged, this, [=]() {
+  connect(this, &NXInfoBadge::signalValueChanged, this, [=]() {
     updateGeometry();
     adjustSize();
     d->_updatePosition();
@@ -70,16 +70,16 @@ NXInfoBadge::NXInfoBadge(int value, QWidget *parent)
     : NXInfoBadge(parent)
 {
   Q_D(NXInfoBadge);
-  d->_badgeMode = Value_;
-  d->_pValue    = value;
+  d->m_BadgeMode = Value_;
+  d->m_Value    = value;
 }
 
 NXInfoBadge::NXInfoBadge(NXIconType::IconName icon, QWidget *parent)
     : NXInfoBadge(parent)
 {
   Q_D(NXInfoBadge);
-  d->_badgeMode = Icon;
-  d->_pNXIcon   = icon;
+  d->m_BadgeMode = Icon;
+  d->m_NXIcon   = icon;
 }
 
 NXInfoBadge::~NXInfoBadge()
@@ -89,7 +89,7 @@ NXInfoBadge::~NXInfoBadge()
 void NXInfoBadge::setBadgeMode(BadgeMode mode)
 {
   Q_D(NXInfoBadge);
-  d->_badgeMode = mode;
+  d->m_BadgeMode = mode;
   updateGeometry();
   adjustSize();
   d->_updatePosition();
@@ -98,40 +98,40 @@ void NXInfoBadge::setBadgeMode(BadgeMode mode)
 
 NXInfoBadge::BadgeMode NXInfoBadge::getBadgeMode() const
 {
-  return d_ptr->_badgeMode;
+  return d_ptr->m_BadgeMode;
 }
 
 void NXInfoBadge::setMaxValue(int maxValue)
 {
   Q_D(NXInfoBadge);
-  d->_maxValue = maxValue;
+  d->m_MaxValue = maxValue;
   update();
 }
 
 int NXInfoBadge::getMaxValue() const
 {
-  return d_ptr->_maxValue;
+  return d_ptr->m_MaxValue;
 }
 
 void NXInfoBadge::setSeverity(Severity severity)
 {
   Q_D(NXInfoBadge);
-  d->_severity = severity;
+  d->m_Severity = severity;
   update();
 }
 
 NXInfoBadge::Severity NXInfoBadge::getSeverity() const
 {
-  return d_ptr->_severity;
+  return d_ptr->m_Severity;
 }
 
 void NXInfoBadge::attachTo(QWidget *target)
 {
   Q_D(NXInfoBadge);
-  if (d->_target) {
-    d->_target->removeEventFilter(this);
+  if (d->m_Target) {
+    d->m_Target->removeEventFilter(this);
   }
-  d->_target = target;
+  d->m_Target = target;
   if (target) {
     setParent(target);
     target->installEventFilter(this);
@@ -145,7 +145,7 @@ void NXInfoBadge::attachTo(QWidget *target)
 bool NXInfoBadge::eventFilter(QObject *watched, QEvent *event)
 {
   Q_D(NXInfoBadge);
-  if (watched == d->_target) {
+  if (watched == d->m_Target) {
     if (event->type() == QEvent::Resize || event->type() == QEvent::Move) {
       d->_updatePosition();
       raise();
@@ -167,7 +167,7 @@ void NXInfoBadge::paintEvent(QPaintEvent *event)
   // White outline for contrast
   painter.setPen(QPen(Qt::white, 2));
 
-  switch (d->_badgeMode) {
+  switch (d->m_BadgeMode) {
   case Dot : {
     QRectF dotRect(1, 1, width() - 2, height() - 2);
     painter.drawEllipse(dotRect);
@@ -177,10 +177,10 @@ void NXInfoBadge::paintEvent(QPaintEvent *event)
   }
   case Value_ : {
     QString text;
-    if (d->_pValue > d->_maxValue) {
-      text = QString::number(d->_maxValue) + QStringLiteral("+");
+    if (d->m_Value > d->m_MaxValue) {
+      text = QString::number(d->m_MaxValue) + QStringLiteral("+");
     } else {
-      text = QString::number(d->_pValue);
+      text = QString::number(d->m_Value);
     }
     QRectF badgeRect(1, 1, width() - 2, height() - 2);
     painter.drawRoundedRect(badgeRect, badgeRect.height() / 2.0, badgeRect.height() / 2.0);
@@ -203,7 +203,7 @@ void NXInfoBadge::paintEvent(QPaintEvent *event)
     iconFont.setPixelSize(height() * 0.55);
     painter.setFont(iconFont);
     painter.setPen(Qt::white);
-    painter.drawText(rect(), Qt::AlignCenter, QChar((unsigned short) d->_pNXIcon));
+    painter.drawText(rect(), Qt::AlignCenter, QChar((unsigned short) d->m_NXIcon));
     break;
   }
   }
@@ -211,15 +211,15 @@ void NXInfoBadge::paintEvent(QPaintEvent *event)
 
 QSize NXInfoBadge::sizeHint() const
 {
-  Q_D(const NXInfoBadge);
-  switch (d->_badgeMode) {
+  Q_CONST_D(NXInfoBadge);
+  switch (d->m_BadgeMode) {
   case Dot    : return QSize(10, 10);
   case Value_ : {
     QString text;
-    if (d->_pValue > d->_maxValue) {
-      text = QString::number(d->_maxValue) + QStringLiteral("+");
+    if (d->m_Value > d->m_MaxValue) {
+      text = QString::number(d->m_MaxValue) + QStringLiteral("+");
     } else {
-      text = QString::number(d->_pValue);
+      text = QString::number(d->m_Value);
     }
     QFont font = this->font();
     font.setPixelSize(10);

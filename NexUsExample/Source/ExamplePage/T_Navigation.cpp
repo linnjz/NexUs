@@ -25,16 +25,14 @@ T_Navigation::T_Navigation(QWidget *parent)
   breadcrumbBarText->setTextPixelSize(18);
   _breadcrumbBar = new NXBreadcrumbBar(this);
   QStringList breadcrumbBarList;
-  for (int i = 0; i < 20; i++)
-  {
+  for (int i = 0; i < 20; i++) {
     breadcrumbBarList << QString(QStringLiteral("Item%1")).arg(i + 1);
   }
   _breadcrumbBar->setBreadcrumbList(breadcrumbBarList);
 
   NXPushButton *resetButton = new NXPushButton(QStringLiteral("还原"), this);
   resetButton->setFixedSize(60, 32);
-  connect(resetButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(resetButton, &NXPushButton::clicked, this, [=]() {
     _breadcrumbBar->setBreadcrumbList(breadcrumbBarList);
   });
 
@@ -81,8 +79,7 @@ T_Navigation::T_Navigation(QWidget *parent)
   page1->setTextPixelSize(32);
   page1->setAlignment(Qt::AlignCenter);
   _tabWidget->addTab(page1, QIcon(QStringLiteral(":/Resource/Image/Cirno.jpg")), QStringLiteral("新标签页"));
-  for (int i = 0; i < 5; i++)
-  {
+  for (int i = 0; i < 5; i++) {
     NXText *page = new NXText(QString(QStringLiteral("新标签页%1")).arg(i), this);
     page->setTextPixelSize(32);
     page->setAlignment(Qt::AlignCenter);

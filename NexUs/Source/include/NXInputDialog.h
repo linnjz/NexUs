@@ -1,4 +1,4 @@
-#ifndef NXINPUTDIALOG_H
+﻿#ifndef NXINPUTDIALOG_H
 #define NXINPUTDIALOG_H
 
 #include <QAbstractNativeEventFilter>
@@ -15,13 +15,13 @@ class NX_EXPORT NXInputDialog : public QDialog
   Q_OBJECT
   Q_Q_CREATE(NXInputDialog)
   Q_TAKEOVER_NATIVEEVENT_H
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), TitleText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitleText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), LabelText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), TextValue)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), OkButtonText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), CancelButtonText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), PlaceholderText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), TitleText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitleText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), LabelText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), TextValue)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), OkButtonText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), CancelButtonText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), PlaceholderText)
   Q_PROPERTY_CREATE_H(double, DoubleValue)
   Q_PROPERTY_CREATE_H(int, IntValue)
   Q_PROPERTY_CREATE_H(int, InputMinimumWidth)
@@ -31,13 +31,13 @@ public:
   explicit NXInputDialog(QWidget *parent = nullptr);
   ~NXInputDialog();
 
-  static QString getText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text = QString(), bool *ok = nullptr, const QString &okButtonText = QStringLiteral("确定"), const QString &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
+  static QString getText(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, QString const &text = QString(), bool *ok = nullptr, QString const &okButtonText = QStringLiteral("确定"), QString const &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
 
-  static int getInt(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, int value = 0, int minValue = -2147483647, int maxValue = 2147483647, int step = 1, bool *ok = nullptr, const QString &okButtonText = QStringLiteral("确定"), const QString &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
+  static int getInt(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, int value = 0, int minValue = -2147483647, int maxValue = 2147483647, int step = 1, bool *ok = nullptr, QString const &okButtonText = QStringLiteral("确定"), QString const &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
 
-  static double getDouble(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, double value = 0.0, double minValue = -2147483647.0, double maxValue = 2147483647.0, int decimals = 2, bool *ok = nullptr, const QString &okButtonText = QStringLiteral("确定"), const QString &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
+  static double getDouble(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, double value = 0.0, double minValue = -2147483647.0, double maxValue = 2147483647.0, int decimals = 2, bool *ok = nullptr, QString const &okButtonText = QStringLiteral("确定"), QString const &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
 
-  static QString getMultiLineText(QWidget *parent, const QString &title, const QString &subtitle, const QString &label, const QString &text = QString(), bool *ok = nullptr, const QString &okButtonText = QStringLiteral("确定"), const QString &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
+  static QString getMultiLineText(QWidget *parent, QString const &title, QString const &subtitle, QString const &label, QString const &text = QString(), bool *ok = nullptr, QString const &okButtonText = QStringLiteral("确定"), QString const &cancelButtonText = QStringLiteral("取消"), int inputMinWidth = 100, int inputMaxWidth = QWIDGETSIZE_MAX);
 
   void setTextEchoMode(QLineEdit::EchoMode mode);
   QLineEdit::EchoMode textEchoMode() const;
@@ -50,7 +50,7 @@ protected:
   void showEvent(QShowEvent *event) override;
   void paintEvent(QPaintEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
-  Q_SIGNAL void textValueChanged(const QString &text);
+  Q_SIGNAL void textValueChanged(QString const &text);
   Q_SIGNAL void intValueChanged(int value);
   Q_SIGNAL void doubleValueChanged(double value);
 

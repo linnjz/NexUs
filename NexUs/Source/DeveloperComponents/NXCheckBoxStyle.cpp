@@ -6,13 +6,18 @@
 
 #include "NXTheme.h"
 
-NXCheckBoxStyle::NXCheckBoxStyle(QStyle *style)
+namespace
 {
-  _pCheckIndicatorWidth = 21;
-  _pBorderRadius        = 2;
-  _themeMode            = nxTheme->getThemeMode();
+static constexpr int s_LabelSpacing { 10 };
+}
+
+NXCheckBoxStyle::NXCheckBoxStyle(QStyle *style)
+    : m_CheckIndicatorWidth { 21 }
+    , m_BorderRadius { 2 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
+{
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -20,12 +25,11 @@ NXCheckBoxStyle::~NXCheckBoxStyle()
 {
 }
 
-void NXCheckBoxStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXCheckBoxStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
-  // qDebug() << element << option->rect;
   switch (element) {
   case QStyle::CE_CheckBox : {
-    if (const QStyleOptionButton *bopt = qstyleoption_cast<const QStyleOptionButton *>(option)) {
+    if (QStyleOptionButton const *bopt = qstyleoption_cast<QStyleOptionButton const *>(option)) {
       bool isEnabled = bopt->state.testFlag(QStyle::State_Enabled);
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
@@ -36,34 +40,34 @@ void NXCheckBoxStyle::drawControl(ControlElement element, const QStyleOption *op
       if (bopt->state.testFlag(QStyle::State_On) || bopt->state.testFlag(QStyle::State_NoChange)) {
         painter->setPen(Qt::NoPen);
         if (bopt->state.testFlag(QStyle::State_Sunken)) {
-          painter->setBrush(NXThemeColor(_themeMode, PrimaryPress));
+          painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryPress));
         } else {
           if (bopt->state.testFlag(QStyle::State_MouseOver)) {
-            painter->setBrush(NXThemeColor(_themeMode, PrimaryHover));
+            painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryHover));
           } else {
-            painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+            painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
           }
         }
       } else {
         if (bopt->state.testFlag(QStyle::State_Sunken)) {
-          painter->setPen(NXThemeColor(_themeMode, BasicBorderDeep));
-          painter->setBrush(NXThemeColor(_themeMode, BasicPress));
+          painter->setPen(NXThemeColor(m_ThemeMode, BasicBorderDeep));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicPress));
         } else {
-          painter->setPen(NXThemeColor(_themeMode, BasicBorderDeep));
+          painter->setPen(NXThemeColor(m_ThemeMode, BasicBorderDeep));
           if (bopt->state.testFlag(QStyle::State_MouseOver)) {
-            painter->setBrush(NXThemeColor(_themeMode, BasicHover));
+            painter->setBrush(NXThemeColor(m_ThemeMode, BasicHover));
           } else {
-            painter->setBrush(NXThemeColor(_themeMode, BasicBase));
+            painter->setBrush(NXThemeColor(m_ThemeMode, BasicBase));
           }
         }
       }
-      painter->drawRoundedRect(checkRect, _pBorderRadius, _pBorderRadius);
+      painter->drawRoundedRect(checkRect, m_BorderRadius, m_BorderRadius);
       //图标绘制
       painter->setPen(NXThemeColor(NXThemeType::Dark, BasicText));
       if (bopt->state.testFlag(QStyle::State_On)) {
         painter->save();
         QFont iconFont = QFont(QStringLiteral("NXAwesome"));
-        iconFont.setPixelSize(_pCheckIndicatorWidth * 0.75);
+        iconFont.setPixelSize(m_CheckIndicatorWidth * 0.75);
         painter->setFont(iconFont);
         painter->drawText(checkRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Check));
         painter->restore();
@@ -72,7 +76,7 @@ void NXCheckBoxStyle::drawControl(ControlElement element, const QStyleOption *op
         painter->drawLine(checkLine);
       }
       //文字绘制
-      painter->setPen(isEnabled ? NXThemeColor(_themeMode, BasicText) : NXThemeColor(_themeMode, BasicTextDisable));
+      painter->setPen(isEnabled ? NXThemeColor(m_ThemeMode, BasicText) : NXThemeColor(m_ThemeMode, BasicTextDisable));
       QRect textRect = subElementRect(SE_CheckBoxContents, bopt, widget);
       painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, bopt->text);
       painter->restore();
@@ -87,15 +91,15 @@ void NXCheckBoxStyle::drawControl(ControlElement element, const QStyleOption *op
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-int NXCheckBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXCheckBoxStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   switch (metric) {
   case QStyle::PM_IndicatorWidth :
   case QStyle::PM_IndicatorHeight : {
-    return _pCheckIndicatorWidth;
+    return m_CheckIndicatorWidth;
   }
   case QStyle::PM_CheckBoxLabelSpacing : {
-    return _labelSpacing;
+    return s_LabelSpacing;
   }
   default : {
     break;
@@ -104,17 +108,17 @@ int NXCheckBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption *option,
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-QRect NXCheckBoxStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+QRect NXCheckBoxStyle::subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const
 {
   QRect subRect = QProxyStyle::subElementRect(element, option, widget);
   if (!widget) {
     return subRect;
   }
   if (element == SE_CheckBoxIndicator) {
-    subRect.setSize(QSize(_pCheckIndicatorWidth, _pCheckIndicatorWidth));
+    subRect.setSize(QSize(m_CheckIndicatorWidth, m_CheckIndicatorWidth));
   } else if (element == SE_CheckBoxContents) {
-    const QRect indicatorRect = subElementRect(SE_CheckBoxIndicator, option, widget);
-    subRect.setLeft(indicatorRect.right() + _labelSpacing);
+    QRect const indicatorRect = subElementRect(SE_CheckBoxIndicator, option, widget);
+    subRect.setLeft(indicatorRect.right() + s_LabelSpacing);
   }
   return subRect;
 }

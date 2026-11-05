@@ -1,4 +1,4 @@
-#ifndef NXTERMINALWIDGET_H
+﻿#ifndef NXTERMINALWIDGET_H
 #define NXTERMINALWIDGET_H
 
 #include <QWidget>
@@ -12,7 +12,7 @@ class NX_EXPORT NXTerminalWidget : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXTerminalWidget)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Prompt)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Prompt)
   Q_PROPERTY_CREATE_H(int, MaxHistorySize)
   Q_PROPERTY_CREATE_H(int, MaxLineCount)
   Q_PROPERTY_CREATE_H(int, FontPixelSize)
@@ -21,15 +21,15 @@ public:
   explicit NXTerminalWidget(QWidget *parent = nullptr);
   ~NXTerminalWidget();
 
-  void appendOutput(const QString &text, const QColor &color = QColor());
-  void appendHtml(const QString &html);
-  void appendError(const QString &text);
-  void appendSuccess(const QString &text);
+  void appendOutput(QString const &text, QColor const &color = QColor());
+  void appendHtml(QString const &html);
+  void appendError(QString const &text);
+  void appendSuccess(QString const &text);
   void clear();
 
   QStringList getCommandHistory() const;
-  Q_SIGNAL void commandSubmitted(const QString &command);
-  Q_SIGNAL void tabPressed(const QString &currentInput);
+  Q_SIGNAL void commandSubmitted(QString const &command);
+  Q_SIGNAL void tabPressed(QString const &currentInput);
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;

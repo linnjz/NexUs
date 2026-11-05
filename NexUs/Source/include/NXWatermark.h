@@ -1,4 +1,4 @@
-#ifndef NXWATERMARK_H
+﻿#ifndef NXWATERMARK_H
 #define NXWATERMARK_H
 
 #include <QWidget>
@@ -11,9 +11,9 @@ class NX_EXPORT NXWatermark : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXWatermark)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Text)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QImage), Image)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), TextColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Text)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QImage), Image)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), TextColor)
   Q_PROPERTY_CREATE_H(qreal, Opacity)
   Q_PROPERTY_CREATE_H(qreal, Rotation)
   Q_PROPERTY_CREATE_H(int, FontPixelSize)
@@ -24,7 +24,7 @@ class NX_EXPORT NXWatermark : public QWidget
 
 public:
   explicit NXWatermark(QWidget *parent = nullptr);
-  explicit NXWatermark(const QString &text, QWidget *parent = nullptr);
+  explicit NXWatermark(QString const &text, QWidget *parent = nullptr);
   ~NXWatermark();
 
 protected:

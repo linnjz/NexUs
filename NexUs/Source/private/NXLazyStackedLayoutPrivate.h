@@ -1,4 +1,4 @@
-#ifndef NXLAZYSTACKEDLAYOUTPRIVATE_H
+﻿#ifndef NXLAZYSTACKEDLAYOUTPRIVATE_H
 #define NXLAZYSTACKEDLAYOUTPRIVATE_H
 
 #include <functional>
@@ -27,9 +27,9 @@ public:
   };
 
 private:
-  QList<StackItemTag> _itemList {};
-  int _currentIndex { -1 };
-  NXLazyStackedLayout::StackingMode _stackingMode { NXLazyStackedLayout::StackOne };
+  QList<StackItemTag> m_ItemList {};
+  int m_CurrentIndex { -1 };
+  NXLazyStackedLayout::StackingMode m_StackingMode { NXLazyStackedLayout::StackOne };
 };
 
 #endif // NXLAZYSTACKEDLAYOUTPRIVATE_H

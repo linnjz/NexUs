@@ -26,7 +26,7 @@ public:
   explicit NXNotificationCenter(QWidget *parent = nullptr);
   ~NXNotificationCenter();
 
-  void addNotification(const NotificationItem &item);
+  void addNotification(NotificationItem const &item);
   void clearAll();
   int getNotificationCount() const;
 

@@ -8,10 +8,10 @@
 #ifdef Q_OS_WIN
 #  if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #    define Q_TAKEOVER_NATIVEEVENT_H \
-      bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
+      bool nativeEvent(QByteArray const &eventType, void *message, qintptr *result) override;
 #  else
 #    define Q_TAKEOVER_NATIVEEVENT_H \
-      bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+      bool nativeEvent(QByteArray const &eventType, void *message, long *result) override;
 #  endif
 #else
 #  define Q_TAKEOVER_NATIVEEVENT_H
@@ -32,13 +32,13 @@
 #ifdef Q_OS_WIN
 #  if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #    define Q_TAKEOVER_NATIVEEVENT_CPP(CLASS, NXAppBar)                                    \
-      bool CLASS::nativeEvent(const QByteArray &eventType, void *message, qintptr *result) \
+      bool CLASS::nativeEvent(QByteArray const &eventType, void *message, qintptr *result) \
       {                                                                                    \
         NXAPPBAR_HANDLE(NXAppBar)                                                          \
       }
 #  else
 #    define Q_TAKEOVER_NATIVEEVENT_CPP(CLASS, NXAppBar)                                 \
-      bool CLASS::nativeEvent(const QByteArray &eventType, void *message, long *result) \
+      bool CLASS::nativeEvent(QByteArray const &eventType, void *message, long *result) \
       {                                                                                 \
         NXAPPBAR_HANDLE(NXAppBar)                                                       \
       }
@@ -65,7 +65,7 @@ public:
   explicit NXAppBar(QWidget *parent = nullptr);
   ~NXAppBar();
 
-  void setCustomWidget(NXAppBarType::CustomArea customArea, QWidget *customWidget, QObject *hitTestObject = nullptr, const QString &hitTestFunctionName = QStringLiteral(""));
+  void setCustomWidget(NXAppBarType::CustomArea customArea, QWidget *customWidget, QObject *hitTestObject = nullptr, QString const &hitTestFunctionName = QStringLiteral(""));
   QWidget *getCustomWidget(NXAppBarType::CustomArea customArea) const;
 
   void setCustomMenu(QMenu *customMenu);
@@ -80,9 +80,9 @@ public:
 
 #ifdef Q_OS_WIN
 #  if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  int takeOverNativeEvent(const QByteArray &eventType, void *message, qintptr *result);
+  int takeOverNativeEvent(QByteArray const &eventType, void *message, qintptr *result);
 #  else
-  int takeOverNativeEvent(const QByteArray &eventType, void *message, long *result);
+  int takeOverNativeEvent(QByteArray const &eventType, void *message, long *result);
 #  endif
 #endif
   Q_SIGNAL void routeBackButtonClicked();

@@ -17,7 +17,7 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXCALENDARPICKERCONTAINER_H

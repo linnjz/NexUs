@@ -9,17 +9,17 @@
 class NXBreadcrumbBarDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), PressIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), PressIndex)
 
 public:
   explicit NXBreadcrumbBarDelegate(QObject *parent = nullptr);
   ~NXBreadcrumbBarDelegate();
 
 protected:
-  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+  void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXBREADCRUMBBARDELEGATE_H

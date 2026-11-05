@@ -43,7 +43,7 @@ public:
   using QLayout::widget;
   QWidget *widget(int index) const;
   int count() const override;
-  int indexOf(const QWidget *widget) const override;
+  int indexOf(QWidget const *widget) const override;
 
   StackingMode stackingMode() const;
   void setStackingMode(StackingMode stackingMode);
@@ -53,7 +53,7 @@ public:
   QSize minimumSize() const override;
   QLayoutItem *itemAt(int index) const override;
   QLayoutItem *takeAt(int index) override;
-  void setGeometry(const QRect &rect) override;
+  void setGeometry(QRect const &rect) override;
   bool hasHeightForWidth() const override;
   int heightForWidth(int width) const override;
 

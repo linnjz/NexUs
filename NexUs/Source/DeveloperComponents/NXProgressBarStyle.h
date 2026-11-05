@@ -12,11 +12,11 @@ class NXProgressBarStyle : public QProxyStyle
 public:
   explicit NXProgressBarStyle(QStyle *style = nullptr);
   ~NXProgressBarStyle();
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  QRect subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXPROGRESSBARSTYLE_H

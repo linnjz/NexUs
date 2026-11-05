@@ -23,19 +23,19 @@ public:
   ~NXExpanderPrivate();
 
 private:
-  bool _isExpanded { false };
-  bool _isPressed { false };
-  NXExpander::ExpandDirection _expandDirection { NXExpander::Down };
-  int _headerHeight { 48 };
-  int _contentHeight { 0 };
-  NXThemeType::ThemeMode _themeMode;
-  QWidget *_contentWidget { nullptr };
-  QWidget *_headerCustomWidget { nullptr };
-  QWidget *_contentContainer { nullptr };
-  QVBoxLayout *_contentLayout { nullptr };
-  QVBoxLayout *_mainLayout { nullptr };
-  QWidget *_headerWidget { nullptr };
-  QVariantAnimation *_expandAnimation { nullptr };
+  bool m_IsExpanded { false };
+  bool m_IsPressed { false };
+  NXExpander::ExpandDirection m_ExpandDirection { NXExpander::Down };
+  int m_HeaderHeight { 48 };
+  int m_ContentHeight { 0 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QWidget *m_ContentWidget { nullptr };
+  QWidget *m_HeaderCustomWidget { nullptr };
+  QWidget *m_ContentContainer { nullptr };
+  QVBoxLayout *m_ContentLayout { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QWidget *m_HeaderWidget { nullptr };
+  QVariantAnimation *m_ExpandAnimation { nullptr };
   void _toggleExpand();
   void _startExpandAnimation(bool expand);
 };

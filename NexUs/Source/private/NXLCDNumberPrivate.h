@@ -22,9 +22,9 @@ public:
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QTimer *_clockTimer { nullptr };
-  NXLCDNumberStyle *_lcdNumberStyle { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QTimer *m_ClockTimer { nullptr };
+  NXLCDNumberStyle *m_LcdNumberStyle { nullptr };
 };
 
 #endif //NEXUS_NXLCDNUMBERPRIVATE_H

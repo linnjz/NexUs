@@ -8,14 +8,14 @@
 #  include <limits>
 
 NXDxgi::NXDxgi(QObject *parent)
-    : QObject(parent)
+    : QObject { parent }
+    , m_DxDeviceID { 0 }
+    , m_OutputDeviceID { 0 }
+    , m_GrabFrameRate { 120 }
+    , m_TimeoutMsValue { 50 }
+    , m_IsInitSuccess { false }
+    , m_IsGrabCenter { false }
 {
-  _pIsInitSuccess  = false;
-  _pGrabFrameRate  = 120;
-  _pTimeoutMsValue = 50;
-  _pIsGrabCenter   = false;
-  _pDxDeviceID     = 0;
-  _pOutputDeviceID = 0;
 }
 
 NXDxgi::~NXDxgi()
@@ -25,17 +25,17 @@ NXDxgi::~NXDxgi()
 
 bool NXDxgi::initialize(int dxID, int outputID)
 {
-  _pIsInitSuccess  = false;
-  _pDxDeviceID     = dxID;
-  _pOutputDeviceID = outputID;
+  m_IsInitSuccess  = false;
+  m_DxDeviceID     = dxID;
+  m_OutputDeviceID = outputID;
   releaseInterface();
   ID3D11Device *d3dDevice         = nullptr;
   ID3D11DeviceContext *d3dContext = nullptr;
   D3D_FEATURE_LEVEL feat          = D3D_FEATURE_LEVEL_11_0;
   HRESULT hr                      = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION, &d3dDevice, &feat, &d3dContext);
   if (FAILED(hr)) {
-    _pLastError = "Failed to D3D11CreateDevice ErrorCode = " + QString::number(uint(hr), 16);
-    qDebug() << _pLastError;
+    m_LastError = "Failed to D3D11CreateDevice ErrorCode = " + QString::number(uint(hr), 16);
+    qDebug() << m_LastError;
     if (d3dDevice) {
       d3dDevice->Release();
     }
@@ -48,8 +48,8 @@ bool NXDxgi::initialize(int dxID, int outputID)
   IDXGIFactory *dxgiFactory = nullptr;
   hr                        = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void **>(&dxgiFactory));
   if (FAILED(hr)) {
-    _pLastError = "创建 DXGI 工厂失败，错误码：" + QString::number(static_cast<uint>(hr), 16);
-    qWarning() << _pLastError;
+    m_LastError = "创建 DXGI 工厂失败，错误码：" + QString::number(static_cast<uint>(hr), 16);
+    qWarning() << m_LastError;
     d3dContext->Release();
     d3dDevice->Release();
     return false;
@@ -61,20 +61,20 @@ bool NXDxgi::initialize(int dxID, int outputID)
   }
   dxgiFactory->Release();
   dxgiAdapter = nullptr;
-  _pDxDeviceList.clear();
+  m_DxDeviceList.clear();
   for (int i = 0; i < dxgiAdapterVector.count(); i++) {
     IDXGIAdapter *adapt = dxgiAdapterVector.at(i);
     DXGI_ADAPTER_DESC desc;
     adapt->GetDesc(&desc);
-    _pDxDeviceList.append(QString::fromWCharArray(desc.Description));
+    m_DxDeviceList.append(QString::fromWCharArray(desc.Description));
   }
   if (dxID >= 0 && dxID < dxgiAdapterVector.count()) {
     dxgiAdapter = dxgiAdapterVector.at(dxID);
   }
 
   if (!dxgiAdapter) {
-    _pLastError = "Failed to found gpu";
-    qDebug() << _pLastError;
+    m_LastError = "Failed to found gpu";
+    qDebug() << m_LastError;
     d3dDevice->Release();
     d3dContext->Release();
     for (auto adapter : dxgiAdapterVector) {
@@ -92,20 +92,20 @@ bool NXDxgi::initialize(int dxID, int outputID)
     adapter->Release();
   }
   dxgiOutput = nullptr;
-  _pOutputDeviceList.clear();
+  m_OutputDeviceList.clear();
   for (int i = 0; i < dxgiOutputVector.count(); i++) {
-    const auto &output = dxgiOutputVector.at(i);
+    auto const &output = dxgiOutputVector.at(i);
     DXGI_OUTPUT_DESC desc;
     output->GetDesc(&desc);
-    _pOutputDeviceList.append(QString::fromWCharArray(desc.DeviceName));
+    m_OutputDeviceList.append(QString::fromWCharArray(desc.DeviceName));
   }
   if (outputID >= 0 && outputID < dxgiOutputVector.count()) {
     dxgiOutput = dxgiOutputVector.at(outputID);
   }
 
   if (!dxgiOutput) {
-    _pLastError = "Failed to found screen!";
-    qDebug() << _pLastError;
+    m_LastError = "Failed to found screen!";
+    qDebug() << m_LastError;
     d3dDevice->Release();
     d3dContext->Release();
     for (auto output : dxgiOutputVector) {
@@ -119,75 +119,75 @@ bool NXDxgi::initialize(int dxID, int outputID)
     output->Release();
   }
   if (FAILED(hr)) {
-    _pLastError = "Failed to QueryInterface IDXGIOutput6 ErrorCode = " + QString::number(uint(hr), 16);
-    qDebug() << _pLastError;
+    m_LastError = "Failed to QueryInterface IDXGIOutput6 ErrorCode = " + QString::number(uint(hr), 16);
+    qDebug() << m_LastError;
     d3dDevice->Release();
     d3dContext->Release();
     return false;
   }
   UINT supportedFormatsCount      = 1; // 支持的格式数
   DXGI_FORMAT supportedFormats[1] = { DXGI_FORMAT_B8G8R8A8_UNORM };
-  hr                              = dxgiOutput6->DuplicateOutput1(d3dDevice, 0, supportedFormatsCount, supportedFormats, &_duplication);
+  hr                              = dxgiOutput6->DuplicateOutput1(d3dDevice, 0, supportedFormatsCount, supportedFormats, &m_Duplication);
   dxgiOutput6->Release();
   if (FAILED(hr)) {
-    _pLastError = "Failed to DuplicateOutput ErrorCode = " + QString::number(uint(hr), 16);
-    qDebug() << _pLastError;
+    m_LastError = "Failed to DuplicateOutput ErrorCode = " + QString::number(uint(hr), 16);
+    qDebug() << m_LastError;
     d3dDevice->Release();
     d3dContext->Release();
-    if (_duplication) {
-      _duplication->Release();
-      _duplication = nullptr;
+    if (m_Duplication) {
+      m_Duplication->Release();
+      m_Duplication = nullptr;
     }
     return false;
   }
-  _device         = d3dDevice;
-  _context        = d3dContext;
-  _pIsInitSuccess = true;
+  m_Device         = d3dDevice;
+  m_Context        = d3dContext;
+  m_IsInitSuccess = true;
   return true;
 }
 
 void NXDxgi::setIsGrabActive(bool isGrabActive)
 {
-  _isGrabActive = isGrabActive;
+  m_IsGrabActive = isGrabActive;
 }
 
 bool NXDxgi::getIsGrabActive() const
 {
-  return _isGrabActive;
+  return m_IsGrabActive;
 }
 
 void NXDxgi::setIsGrabStopped(bool isGrabStopped)
 {
-  _pIsGrabStopped.store(isGrabStopped, std::memory_order_release);
+  m_IsGrabStopped.store(isGrabStopped, std::memory_order_release);
 }
 
 bool NXDxgi::getIsGrabStopped() const
 {
-  return _pIsGrabStopped.load(std::memory_order_acquire);
+  return m_IsGrabStopped.load(std::memory_order_acquire);
 }
 
 QImage NXDxgi::getGrabImage()
 {
-  QMutexLocker grabLocker(&_grabMutex);
-  return _grabImage;
+  QMutexLocker grabLocker(&m_GrabMutex);
+  return m_GrabImage;
 }
 
 void NXDxgi::onGrabScreen()
 {
-  if (!_duplication || !_device || !_context) {
+  if (!m_Duplication || !m_Device || !m_Context) {
     setIsGrabStopped(true);
     return;
   }
   setIsGrabStopped(false);
-  const auto stoppedGuard = qScopeGuard([this]() {
+  auto const stoppedGuard = qScopeGuard([this]() {
     setIsGrabActive(false);
     setIsGrabStopped(true);
   });
-  while (_isGrabActive) {
-    _grabTimer.start();
+  while (m_IsGrabActive) {
+    m_GrabTimer.start();
     IDXGIResource *desktopRes = nullptr;
     DXGI_OUTDUPL_FRAME_INFO frameInfo {};
-    HRESULT hr = _duplication->AcquireNextFrame(_pTimeoutMsValue, &frameInfo, &desktopRes);
+    HRESULT hr = m_Duplication->AcquireNextFrame(m_TimeoutMsValue, &frameInfo, &desktopRes);
     if (FAILED(hr)) {
       if (desktopRes) {
         desktopRes->Release();
@@ -195,39 +195,39 @@ void NXDxgi::onGrabScreen()
       if (hr == DXGI_ERROR_WAIT_TIMEOUT) {
         continue;
       }
-      if (!_isGrabActive || !initialize(_pDxDeviceID, _pOutputDeviceID)) {
+      if (!m_IsGrabActive || !initialize(m_DxDeviceID, m_OutputDeviceID)) {
         return;
       }
       continue;
     }
 
     // 本轮所有退出路径均释放帧；正常路径延至帧间等待结束，减少 DXGI 的重复更新。
-    const auto frameGuard = qScopeGuard([this, desktopRes]() {
+    auto const frameGuard = qScopeGuard([this, desktopRes]() {
       if (desktopRes) {
         desktopRes->Release();
       }
-      _duplication->ReleaseFrame();
+      m_Duplication->ReleaseFrame();
     });
-    if (!_isGrabActive || !desktopRes || !frameInfo.LastPresentTime.QuadPart) {
+    if (!m_IsGrabActive || !desktopRes || !frameInfo.LastPresentTime.QuadPart) {
       continue;
     }
-    const QImage grabImage = _captureFrame(desktopRes);
+    QImage const grabImage = _captureFrame(desktopRes);
     if (grabImage.isNull()) {
       continue;
     }
     {
-      QMutexLocker grabLocker(&_grabMutex);
-      _grabImage = grabImage;
+      QMutexLocker grabLocker(&m_GrabMutex);
+      m_GrabImage = grabImage;
     }
     Q_EMIT grabScreenOver(grabImage);
-    if (_lastGrabTime == 0) {
-      _lastGrabTime = static_cast<qreal>(_grabTimer.elapsed()); // 毫秒
+    if (m_LastGrabTime == 0) {
+      m_LastGrabTime = static_cast<qreal>(m_GrabTimer.elapsed()); // 毫秒
     } else {
-      _lastGrabTime = (static_cast<qreal>(_grabTimer.elapsed()) + _lastGrabTime) / 2;
+      m_LastGrabTime = (static_cast<qreal>(m_GrabTimer.elapsed()) + m_LastGrabTime) / 2;
     }
-    _cpuSleepTime = (1000 - _lastGrabTime * _pGrabFrameRate) / _pGrabFrameRate;
-    waitElapsedTime(_cpuSleepTime * 1000);
-    // qDebug() << _cpuSleepTime << _lastGrabTime;
+    m_CpuSleepTime = (1000 - m_LastGrabTime * m_GrabFrameRate) / m_GrabFrameRate;
+    waitElapsedTime(m_CpuSleepTime * 1000);
+    // qDebug() << m_CpuSleepTime << m_LastGrabTime;
   }
 }
 
@@ -239,7 +239,7 @@ QImage NXDxgi::_captureFrame(IDXGIResource *desktopResource)
     qWarning() << "获取桌面纹理失败，错误码：" << QString::number(static_cast<uint>(hr), 16);
     return {};
   }
-  const auto textureGuard = qScopeGuard([textureRes]() {
+  auto const textureGuard = qScopeGuard([textureRes]() {
     textureRes->Release();
   });
   D3D11_TEXTURE2D_DESC desc {};
@@ -250,15 +250,15 @@ QImage NXDxgi::_captureFrame(IDXGIResource *desktopResource)
     qWarning() << "桌面纹理格式或尺寸无效";
     return {};
   }
-  if (_texture) {
+  if (m_Texture) {
     D3D11_TEXTURE2D_DESC cachedDesc {};
-    _texture->GetDesc(&cachedDesc);
+    m_Texture->GetDesc(&cachedDesc);
     if (cachedDesc.Width != desc.Width || cachedDesc.Height != desc.Height || cachedDesc.Format != desc.Format) {
-      _texture->Release();
-      _texture = nullptr;
+      m_Texture->Release();
+      m_Texture = nullptr;
     }
   }
-  if (!_texture) {
+  if (!m_Texture) {
     D3D11_TEXTURE2D_DESC texDesc {};
     texDesc.Width            = desc.Width;
     texDesc.Height           = desc.Height;
@@ -268,20 +268,20 @@ QImage NXDxgi::_captureFrame(IDXGIResource *desktopResource)
     texDesc.Usage            = D3D11_USAGE_STAGING;
     texDesc.Format           = desc.Format;
     texDesc.CPUAccessFlags   = D3D11_CPU_ACCESS_READ;
-    hr                       = _device->CreateTexture2D(&texDesc, nullptr, &_texture);
+    hr                       = m_Device->CreateTexture2D(&texDesc, nullptr, &m_Texture);
     if (FAILED(hr)) {
       qWarning() << "创建暂存纹理失败，错误码：" << QString::number(static_cast<uint>(hr), 16);
       return {};
     }
   }
-  _context->CopyResource(_texture, textureRes);
+  m_Context->CopyResource(m_Texture, textureRes);
   IDXGISurface *surface = nullptr;
-  hr                    = _texture->QueryInterface(__uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
+  hr                    = m_Texture->QueryInterface(__uuidof(IDXGISurface), reinterpret_cast<void **>(&surface));
   if (FAILED(hr)) {
     qWarning() << "获取暂存表面失败，错误码：" << QString::number(static_cast<uint>(hr), 16);
     return {};
   }
-  const auto surfaceGuard = qScopeGuard([surface]() {
+  auto const surfaceGuard = qScopeGuard([surface]() {
     surface->Release();
   });
   DXGI_MAPPED_RECT map {};
@@ -290,17 +290,17 @@ QImage NXDxgi::_captureFrame(IDXGIResource *desktopResource)
     qWarning() << "映射桌面纹理失败，错误码：" << QString::number(static_cast<uint>(hr), 16);
     return {};
   }
-  const auto mapGuard = qScopeGuard([surface]() {
+  auto const mapGuard = qScopeGuard([surface]() {
     surface->Unmap();
   });
-  const int width     = static_cast<int>(desc.Width);
-  const int height    = static_cast<int>(desc.Height);
+  int const width     = static_cast<int>(desc.Width);
+  int const height    = static_cast<int>(desc.Height);
   if (!map.pBits || map.Pitch < width * 4) {
     return {};
   }
-  const QImage mappedImage(static_cast<const uchar *>(map.pBits), width, height, map.Pitch, QImage::Format_ARGB32);
-  QRect grabArea = _pGrabArea;
-  if (_pIsGrabCenter) {
+  QImage const mappedImage(static_cast<uchar const *>(map.pBits), width, height, map.Pitch, QImage::Format_ARGB32);
+  QRect grabArea = m_GrabArea;
+  if (m_IsGrabCenter) {
     grabArea.moveTo((width - grabArea.width()) / 2, (height - grabArea.height()) / 2);
   }
   // 像素只在映射有效时复制一次；返回值和后续快照不再引用 DXGI 内存。
@@ -310,24 +310,24 @@ QImage NXDxgi::_captureFrame(IDXGIResource *desktopResource)
 void NXDxgi::releaseInterface()
 {
   {
-    QMutexLocker grabLocker(&_grabMutex);
-    _grabImage = QImage();
+    QMutexLocker grabLocker(&m_GrabMutex);
+    m_GrabImage = QImage();
   }
-  if (_texture) {
-    _texture->Release();
-    _texture = nullptr;
+  if (m_Texture) {
+    m_Texture->Release();
+    m_Texture = nullptr;
   }
-  if (_duplication) {
-    _duplication->Release();
-    _duplication = nullptr;
+  if (m_Duplication) {
+    m_Duplication->Release();
+    m_Duplication = nullptr;
   }
-  if (_context) {
-    _context->Release();
-    _context = nullptr;
+  if (m_Context) {
+    m_Context->Release();
+    m_Context = nullptr;
   }
-  if (_device) {
-    _device->Release();
-    _device = nullptr;
+  if (m_Device) {
+    m_Device->Release();
+    m_Device = nullptr;
   }
 }
 

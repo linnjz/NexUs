@@ -36,38 +36,38 @@ public:
 
 private:
 #ifndef Q_OS_WIN
-  bool _isDragging { false };
+  bool m_IsDragging { false };
 #endif
-  bool _isHoverMaxButton { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXAppBarType::ButtonFlags _buttonFlags;
-  int _lastMinTrackWidth { 0 };
-  int _edges { 0 };
-  int _margins { 8 };
-  int _win7Margins { 0 };
-  qint64 _currentWinID { 0 };
-  quint64 _clickTimer { 0 };
+  bool m_IsHoverMaxButton { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXAppBarType::ButtonFlags m_ButtonFlags;
+  int m_LastMinTrackWidth { 0 };
+  int m_Edges { 0 };
+  int m_Margins { 8 };
+  int m_Win7Margins { 0 };
+  qint64 m_CurrentWinID { 0 };
+  quint64 m_ClickTimer { 0 };
 #ifndef Q_OS_WIN
-  QPoint _dragStartPos;
+  QPoint m_DragStartPos;
 #endif
-  QList<QWidget *> _customAreaWidgetList { nullptr, nullptr, nullptr };
-  QList<QObject *> _customAreaHitTestObjectList { nullptr, nullptr, nullptr };
-  QStringList _customAreaHitTestFunctionNameList { QStringLiteral(""), QStringLiteral(""), QStringLiteral("") };
-  QList<QWidget *> _clientWidgetList;
-  QHBoxLayout *_mainLayout { nullptr };
-  QVBoxLayout *_iconLabelLayout { nullptr };
-  QVBoxLayout *_titleLabelLayout { nullptr };
-  NXToolButton *_routeBackButton { nullptr };
-  NXToolButton *_routeForwardButton { nullptr };
-  NXToolButton *_navigationButton { nullptr };
-  NXToolButton *_themeChangeButton { nullptr };
-  NXToolButton *_stayTopButton { nullptr };
-  NXToolButton *_minButton { nullptr };
-  NXToolButton *_maxButton { nullptr };
-  NXIconButton *_closeButton { nullptr };
-  QScreen *_lastScreen { nullptr };
-  NXText *_titleLabel { nullptr };
-  QLabel *_iconLabel { nullptr };
+  QList<QWidget *> m_CustomAreaWidgetList { nullptr, nullptr, nullptr };
+  QList<QObject *> m_CustomAreaHitTestObjectList { nullptr, nullptr, nullptr };
+  QStringList m_CustomAreaHitTestFunctionNameList { QStringLiteral(""), QStringLiteral(""), QStringLiteral("") };
+  QList<QWidget *> m_ClientWidgetList;
+  QHBoxLayout *m_MainLayout { nullptr };
+  QVBoxLayout *m_IconLabelLayout { nullptr };
+  QVBoxLayout *m_TitleLabelLayout { nullptr };
+  NXToolButton *m_RouteBackButton { nullptr };
+  NXToolButton *m_RouteForwardButton { nullptr };
+  NXToolButton *m_NavigationButton { nullptr };
+  NXToolButton *m_ThemeChangeButton { nullptr };
+  NXToolButton *m_StayTopButton { nullptr };
+  NXToolButton *m_MinButton { nullptr };
+  NXToolButton *m_MaxButton { nullptr };
+  NXIconButton *m_CloseButton { nullptr };
+  QScreen *m_LastScreen { nullptr };
+  NXText *m_TitleLabel { nullptr };
+  QLabel *m_IconLabel { nullptr };
   void _changeMaxButtonAwesome(bool isMaximized);
   void _showAppBarMenu(QPoint point);
   void _updateCursor(int edges);

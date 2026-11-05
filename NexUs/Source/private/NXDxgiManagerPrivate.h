@@ -18,9 +18,9 @@ public:
 
 private:
   Q_SIGNAL void grabScreen();
-  bool _isAllowedGrabScreen { false };
-  NXDxgi *_dxgi { nullptr };
-  QThread *_dxgiThread { nullptr };
+  bool m_IsAllowedGrabScreen { false };
+  NXDxgi *m_Dxgi { nullptr };
+  QThread *m_DxgiThread { nullptr };
 };
 #endif // Q_OS_WIN
 #endif // NXDXGIMANAGERPRIVATE_H

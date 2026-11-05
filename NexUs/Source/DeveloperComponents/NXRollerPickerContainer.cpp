@@ -9,23 +9,23 @@
 
 NXRollerPickerContainer::NXRollerPickerContainer(QWidget *parent)
     : QWidget { parent }
+    , m_AnimationPixOffsetY { 0 }
+    , m_ButtonAreaHeight { 38 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pAnimationPixOffsetY = 0;
-  _pButtonAreaHeight    = 38;
   setMouseTracking(true);
   setWindowFlags(Qt::FramelessWindowHint | Qt::Popup | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  setContentsMargins(2, 2, 2, _pButtonAreaHeight);
+  setContentsMargins(2, 2, 2, m_ButtonAreaHeight);
 #else
-  setContentsMargins(8, 8, 8, 6 + _pButtonAreaHeight);
+  setContentsMargins(8, 8, 8, 6 + m_ButtonAreaHeight);
 #endif
   setObjectName("NXCalendarPickerContainer");
   setStyleSheet(QStringLiteral("#NXCalendarPickerContainer{background-color:transparent}"));
 
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
     update();
   });
 }
@@ -37,16 +37,16 @@ NXRollerPickerContainer::~NXRollerPickerContainer()
 void NXRollerPickerContainer::doPickerAnimation()
 {
   _handleSaveOrReset(true);
-  if (!_animationPix.isNull()) {
-    _animationPix = QPixmap();
+  if (!m_AnimationPix.isNull()) {
+    m_AnimationPix = QPixmap();
   }
-  _animationPix                       = this->grab(rect());
-  QPropertyAnimation *offsetAnimation = new QPropertyAnimation(this, "pAnimationPixOffsetY");
+  m_AnimationPix                       = this->grab(rect());
+  QPropertyAnimation *offsetAnimation = new QPropertyAnimation(this, "AnimationPixOffsetY");
   connect(offsetAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _animationPix = QPixmap();
+    m_AnimationPix = QPixmap();
     update();
   });
-  connect(offsetAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  connect(offsetAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     update();
   });
   offsetAnimation->setEasingCurve(QEasingCurve::OutCubic);
@@ -59,18 +59,18 @@ void NXRollerPickerContainer::doPickerAnimation()
 void NXRollerPickerContainer::mouseMoveEvent(QMouseEvent *event)
 {
   auto currentPos = event->pos();
-  if (_overButtonRect.contains(currentPos)) {
-    _isOverButtonHover   = true;
-    _isCancelButtonHover = false;
+  if (m_OverButtonRect.contains(currentPos)) {
+    m_IsOverButtonHover   = true;
+    m_IsCancelButtonHover = false;
     update();
-  } else if (_cancelButtonRect.contains(currentPos)) {
-    _isCancelButtonHover = true;
-    _isOverButtonHover   = false;
+  } else if (m_CancelButtonRect.contains(currentPos)) {
+    m_IsCancelButtonHover = true;
+    m_IsOverButtonHover   = false;
     update();
   } else {
-    if (_isCancelButtonHover || _isOverButtonHover) {
-      _isCancelButtonHover = false;
-      _isOverButtonHover   = false;
+    if (m_IsCancelButtonHover || m_IsOverButtonHover) {
+      m_IsCancelButtonHover = false;
+      m_IsOverButtonHover   = false;
       update();
     }
   }
@@ -80,11 +80,11 @@ void NXRollerPickerContainer::mouseMoveEvent(QMouseEvent *event)
 void NXRollerPickerContainer::mouseReleaseEvent(QMouseEvent *event)
 {
   auto currentPos = event->pos();
-  if (_overButtonRect.contains(currentPos)) {
-    _isOverButtonClicked = true;
+  if (m_OverButtonRect.contains(currentPos)) {
+    m_IsOverButtonClicked = true;
     Q_EMIT overButtonClicked();
     hide();
-  } else if (_cancelButtonRect.contains(currentPos)) {
+  } else if (m_CancelButtonRect.contains(currentPos)) {
     _handleSaveOrReset(false);
     Q_EMIT cancelButtonClicked();
     hide();
@@ -94,16 +94,16 @@ void NXRollerPickerContainer::mouseReleaseEvent(QMouseEvent *event)
 
 void NXRollerPickerContainer::leaveEvent(QEvent *event)
 {
-  _isOverButtonHover   = false;
-  _isCancelButtonHover = false;
+  m_IsOverButtonHover   = false;
+  m_IsCancelButtonHover = false;
   update();
   QWidget::leaveEvent(event);
 }
 
 void NXRollerPickerContainer::hideEvent(QHideEvent *event)
 {
-  if (_isOverButtonClicked) {
-    _isOverButtonClicked = false;
+  if (m_IsOverButtonClicked) {
+    m_IsOverButtonClicked = false;
   } else {
     _handleSaveOrReset(false);
   }
@@ -115,9 +115,9 @@ void NXRollerPickerContainer::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing);
-  if (!_animationPix.isNull()) {
-    painter.setClipRect(QRect(0, _pAnimationPixOffsetY, width(), height() - 2 * _pAnimationPixOffsetY));
-    painter.drawPixmap(rect(), _animationPix);
+  if (!m_AnimationPix.isNull()) {
+    painter.setClipRect(QRect(0, m_AnimationPixOffsetY, width(), height() - 2 * m_AnimationPixOffsetY));
+    painter.drawPixmap(rect(), m_AnimationPix);
   } else {
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
     QRect foregroundRect = rect();
@@ -125,42 +125,42 @@ void NXRollerPickerContainer::paintEvent(QPaintEvent *event)
     nxTheme->drawEffectShadow(&painter, rect(), 6, 5);
     QRect foregroundRect(6, 6, rect().width() - 2 * 6, rect().height() - 2 * 6);
 #endif
-    painter.setPen(NXThemeColor(_themeMode, PopupBorder));
-    painter.setBrush(NXThemeColor(_themeMode, PopupBase));
+    painter.setPen(NXThemeColor(m_ThemeMode, PopupBorder));
+    painter.setBrush(NXThemeColor(m_ThemeMode, PopupBase));
     painter.drawRoundedRect(foregroundRect, 8, 8);
     // 纵向分割线
-    painter.setPen(NXThemeColor(_themeMode, BasicBorder));
+    painter.setPen(NXThemeColor(m_ThemeMode, BasicBorder));
     int rollerXOffset = 8;
-    for (int i = 0; i < _rollerList.count(); i++) {
-      rollerXOffset += _rollerList[i]->width();
-      if (i != _rollerList.count() - 1) {
-        painter.setPen(NXThemeColor(_themeMode, BasicBorder));
-        painter.drawLine(rollerXOffset, foregroundRect.y(), rollerXOffset, foregroundRect.bottom() - _pButtonAreaHeight);
+    for (int i = 0; i < m_RollerList.count(); i++) {
+      rollerXOffset += m_RollerList[i]->width();
+      if (i != m_RollerList.count() - 1) {
+        painter.setPen(NXThemeColor(m_ThemeMode, BasicBorder));
+        painter.drawLine(rollerXOffset, foregroundRect.y(), rollerXOffset, foregroundRect.bottom() - m_ButtonAreaHeight);
       }
     }
     // 横向分割线
-    painter.drawLine(foregroundRect.x(), foregroundRect.bottom() - _pButtonAreaHeight, foregroundRect.right(), foregroundRect.bottom() - _pButtonAreaHeight);
+    painter.drawLine(foregroundRect.x(), foregroundRect.bottom() - m_ButtonAreaHeight, foregroundRect.right(), foregroundRect.bottom() - m_ButtonAreaHeight);
     // 按钮区域绘制
-    _overButtonRect = QRect(
-        foregroundRect.x() + _buttonMargin, foregroundRect.bottom() - _pButtonAreaHeight + _buttonMargin,
-        (foregroundRect.width() - 2 * _buttonMargin - _buttonSpacing) / 2, _pButtonAreaHeight - 2 * _buttonMargin + 1);
-    _cancelButtonRect = QRect(_overButtonRect.right() + _buttonSpacing, _overButtonRect.y(), _overButtonRect.width(), _overButtonRect.height());
+    m_OverButtonRect = QRect(
+        foregroundRect.x() + m_ButtonMargin, foregroundRect.bottom() - m_ButtonAreaHeight + m_ButtonMargin,
+        (foregroundRect.width() - 2 * m_ButtonMargin - m_ButtonSpacing) / 2, m_ButtonAreaHeight - 2 * m_ButtonMargin + 1);
+    m_CancelButtonRect = QRect(m_OverButtonRect.right() + m_ButtonSpacing, m_OverButtonRect.y(), m_OverButtonRect.width(), m_OverButtonRect.height());
     // 按钮覆盖绘制
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(_themeMode, BasicHover));
-    if (_isOverButtonHover) {
-      painter.drawRoundedRect(_overButtonRect, 5, 5);
-    } else if (_isCancelButtonHover) {
-      painter.drawRoundedRect(_cancelButtonRect, 5, 5);
+    painter.setBrush(NXThemeColor(m_ThemeMode, BasicHover));
+    if (m_IsOverButtonHover) {
+      painter.drawRoundedRect(m_OverButtonRect, 5, 5);
+    } else if (m_IsCancelButtonHover) {
+      painter.drawRoundedRect(m_CancelButtonRect, 5, 5);
     }
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(nxApp->getFontPixelSize() + 4);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(_themeMode, BasicText));
+    painter.setPen(NXThemeColor(m_ThemeMode, BasicText));
     // 确定
-    painter.drawText(_overButtonRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Check));
+    painter.drawText(m_OverButtonRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Check));
     // 取消
-    painter.drawText(_cancelButtonRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Xmark));
+    painter.drawText(m_CancelButtonRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Xmark));
   }
   painter.restore();
 }
@@ -169,15 +169,15 @@ void NXRollerPickerContainer::_handleSaveOrReset(bool isSave)
 {
   if (isSave) {
     // 保存历史数据
-    _historyIndexList.clear();
-    for (auto roller : _rollerList) {
-      _historyIndexList.append(roller->getCurrentIndex());
+    m_HistoryIndexList.clear();
+    for (auto roller : m_RollerList) {
+      m_HistoryIndexList.append(roller->getCurrentIndex());
     }
   } else {
     // 恢复数据
-    for (int i = 0; i < _rollerList.count(); i++) {
-      auto roller = _rollerList[i];
-      roller->setCurrentIndex(_historyIndexList[i]);
+    for (int i = 0; i < m_RollerList.count(); i++) {
+      auto roller = m_RollerList[i];
+      roller->setCurrentIndex(m_HistoryIndexList[i]);
     }
   }
 }

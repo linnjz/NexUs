@@ -17,13 +17,13 @@ class NXPlainTextEditPrivate : public QObject
 public:
   explicit NXPlainTextEditPrivate(QObject *parent = nullptr);
   ~NXPlainTextEditPrivate();
-  Q_INVOKABLE void onWMWindowClickedEvent(const QVariantMap &data);
+  Q_INVOKABLE void onWMWindowClickedEvent(QVariantMap const &data);
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXPlainTextEditStyle *_style { nullptr };
-  NXEvent *_focusEvent { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXPlainTextEditStyle *m_Style { nullptr };
+  NXEvent *m_FocusEvent { nullptr };
 };
 
 #endif // NXPLAINTEXTEDITPRIVATE_H

@@ -1,22 +1,22 @@
-#include "NXWinShadowHelper.h"
+﻿#include "NXWinShadowHelper.h"
 
 #ifdef Q_OS_WIN
 #  include <QDebug>
 #  include <QWidget>
 
 NXWinShadowHelper::NXWinShadowHelper(QObject *parent)
-    : QObject(parent)
+    : QObject { parent }
+    , m_IsWinVersionGreater10 { true }
+    , m_IsWinVersionGreater11 { true }
 {
-  _pIsWinVersionGreater10 = true;
-  _pIsWinVersionGreater11 = true;
-  HMODULE module          = LoadLibraryW(L"ntdll.dll");
+  HMODULE module = LoadLibraryW(L"ntdll.dll");
   if (module) {
     auto pRtlGetVersion = reinterpret_cast<RtlGetVersionFunc>(GetProcAddress(module, "RtlGetVersion"));
     Q_ASSERT(pRtlGetVersion);
-    _windowsVersion.dwOSVersionInfoSize = sizeof(_windowsVersion);
-    pRtlGetVersion(&_windowsVersion);
-    _pIsWinVersionGreater10 = compareWindowsVersion(Win10_Origin);
-    _pIsWinVersionGreater11 = compareWindowsVersion(Win11_Origin);
+    m_WindowsVersion.dwOSVersionInfoSize = sizeof(m_WindowsVersion);
+    pRtlGetVersion(&m_WindowsVersion);
+    m_IsWinVersionGreater10 = compareWindowsVersion(Win10_Origin);
+    m_IsWinVersionGreater11 = compareWindowsVersion(Win11_Origin);
   }
 }
 
@@ -28,24 +28,24 @@ bool NXWinShadowHelper::initWinAPI()
 {
   HMODULE dwmModule = LoadLibraryW(L"dwmapi.dll");
   if (dwmModule) {
-    if (!_dwmExtendFrameIntoClientArea) {
-      _dwmExtendFrameIntoClientArea =
+    if (!m_DwmExtendFrameIntoClientArea) {
+      m_DwmExtendFrameIntoClientArea =
           reinterpret_cast<DwmExtendFrameIntoClientAreaFunc>(GetProcAddress(dwmModule, "DwmExtendFrameIntoClientArea"));
     }
-    if (!_dwmSetWindowAttribute) {
-      _dwmSetWindowAttribute =
+    if (!m_DwmSetWindowAttribute) {
+      m_DwmSetWindowAttribute =
           reinterpret_cast<DwmSetWindowAttributeFunc>(GetProcAddress(dwmModule, "DwmSetWindowAttribute"));
     }
-    if (!_dwmIsCompositionEnabled) {
-      _dwmIsCompositionEnabled =
+    if (!m_DwmIsCompositionEnabled) {
+      m_DwmIsCompositionEnabled =
           reinterpret_cast<DwmIsCompositionEnabledFunc>(GetProcAddress(dwmModule, "DwmIsCompositionEnabled"));
     }
-    if (!_dwmEnableBlurBehindWindow) {
-      _dwmEnableBlurBehindWindow =
+    if (!m_DwmEnableBlurBehindWindow) {
+      m_DwmEnableBlurBehindWindow =
           reinterpret_cast<DwmEnableBlurBehindWindowFunc>(GetProcAddress(dwmModule, "DwmEnableBlurBehindWindow"));
     }
-    if (!(_dwmExtendFrameIntoClientArea && _dwmSetWindowAttribute && _dwmIsCompositionEnabled &&
-          _dwmEnableBlurBehindWindow)) {
+    if (!(m_DwmExtendFrameIntoClientArea && m_DwmSetWindowAttribute && m_DwmIsCompositionEnabled &&
+          m_DwmEnableBlurBehindWindow)) {
       qCritical() << "Dwm Func Init Incomplete!";
       return false;
     }
@@ -55,18 +55,18 @@ bool NXWinShadowHelper::initWinAPI()
   }
   HMODULE user32Module = LoadLibraryW(L"user32.dll");
   if (user32Module) {
-    if (!_setWindowCompositionAttribute) {
-      _setWindowCompositionAttribute = reinterpret_cast<SetWindowCompositionAttributeFunc>(
+    if (!m_SetWindowCompositionAttribute) {
+      m_SetWindowCompositionAttribute = reinterpret_cast<SetWindowCompositionAttributeFunc>(
           GetProcAddress(user32Module, "SetWindowCompositionAttribute"));
     }
-    if (!_getDpiForWindow) {
-      _getDpiForWindow = reinterpret_cast<GetDpiForWindowFunc>(GetProcAddress(user32Module, "GetDpiForWindow"));
+    if (!m_GetDpiForWindow) {
+      m_GetDpiForWindow = reinterpret_cast<GetDpiForWindowFunc>(GetProcAddress(user32Module, "GetDpiForWindow"));
     }
-    if (!_getSystemMetricsForDpi) {
-      _getSystemMetricsForDpi =
+    if (!m_GetSystemMetricsForDpi) {
+      m_GetSystemMetricsForDpi =
           reinterpret_cast<GetSystemMetricsForDpiFunc>(GetProcAddress(user32Module, "GetSystemMetricsForDpi"));
     }
-    if (!(_setWindowCompositionAttribute && _getDpiForWindow && _getSystemMetricsForDpi)) {
+    if (!(m_SetWindowCompositionAttribute && m_GetDpiForWindow && m_GetSystemMetricsForDpi)) {
       qCritical() << "User32 Func Init Incomplete!";
       return false;
     }
@@ -77,10 +77,10 @@ bool NXWinShadowHelper::initWinAPI()
 
   HMODULE shCoreModule = LoadLibraryW(L"SHCore.dll");
   if (shCoreModule) {
-    if (!_getDpiForMonitor) {
-      _getDpiForMonitor = reinterpret_cast<GetDpiForMonitorFunc>(GetProcAddress(shCoreModule, "GetDpiForMonitor"));
+    if (!m_GetDpiForMonitor) {
+      m_GetDpiForMonitor = reinterpret_cast<GetDpiForMonitorFunc>(GetProcAddress(shCoreModule, "GetDpiForMonitor"));
     }
-    if (!(_getDpiForMonitor)) {
+    if (!(m_GetDpiForMonitor)) {
       qCritical() << "SHCore Func Init Incomplete!";
       return false;
     }
@@ -94,18 +94,18 @@ bool NXWinShadowHelper::initWinAPI()
 void NXWinShadowHelper::setWindowShadow(quint64 hwnd)
 {
   static const MARGINS shadow = { 1, 0, 0, 0 };
-  _dwmExtendFrameIntoClientArea((HWND) hwnd, &shadow);
+  m_DwmExtendFrameIntoClientArea((HWND) hwnd, &shadow);
 }
 
 void NXWinShadowHelper::setWindowThemeMode(quint64 hwnd, bool isLightMode)
 {
-  if (!compareWindowsVersion(Win10_1809) || !_dwmSetWindowAttribute) {
+  if (!compareWindowsVersion(Win10_1809) || !m_DwmSetWindowAttribute) {
     return;
   }
   BOOL bIsLightMode = !isLightMode;
   _DWMWINDOWATTRIBUTE dwAttritube =
       compareWindowsVersion(Win10_20H1) ? _DWMWA_USE_IMMERSIVE_DARK_MODE : _DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1;
-  _dwmSetWindowAttribute((HWND) hwnd, dwAttritube, &bIsLightMode, sizeof(bIsLightMode));
+  m_DwmSetWindowAttribute((HWND) hwnd, dwAttritube, &bIsLightMode, sizeof(bIsLightMode));
 }
 
 void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType::WindowDisplayMode displayMode, NXApplicationType::WindowDisplayMode lastDisplayMode)
@@ -118,10 +118,10 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
     }
     if (compareWindowsVersion(Win11_22H2)) {
       const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
-      _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+      m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     } else {
       const BOOL isEnable = FALSE;
-      _dwmSetWindowAttribute(winHwnd, _DWMWA_MICA_EFFECT, &isEnable, sizeof(isEnable));
+      m_DwmSetWindowAttribute(winHwnd, _DWMWA_MICA_EFFECT, &isEnable, sizeof(isEnable));
     }
     break;
   }
@@ -130,7 +130,7 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
       break;
     }
     const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
-    _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+    m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     break;
   }
   case NXApplicationType::Acrylic : {
@@ -138,7 +138,7 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
       break;
     }
     const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_AUTO;
-    _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+    m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     break;
   }
   case NXApplicationType::DWMBlur : {
@@ -150,12 +150,12 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
       wcad.Attrib = _WCA_ACCENT_POLICY;
       wcad.pvData = &policy;
       wcad.cbData = sizeof(policy);
-      _setWindowCompositionAttribute(winHwnd, &wcad);
+      m_SetWindowCompositionAttribute(winHwnd, &wcad);
     } else {
       DWM_BLURBEHIND bb {};
       bb.fEnable = FALSE;
       bb.dwFlags = DWM_BB_ENABLE;
-      _dwmEnableBlurBehindWindow(winHwnd, &bb);
+      m_DwmEnableBlurBehindWindow(winHwnd, &bb);
     }
     break;
   }
@@ -172,10 +172,10 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
     _externWindowMargins(winHwnd);
     if (compareWindowsVersion(Win11_22H2)) {
       const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_MAINWINDOW;
-      _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+      m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     } else {
       const BOOL enable = TRUE;
-      _dwmSetWindowAttribute(winHwnd, _DWMWA_MICA_EFFECT, &enable, sizeof(enable));
+      m_DwmSetWindowAttribute(winHwnd, _DWMWA_MICA_EFFECT, &enable, sizeof(enable));
     }
     break;
   }
@@ -185,7 +185,7 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
     }
     _externWindowMargins(winHwnd);
     const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_TABBEDWINDOW;
-    _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+    m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     break;
   }
   case NXApplicationType::Acrylic : {
@@ -194,12 +194,12 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
     }
     _externWindowMargins(winHwnd);
     const _DWM_SYSTEMBACKDROP_TYPE backdropType = _DWMSBT_TRANSIENTWINDOW;
-    _dwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+    m_DwmSetWindowAttribute(winHwnd, _DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
     break;
   }
   case NXApplicationType::DWMBlur : {
     MARGINS windowMargins = { 0, 1, 0, 0 };
-    _dwmExtendFrameIntoClientArea(winHwnd, &windowMargins);
+    m_DwmExtendFrameIntoClientArea(winHwnd, &windowMargins);
     if (compareWindowsVersion(Win7_Origin)) {
       _ACCENT_POLICY policy {};
       policy.dwAccentState = _ACCENT_ENABLE_BLURBEHIND;
@@ -208,12 +208,12 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
       wcad.Attrib = _WCA_ACCENT_POLICY;
       wcad.pvData = &policy;
       wcad.cbData = sizeof(policy);
-      _setWindowCompositionAttribute(winHwnd, &wcad);
+      m_SetWindowCompositionAttribute(winHwnd, &wcad);
     } else {
       DWM_BLURBEHIND bb {};
       bb.fEnable = TRUE;
       bb.dwFlags = DWM_BB_ENABLE;
-      _dwmEnableBlurBehindWindow(winHwnd, &bb);
+      m_DwmEnableBlurBehindWindow(winHwnd, &bb);
     }
     break;
   }
@@ -226,8 +226,8 @@ void NXWinShadowHelper::setWindowDisplayMode(QWidget *widget, NXApplicationType:
 bool NXWinShadowHelper::getIsCompositionEnabled() const
 {
   BOOL isCompositionEnabled = false;
-  if (_dwmIsCompositionEnabled) {
-    _dwmIsCompositionEnabled(&isCompositionEnabled);
+  if (m_DwmIsCompositionEnabled) {
+    m_DwmIsCompositionEnabled(&isCompositionEnabled);
   }
   return isCompositionEnabled;
 }
@@ -257,53 +257,53 @@ quint32 NXWinShadowHelper::getResizeBorderThickness(const HWND &hwnd)
 
 quint32 NXWinShadowHelper::getDpiForWindow(const HWND &hwnd)
 {
-  if (_getDpiForWindow) {
-    return _getDpiForWindow(hwnd);
-  } else if (_getDpiForMonitor) {
+  if (m_GetDpiForWindow) {
+    return m_GetDpiForWindow(hwnd);
+  } else if (m_GetDpiForMonitor) {
     HMONITOR monitor = ::MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
     UINT dpiX { 0 };
     UINT dpiY { 0 };
-    _getDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
+    m_GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
     return dpiX;
   } else {
     HDC hdc        = ::GetDC(nullptr);
-    const int dpiX = ::GetDeviceCaps(hdc, LOGPIXELSX);
+    int const dpiX = ::GetDeviceCaps(hdc, LOGPIXELSX);
     ::ReleaseDC(nullptr, hdc);
     return quint32(dpiX);
   }
 }
 
-int NXWinShadowHelper::getSystemMetricsForDpi(const HWND &hwnd, const int index)
+int NXWinShadowHelper::getSystemMetricsForDpi(const HWND &hwnd, int const index)
 {
-  const quint32 dpi = getDpiForWindow(hwnd);
-  if (_getSystemMetricsForDpi) {
-    return _getSystemMetricsForDpi(index, dpi);
+  quint32 const dpi = getDpiForWindow(hwnd);
+  if (m_GetSystemMetricsForDpi) {
+    return m_GetSystemMetricsForDpi(index, dpi);
   }
-  const int result = ::GetSystemMetrics(index);
+  int const result = ::GetSystemMetrics(index);
   if (dpi != USER_DEFAULT_SCREEN_DPI) {
     return result;
   }
-  const qreal dpr = qreal(dpi) / qreal(USER_DEFAULT_SCREEN_DPI);
+  qreal const dpr = qreal(dpi) / qreal(USER_DEFAULT_SCREEN_DPI);
   return qRound(qreal(result) / dpr);
 }
 
-bool NXWinShadowHelper::compareWindowsVersion(const QString &windowsVersion) const
+bool NXWinShadowHelper::compareWindowsVersion(QString const &windowsVersion) const
 {
   QStringList versionList = windowsVersion.split(QStringLiteral("."));
   if (versionList.count() != 3) {
     return false;
   }
-  return (_windowsVersion.dwMajorVersion > versionList[0].toUInt()) ||
-         (_windowsVersion.dwMajorVersion == versionList[0].toUInt() &&
-          (_windowsVersion.dwMinorVersion > versionList[1].toUInt() ||
-           _windowsVersion.dwBuildNumber >= versionList[2].toUInt()));
+  return (m_WindowsVersion.dwMajorVersion > versionList[0].toUInt()) ||
+         (m_WindowsVersion.dwMajorVersion == versionList[0].toUInt() &&
+          (m_WindowsVersion.dwMinorVersion > versionList[1].toUInt() ||
+           m_WindowsVersion.dwBuildNumber >= versionList[2].toUInt()));
 }
 
 void NXWinShadowHelper::_externWindowMargins(HWND hwnd)
 {
   static const MARGINS margins = { 65536, 0, 0, 0 };
-  if (_dwmExtendFrameIntoClientArea) {
-    _dwmExtendFrameIntoClientArea(hwnd, &margins);
+  if (m_DwmExtendFrameIntoClientArea) {
+    m_DwmExtendFrameIntoClientArea(hwnd, &margins);
   }
 }
 #endif

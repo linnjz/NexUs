@@ -13,17 +13,17 @@ class NXToggleButtonPrivate : public QObject
   Q_PROPERTY_CREATE_D(QString, Text)
   Q_PROPERTY_CREATE_D(NXIconType::IconName, NXIcon, NXIconType::None)
   Q_PROPERTY_CREATE_D(int, BorderRadius, 3)
-  Q_PROPERTY_CREATE(int, ToggleAlpha, QS_DEFAULT_VALUE(0))
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), ToggleAlpha)
 
 public:
   explicit NXToggleButtonPrivate(QObject *parent = nullptr);
   ~NXToggleButtonPrivate();
 
 private:
-  bool _isAlphaAnimationFinished { true };
-  bool _isToggled { false };
-  bool _isPressed { false };
-  NXThemeType::ThemeMode _themeMode;
+  bool m_IsAlphaAnimationFinished { true };
+  bool m_IsToggled { false };
+  bool m_IsPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXTOGGLEBUTTONPRIVATE_H

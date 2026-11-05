@@ -1,4 +1,4 @@
-#ifndef NXIMAGECARD_H
+﻿#ifndef NXIMAGECARD_H
 #define NXIMAGECARD_H
 
 #include <QWidget>
@@ -11,7 +11,7 @@ class NX_EXPORT NXImageCard : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXImageCard)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QImage), CardImage)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QImage), CardImage)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(bool, IsPreserveAspectCrop)
 

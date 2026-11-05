@@ -22,9 +22,9 @@ public:
   ~NXBreadcrumbBarPrivate();
 
 private:
-  NXBreadcrumbBarModel *_listModel { nullptr };
-  NXBreadcrumbBarDelegate *_listDelegate { nullptr };
-  NXBaseListView *_listView { nullptr };
+  NXBreadcrumbBarModel *m_ListModel { nullptr };
+  NXBreadcrumbBarDelegate *m_ListDelegate { nullptr };
+  NXBaseListView *m_ListView { nullptr };
 };
 
 #endif // NXBREADCRUMBBARPRIVATE_H

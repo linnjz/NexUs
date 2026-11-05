@@ -10,22 +10,22 @@ class NXActionCommanderViewStyle;
 class NXActionCommanderView : public QTreeView
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), DomainName)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), DomainName)
 
 public:
   explicit NXActionCommanderView(QWidget *parent = nullptr);
   ~NXActionCommanderView() override;
 
-  Q_SLOT void onCustomContextMenuRequested(const QPoint &pos);
+  Q_SLOT void onCustomContextMenuRequested(QPoint const &pos);
 
 Q_SIGNALS:
-  Q_SIGNAL void runToCommand(const QString &domainName, int commandIndex);
+  Q_SIGNAL void runToCommand(QString const &domainName, int commandIndex);
 
 protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  NXActionCommanderViewStyle *_style { nullptr };
+  NXActionCommanderViewStyle *m_Style { nullptr };
 };
 
 #endif //NXACTIONCOMMANDERVIEW_H

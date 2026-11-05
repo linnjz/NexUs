@@ -19,16 +19,16 @@ NXDockWidget::NXDockWidget(QWidget *parent, Qt::WindowFlags flags)
   Q_D(NXDockWidget);
   d->q_ptr = this;
   setObjectName("NXDockWidget");
-  d->_titleBar = new NXDockWidgetTitleBar(this);
-  setTitleBarWidget(d->_titleBar);
+  d->m_TitleBar = new NXDockWidgetTitleBar(this);
+  setTitleBarWidget(d->m_TitleBar);
 
   // 主题变更动画
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXDockWidgetPrivate::onThemeModeChanged);
 
-  d->_windowDisplayMode = nxApp->getWindowDisplayMode();
-  connect(nxApp, &NXApplication::pWindowDisplayModeChanged, this, [=]() {
-    d->_windowDisplayMode = nxApp->getWindowDisplayMode();
+  d->m_WindowDisplayMode = nxApp->getWindowDisplayMode();
+  connect(nxApp, &NXApplication::signalWindowDisplayModeChanged, this, [=]() {
+    d->m_WindowDisplayMode = nxApp->getWindowDisplayMode();
     update();
   });
   connect(this, &NXDockWidget::topLevelChanged, this, [=](bool topLevel) {
@@ -38,7 +38,7 @@ NXDockWidget::NXDockWidget(QWidget *parent, Qt::WindowFlags flags)
   });
 }
 
-NXDockWidget::NXDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
+NXDockWidget::NXDockWidget(QString const &title, QWidget *parent, Qt::WindowFlags flags)
     : NXDockWidget(parent, flags)
 {
   this->setWindowTitle(title);
@@ -69,16 +69,16 @@ void NXDockWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::Antialiasing);
 #ifdef Q_OS_WIN
     // 背景
-    if (d->_windowDisplayMode != NXApplicationType::WindowDisplayMode::NXMica) {
+    if (d->m_WindowDisplayMode != NXApplicationType::WindowDisplayMode::NXMica) {
       painter.setPen(Qt::NoPen);
-      painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+      painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
       painter.drawRect(rect());
     }
 #else
     // 背景
     painter.setPen(Qt::NoPen);
-    painter.setBrush(d->_windowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica ? Qt::transparent : NXThemeColor(d->_themeMode, DialogBase));
-    QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
+    painter.setBrush(d->m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica ? Qt::transparent : NXThemeColor(d->m_ThemeMode, DialogBase));
+    QRect foregroundRect(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, width() - 2 * d->m_ShadowBorderWidth, height() - 2 * d->m_ShadowBorderWidth);
     painter.drawRect(rect());
 #endif
     painter.restore();
@@ -93,10 +93,10 @@ bool NXDockWidget::event(QEvent *event)
   switch (event->type()) {
   case QEvent::Show :
   case QEvent::MouseButtonRelease : {
-    HWND hwnd   = (HWND) d->_currentWinID;
+    HWND hwnd   = (HWND) d->m_CurrentWinID;
     DWORD style = ::GetWindowLongPtr(hwnd, GWL_STYLE);
     ::SetWindowLongPtr(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME);
-    NXWinShadowHelper::getInstance()->setWindowShadow(d->_currentWinID);
+    NXWinShadowHelper::getInstance()->setWindowShadow(d->m_CurrentWinID);
 #  if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 3) && QT_VERSION <= QT_VERSION_CHECK(6, 6, 1))
     bool hasCaption = (style & WS_CAPTION) == WS_CAPTION;
     if (!hasCaption) {
@@ -113,21 +113,21 @@ bool NXDockWidget::event(QEvent *event)
 }
 
 #  if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-bool NXDockWidget::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
+bool NXDockWidget::nativeEvent(QByteArray const &eventType, void *message, qintptr *result)
 #  else
-bool NXDockWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
+bool NXDockWidget::nativeEvent(QByteArray const &eventType, void *message, long *result)
 #  endif
 {
   Q_D(NXDockWidget);
   if ((eventType != QStringLiteral("windows_generic_MSG")) || !message) {
     return false;
   }
-  const auto msg  = static_cast<const MSG *>(message);
+  auto const msg  = static_cast<const MSG *>(message);
   const HWND hwnd = msg->hwnd;
   if (!hwnd || !msg) {
     return false;
   }
-  d->_currentWinID    = (qint64) hwnd;
+  d->m_CurrentWinID    = (qint64) hwnd;
   const UINT uMsg     = msg->message;
   const WPARAM wParam = msg->wParam;
   const LPARAM lParam = msg->lParam;
@@ -152,10 +152,10 @@ bool NXDockWidget::nativeEvent(const QByteArray &eventType, void *message, long 
     ::GetClientRect(hwnd, &clientRect);
     auto clientWidth  = clientRect.right - clientRect.left;
     auto clientHeight = clientRect.bottom - clientRect.top;
-    bool left         = nativeLocalPos.x < d->_margins;
-    bool right        = nativeLocalPos.x > clientWidth - d->_margins;
-    bool top          = nativeLocalPos.y < d->_margins;
-    bool bottom       = nativeLocalPos.y > clientHeight - d->_margins;
+    bool left         = nativeLocalPos.x < d->m_Margins;
+    bool right        = nativeLocalPos.x > clientWidth - d->m_Margins;
+    bool top          = nativeLocalPos.y < d->m_Margins;
+    bool bottom       = nativeLocalPos.y > clientHeight - d->m_Margins;
     *result           = 0;
     if (!window()->isFullScreen() && !window()->isMaximized()) {
       if (left && top) {

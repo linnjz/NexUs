@@ -14,7 +14,7 @@
 #include "DeveloperComponents/NXWinShadowHelper.h"
 #include "NXTheme.h"
 #include "private/NXContentDialogPrivate.h"
-Q_TAKEOVER_NATIVEEVENT_CPP(NXContentDialog, d_func()->_appBar);
+Q_TAKEOVER_NATIVEEVENT_CPP(NXContentDialog, d_func()->m_AppBar);
 
 NXContentDialog::NXContentDialog(QWidget *parent)
     : QDialog { parent }
@@ -23,56 +23,56 @@ NXContentDialog::NXContentDialog(QWidget *parent)
   Q_D(NXContentDialog);
   d->q_ptr = this;
 
-  d->_maskWidget = new NXMaskWidget(parent);
-  d->_maskWidget->move(0, 0);
-  d->_maskWidget->setFixedSize(parent->size());
-  d->_maskWidget->setVisible(false);
+  d->m_MaskWidget = new NXMaskWidget(parent);
+  d->m_MaskWidget->move(0, 0);
+  d->m_MaskWidget->setFixedSize(parent->size());
+  d->m_MaskWidget->setVisible(false);
 
   resize(400, height());
   setWindowModality(Qt::ApplicationModal);
 
-  d->_appBar = new NXAppBar(this);
-  d->_appBar->setWindowButtonFlags(NXAppBarType::NoneButtonHint);
-  d->_appBar->setIsFixedSize(true);
-  d->_appBar->setAppBarHeight(0);
+  d->m_AppBar = new NXAppBar(this);
+  d->m_AppBar->setWindowButtonFlags(NXAppBarType::NoneButtonHint);
+  d->m_AppBar->setIsFixedSize(true);
+  d->m_AppBar->setAppBarHeight(0);
 #ifdef Q_OS_WIN
   createWinId();
 #endif
 
-  d->_mainLayout = new QVBoxLayout(this);
-  d->_mainLayout->setContentsMargins(0, 0, 0, 0);
-  d->_centralWidget = new QWidget(this);
-  d->_mainLayout->addWidget(d->_centralWidget);
-  d->_buttonWidget = new QWidget(this);
-  d->_buttonWidget->setFixedHeight(60);
-  d->_buttonLayout = new QHBoxLayout(d->_buttonWidget);
-  d->_mainLayout->addWidget(d->_buttonWidget);
+  d->m_MainLayout = new QVBoxLayout(this);
+  d->m_MainLayout->setContentsMargins(0, 0, 0, 0);
+  d->m_CentralWidget = new QWidget(this);
+  d->m_MainLayout->addWidget(d->m_CentralWidget);
+  d->m_ButtonWidget = new QWidget(this);
+  d->m_ButtonWidget->setFixedHeight(60);
+  d->m_ButtonLayout = new QHBoxLayout(d->m_ButtonWidget);
+  d->m_MainLayout->addWidget(d->m_ButtonWidget);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
 NXContentDialog::~NXContentDialog()
 {
   Q_D(NXContentDialog);
-  d->_maskWidget->deleteLater();
+  d->m_MaskWidget->deleteLater();
 }
 
 void NXContentDialog::setCentralWidget(QWidget *widget)
 {
   Q_D(NXContentDialog);
-  int idx = d->_mainLayout->indexOf(d->_centralWidget);
+  int idx = d->m_MainLayout->indexOf(d->m_CentralWidget);
   if (idx >= 0) {
-    d->_mainLayout->takeAt(idx);
+    d->m_MainLayout->takeAt(idx);
   }
-  delete d->_centralWidget;
-  d->_centralWidget = widget;
-  d->_mainLayout->insertWidget(idx < 0 ? 0 : idx, widget);
+  delete d->m_CentralWidget;
+  d->m_CentralWidget = widget;
+  d->m_MainLayout->insertWidget(idx < 0 ? 0 : idx, widget);
 }
 
-NXPushButton * NXContentDialog::addButton(const QString &text)
+NXPushButton *NXContentDialog::addButton(QString const &text)
 {
   Q_D(NXContentDialog);
   auto *btn = new NXPushButton(text, this);
@@ -85,24 +85,24 @@ NXPushButton * NXContentDialog::addButton(const QString &text)
     d->startCloseAnimation(btn);
   });
 
-  d->_buttons.append(btn);
-  d->_buttonLayout->addWidget(btn);
+  d->m_Buttons.append(btn);
+  d->m_ButtonLayout->addWidget(btn);
   return btn;
 }
 
 void NXContentDialog::removeButton(NXPushButton *button)
 {
   Q_D(NXContentDialog);
-  if (d->_buttons.removeOne(button)) {
-    d->_buttonLayout->removeWidget(button);
+  if (d->m_Buttons.removeOne(button)) {
+    d->m_ButtonLayout->removeWidget(button);
     button->deleteLater();
   }
 }
 
 QList<NXPushButton *> NXContentDialog::buttons() const
 {
-  Q_D(const NXContentDialog);
-  return d->_buttons;
+  Q_CONST_D(NXContentDialog);
+  return d->m_Buttons;
 }
 
 void NXContentDialog::close()
@@ -111,19 +111,19 @@ void NXContentDialog::close()
   d->startCloseAnimation(nullptr);
 }
 
-NXAppBar * NXContentDialog::appBar() const
+NXAppBar *NXContentDialog::appBar() const
 {
-  Q_D(const NXContentDialog);
-  return d->_appBar;
+  Q_CONST_D(NXContentDialog);
+  return d->m_AppBar;
 }
 
 void NXContentDialog::showEvent(QShowEvent *event)
 {
   Q_D(NXContentDialog);
-  d->_maskWidget->setVisible(true);
-  d->_maskWidget->raise();
-  d->_maskWidget->setFixedSize(parentWidget()->size());
-  d->_maskWidget->doMaskAnimation(90);
+  d->m_MaskWidget->setVisible(true);
+  d->m_MaskWidget->raise();
+  d->m_MaskWidget->setFixedSize(parentWidget()->size());
+  d->m_MaskWidget->doMaskAnimation(90);
   d->_moveToCenter();
   QDialog::showEvent(event);
 }
@@ -136,10 +136,10 @@ void NXContentDialog::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
   // 背景绘制
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
   painter.drawRect(rect());
   // 按钮栏背景绘制
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogLayoutArea));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogLayoutArea));
   painter.drawRoundedRect(QRectF(0, height() - 60, width(), 60), 8, 8);
   painter.restore();
 }

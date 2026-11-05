@@ -17,15 +17,15 @@ NXDoubleSpinBox::NXDoubleSpinBox(QWidget *parent)
 {
   Q_D(NXDoubleSpinBox);
   d->q_ptr             = this;
-  d->_pExpandMarkWidth = 0;
+  d->m_ExpandMarkWidth = 0;
   setLocale(QLocale::C);
   setFixedSize(115, 35);
 #ifdef Q_OS_MACOS
   setAttribute(Qt::WA_Hover);
   setAttribute(Qt::WA_MacShowFocusRect, false);
 #endif
-  d->_style = new NXSpinBoxStyle(style());
-  setStyle(d->_style);
+  d->m_Style = new NXSpinBoxStyle(style());
+  setStyle(d->m_Style);
   lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 #ifdef Q_OS_MACOS
   lineEdit()->setStyleSheet(
@@ -40,7 +40,7 @@ NXDoubleSpinBox::NXDoubleSpinBox(QWidget *parent)
 NXDoubleSpinBox::~NXDoubleSpinBox()
 {
   Q_D(NXDoubleSpinBox);
-  delete d->_style;
+  delete d->m_Style;
 }
 
 void NXDoubleSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
@@ -49,7 +49,7 @@ void NXDoubleSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
   if (minimumWidth() < 90) {
     setMinimumWidth(90);
   }
-  d->_style->setButtonMode(buttonMode);
+  d->m_Style->setButtonMode(buttonMode);
   switch (buttonMode) {
   case NXSpinBoxType::Inline : {
     lineEdit()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -76,26 +76,26 @@ void NXDoubleSpinBox::setButtonMode(NXSpinBoxType::ButtonMode buttonMode)
   }
   d->onThemeChanged(nxTheme->getThemeMode());
   setFrame(hasFrame());
-  Q_EMIT pButtonModeChanged();
+  Q_EMIT signalButtonModeChanged();
 }
 
-NXSpinBoxType::ButtonMode NXDoubleSpinBox::getButtonMode() const
+NXSpinBoxType::ButtonMode NXDoubleSpinBox::getButtonMode() const noexcept(std::is_nothrow_copy_constructible_v<NXSpinBoxType::ButtonMode>)
 {
-  Q_D(const NXDoubleSpinBox);
-  return d->_style->getButtonMode();
+  Q_CONST_D(NXDoubleSpinBox);
+  return d->m_Style->getButtonMode();
 }
 
 void NXDoubleSpinBox::focusInEvent(QFocusEvent *event)
 {
   Q_D(NXDoubleSpinBox);
   if (event->reason() == Qt::MouseFocusReason) {
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_pExpandMarkWidth);
+    markAnimation->setStartValue(d->m_ExpandMarkWidth);
     markAnimation->setEndValue(width() / 2 - 3);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   }
@@ -106,13 +106,13 @@ void NXDoubleSpinBox::focusOutEvent(QFocusEvent *event)
 {
   Q_D(NXDoubleSpinBox);
   if (event->reason() != Qt::PopupFocusReason) {
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_pExpandMarkWidth);
+    markAnimation->setStartValue(d->m_ExpandMarkWidth);
     markAnimation->setEndValue(0);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   }
@@ -127,8 +127,8 @@ void NXDoubleSpinBox::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2, 2);
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
+  painter.drawRoundedRect(QRectF(width() / 2 - d->m_ExpandMarkWidth, height() - 2.5, d->m_ExpandMarkWidth * 2, 2.5), 2, 2);
   painter.restore();
 }
 
@@ -140,18 +140,18 @@ void NXDoubleSpinBox::contextMenuEvent(QContextMenuEvent *event)
     return;
   }
   menu->addSeparator();
-  const uint se = stepEnabled();
+  uint const se = stepEnabled();
   QAction *up   = menu->addNXIconAction(NXIconType::Plus, tr("增加"));
   up->setEnabled(se & StepUpEnabled);
   QAction *down = menu->addNXIconAction(NXIconType::Minus, tr("减少"));
   down->setEnabled(se & StepDownEnabled);
   menu->addSeparator();
 
-  const QAbstractSpinBox *that = this;
-  const QPoint pos             = (event->reason() == QContextMenuEvent::Mouse)
+  QAbstractSpinBox const *that = this;
+  QPoint const pos             = (event->reason() == QContextMenuEvent::Mouse)
                                    ? event->globalPos()
                                    : mapToGlobal(QPoint(event->pos().x(), 0)) + QPoint(width() / 2, height() / 2);
-  const QAction *action        = menu->exec(pos);
+  QAction const *action        = menu->exec(pos);
   delete menu;
   if (that && action) {
     if (action == up) {

@@ -10,13 +10,13 @@ class T_LogModel : public QAbstractListModel
 public:
   explicit T_LogModel(QObject *parent = nullptr);
   ~T_LogModel();
-  void setLogList(const QStringList &list);
-  void appendLogList(const QString &log);
+  void setLogList(QStringList const &list);
+  void appendLogList(QString const &log);
   QStringList getLogList() const;
 
 protected:
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  QVariant data(const QModelIndex &index, int role) const override;
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  QVariant data(QModelIndex const &index, int role) const override;
 
 private:
   QStringList _logList;

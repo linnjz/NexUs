@@ -18,7 +18,7 @@ public:
   ~NXTableWidgetPrivate();
 
 private:
-  NXTableWidgetStyle *_tableWidgetStyle { nullptr };
+  NXTableWidgetStyle *m_TableWidgetStyle { nullptr };
 };
 
 #endif // NXTABLEWIDGETPRIVATE_H

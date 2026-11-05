@@ -2,7 +2,7 @@
 
 #include "private/NXNavigationRouterPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXNavigationRouter, int, MaxRouteCount)
+Q_PROPERTY_CREATE_CPP(NXNavigationRouter, QPS_PAEMIT(int), MaxRouteCount)
 
 NXNavigationRouter::NXNavigationRouter(QObject *parent)
     : QObject { parent }
@@ -10,14 +10,14 @@ NXNavigationRouter::NXNavigationRouter(QObject *parent)
 {
   Q_D(NXNavigationRouter);
   d->q_ptr           = this;
-  d->_pMaxRouteCount = 25;
+  d->m_MaxRouteCount = 25;
 }
 
 NXNavigationRouter::~NXNavigationRouter()
 {
 }
 
-NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(QObject *routeObject, const QString &routeFunctionName, const QVariantMap &routeData, Qt::ConnectionType connectionType)
+NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(QObject *routeObject, QString const &routeFunctionName, QVariantMap const &routeData, Qt::ConnectionType connectionType)
 {
   Q_D(NXNavigationRouter);
   if (!routeObject) {
@@ -26,13 +26,13 @@ NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(
   if (routeFunctionName.isEmpty()) {
     return NXNavigationRouterType::FunctionNameInvalid;
   }
-  if (d->_routeList.count() == 0) {
+  if (d->m_RouteList.count() == 0) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::BackValid);
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardInvalid);
   } else {
-    if (d->_routeList.count() >= d->_pMaxRouteCount) {
-      d->_routeList.removeFirst();
-      d->_currentIndex -= 1;
+    if (d->m_RouteList.count() >= d->m_MaxRouteCount) {
+      d->m_RouteList.removeFirst();
+      d->m_CurrentIndex -= 1;
     }
   }
   QVariantMap saveData;
@@ -40,24 +40,24 @@ NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(
   saveData.insert(QStringLiteral("NXRouteFunctionName"), routeFunctionName);
   saveData.insert(QStringLiteral("NXRouteData"), routeData);
   saveData.insert(QStringLiteral("NXRouteConnectionType"), QVariant::fromValue<Qt::ConnectionType>(connectionType));
-  if (d->_currentIndex != d->_routeList.count() - 1) {
-    d->_routeList.remove(d->_currentIndex + 1, d->_routeList.count() - d->_currentIndex - 1);
+  if (d->m_CurrentIndex != d->m_RouteList.count() - 1) {
+    d->m_RouteList.remove(d->m_CurrentIndex + 1, d->m_RouteList.count() - d->m_CurrentIndex - 1);
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardInvalid);
   }
-  if (d->_currentIndex <= 0) {
+  if (d->m_CurrentIndex <= 0) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::BackValid);
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardInvalid);
   }
-  d->_routeList.append(saveData);
-  d->_currentIndex = d->_routeList.count() - 1;
+  d->m_RouteList.append(saveData);
+  d->m_CurrentIndex = d->m_RouteList.count() - 1;
   return NXNavigationRouterType::Success;
 }
 
 void NXNavigationRouter::clearNavigationRoute()
 {
   Q_D(NXNavigationRouter);
-  d->_currentIndex = -1;
-  d->_routeList.clear();
+  d->m_CurrentIndex = -1;
+  d->m_RouteList.clear();
   Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::BackInvalid);
   Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardInvalid);
 }
@@ -65,17 +65,17 @@ void NXNavigationRouter::clearNavigationRoute()
 void NXNavigationRouter::navigationRouteBack()
 {
   Q_D(NXNavigationRouter);
-  if (d->_routeList.isEmpty()) {
+  if (d->m_RouteList.isEmpty()) {
     return;
   }
-  if (d->_currentIndex == 0) {
+  if (d->m_CurrentIndex == 0) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::BackInvalid);
   }
-  if (d->_currentIndex == d->_routeList.size() - 1) {
+  if (d->m_CurrentIndex == d->m_RouteList.size() - 1) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardValid);
   }
-  QVariantMap routeSaveData = d->_routeList[d->_currentIndex];
-  d->_currentIndex -= 1;
+  QVariantMap routeSaveData = d->m_RouteList[d->m_CurrentIndex];
+  d->m_CurrentIndex -= 1;
   QObject *routeObject      = routeSaveData.value(QStringLiteral("NXRouteObject")).value<QObject *>();
   QString routeFunctionName = routeSaveData.value(QStringLiteral("NXRouteFunctionName")).toString();
   QVariantMap routeData     = routeSaveData.value(QStringLiteral("NXRouteData")).toMap();
@@ -88,19 +88,19 @@ void NXNavigationRouter::navigationRouteBack()
 void NXNavigationRouter::navigationRouteForward()
 {
   Q_D(NXNavigationRouter);
-  if (d->_routeList.isEmpty()) {
+  if (d->m_RouteList.isEmpty()) {
     return;
   }
-  if (d->_currentIndex <= 0) {
+  if (d->m_CurrentIndex <= 0) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::BackValid);
   }
-  if (d->_currentIndex == d->_routeList.size() - 2) {
+  if (d->m_CurrentIndex == d->m_RouteList.size() - 2) {
     Q_EMIT navigationRouterStateChanged(NXNavigationRouterType::ForwardInvalid);
   }
-  if (d->_currentIndex < d->_routeList.size() - 1) {
-    d->_currentIndex += 1;
+  if (d->m_CurrentIndex < d->m_RouteList.size() - 1) {
+    d->m_CurrentIndex += 1;
   }
-  QVariantMap routeSaveData = d->_routeList[d->_currentIndex];
+  QVariantMap routeSaveData = d->m_RouteList[d->m_CurrentIndex];
   QObject *routeObject      = routeSaveData.value(QStringLiteral("NXRouteObject")).value<QObject *>();
   QString routeFunctionName = routeSaveData.value(QStringLiteral("NXRouteFunctionName")).toString();
   QVariantMap routeData     = routeSaveData.value(QStringLiteral("NXRouteData")).toMap();
@@ -110,7 +110,7 @@ void NXNavigationRouter::navigationRouteForward()
   QMetaObject::invokeMethod(routeObject, routeFunctionName.toLocal8Bit().constData(), connectionType, Q_ARG(QVariantMap, routeData));
 }
 
-NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(QObject *context, QObject *routeObject, const QString &routeFunctionName, const QVariantMap &routeData, Qt::ConnectionType connectionType)
+NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(QObject *context, QObject *routeObject, QString const &routeFunctionName, QVariantMap const &routeData, Qt::ConnectionType connectionType)
 {
   Q_D(NXNavigationRouter);
   if (!routeObject) {
@@ -119,12 +119,12 @@ NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(
   if (routeFunctionName.isEmpty()) {
     return NXNavigationRouterType::FunctionNameInvalid;
   }
-  auto &ctx = d->_contextMap[context];
+  auto &ctx = d->m_ContextMap[context];
   if (ctx.routeList.count() == 0) {
     Q_EMIT windowRouterStateChanged(context, NXNavigationRouterType::BackValid);
     Q_EMIT windowRouterStateChanged(context, NXNavigationRouterType::ForwardInvalid);
   } else {
-    if (ctx.routeList.count() >= d->_pMaxRouteCount) {
+    if (ctx.routeList.count() >= d->m_MaxRouteCount) {
       ctx.routeList.removeFirst();
       ctx.currentIndex -= 1;
     }
@@ -154,7 +154,7 @@ NXNavigationRouterType::NavigationRouteType NXNavigationRouter::navigationRoute(
 void NXNavigationRouter::clearNavigationRoute(QObject *context)
 {
   Q_D(NXNavigationRouter);
-  auto &ctx        = d->_contextMap[context];
+  auto &ctx        = d->m_ContextMap[context];
   ctx.currentIndex = -1;
   ctx.routeList.clear();
   Q_EMIT windowRouterStateChanged(context, NXNavigationRouterType::BackInvalid);
@@ -164,10 +164,10 @@ void NXNavigationRouter::clearNavigationRoute(QObject *context)
 void NXNavigationRouter::navigationRouteBack(QObject *context)
 {
   Q_D(NXNavigationRouter);
-  if (!d->_contextMap.contains(context)) {
+  if (!d->m_ContextMap.contains(context)) {
     return;
   }
-  auto &ctx = d->_contextMap[context];
+  auto &ctx = d->m_ContextMap[context];
   if (ctx.routeList.isEmpty()) {
     return;
   }
@@ -191,10 +191,10 @@ void NXNavigationRouter::navigationRouteBack(QObject *context)
 void NXNavigationRouter::navigationRouteForward(QObject *context)
 {
   Q_D(NXNavigationRouter);
-  if (!d->_contextMap.contains(context)) {
+  if (!d->m_ContextMap.contains(context)) {
     return;
   }
-  auto &ctx = d->_contextMap[context];
+  auto &ctx = d->m_ContextMap[context];
   if (ctx.routeList.isEmpty()) {
     return;
   }

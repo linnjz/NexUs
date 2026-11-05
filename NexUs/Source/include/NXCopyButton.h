@@ -1,4 +1,4 @@
-#ifndef NXCOPYBUTTONH
+﻿#ifndef NXCOPYBUTTONH
 #define NXCOPYBUTTONH
 
 #include <QPushButton>
@@ -11,20 +11,20 @@ class NX_EXPORT NXCopyButton : public QPushButton
 {
   Q_OBJECT
   Q_Q_CREATE(NXCopyButton)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), CopyText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SuccessText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), CopyText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SuccessText)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, SuccessDuration)
 
 public:
   explicit NXCopyButton(QWidget *parent = nullptr);
-  explicit NXCopyButton(const QString &text, QWidget *parent = nullptr);
+  explicit NXCopyButton(QString const &text, QWidget *parent = nullptr);
   ~NXCopyButton();
 
-  void setText(const QString &text);
+  void setText(QString const &text);
   void setNXIcon(NXIconType::IconName icon);
   void setSuccessIcon(NXIconType::IconName icon);
-  Q_SIGNAL void copyCompleted(const QString &text);
+  Q_SIGNAL void copyCompleted(QString const &text);
 
 protected:
   void mousePressEvent(QMouseEvent *event) override;

@@ -1,4 +1,4 @@
-#ifndef NXSTATCARD_H
+﻿#ifndef NXSTATCARD_H
 #define NXSTATCARD_H
 
 #include <QWidget>
@@ -12,9 +12,9 @@ class NX_EXPORT NXStatCard : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXStatCard)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Value)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Description)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Value)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Description)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, CardIcon)
 
@@ -34,7 +34,7 @@ public:
   void setTrend(TrendType trend);
   TrendType getTrend() const;
 
-  void setTrendText(const QString &text);
+  void setTrendText(QString const &text);
   QString getTrendText() const;
 
 protected:

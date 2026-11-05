@@ -18,7 +18,7 @@ public:
   ~NXTreeViewPrivate();
 
 private:
-  NXTreeViewStyle *_treeViewStyle { nullptr };
+  NXTreeViewStyle *m_TreeViewStyle { nullptr };
 };
 
 #endif // NXTREEVIEWPRIVATE_H

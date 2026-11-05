@@ -1,4 +1,4 @@
-#ifndef NXDASHBOARDGAUGE_H
+﻿#ifndef NXDASHBOARDGAUGE_H
 #define NXDASHBOARDGAUGE_H
 
 #include <QWidget>
@@ -12,8 +12,8 @@ class NX_EXPORT NXDashboardGauge : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXDashboardGauge)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Unit)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Unit)
   Q_PROPERTY_CREATE_H(qreal, Minimum)
   Q_PROPERTY_CREATE_H(qreal, Maximum)
   Q_PROPERTY_CREATE_H(qreal, Value)

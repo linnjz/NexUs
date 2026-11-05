@@ -22,17 +22,17 @@ protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  bool _isVisible { false };
-  NXThemeType::ThemeMode _themeMode;
+  bool m_IsVisible { false };
+  NXThemeType::ThemeMode m_ThemeMode;
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  int _shadowBorderWidth { 0 };
+  int m_ShadowBorderWidth { 0 };
 #else
-  int _shadowBorderWidth { 8 };
+  int m_ShadowBorderWidth { 8 };
 #endif
-  int _scrollOffset { 0 };
-  QList<NXNotificationCenter::NotificationItem> _items;
-  QPropertyAnimation *_slideAnimation { nullptr };
-  QWidget *_anchorWidget { nullptr };
+  int m_ScrollOffset { 0 };
+  QList<NXNotificationCenter::NotificationItem> m_Items;
+  QPropertyAnimation *m_SlideAnimation { nullptr };
+  QWidget *m_AnchorWidget { nullptr };
 
   int _hitTestCard(QPoint pos) const;
   QRect _clearAllButtonRect() const;

@@ -15,6 +15,6 @@ NXInputDialogPrivate::~NXInputDialogPrivate()
 void NXInputDialogPrivate::_doCloseAnimation(bool isAccept)
 {
   Q_Q(NXInputDialog);
-  _maskWidget->doMaskAnimation(0);
+  m_MaskWidget->doMaskAnimation(0);
   isAccept ? q->accept() : q->reject();
 }

@@ -12,61 +12,61 @@
 #include "NXTheme.h"
 #include "private/NXMessageBarPrivate.h"
 
-NXMessageBar::NXMessageBar(NXMessageBarType::PositionPolicy policy, NXMessageBarType::MessageMode messageMode, const QString &title, const QString &text, int displayMsec, QWidget *parent)
+NXMessageBar::NXMessageBar(NXMessageBarType::PositionPolicy policy, NXMessageBarType::MessageMode messageMode, QString const &title, QString const &text, int displayMsec, QWidget *parent)
     : QWidget { parent }
     , d_ptr(new NXMessageBarPrivate())
 {
   Q_D(NXMessageBar);
   d->q_ptr         = this;
-  d->_borderRadius = 6;
-  d->_title        = title;
-  d->_text         = text;
-  d->_policy       = policy;
-  d->_messageMode  = messageMode;
-  d->_themeMode    = nxTheme->getThemeMode();
+  d->m_BorderRadius = 6;
+  d->m_Title        = title;
+  d->m_Text         = text;
+  d->m_Policy       = policy;
+  d->m_MessageMode  = messageMode;
+  d->m_ThemeMode    = nxTheme->getThemeMode();
   setMouseTracking(true);
-  d->_pOpacity = 1;
+  d->m_Opacity = 1;
   setFont(qApp->font());
   parent->installEventFilter(this);
   int fontPixelSize = nxApp->getFontPixelSize();
   setFont(QFont("微软雅黑"));
-  d->_closeButton = new NXIconButton(NXIconType::Xmark, fontPixelSize + 3, d->_closeButtonWidth, 30, this);
-  switch (d->_messageMode) {
+  d->m_CloseButton = new NXIconButton(NXIconType::Xmark, fontPixelSize + 3, d->m_CloseButtonWidth, 30, this);
+  switch (d->m_MessageMode) {
   case NXMessageBarType::Success : {
-    d->_closeButton->setLightHoverColor(QColor(0xCA, 0xDE, 0xC8));
-    d->_closeButton->setDarkHoverColor(QColor(0xCA, 0xDE, 0xC8));
-    d->_closeButton->setDarkIconColor(Qt::black);
-    d->_closeButton->setDarkHoverIconColor(Qt::black);
+    d->m_CloseButton->setLightHoverColor(QColor(0xCA, 0xDE, 0xC8));
+    d->m_CloseButton->setDarkHoverColor(QColor(0xCA, 0xDE, 0xC8));
+    d->m_CloseButton->setDarkIconColor(Qt::black);
+    d->m_CloseButton->setDarkHoverIconColor(Qt::black);
     break;
   }
   case NXMessageBarType::Warning : {
-    d->_closeButton->setLightHoverColor(QColor(0xE8, 0xDE, 0xBB));
-    d->_closeButton->setDarkHoverColor(QColor(0xE8, 0xDE, 0xBB));
-    d->_closeButton->setDarkIconColor(Qt::black);
-    d->_closeButton->setDarkHoverIconColor(Qt::black);
+    d->m_CloseButton->setLightHoverColor(QColor(0xE8, 0xDE, 0xBB));
+    d->m_CloseButton->setDarkHoverColor(QColor(0xE8, 0xDE, 0xBB));
+    d->m_CloseButton->setDarkIconColor(Qt::black);
+    d->m_CloseButton->setDarkHoverIconColor(Qt::black);
     break;
   }
   case NXMessageBarType::Information : {
-    d->_closeButton->setLightHoverColor(QColor(0xDE, 0xDE, 0xDE));
-    d->_closeButton->setDarkHoverColor(QColor(0xDE, 0xDE, 0xDE));
-    d->_closeButton->setDarkIconColor(Qt::black);
-    d->_closeButton->setDarkHoverIconColor(Qt::black);
+    d->m_CloseButton->setLightHoverColor(QColor(0xDE, 0xDE, 0xDE));
+    d->m_CloseButton->setDarkHoverColor(QColor(0xDE, 0xDE, 0xDE));
+    d->m_CloseButton->setDarkIconColor(Qt::black);
+    d->m_CloseButton->setDarkHoverIconColor(Qt::black);
     break;
   }
   case NXMessageBarType::Error : {
-    d->_closeButton->setLightHoverColor(QColor(0xF2, 0xDD, 0xE0));
-    d->_closeButton->setDarkHoverColor(QColor(0xF2, 0xDD, 0xE0));
-    d->_closeButton->setDarkIconColor(Qt::black);
-    d->_closeButton->setDarkHoverIconColor(Qt::black);
+    d->m_CloseButton->setLightHoverColor(QColor(0xF2, 0xDD, 0xE0));
+    d->m_CloseButton->setDarkHoverColor(QColor(0xF2, 0xDD, 0xE0));
+    d->m_CloseButton->setDarkIconColor(Qt::black);
+    d->m_CloseButton->setDarkHoverIconColor(Qt::black);
     break;
   }
   }
-  d->_closeButton->setBorderRadius(5);
-  connect(d->_closeButton, &NXIconButton::clicked, d, &NXMessageBarPrivate::messageBarEnd);
+  d->m_CloseButton->setBorderRadius(5);
+  connect(d->m_CloseButton, &NXIconButton::clicked, d, &NXMessageBarPrivate::messageBarEnd);
   QHBoxLayout *mainLayout = new QHBoxLayout(this);
   mainLayout->setContentsMargins(0, 0, 10, 0);
   mainLayout->addStretch();
-  mainLayout->addWidget(d->_closeButton);
+  mainLayout->addWidget(d->m_CloseButton);
   setObjectName("NXMessageBar");
   setStyleSheet(QStringLiteral("#NXMessageBar{background-color:transparent;}"));
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXMessageBarPrivate::onThemeChanged);
@@ -77,7 +77,7 @@ NXMessageBar::~NXMessageBar()
 {
 }
 
-void NXMessageBar::success(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent)
+void NXMessageBar::success(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent)
 {
   // qDebug() << QApplication::topLevelWidgets();
   if (!parent) {
@@ -96,7 +96,7 @@ void NXMessageBar::success(NXMessageBarType::PositionPolicy policy, const QStrin
   Q_UNUSED(bar);
 }
 
-void NXMessageBar::warning(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent)
+void NXMessageBar::warning(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent)
 {
   if (!parent) {
     QList<QWidget *> widgetList = QApplication::topLevelWidgets();
@@ -113,7 +113,7 @@ void NXMessageBar::warning(NXMessageBarType::PositionPolicy policy, const QStrin
   Q_UNUSED(bar);
 }
 
-void NXMessageBar::information(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent)
+void NXMessageBar::information(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent)
 {
   if (!parent) {
     QList<QWidget *> widgetList = QApplication::topLevelWidgets();
@@ -130,7 +130,7 @@ void NXMessageBar::information(NXMessageBarType::PositionPolicy policy, const QS
   Q_UNUSED(bar);
 }
 
-void NXMessageBar::error(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent)
+void NXMessageBar::error(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent)
 {
   if (!parent) {
     QList<QWidget *> widgetList = QApplication::topLevelWidgets();
@@ -150,17 +150,17 @@ void NXMessageBar::error(NXMessageBarType::PositionPolicy policy, const QString 
 void NXMessageBar::paintEvent(QPaintEvent *event)
 {
   Q_D(NXMessageBar);
-  const int fontPixelSize = nxApp->getFontPixelSize();
+  int const fontPixelSize = nxApp->getFontPixelSize();
   QPainter painter(this);
-  painter.setOpacity(d->_pOpacity);
+  painter.setOpacity(d->m_Opacity);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
   // 高性能阴影
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_borderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
 
   // 背景和图标绘制
   painter.save();
-  painter.setPen(d->_themeMode == NXThemeType::Light ? QColor(0xBE, 0xBA, 0xBE) : QColor(0x52, 0x50, 0x52));
-  switch (d->_messageMode) {
+  painter.setPen(d->m_ThemeMode == NXThemeType::Light ? QColor(0xBE, 0xBA, 0xBE) : QColor(0x52, 0x50, 0x52));
+  switch (d->m_MessageMode) {
   case NXMessageBarType::Success : {
     d->_drawSuccess(&painter);
     break;
@@ -184,16 +184,16 @@ void NXMessageBar::paintEvent(QPaintEvent *event)
   font.setWeight(QFont::Bold);
   font.setPixelSize(fontPixelSize);
   painter.setFont(font);
-  int titleTextWidth = painter.fontMetrics().horizontalAdvance(d->_title) + 1;
+  int titleTextWidth = painter.fontMetrics().horizontalAdvance(d->m_Title) + 1;
   if (titleTextWidth > 100) {
     titleTextWidth = 100;
   }
   int textFlags = Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap | Qt::TextWrapAnywhere;
-  painter.drawText(QRect(d->_leftPadding + d->_titleLeftSpacing, -1, titleTextWidth, height()), textFlags, d->_title);
+  painter.drawText(QRect(d->m_LeftPadding + d->m_TitleLeftSpacing, -1, titleTextWidth, height()), textFlags, d->m_Title);
   // 正文
   font.setWeight(QFont::Light);
   painter.setFont(font);
-  painter.drawText(QRect(d->_leftPadding + d->_titleLeftSpacing + titleTextWidth + d->_textLeftSpacing, 0, width() - (d->_leftPadding + d->_titleLeftSpacing + titleTextWidth + d->_textLeftSpacing + d->_closeButtonWidth + d->_closeButtonLeftRightMargin / 2), height() - d->_timePercentHeight), textFlags, d->_text);
+  painter.drawText(QRect(d->m_LeftPadding + d->m_TitleLeftSpacing + titleTextWidth + d->m_TextLeftSpacing, 0, width() - (d->m_LeftPadding + d->m_TitleLeftSpacing + titleTextWidth + d->m_TextLeftSpacing + d->m_CloseButtonWidth + d->m_CloseButtonLeftRightMargin / 2), height() - d->m_TimePercentHeight), textFlags, d->m_Text);
   painter.restore();
 }
 
@@ -205,8 +205,8 @@ bool NXMessageBar::eventFilter(QObject *watched, QEvent *event)
     case QEvent::Resize : {
       QResizeEvent *resizeEvent = dynamic_cast<QResizeEvent *>(event);
       QSize offsetSize          = parentWidget()->size() - resizeEvent->oldSize();
-      if (d->_isNormalDisplay) {
-        switch (d->_policy) {
+      if (d->m_IsNormalDisplay) {
+        switch (d->m_Policy) {
         case NXMessageBarType::Top : {
           this->move(parentWidget()->width() / 2 - minimumWidth() / 2, this->y());
           break;
@@ -217,20 +217,20 @@ bool NXMessageBar::eventFilter(QObject *watched, QEvent *event)
         }
         case NXMessageBarType::Left :
         case NXMessageBarType::TopLeft : {
-          this->move(d->_messageBarHorizontalMargin, this->pos().y());
+          this->move(d->m_MessageBarHorizontalMargin, this->pos().y());
           break;
         }
         case NXMessageBarType::BottomLeft : {
-          this->move(d->_messageBarHorizontalMargin, this->pos().y() + offsetSize.height());
+          this->move(d->m_MessageBarHorizontalMargin, this->pos().y() + offsetSize.height());
           break;
         }
         case NXMessageBarType::Right :
         case NXMessageBarType::TopRight : {
-          this->move(parentWidget()->width() - minimumWidth() - d->_messageBarHorizontalMargin, this->y());
+          this->move(parentWidget()->width() - minimumWidth() - d->m_MessageBarHorizontalMargin, this->y());
           break;
         }
         case NXMessageBarType::BottomRight : {
-          this->move(parentWidget()->width() - minimumWidth() - d->_messageBarHorizontalMargin, this->pos().y() + offsetSize.height());
+          this->move(parentWidget()->width() - minimumWidth() - d->m_MessageBarHorizontalMargin, this->pos().y() + offsetSize.height());
           break;
         }
         }

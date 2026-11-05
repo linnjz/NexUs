@@ -24,14 +24,14 @@ public:
   void onPromotionCardClicked(NXPromotionCard *clickedCard);
 
 private:
-  bool _isAllowSwitch { true };
-  NXThemeType::ThemeMode _themeMode;
-  int _leftPadding { 40 };
-  int _cardSpacing { 5 };
-  int _bottomMargin { 30 };
-  int _indicatorSpacing { 12 };
-  QList<NXPromotionCard *> _promotionCardList;
-  QTimer *_autoScrollTimer { nullptr };
+  bool m_IsAllowSwitch { true };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_LeftPadding { 40 };
+  int m_CardSpacing { 5 };
+  int m_BottomMargin { 30 };
+  int m_IndicatorSpacing { 12 };
+  QList<NXPromotionCard *> m_PromotionCardList;
+  QTimer *m_AutoScrollTimer { nullptr };
   void _startCardGeometryAnimation(NXPromotionCard *card, QRect start, QRect end);
   void _startHorizontalCardPixmapRatioAnimation(NXPromotionCard *card, qreal start, qreal end);
   void _updatePromotionCardGeometry();

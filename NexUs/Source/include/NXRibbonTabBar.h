@@ -18,13 +18,13 @@ public:
   explicit NXRibbonTabBar(QWidget *parent = nullptr);
   ~NXRibbonTabBar();
 
-  int appendTab(const QString &title);
+  int appendTab(QString const &title);
   void removeTab(int index);
   void clear();
 
   int tabCount() const;
   QString tabText(int index) const;
-  void setTabText(int index, const QString &title);
+  void setTabText(int index, QString const &title);
 
   // 禁用态:文字置灰 不可点击 无悬停反馈 用于Ribbon整页启用/禁用联动
   void setTabEnabled(int index, bool isEnable);

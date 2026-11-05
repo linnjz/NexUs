@@ -1,4 +1,4 @@
-#ifndef NXGRAPHICSSCENE_H
+﻿#ifndef NXGRAPHICSSCENE_H
 #define NXGRAPHICSSCENE_H
 
 #include <QDataStream>
@@ -18,7 +18,7 @@ class NX_EXPORT NXGraphicsScene : public QGraphicsScene
 {
   Q_OBJECT
   Q_Q_CREATE(NXGraphicsScene)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SerializePath)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SerializePath)
   Q_PROPERTY_CREATE_H(bool, IsCheckLinkPort)
 
 public:

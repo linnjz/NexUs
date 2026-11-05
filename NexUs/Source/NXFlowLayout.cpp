@@ -1,4 +1,4 @@
-#include "NXFlowLayout.h"
+﻿#include "NXFlowLayout.h"
 
 #include <QPropertyAnimation>
 #include <QWidget>
@@ -11,8 +11,8 @@ NXFlowLayout::NXFlowLayout(QWidget *parent, int margin, int hSpacing, int vSpaci
 {
   Q_D(NXFlowLayout);
   d->q_ptr     = this;
-  d->_hSpacing = hSpacing;
-  d->_vSpacing = vSpacing;
+  d->m_HSpacing = hSpacing;
+  d->m_VSpacing = vSpacing;
   setContentsMargins(margin, margin, margin, margin);
 }
 
@@ -21,8 +21,8 @@ NXFlowLayout::NXFlowLayout(int margin, int hSpacing, int vSpacing)
 {
   Q_D(NXFlowLayout);
   d->q_ptr     = this;
-  d->_hSpacing = hSpacing;
-  d->_vSpacing = vSpacing;
+  d->m_HSpacing = hSpacing;
+  d->m_VSpacing = vSpacing;
   setContentsMargins(margin, margin, margin, margin);
 }
 
@@ -37,14 +37,14 @@ NXFlowLayout::~NXFlowLayout()
 void NXFlowLayout::addItem(QLayoutItem *item)
 {
   Q_D(NXFlowLayout);
-  d->_itemList.append(item);
+  d->m_ItemList.append(item);
 }
 
 int NXFlowLayout::horizontalSpacing() const
 {
-  Q_D(const NXFlowLayout);
-  if (d->_hSpacing >= 0) {
-    return d->_hSpacing;
+  Q_CONST_D(NXFlowLayout);
+  if (d->m_HSpacing >= 0) {
+    return d->m_HSpacing;
   } else {
     return d->_smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
   }
@@ -52,9 +52,9 @@ int NXFlowLayout::horizontalSpacing() const
 
 int NXFlowLayout::verticalSpacing() const
 {
-  Q_D(const NXFlowLayout);
-  if (d->_vSpacing >= 0) {
-    return d->_vSpacing;
+  Q_CONST_D(NXFlowLayout);
+  if (d->m_VSpacing >= 0) {
+    return d->m_VSpacing;
   } else {
     return d->_smartSpacing(QStyle::PM_LayoutVerticalSpacing);
   }
@@ -62,21 +62,21 @@ int NXFlowLayout::verticalSpacing() const
 
 int NXFlowLayout::count() const
 {
-  Q_D(const NXFlowLayout);
-  return d->_itemList.size();
+  Q_CONST_D(NXFlowLayout);
+  return d->m_ItemList.size();
 }
 
-QLayoutItem * NXFlowLayout::itemAt(int index) const
+QLayoutItem *NXFlowLayout::itemAt(int index) const
 {
-  Q_D(const NXFlowLayout);
-  return d->_itemList.value(index);
+  Q_CONST_D(NXFlowLayout);
+  return d->m_ItemList.value(index);
 }
 
-QLayoutItem * NXFlowLayout::takeAt(int index)
+QLayoutItem *NXFlowLayout::takeAt(int index)
 {
   Q_D(NXFlowLayout);
-  if (index >= 0 && index < d->_itemList.size()) {
-    return d->_itemList.takeAt(index);
+  if (index >= 0 && index < d->m_ItemList.size()) {
+    return d->m_ItemList.takeAt(index);
   }
   return nullptr;
 }
@@ -84,7 +84,7 @@ QLayoutItem * NXFlowLayout::takeAt(int index)
 void NXFlowLayout::setIsAnimation(bool isAnimation)
 {
   Q_D(NXFlowLayout);
-  d->_isAnimation = isAnimation;
+  d->m_IsAnimation = isAnimation;
 }
 
 Qt::Orientations NXFlowLayout::expandingDirections() const
@@ -99,11 +99,11 @@ bool NXFlowLayout::hasHeightForWidth() const
 
 int NXFlowLayout::heightForWidth(int width) const
 {
-  Q_D(const NXFlowLayout);
+  Q_CONST_D(NXFlowLayout);
   return d->_doLayout(QRect(0, 0, width, 0), true);
 }
 
-void NXFlowLayout::setGeometry(const QRect &rect)
+void NXFlowLayout::setGeometry(QRect const &rect)
 {
   Q_D(NXFlowLayout);
   QLayout::setGeometry(rect);
@@ -117,12 +117,12 @@ QSize NXFlowLayout::sizeHint() const
 
 QSize NXFlowLayout::minimumSize() const
 {
-  Q_D(const NXFlowLayout);
+  Q_CONST_D(NXFlowLayout);
   QSize size;
-  for (const QLayoutItem *item : d->_itemList) {
+  for (QLayoutItem const *item : d->m_ItemList) {
     size = size.expandedTo(item->minimumSize());
   }
-  const QMargins margins = contentsMargins();
+  QMargins const margins = contentsMargins();
   size += QSize(margins.left() + margins.right(), margins.top() + margins.bottom());
   return size;
 }

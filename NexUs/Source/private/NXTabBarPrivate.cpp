@@ -8,10 +8,10 @@
 
 NXTabBarPrivate::NXTabBarPrivate(QObject *parent)
     : QObject { parent }
+    , m_ScrollAnimation { new QPropertyAnimation(this, "ScrollOffset") }
 {
-  _scrollAnimation = new QPropertyAnimation(this, "pScrollOffset");
-  _scrollAnimation->setDuration(200);
-  _scrollAnimation->setEasingCurve(QEasingCurve::OutCubic);
+  m_ScrollAnimation->setDuration(200);
+  m_ScrollAnimation->setEasingCurve(QEasingCurve::OutCubic);
 }
 
 NXTabBarPrivate::~NXTabBarPrivate()
@@ -20,23 +20,23 @@ NXTabBarPrivate::~NXTabBarPrivate()
 
 void NXTabBarPrivate::startScrollAnimation()
 {
-  if (qFuzzyCompare(_pScrollOffset, _pTargetScrollOffset)) {
+  if (qFuzzyCompare(m_ScrollOffset, m_TargetScrollOffset)) {
     return;
   }
-  _scrollAnimation->stop();
-  _scrollAnimation->setStartValue(_pScrollOffset);
-  _scrollAnimation->setEndValue(_pTargetScrollOffset);
-  _scrollAnimation->start();
+  m_ScrollAnimation->stop();
+  m_ScrollAnimation->setStartValue(m_ScrollOffset);
+  m_ScrollAnimation->setEndValue(m_TargetScrollOffset);
+  m_ScrollAnimation->start();
 }
 
 void NXTabBarPrivate::restoreScrollOffset(qreal offset)
 {
   Q_Q(NXTabBar);
   // 不超过当前最大偏移
-  int maxOffset = qMax(0, _tabBarPrivate->tabList.size() * _style->getTabSize().width() - q->width());
+  int maxOffset = qMax(0, m_TabBarPrivate->tabList.size() * m_Style->getTabSize().width() - q->width());
   offset        = qBound(0.0, offset, static_cast<qreal>(maxOffset));
   setTargetScrollOffset(offset);
   setScrollOffset(offset);
-  _tabBarPrivate->scrollOffset = qRound(offset);
+  m_TabBarPrivate->scrollOffset = qRound(offset);
   q->update();
 }

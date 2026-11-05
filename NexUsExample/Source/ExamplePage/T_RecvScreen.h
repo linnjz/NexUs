@@ -11,7 +11,7 @@ public:
   explicit T_RecvScreen(QWidget *parent = nullptr);
   ~T_RecvScreen();
 
-  Q_SLOT void onSendHandleResult(const QPixmap &pix);
+  Q_SLOT void onSendHandleResult(QPixmap const &pix);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

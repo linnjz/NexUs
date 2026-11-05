@@ -17,23 +17,23 @@ public:
   explicit NXRollerPicker(QWidget *parent = nullptr);
   ~NXRollerPicker();
 
-  void addRoller(const QStringList &itemList, bool isEnableLoop = true);
+  void addRoller(QStringList const &itemList, bool isEnableLoop = true);
   void removeRoller(int index);
 
-  void setRollerItemList(int index, const QStringList &itemList);
+  void setRollerItemList(int index, QStringList const &itemList);
   void setRollerWidth(int index, int width);
 
-  void setCurrentData(int index, const QString &data);
-  void setCurrentData(const QStringList &dataList);
+  void setCurrentData(int index, QString const &data);
+  void setCurrentData(QStringList const &dataList);
   QString getCurrentData(int index) const;
   QStringList getCurrentData() const;
 
   void setCurrentIndex(int rollerIndex, int index);
-  void setCurrentIndex(const QList<int> &indexList);
+  void setCurrentIndex(QList<int> const &indexList);
   int getCurrentIndex(int rollerIndex) const;
   QList<int> getCurrentIndex() const;
-  Q_SIGNAL void currentDataChanged(const QStringList &dataList);
-  Q_SIGNAL void currentDataSelectionChanged(const QStringList &dataList);
+  Q_SIGNAL void currentDataChanged(QStringList const &dataList);
+  Q_SIGNAL void currentDataSelectionChanged(QStringList const &dataList);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

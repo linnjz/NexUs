@@ -18,7 +18,7 @@ public:
   explicit NXWizard(QWidget *parent = nullptr);
   ~NXWizard();
 
-  void addStep(const QString &title, QWidget *page);
+  void addStep(QString const &title, QWidget *page);
   void next();
   void previous();
   void finish();

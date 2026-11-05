@@ -21,26 +21,26 @@ NXLineEdit::NXLineEdit(QWidget *parent)
   d->q_ptr = this;
   setObjectName("NXLineEdit");
   setFixedHeight(35);
-  d->_themeMode            = nxTheme->getThemeMode();
-  d->_pExpandMarkWidth     = 0;
-  d->_pIsClearButtonEnable = true;
+  d->m_ThemeMode            = nxTheme->getThemeMode();
+  d->m_ExpandMarkWidth     = 0;
+  d->m_IsClearButtonEnable = true;
   setFocusPolicy(Qt::StrongFocus);
   // 事件总线
-  d->_focusEvent = new NXEvent(QStringLiteral("WMWindowClicked"), QStringLiteral("onWMWindowClickedEvent"), d);
-  d->_focusEvent->registerAndInit();
+  d->m_FocusEvent = new NXEvent(QStringLiteral("WMWindowClicked"), QStringLiteral("onWMWindowClickedEvent"), d);
+  d->m_FocusEvent->registerAndInit();
   setMouseTracking(true);
   QFont textFont = font();
-  textFont.setLetterSpacing(QFont::AbsoluteSpacing, d->_textSpacing);
+  textFont.setLetterSpacing(QFont::AbsoluteSpacing, d->m_TextSpacing);
   setFont(textFont);
-  d->_lineEditStyle = new NXLineEditStyle(style());
-  setStyle(d->_lineEditStyle);
+  d->m_LineEditStyle = new NXLineEditStyle(style());
+  setStyle(d->m_LineEditStyle);
   setStyleSheet(QStringLiteral("#NXLineEdit{background-color:transparent;}"));
   d->onThemeChanged(nxTheme->getThemeMode());
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXLineEditPrivate::onThemeChanged);
   QWidget::setVisible(true);
 }
 
-NXLineEdit::NXLineEdit(const QString &text, QWidget *parent)
+NXLineEdit::NXLineEdit(QString const &text, QWidget *parent)
     : NXLineEdit(parent)
 {
   Q_D(NXLineEdit);
@@ -55,53 +55,53 @@ NXLineEdit::~NXLineEdit()
 void NXLineEdit::setContentsMargins(QMargins margins)
 {
   Q_D(NXLineEdit);
-  d->_lineEditStyle->setContentsMargins(margins);
+  d->m_LineEditStyle->setContentsMargins(margins);
   update();
-  Q_EMIT pContentsMarginsChanged();
+  Q_EMIT signalContentsMarginsChanged();
 }
 
-QMargins NXLineEdit::getContentsMargins() const
+QMargins NXLineEdit::getContentsMargins() const noexcept(std::is_nothrow_copy_constructible_v<QMargins>)
 {
-  Q_D(const NXLineEdit);
-  return d->_lineEditStyle->getContentsMargins();
+  Q_CONST_D(NXLineEdit);
+  return d->m_LineEditStyle->getContentsMargins();
 }
 
 void NXLineEdit::setIsClearButtonEnable(bool isClearButtonEnable)
 {
   Q_D(NXLineEdit);
-  d->_pIsClearButtonEnable = isClearButtonEnable;
+  d->m_IsClearButtonEnable = isClearButtonEnable;
   setClearButtonEnabled(isClearButtonEnable);
-  Q_EMIT pIsClearButtonEnableChanged();
+  Q_EMIT signalIsClearButtonEnableChanged();
 }
 
-bool NXLineEdit::getIsClearButtonEnable() const
+bool NXLineEdit::getIsClearButtonEnable() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXLineEdit);
-  return d->_pIsClearButtonEnable;
+  Q_CONST_D(NXLineEdit);
+  return d->m_IsClearButtonEnable;
 }
 
 void NXLineEdit::setBorderRadius(int borderRadius)
 {
-  Q_D(const NXLineEdit);
-  d->_lineEditStyle->setBorderRadius(borderRadius);
+  Q_CONST_D(NXLineEdit);
+  d->m_LineEditStyle->setBorderRadius(borderRadius);
 }
 
-int NXLineEdit::getBorderRadius() const
+int NXLineEdit::getBorderRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXLineEdit);
-  return d->_lineEditStyle->getBorderRadius();
+  Q_CONST_D(NXLineEdit);
+  return d->m_LineEditStyle->getBorderRadius();
 }
 
 void NXLineEdit::setIconMargin(int margin)
 {
   Q_D(NXLineEdit);
-  d->_lineEditStyle->setIconMargin(margin);
+  d->m_LineEditStyle->setIconMargin(margin);
 }
 
-int NXLineEdit::getIconMargin() const
+int NXLineEdit::getIconMargin() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXLineEdit);
-  return d->_lineEditStyle->getIconMargin();
+  Q_CONST_D(NXLineEdit);
+  return d->m_LineEditStyle->getIconMargin();
 }
 
 void NXLineEdit::focusInEvent(QFocusEvent *event)
@@ -109,17 +109,17 @@ void NXLineEdit::focusInEvent(QFocusEvent *event)
   Q_D(NXLineEdit);
   Q_EMIT focusIn(this->text());
   if (event->reason() != Qt::PopupFocusReason) {
-    if (d->_pIsClearButtonEnable) {
+    if (d->m_IsClearButtonEnable) {
       setClearButtonEnabled(true);
     }
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_pExpandMarkWidth);
-    markAnimation->setEndValue(width() / 2 - d->_lineEditStyle->getBorderRadius() / 2);
+    markAnimation->setStartValue(d->m_ExpandMarkWidth);
+    markAnimation->setEndValue(width() / 2 - d->m_LineEditStyle->getBorderRadius() / 2);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   }
   QLineEdit::focusInEvent(event);
@@ -130,16 +130,16 @@ void NXLineEdit::focusOutEvent(QFocusEvent *event)
   Q_D(NXLineEdit);
   Q_EMIT focusOut(this->text());
   if (event->reason() != Qt::PopupFocusReason) {
-    if (d->_pIsClearButtonEnable) {
+    if (d->m_IsClearButtonEnable) {
       setClearButtonEnabled(false);
     }
-    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "pExpandMarkWidth");
-    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *markAnimation = new QPropertyAnimation(d, "ExpandMarkWidth");
+    connect(markAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     markAnimation->setDuration(300);
     markAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    markAnimation->setStartValue(d->_pExpandMarkWidth);
+    markAnimation->setStartValue(d->m_ExpandMarkWidth);
     markAnimation->setEndValue(0);
     markAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     Q_EMIT wmFocusOut(text());
@@ -150,16 +150,16 @@ void NXLineEdit::focusOutEvent(QFocusEvent *event)
 void NXLineEdit::paintEvent(QPaintEvent *event)
 {
   Q_D(NXLineEdit);
-  if (palette().color(QPalette::Text) != NXThemeColor(d->_themeMode, BasicText)) {
-    d->onThemeChanged(d->_themeMode);
+  if (palette().color(QPalette::Text) != NXThemeColor(d->m_ThemeMode, BasicText)) {
+    d->onThemeChanged(d->m_ThemeMode);
   }
   QLineEdit::paintEvent(event);
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
-  painter.drawRoundedRect(QRectF(width() / 2 - d->_pExpandMarkWidth, height() - 2.5, d->_pExpandMarkWidth * 2, 2.5), 2, 2);
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
+  painter.drawRoundedRect(QRectF(width() / 2 - d->m_ExpandMarkWidth, height() - 2.5, d->m_ExpandMarkWidth * 2, 2.5), 2, 2);
   painter.restore();
 }
 

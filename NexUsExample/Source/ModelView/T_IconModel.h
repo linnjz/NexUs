@@ -14,12 +14,12 @@ class T_IconModel : public QAbstractListModel
 public:
   explicit T_IconModel(QObject *parent = nullptr);
   ~T_IconModel();
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  void setSearchKeyList(const QStringList &list);
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  void setSearchKeyList(QStringList const &list);
   QStringList getSearchKeyList();
 
-  QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-  QString getIconNameFromModelIndex(const QModelIndex &index) const;
+  QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const override;
+  QString getIconNameFromModelIndex(QModelIndex const &index) const;
 
 private:
   int _rowCount;

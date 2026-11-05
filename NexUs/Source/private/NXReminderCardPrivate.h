@@ -29,8 +29,8 @@ public:
   ~NXReminderCardPrivate();
 
 private:
-  int _shadowBorderWidth { 6 };
-  NXThemeType::ThemeMode _themeMode;
+  int m_ShadowBorderWidth { 6 };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXREMINDERCARDPRIVATE_H

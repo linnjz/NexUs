@@ -25,16 +25,16 @@ public:
   };
   Q_ENUM(ToastType)
 
-  static void success(const QString &text, int displayMsec = 2000, QWidget *parent = nullptr);
-  static void info(const QString &text, int displayMsec = 2000, QWidget *parent = nullptr);
-  static void warning(const QString &text, int displayMsec = 2000, QWidget *parent = nullptr);
-  static void error(const QString &text, int displayMsec = 2000, QWidget *parent = nullptr);
+  static void success(QString const &text, int displayMsec = 2000, QWidget *parent = nullptr);
+  static void info(QString const &text, int displayMsec = 2000, QWidget *parent = nullptr);
+  static void warning(QString const &text, int displayMsec = 2000, QWidget *parent = nullptr);
+  static void error(QString const &text, int displayMsec = 2000, QWidget *parent = nullptr);
 
 protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  explicit NXToast(ToastType type, const QString &text, int displayMsec, QWidget *parent = nullptr);
+  explicit NXToast(ToastType type, QString const &text, int displayMsec, QWidget *parent = nullptr);
   ~NXToast();
 };
 

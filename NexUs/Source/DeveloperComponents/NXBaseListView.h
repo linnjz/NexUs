@@ -13,9 +13,9 @@ class NXBaseListView : public QListView
 public:
   explicit NXBaseListView(QWidget *parent = nullptr);
   ~NXBaseListView();
-  Q_SIGNAL void mousePress(const QModelIndex &index);
-  Q_SIGNAL void mouseRelease(const QModelIndex &index);
-  Q_SIGNAL void mouseDoubleClick(const QModelIndex &index);
+  Q_SIGNAL void mousePress(QModelIndex const &index);
+  Q_SIGNAL void mouseRelease(QModelIndex const &index);
+  Q_SIGNAL void mouseDoubleClick(QModelIndex const &index);
 
 protected:
   void wheelEvent(QWheelEvent *event) override;

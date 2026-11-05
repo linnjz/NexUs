@@ -30,12 +30,12 @@ protected:
 
 private:
   friend class NXPopconfirm;
-  NXThemeType::ThemeMode _themeMode;
-  int _shadowBorderWidth { 8 };
-  QVBoxLayout *_mainLayout { nullptr };
-  QGraphicsOpacityEffect *_opacityEffect { nullptr };
-  NXPushButton *_confirmButton { nullptr };
-  NXPushButton *_cancelButton { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_ShadowBorderWidth { 8 };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QGraphicsOpacityEffect *m_OpacityEffect { nullptr };
+  NXPushButton *m_ConfirmButton { nullptr };
+  NXPushButton *m_CancelButton { nullptr };
   void _doShowAnimation();
 };
 

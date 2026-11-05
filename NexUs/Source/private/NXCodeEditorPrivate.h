@@ -23,11 +23,11 @@ public:
 private:
   friend class NXCodeEditorLineArea;
   friend class NXCodeHighlighter;
-  NXThemeType::ThemeMode _themeMode;
-  int _language { 0 };
-  NXCodePlainTextEdit *_editor { nullptr };
-  QWidget *_lineArea { nullptr };
-  void *_highlighter { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_Language { 0 };
+  NXCodePlainTextEdit *m_Editor { nullptr };
+  QWidget *m_LineArea { nullptr };
+  void *m_Highlighter { nullptr };
 };
 
 #endif // NXCODEEDITORPRIVATE_H

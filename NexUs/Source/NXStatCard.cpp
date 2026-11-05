@@ -6,11 +6,11 @@
 #include "NXTheme.h"
 #include "private/NXStatCardPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXStatCard, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXStatCard, QS_SET_CREF(QString), Value)
-Q_PROPERTY_CREATE_CPP(NXStatCard, QS_SET_CREF(QString), Description)
-Q_PROPERTY_CREATE_CPP(NXStatCard, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXStatCard, NXIconType::IconName, CardIcon)
+Q_PROPERTY_CREATE_CPP(NXStatCard, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXStatCard, QPS_SCREF_PAEMIT(QString), Value)
+Q_PROPERTY_CREATE_CPP(NXStatCard, QPS_SCREF_PAEMIT(QString), Description)
+Q_PROPERTY_CREATE_CPP(NXStatCard, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXStatCard, QPS_PAEMIT(NXIconType::IconName), CardIcon)
 
 NXStatCard::NXStatCard(QWidget *parent)
     : QWidget { parent }
@@ -18,14 +18,14 @@ NXStatCard::NXStatCard(QWidget *parent)
 {
   Q_D(NXStatCard);
   d->q_ptr          = this;
-  d->_pBorderRadius = 8;
-  d->_pCardIcon     = NXIconType::None;
+  d->m_BorderRadius = 8;
+  d->m_CardIcon     = NXIconType::None;
   setObjectName("NXStatCard");
   setFixedSize(220, 120);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -37,25 +37,25 @@ NXStatCard::~NXStatCard()
 void NXStatCard::setTrend(TrendType trend)
 {
   Q_D(NXStatCard);
-  d->_trend = trend;
+  d->m_Trend = trend;
   update();
 }
 
 NXStatCard::TrendType NXStatCard::getTrend() const
 {
-  return d_ptr->_trend;
+  return d_ptr->m_Trend;
 }
 
-void NXStatCard::setTrendText(const QString &text)
+void NXStatCard::setTrendText(QString const &text)
 {
   Q_D(NXStatCard);
-  d->_trendText = text;
+  d->m_TrendText = text;
   update();
 }
 
 QString NXStatCard::getTrendText() const
 {
-  return d_ptr->_trendText;
+  return d_ptr->m_TrendText;
 }
 
 void NXStatCard::paintEvent(QPaintEvent *event)
@@ -68,9 +68,9 @@ void NXStatCard::paintEvent(QPaintEvent *event)
 
   // Background rounded rect
   QPainterPath backgroundPath;
-  backgroundPath.addRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->_pBorderRadius, d->_pBorderRadius);
-  painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicBase));
-  painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
+  backgroundPath.addRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->m_BorderRadius, d->m_BorderRadius);
+  painter.fillPath(backgroundPath, NXThemeColor(d->m_ThemeMode, BasicBase));
+  painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
   painter.drawPath(backgroundPath);
 
   int padding  = 16;
@@ -78,46 +78,46 @@ void NXStatCard::paintEvent(QPaintEvent *event)
   int titleY   = 16;
 
   // Icon + Title row
-  if (d->_pCardIcon != NXIconType::None) {
+  if (d->m_CardIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(20);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, PrimaryNormal));
-    QChar iconChar = QChar(static_cast<int>(d->_pCardIcon));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
+    QChar iconChar = QChar(static_cast<int>(d->m_CardIcon));
     painter.drawText(currentX, titleY + 18, QString(iconChar));
     currentX += 24;
   }
 
-  if (!d->_pTitle.isEmpty()) {
+  if (!d->m_Title.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(13);
     painter.setFont(titleFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
-    painter.drawText(currentX, titleY + 16, d->_pTitle);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
+    painter.drawText(currentX, titleY + 16, d->m_Title);
   }
 
   // Value (big number)
-  if (!d->_pValue.isEmpty()) {
+  if (!d->m_Value.isEmpty()) {
     QFont valueFont = font();
     valueFont.setPixelSize(28);
     valueFont.setBold(true);
     painter.setFont(valueFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-    painter.drawText(padding, 42 + 26, d->_pValue);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
+    painter.drawText(padding, 42 + 26, d->m_Value);
   }
 
   // Trend + Description row
   int bottomY = 88 + 14;
   int trendX  = padding;
 
-  if (d->_trend != None) {
+  if (d->m_Trend != None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(12);
 
     QFont trendFont = font();
     trendFont.setPixelSize(12);
 
-    if (d->_trend == Up) {
+    if (d->m_Trend == Up) {
       QColor greenColor(0x0F, 0x7B, 0x0F);
       painter.setFont(iconFont);
       painter.setPen(greenColor);
@@ -125,45 +125,45 @@ void NXStatCard::paintEvent(QPaintEvent *event)
       painter.drawText(trendX, bottomY, QString(arrowChar));
       trendX += 14;
 
-      if (!d->_trendText.isEmpty()) {
+      if (!d->m_TrendText.isEmpty()) {
         painter.setFont(trendFont);
-        painter.drawText(trendX, bottomY, d->_trendText);
-        trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
+        painter.drawText(trendX, bottomY, d->m_TrendText);
+        trendX += QFontMetrics(trendFont).horizontalAdvance(d->m_TrendText) + 6;
       }
-    } else if (d->_trend == Down) {
-      QColor redColor = NXThemeColor(d->_themeMode, StatusDanger);
+    } else if (d->m_Trend == Down) {
+      QColor redColor = NXThemeColor(d->m_ThemeMode, StatusDanger);
       painter.setFont(iconFont);
       painter.setPen(redColor);
       QChar arrowChar = QChar(static_cast<int>(NXIconType::AngleDown));
       painter.drawText(trendX, bottomY, QString(arrowChar));
       trendX += 14;
 
-      if (!d->_trendText.isEmpty()) {
+      if (!d->m_TrendText.isEmpty()) {
         painter.setFont(trendFont);
-        painter.drawText(trendX, bottomY, d->_trendText);
-        trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
+        painter.drawText(trendX, bottomY, d->m_TrendText);
+        trendX += QFontMetrics(trendFont).horizontalAdvance(d->m_TrendText) + 6;
       }
-    } else if (d->_trend == Neutral) {
-      QColor neutralColor = NXThemeColor(d->_themeMode, BasicDetailsText);
+    } else if (d->m_Trend == Neutral) {
+      QColor neutralColor = NXThemeColor(d->m_ThemeMode, BasicDetailsText);
       painter.setFont(trendFont);
       painter.setPen(neutralColor);
       painter.drawText(trendX, bottomY, QStringLiteral("\u2014"));
       trendX += QFontMetrics(trendFont).horizontalAdvance(QStringLiteral("\u2014")) + 6;
 
-      if (!d->_trendText.isEmpty()) {
-        painter.drawText(trendX, bottomY, d->_trendText);
-        trendX += QFontMetrics(trendFont).horizontalAdvance(d->_trendText) + 6;
+      if (!d->m_TrendText.isEmpty()) {
+        painter.drawText(trendX, bottomY, d->m_TrendText);
+        trendX += QFontMetrics(trendFont).horizontalAdvance(d->m_TrendText) + 6;
       }
     }
   }
 
   // Description
-  if (!d->_pDescription.isEmpty()) {
+  if (!d->m_Description.isEmpty()) {
     QFont descFont = font();
     descFont.setPixelSize(12);
     painter.setFont(descFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
-    painter.drawText(trendX, bottomY, d->_pDescription);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
+    painter.drawText(trendX, bottomY, d->m_Description);
   }
 }
 

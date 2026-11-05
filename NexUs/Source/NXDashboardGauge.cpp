@@ -8,56 +8,56 @@
 #include "NXTheme.h"
 #include "private/NXDashboardGaugePrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QS_SET_CREF(QString), Unit)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, MajorTickCount)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, MinorTickCount)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, StartAngle)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, SpanAngle)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, ArcWidth)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, ValuePixelSize)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, int, Decimals)
-Q_PROPERTY_CREATE_CPP(NXDashboardGauge, bool, IsAnimated)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_SCREF_PAEMIT(QString), Unit)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), MajorTickCount)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), MinorTickCount)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), StartAngle)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), SpanAngle)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), ArcWidth)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), ValuePixelSize)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(int), Decimals)
+Q_PROPERTY_CREATE_CPP(NXDashboardGauge, QPS_PAEMIT(bool), IsAnimated)
 
 void NXDashboardGauge::setMinimum(qreal minimum)
 {
   Q_D(NXDashboardGauge);
-  d->_pMinimum = minimum;
+  d->m_Minimum = minimum;
   update();
-  Q_EMIT pMinimumChanged();
+  Q_EMIT signalMinimumChanged();
 }
 
-qreal NXDashboardGauge::getMinimum() const
+qreal NXDashboardGauge::getMinimum() const noexcept(std::is_nothrow_copy_constructible_v<qreal>)
 {
-  return d_ptr->_pMinimum;
+  return d_ptr->m_Minimum;
 }
 
 void NXDashboardGauge::setMaximum(qreal maximum)
 {
   Q_D(NXDashboardGauge);
-  d->_pMaximum = maximum;
+  d->m_Maximum = maximum;
   update();
-  Q_EMIT pMaximumChanged();
+  Q_EMIT signalMaximumChanged();
 }
 
-qreal NXDashboardGauge::getMaximum() const
+qreal NXDashboardGauge::getMaximum() const noexcept(std::is_nothrow_copy_constructible_v<qreal>)
 {
-  return d_ptr->_pMaximum;
+  return d_ptr->m_Maximum;
 }
 
 void NXDashboardGauge::setValue(qreal value)
 {
   Q_D(NXDashboardGauge);
-  value = qBound(d->_pMinimum, value, d->_pMaximum);
-  if (qFuzzyCompare(d->_pValue, value)) {
+  value = qBound(d->m_Minimum, value, d->m_Maximum);
+  if (qFuzzyCompare(d->m_Value, value)) {
     return;
   }
-  d->_pValue = value;
+  d->m_Value = value;
 
-  if (d->_pIsAnimated) {
-    QPropertyAnimation *animation = new QPropertyAnimation(d, "pAnimatedValue");
+  if (d->m_IsAnimated) {
+    QPropertyAnimation *animation = new QPropertyAnimation(d, "AnimatedValue");
     animation->setDuration(600);
-    animation->setStartValue(d->_animatedValue);
+    animation->setStartValue(d->m_AnimatedValue);
     animation->setEndValue(value);
     animation->setEasingCurve(QEasingCurve::OutCubic);
     connect(animation, &QPropertyAnimation::valueChanged, this, [this]() {
@@ -65,16 +65,16 @@ void NXDashboardGauge::setValue(qreal value)
     });
     animation->start(QAbstractAnimation::DeleteWhenStopped);
   } else {
-    d->_animatedValue = value;
+    d->m_AnimatedValue = value;
     update();
   }
   Q_EMIT valueChanged(value);
-  Q_EMIT pValueChanged();
+  Q_EMIT signalValueChanged();
 }
 
-qreal NXDashboardGauge::getValue() const
+qreal NXDashboardGauge::getValue() const noexcept(std::is_nothrow_copy_constructible_v<qreal>)
 {
-  return d_ptr->_pValue;
+  return d_ptr->m_Value;
 }
 
 NXDashboardGauge::NXDashboardGauge(QWidget *parent)
@@ -83,24 +83,24 @@ NXDashboardGauge::NXDashboardGauge(QWidget *parent)
 {
   Q_D(NXDashboardGauge);
   d->q_ptr            = this;
-  d->_pMinimum        = 0;
-  d->_pMaximum        = 100;
-  d->_pValue          = 0;
-  d->_animatedValue   = 0;
-  d->_pMajorTickCount = 10;
-  d->_pMinorTickCount = 5;
-  d->_pStartAngle     = 225;
-  d->_pSpanAngle      = 270;
-  d->_pArcWidth       = 12;
-  d->_pValuePixelSize = 22;
-  d->_pIsAnimated     = true;
-  d->_pDecimals       = 0;
+  d->m_Minimum        = 0;
+  d->m_Maximum        = 100;
+  d->m_Value          = 0;
+  d->m_AnimatedValue   = 0;
+  d->m_MajorTickCount = 10;
+  d->m_MinorTickCount = 5;
+  d->m_StartAngle     = 225;
+  d->m_SpanAngle      = 270;
+  d->m_ArcWidth       = 12;
+  d->m_ValuePixelSize = 22;
+  d->m_IsAnimated     = true;
+  d->m_Decimals       = 0;
   setObjectName("NXDashboardGauge");
   setFixedSize(260, 260);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -112,37 +112,37 @@ NXDashboardGauge::~NXDashboardGauge()
 void NXDashboardGauge::setDangerPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
-  d->_dangerPercent = qBound(0.0, percent, 1.0);
+  d->m_DangerPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
 qreal NXDashboardGauge::getDangerPercent() const
 {
-  return d_ptr->_dangerPercent;
+  return d_ptr->m_DangerPercent;
 }
 
 void NXDashboardGauge::setWarningPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
-  d->_warningPercent = qBound(0.0, percent, 1.0);
+  d->m_WarningPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
 qreal NXDashboardGauge::getWarningPercent() const
 {
-  return d_ptr->_warningPercent;
+  return d_ptr->m_WarningPercent;
 }
 
 void NXDashboardGauge::setTickWarningPercent(qreal percent)
 {
   Q_D(NXDashboardGauge);
-  d->_tickWarningPercent = qBound(0.0, percent, 1.0);
+  d->m_TickWarningPercent = qBound(0.0, percent, 1.0);
   update();
 }
 
 qreal NXDashboardGauge::getTickWarningPercent() const
 {
-  return d_ptr->_tickWarningPercent;
+  return d_ptr->m_TickWarningPercent;
 }
 
 void NXDashboardGauge::paintEvent(QPaintEvent *event)
@@ -158,30 +158,30 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
   painter.scale(side / 260.0, side / 260.0);
 
   qreal radius    = 110.0;
-  qreal arcWidth  = d->_pArcWidth;
+  qreal arcWidth  = d->m_ArcWidth;
   qreal arcRadius = radius - arcWidth / 2.0;
 
   QPen trackPen;
   trackPen.setWidthF(arcWidth);
   trackPen.setCapStyle(Qt::RoundCap);
-  trackPen.setColor(NXThemeColor(d->_themeMode, BasicChute));
+  trackPen.setColor(NXThemeColor(d->m_ThemeMode, BasicChute));
   painter.setPen(trackPen);
   painter.setBrush(Qt::NoBrush);
   QRectF arcRect(-arcRadius, -arcRadius, arcRadius * 2, arcRadius * 2);
-  painter.drawArc(arcRect, d->_pStartAngle * 16, -d->_pSpanAngle * 16);
+  painter.drawArc(arcRect, d->m_StartAngle * 16, -d->m_SpanAngle * 16);
 
-  qreal range        = d->_pMaximum - d->_pMinimum;
-  qreal displayValue = d->_pIsAnimated ? d->_animatedValue : d->_pValue;
-  qreal percent      = range > 0 ? (displayValue - d->_pMinimum) / range : 0;
-  int valueSpan      = static_cast<int>(d->_pSpanAngle * percent);
+  qreal range        = d->m_Maximum - d->m_Minimum;
+  qreal displayValue = d->m_IsAnimated ? d->m_AnimatedValue : d->m_Value;
+  qreal percent      = range > 0 ? (displayValue - d->m_Minimum) / range : 0;
+  int valueSpan      = static_cast<int>(d->m_SpanAngle * percent);
 
   QColor arcColor;
-  if (percent >= d->_dangerPercent) {
-    arcColor = NXThemeColor(d->_themeMode, StatusDanger);
-  } else if (percent >= d->_warningPercent) {
+  if (percent >= d->m_DangerPercent) {
+    arcColor = NXThemeColor(d->m_ThemeMode, StatusDanger);
+  } else if (percent >= d->m_WarningPercent) {
     arcColor = QColor(0xF7, 0x94, 0x0B);
   } else {
-    arcColor = NXThemeColor(d->_themeMode, PrimaryNormal);
+    arcColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
   }
 
   QPen valuePen;
@@ -189,17 +189,17 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
   valuePen.setCapStyle(Qt::RoundCap);
   valuePen.setColor(arcColor);
   painter.setPen(valuePen);
-  painter.drawArc(arcRect, d->_pStartAngle * 16, -valueSpan * 16);
+  painter.drawArc(arcRect, d->m_StartAngle * 16, -valueSpan * 16);
 
   qreal tickOuterRadius = radius - arcWidth - 4;
   qreal majorTickLength = 10;
   qreal minorTickLength = 5;
-  int totalTicks        = d->_pMajorTickCount * d->_pMinorTickCount;
+  int totalTicks        = d->m_MajorTickCount * d->m_MinorTickCount;
 
   for (int i = 0; i <= totalTicks; i++) {
-    qreal tickAngle = d->_pStartAngle - (d->_pSpanAngle * i / static_cast<qreal>(totalTicks));
+    qreal tickAngle = d->m_StartAngle - (d->m_SpanAngle * i / static_cast<qreal>(totalTicks));
     qreal rad       = qDegreesToRadians(tickAngle);
-    bool isMajor    = (i % d->_pMinorTickCount == 0);
+    bool isMajor    = (i % d->m_MinorTickCount == 0);
 
     qreal len = isMajor ? majorTickLength : minorTickLength;
     qreal x1  = tickOuterRadius * qCos(rad);
@@ -209,12 +209,12 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
 
     qreal tickPercent = i / static_cast<qreal>(totalTicks);
     QColor tickColor;
-    if (tickPercent >= d->_dangerPercent) {
-      tickColor = NXThemeColor(d->_themeMode, StatusDanger);
-    } else if (tickPercent >= d->_tickWarningPercent) {
+    if (tickPercent >= d->m_DangerPercent) {
+      tickColor = NXThemeColor(d->m_ThemeMode, StatusDanger);
+    } else if (tickPercent >= d->m_TickWarningPercent) {
       tickColor = QColor(0xF7, 0x94, 0x0B);
     } else {
-      tickColor = NXThemeColor(d->_themeMode, BasicText);
+      tickColor = NXThemeColor(d->m_ThemeMode, BasicText);
     }
 
     QPen tickPen;
@@ -224,8 +224,8 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
     painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
 
     if (isMajor) {
-      qreal tickValue   = d->_pMinimum + range * tickPercent;
-      QString tickLabel = QString::number(tickValue, 'f', d->_pDecimals);
+      qreal tickValue   = d->m_Minimum + range * tickPercent;
+      QString tickLabel = QString::number(tickValue, 'f', d->m_Decimals);
 
       QFont tickFont = font();
       tickFont.setPixelSize(10);
@@ -240,7 +240,7 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
     }
   }
 
-  qreal needleAngle      = d->_pStartAngle - d->_pSpanAngle * percent;
+  qreal needleAngle      = d->m_StartAngle - d->m_SpanAngle * percent;
   qreal needleRad        = qDegreesToRadians(needleAngle);
   qreal needleLength     = tickOuterRadius - majorTickLength - 20;
   qreal needleTailLength = 12;
@@ -259,30 +259,30 @@ void NXDashboardGauge::paintEvent(QPaintEvent *event)
   painter.setBrush(arcColor);
   painter.drawPath(needlePath);
 
-  painter.setBrush(NXThemeColor(d->_themeMode, BasicText));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicText));
   painter.drawEllipse(QPointF(0, 0), 6, 6);
-  painter.setBrush(NXThemeColor(d->_themeMode, WindowBase));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, WindowBase));
   painter.drawEllipse(QPointF(0, 0), 3, 3);
   painter.restore();
 
   QFont valueFont = font();
-  valueFont.setPixelSize(d->_pValuePixelSize);
+  valueFont.setPixelSize(d->m_ValuePixelSize);
   valueFont.setBold(true);
   painter.setFont(valueFont);
   painter.setPen(arcColor);
 
-  QString valueText = QString::number(displayValue, 'f', d->_pDecimals);
-  if (!d->_pUnit.isEmpty()) {
-    valueText += QStringLiteral(" ") + d->_pUnit;
+  QString valueText = QString::number(displayValue, 'f', d->m_Decimals);
+  if (!d->m_Unit.isEmpty()) {
+    valueText += QStringLiteral(" ") + d->m_Unit;
   }
   painter.drawText(QRectF(-80, 15, 160, 40), Qt::AlignCenter, valueText);
 
-  if (!d->_pTitle.isEmpty()) {
+  if (!d->m_Title.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(13);
     painter.setFont(titleFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
-    painter.drawText(QRectF(-80, 50, 160, 20), Qt::AlignCenter, d->_pTitle);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
+    painter.drawText(QRectF(-80, 50, 160, 20), Qt::AlignCenter, d->m_Title);
   }
 }
 

@@ -27,12 +27,12 @@ public:
   ~NXPushButtonPrivate();
 
 private:
-  bool _isPressed { false };
-  bool _hasIcon { false };
-  int _iconSize { 18 };
-  NXThemeType::ThemeMode _themeMode;
-  NXIconType::IconName _icon { NXIconType::None };
-  NXTextType::TextStyle _textStyle { NXTextType::NoStyle };
+  bool m_IsPressed { false };
+  bool m_HasIcon { false };
+  int m_IconSize { 18 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXIconType::IconName m_Icon { NXIconType::None };
+  NXTextType::TextStyle m_TextStyle { NXTextType::NoStyle };
 };
 
 #endif // NXPUSHBUTTONPRIVATE_H

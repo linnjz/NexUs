@@ -18,16 +18,16 @@ class NXQRCodePrivate : public QObject
   Q_PROPERTY_CREATE_D(int, QuietZone)
 
 public:
-  int _moduleCount { 0 };
-  int _ecLevel { 1 }; // 0=L, 1=M, 2=Q, 3=H
-  NXThemeType::ThemeMode _themeMode;
-  QString _text;
+  int m_ModuleCount { 0 };
+  int m_EcLevel { 1 }; // 0=L, 1=M, 2=Q, 3=H
+  NXThemeType::ThemeMode m_ThemeMode;
+  QString m_Text;
   explicit NXQRCodePrivate(QObject *parent = nullptr);
   ~NXQRCodePrivate();
 
-  void encode(const QString &text);
+  void encode(QString const &text);
 
-  QVector<QVector<bool>> _modules;
+  QVector<QVector<bool>> m_Modules;
 };
 
 #endif // NXQRCODEPRIVATE_H

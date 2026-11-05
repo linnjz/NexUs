@@ -18,22 +18,22 @@ public:
   ~NXSnackbarPrivate();
 
 private:
-  bool _isActionHover { false };
-  bool _isActionPressed { false };
-  bool _isClosing { false };
-  NXThemeType::ThemeMode _themeMode;
+  bool m_IsActionHover { false };
+  bool m_IsActionPressed { false };
+  bool m_IsClosing { false };
+  NXThemeType::ThemeMode m_ThemeMode;
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  int _shadowBorderWidth { 0 };
+  int m_ShadowBorderWidth { 0 };
 #else
-  int _shadowBorderWidth { 6 };
+  int m_ShadowBorderWidth { 6 };
 #endif
-  NXSnackbar::SnackbarType _snackbarType { NXSnackbar::Info };
-  int _baseBottomY { 0 };
-  int _centerX { 0 };
-  QRect _actionRect;
-  QString _text;
-  QString _actionText;
-  std::function<void()> _doClose;
+  NXSnackbar::SnackbarType m_SnackbarType { NXSnackbar::Info };
+  int m_BaseBottomY { 0 };
+  int m_CenterX { 0 };
+  QRect m_ActionRect;
+  QString m_Text;
+  QString m_ActionText;
+  std::function<void()> m_DoClose;
 };
 
 #endif // NXSTACKBARPRIVATE_H

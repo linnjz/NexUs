@@ -12,11 +12,11 @@ class NX_EXPORT NXPivot : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXPivot)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), TextNormalColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), TextFocusColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), TextPressedColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), IndicatorColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), ItemBackgroundColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), TextNormalColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), TextFocusColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), TextPressedColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), IndicatorColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), ItemBackgroundColor)
   Q_PROPERTY_CREATE_H(QPoint, OverlayTextOffsetFromCenterAnchor)
   Q_PROPERTY_CREATE_H(QSize, ItemFixedSize)
   Q_PROPERTY_CREATE_H(NXPivotType::DisplayMode, DisplayMode)
@@ -36,21 +36,21 @@ public:
   explicit NXPivot(QWidget *parent = nullptr);
   ~NXPivot();
 
-  void appendPivot(const QPixmap &pixmap);
-  void appendPivot(const QString &pivotTitle, const QPixmap &pixmap = {});
+  void appendPivot(QPixmap const &pixmap);
+  void appendPivot(QString const &pivotTitle, QPixmap const &pixmap = {});
 
-  void insertPivot(int index, const QPixmap &pixmap);
-  void insertPivot(int index, const QString &pivotTitle, const QPixmap &pixmap = {});
+  void insertPivot(int index, QPixmap const &pixmap);
+  void insertPivot(int index, QString const &pivotTitle, QPixmap const &pixmap = {});
 
   void removePivot(int index);
-  void removePivot(const QString &pivotTitle);
+  void removePivot(QString const &pivotTitle);
 
-  void setPivot(int index, const QPixmap &pixmap);
-  void setPivot(int index, const QString &pivotTitle, const QPixmap &pixmap = {});
+  void setPivot(int index, QPixmap const &pixmap);
+  void setPivot(int index, QString const &pivotTitle, QPixmap const &pixmap = {});
 
   void clearPivot();
   QStringList getPivotTitle() const;
-  void setCurrentTitle(const QString &pivotTitle);
+  void setCurrentTitle(QString const &pivotTitle);
 
   Q_SIGNAL void pivotChanged(int index);
   Q_SIGNAL void pivotInserted(int index);

@@ -1,10 +1,10 @@
-#include "NXSplitter.h"
+﻿#include "NXSplitter.h"
 
 #include "DeveloperComponents/NXSplitterHandle.h"
 #include "private/NXSplitterPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXSplitter, int, HandleWidth)
-Q_PROPERTY_CREATE_CPP(NXSplitter, int, GripLength)
+Q_PROPERTY_CREATE_CPP(NXSplitter, QPS_PAEMIT(int), HandleWidth)
+Q_PROPERTY_CREATE_CPP(NXSplitter, QPS_PAEMIT(int), GripLength)
 
 NXSplitter::NXSplitter(QWidget *parent)
     : QSplitter(parent)
@@ -12,9 +12,9 @@ NXSplitter::NXSplitter(QWidget *parent)
 {
   Q_D(NXSplitter);
   d->q_ptr         = this;
-  d->_pHandleWidth = 6;
-  d->_pGripLength  = 36;
-  setHandleWidth(d->_pHandleWidth);
+  d->m_HandleWidth = 6;
+  d->m_GripLength  = 36;
+  setHandleWidth(d->m_HandleWidth);
   setChildrenCollapsible(false);
   setStyleSheet(QStringLiteral("QSplitter{background-color:transparent;}"));
 }
@@ -29,10 +29,10 @@ NXSplitter::~NXSplitter()
 {
 }
 
-QSplitterHandle * NXSplitter::createHandle()
+QSplitterHandle *NXSplitter::createHandle()
 {
   Q_D(NXSplitter);
   NXSplitterHandle *handle = new NXSplitterHandle(orientation(), this);
-  handle->setGripLength(d->_pGripLength);
+  handle->setGripLength(d->m_GripLength);
   return handle;
 }

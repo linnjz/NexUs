@@ -18,7 +18,7 @@ public:
   ~NXListViewPrivate();
 
 private:
-  NXListViewStyle *_listViewStyle { nullptr };
+  NXListViewStyle *m_ListViewStyle { nullptr };
 };
 
 #endif // NXLISTVIEWPRIVATE_H

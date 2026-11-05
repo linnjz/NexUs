@@ -18,7 +18,7 @@ public:
   explicit NXSteps(QWidget *parent = nullptr);
   ~NXSteps();
 
-  void setStepTitles(const QStringList &titles);
+  void setStepTitles(QStringList const &titles);
   QStringList getStepTitles() const;
 
   void next();

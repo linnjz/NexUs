@@ -1,4 +1,4 @@
-#ifndef NXSPLITBUTTON_H
+﻿#ifndef NXSPLITBUTTON_H
 #define NXSPLITBUTTON_H
 
 #include <QWidget>
@@ -12,7 +12,7 @@ class NX_EXPORT NXSplitButton : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXSplitButton)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Text)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Text)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, NXIcon)
 

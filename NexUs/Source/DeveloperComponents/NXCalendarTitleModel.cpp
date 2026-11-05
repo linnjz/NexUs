@@ -9,12 +9,12 @@ NXCalendarTitleModel::~NXCalendarTitleModel()
 {
 }
 
-int NXCalendarTitleModel::rowCount(const QModelIndex &parent) const
+int NXCalendarTitleModel::rowCount(QModelIndex const &parent) const
 {
   return 7;
 }
 
-QVariant NXCalendarTitleModel::data(const QModelIndex &index, int role) const
+QVariant NXCalendarTitleModel::data(QModelIndex const &index, int role) const
 {
   if (role == Qt::UserRole) {
     switch (index.row()) {

@@ -28,15 +28,15 @@ public:
 
 private:
   friend class NXUploadArea;
-  bool _isDragOver { false };
-  bool _isHover { false };
-  bool _isPressed { false };
-  NXThemeType::ThemeMode _themeMode;
-  QString _mimeFilter;
-  QStringList _filePaths;
+  bool m_IsDragOver { false };
+  bool m_IsHover { false };
+  bool m_IsPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QString m_MimeFilter;
+  QStringList m_FilePaths;
   void _openFileDialog();
-  bool _validateFile(const QString &filePath, QString &reason) const;
-  void _addFiles(const QStringList &filePaths);
+  bool _validateFile(QString const &filePath, QString &reason) const;
+  void _addFiles(QStringList const &filePaths);
   void _removeFile(int index);
 };
 

@@ -25,7 +25,7 @@ public:
   explicit NXTimeline(QWidget *parent = nullptr);
   ~NXTimeline();
 
-  void addItem(const TimelineItem &item);
+  void addItem(TimelineItem const &item);
   void clearItems();
   int getItemCount() const;
 

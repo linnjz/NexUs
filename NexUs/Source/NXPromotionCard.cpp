@@ -9,21 +9,21 @@
 
 #include "NXTheme.h"
 #include "private/NXPromotionCardPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QPixmap), CardPixmap)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QString), CardTitle)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QString), PromotionTitle)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QString), SubTitle)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QColor), CardTitleColor)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QColor), PromotionTitleColor)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QColor), PromotionTitleBaseColor)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QColor), TitleColor)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, QS_SET_CREF(QColor), SubTitleColor)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, int, CardTitlePixelSize)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, int, PromotionTitlePixelSize)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, int, TitlePixelSize)
-Q_PROPERTY_CREATE_CPP(NXPromotionCard, int, SubTitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QPixmap), CardPixmap)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QString), CardTitle)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QString), PromotionTitle)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QString), SubTitle)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QColor), CardTitleColor)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QColor), PromotionTitleColor)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QColor), PromotionTitleBaseColor)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QColor), TitleColor)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_SCREF_PAEMIT(QColor), SubTitleColor)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_PAEMIT(int), CardTitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_PAEMIT(int), PromotionTitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_PAEMIT(int), TitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXPromotionCard, QPS_PAEMIT(int), SubTitlePixelSize)
 
 NXPromotionCard::NXPromotionCard(QWidget *parent)
     : QWidget { parent }
@@ -31,73 +31,73 @@ NXPromotionCard::NXPromotionCard(QWidget *parent)
 {
   Q_D(NXPromotionCard);
   d->q_ptr                       = this;
-  d->_pBorderRadius              = 5;
-  d->_pPressRadius               = 0;
-  d->_pHoverOpacity              = 0;
-  d->_pHorizontalCardPixmapRatio = 1;
-  d->_pVerticalCardPixmapRatio   = 1;
-  d->_pCardTitle                 = QStringLiteral("");
-  d->_pPromotionTitle            = QStringLiteral("");
-  d->_pTitle                     = QStringLiteral("");
-  d->_pSubTitle                  = QStringLiteral("");
-  d->_pCardTitleColor            = Qt::white;
-  d->_pPromotionTitleColor       = Qt::white;
-  d->_pTitleColor                = Qt::white;
-  d->_pSubTitleColor             = Qt::white;
-  d->_pPromotionTitleBaseColor   = QColor(0, 0, 0, 120);
-  d->_pCardTitlePixelSize        = 22;
-  d->_pPromotionTitlePixelSize   = 12;
-  d->_pTitlePixelSize            = 25;
-  d->_pSubTitlePixelSize         = 16;
+  d->m_BorderRadius              = 5;
+  d->m_PressRadius               = 0;
+  d->m_HoverOpacity              = 0;
+  d->m_HorizontalCardPixmapRatio = 1;
+  d->m_VerticalCardPixmapRatio   = 1;
+  d->m_CardTitle                 = QStringLiteral("");
+  d->m_PromotionTitle            = QStringLiteral("");
+  d->m_Title                     = QStringLiteral("");
+  d->m_SubTitle                  = QStringLiteral("");
+  d->m_CardTitleColor            = Qt::white;
+  d->m_PromotionTitleColor       = Qt::white;
+  d->m_TitleColor                = Qt::white;
+  d->m_SubTitleColor             = Qt::white;
+  d->m_PromotionTitleBaseColor   = QColor(0, 0, 0, 120);
+  d->m_CardTitlePixelSize        = 22;
+  d->m_PromotionTitlePixelSize   = 12;
+  d->m_TitlePixelSize            = 25;
+  d->m_SubTitlePixelSize         = 16;
   setMouseTracking(true);
   setObjectName("NXPromotionCard");
   setStyleSheet(QStringLiteral("#NXPromotionCard{background-color:transparent;}"));
-  d->_hoverGradient = new QRadialGradient();
-  d->_hoverGradient->setRadius(170);
-  d->_hoverGradient->setColorAt(0, QColor(0xFF, 0xFF, 0xFF, 40));
-  d->_hoverGradient->setColorAt(1, QColor(0xFF, 0xFF, 0xFF, 0));
+  d->m_HoverGradient = new QRadialGradient();
+  d->m_HoverGradient->setRadius(170);
+  d->m_HoverGradient->setColorAt(0, QColor(0xFF, 0xFF, 0xFF, 40));
+  d->m_HoverGradient->setColorAt(1, QColor(0xFF, 0xFF, 0xFF, 0));
 
-  d->_pressGradient = new QRadialGradient();
-  d->_pressGradient->setRadius(170);
-  d->_pressGradient->setColorAt(0, QColor(0xFF, 0xFF, 0xFF, 0));
-  d->_pressGradient->setColorAt(1, QColor(0xFF, 0xFF, 0xFF, 40));
+  d->m_PressGradient = new QRadialGradient();
+  d->m_PressGradient->setRadius(170);
+  d->m_PressGradient->setColorAt(0, QColor(0xFF, 0xFF, 0xFF, 0));
+  d->m_PressGradient->setColorAt(1, QColor(0xFF, 0xFF, 0xFF, 40));
 }
 
 NXPromotionCard::~NXPromotionCard()
 {
-  Q_D(const NXPromotionCard);
-  delete d->_hoverGradient;
-  delete d->_pressGradient;
+  Q_CONST_D(NXPromotionCard);
+  delete d->m_HoverGradient;
+  delete d->m_PressGradient;
 }
 
 void NXPromotionCard::setHorizontalCardPixmapRatio(qreal pixmapRatio)
 {
   Q_D(NXPromotionCard);
   if (pixmapRatio > 0 && pixmapRatio <= 1) {
-    Q_EMIT pHorizontalCardPixmapRatioChanged();
-    d->_pHorizontalCardPixmapRatio = pixmapRatio;
+    Q_EMIT signalHorizontalCardPixmapRatioChanged();
+    d->m_HorizontalCardPixmapRatio = pixmapRatio;
   }
 }
 
-qreal NXPromotionCard::getHorizontalCardPixmapRatio() const
+qreal NXPromotionCard::getHorizontalCardPixmapRatio() const noexcept(std::is_nothrow_copy_constructible_v<qreal>)
 {
-  Q_D(const NXPromotionCard);
-  return d->_pHorizontalCardPixmapRatio;
+  Q_CONST_D(NXPromotionCard);
+  return d->m_HorizontalCardPixmapRatio;
 }
 
 void NXPromotionCard::setVerticalCardPixmapRatio(qreal pixmapRatio)
 {
   Q_D(NXPromotionCard);
   if (pixmapRatio > 0 && pixmapRatio <= 1) {
-    Q_EMIT pVerticalCardPixmapRatioChanged();
-    d->_pVerticalCardPixmapRatio = pixmapRatio;
+    Q_EMIT signalVerticalCardPixmapRatioChanged();
+    d->m_VerticalCardPixmapRatio = pixmapRatio;
   }
 }
 
-qreal NXPromotionCard::getVerticalCardPixmapRatio() const
+qreal NXPromotionCard::getVerticalCardPixmapRatio() const noexcept(std::is_nothrow_copy_constructible_v<qreal>)
 {
-  Q_D(const NXPromotionCard);
-  return d->_pVerticalCardPixmapRatio;
+  Q_CONST_D(NXPromotionCard);
+  return d->m_VerticalCardPixmapRatio;
 }
 
 bool NXPromotionCard::event(QEvent *event)
@@ -106,12 +106,12 @@ bool NXPromotionCard::event(QEvent *event)
   switch (event->type()) {
   case QEvent::MouseButtonPress : {
     QMouseEvent *mouseEvent              = dynamic_cast<QMouseEvent *>(event);
-    QPropertyAnimation *opacityAnimation = new QPropertyAnimation(d, "pPressOpacity");
-    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    QPropertyAnimation *opacityAnimation = new QPropertyAnimation(d, "PressOpacity");
+    connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       update();
     });
     connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
-      d->_isPressAnimationFinished = true;
+      d->m_IsPressAnimationFinished = true;
     });
     opacityAnimation->setDuration(300);
     opacityAnimation->setEasingCurve(QEasingCurve::InQuad);
@@ -119,18 +119,18 @@ bool NXPromotionCard::event(QEvent *event)
     opacityAnimation->setEndValue(0);
     opacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-    QPropertyAnimation *pressAnimation = new QPropertyAnimation(d, "pPressRadius");
-    connect(pressAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      d->_pressGradient->setRadius(value.toReal());
+    QPropertyAnimation *pressAnimation = new QPropertyAnimation(d, "PressRadius");
+    connect(pressAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      d->m_PressGradient->setRadius(value.toReal());
     });
     pressAnimation->setDuration(300);
     pressAnimation->setEasingCurve(QEasingCurve::InQuad);
     pressAnimation->setStartValue(30);
     pressAnimation->setEndValue(d->_getLongestDistance(mouseEvent->pos()) * 1.8);
     pressAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-    d->_isPressAnimationFinished = false;
-    d->_pressGradient->setFocalPoint(mouseEvent->pos());
-    d->_pressGradient->setCenter(mouseEvent->pos());
+    d->m_IsPressAnimationFinished = false;
+    d->m_PressGradient->setFocalPoint(mouseEvent->pos());
+    d->m_PressGradient->setCenter(mouseEvent->pos());
     //点击后隐藏Hover效果
     d->_startHoverOpacityAnimation(false);
     break;
@@ -141,12 +141,12 @@ bool NXPromotionCard::event(QEvent *event)
   }
   case QEvent::MouseMove : {
     QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(event);
-    if (d->_pHoverOpacity < 1 && d->_isPressAnimationFinished) {
+    if (d->m_HoverOpacity < 1 && d->m_IsPressAnimationFinished) {
       d->_startHoverOpacityAnimation(true);
     }
-    if (d->_isPressAnimationFinished) {
-      d->_hoverGradient->setCenter(mouseEvent->pos());
-      d->_hoverGradient->setFocalPoint(mouseEvent->pos());
+    if (d->m_IsPressAnimationFinished) {
+      d->m_HoverGradient->setCenter(mouseEvent->pos());
+      d->m_HoverGradient->setFocalPoint(mouseEvent->pos());
     }
     update();
     break;
@@ -174,73 +174,73 @@ void NXPromotionCard::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
   painter.setPen(Qt::NoPen);
   //阴影绘制
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
-  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
+  QRect foregroundRect(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, width() - 2 * d->m_ShadowBorderWidth, height() - 2 * d->m_ShadowBorderWidth);
   QPainterPath path;
-  path.addRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  path.addRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
   painter.setClipPath(path);
   //背景图片绘制
-  if (!d->_pCardPixmap.isNull()) {
+  if (!d->m_CardPixmap.isNull()) {
     //源区域计算
-    QRect pixSourceRect    = d->_pCardPixmap.rect();
-    qreal horizontalOffset = d->_pCardPixmap.width() * (1 - d->_pHorizontalCardPixmapRatio) / 2;
-    qreal verticalOffset   = d->_pCardPixmap.height() * (1 - d->_pVerticalCardPixmapRatio) / 2;
+    QRect pixSourceRect    = d->m_CardPixmap.rect();
+    qreal horizontalOffset = d->m_CardPixmap.width() * (1 - d->m_HorizontalCardPixmapRatio) / 2;
+    qreal verticalOffset   = d->m_CardPixmap.height() * (1 - d->m_VerticalCardPixmapRatio) / 2;
     pixSourceRect.adjust(horizontalOffset, verticalOffset, -horizontalOffset, -verticalOffset);
-    painter.drawPixmap(foregroundRect, d->_pCardPixmap, pixSourceRect);
+    painter.drawPixmap(foregroundRect, d->m_CardPixmap, pixSourceRect);
   }
   //文字绘制
   painter.save();
   QFont font = painter.font();
   //卡片标题
   font.setWeight(QFont::Bold);
-  font.setPixelSize(d->_pCardTitlePixelSize);
+  font.setPixelSize(d->m_CardTitlePixelSize);
   painter.setFont(font);
-  painter.setPen(d->_pCardTitleColor);
-  painter.drawText(QRect(25, 25, foregroundRect.width() - 25, foregroundRect.height()), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, d->_pCardTitle);
+  painter.setPen(d->m_CardTitleColor);
+  painter.drawText(QRect(25, 25, foregroundRect.width() - 25, foregroundRect.height()), Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, d->m_CardTitle);
   //标题
   font.setWeight(QFont::Bold);
-  font.setPixelSize(d->_pTitlePixelSize);
+  font.setPixelSize(d->m_TitlePixelSize);
   painter.setFont(font);
-  painter.setPen(d->_pTitleColor);
+  painter.setPen(d->m_TitleColor);
   int titleTextHeight = painter.fontMetrics().height();
   QRect titleRect(25, (height() - titleTextHeight) / 2, foregroundRect.width() - 25, titleTextHeight);
-  painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignBottom | Qt::TextSingleLine, d->_pTitle);
+  painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignBottom | Qt::TextSingleLine, d->m_Title);
   //推广标题
-  if (!d->_pPromotionTitle.isEmpty()) {
+  if (!d->m_PromotionTitle.isEmpty()) {
     font.setWeight(QFont::Normal);
-    font.setPixelSize(d->_pPromotionTitlePixelSize);
+    font.setPixelSize(d->m_PromotionTitlePixelSize);
     painter.setFont(font);
-    int promotionTitleTextWidth  = painter.fontMetrics().horizontalAdvance(d->_pPromotionTitle);
+    int promotionTitleTextWidth  = painter.fontMetrics().horizontalAdvance(d->m_PromotionTitle);
     int promotionTitleTextHeight = painter.fontMetrics().height();
     QRect promotionTitleTextRect(32, titleRect.top() - promotionTitleTextHeight - 5, foregroundRect.width() / 2 - 25, promotionTitleTextHeight);
     //背景绘制
     painter.setPen(Qt::NoPen);
-    painter.setBrush(d->_pPromotionTitleBaseColor);
+    painter.setBrush(d->m_PromotionTitleBaseColor);
     painter.drawRoundedRect(
         QRect(25, promotionTitleTextRect.top() - 2, promotionTitleTextWidth + 14, promotionTitleTextHeight + 4), 8, 8);
     //文字绘制
-    painter.setPen(d->_pPromotionTitleColor);
-    painter.drawText(promotionTitleTextRect, Qt::AlignLeft | Qt::AlignBottom | Qt::TextSingleLine, d->_pPromotionTitle);
+    painter.setPen(d->m_PromotionTitleColor);
+    painter.drawText(promotionTitleTextRect, Qt::AlignLeft | Qt::AlignBottom | Qt::TextSingleLine, d->m_PromotionTitle);
   }
   //副标题
   font.setWeight(QFont::Medium);
-  font.setPixelSize(d->_pSubTitlePixelSize);
+  font.setPixelSize(d->m_SubTitlePixelSize);
   painter.setFont(font);
-  painter.setPen(d->_pSubTitleColor);
-  painter.drawText(QRect(25, titleRect.bottom(), foregroundRect.width() / 2 - 25, height() / 2), Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, d->_pSubTitle);
+  painter.setPen(d->m_SubTitleColor);
+  painter.drawText(QRect(25, titleRect.bottom(), foregroundRect.width() / 2 - 25, height() / 2), Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, d->m_SubTitle);
 
   painter.restore();
   //效果阴影绘制
-  if (d->_isPressAnimationFinished) {
+  if (d->m_IsPressAnimationFinished) {
     //覆盖阴影绘制
-    painter.setOpacity(d->_pHoverOpacity);
-    painter.setBrush(*d->_hoverGradient);
-    painter.drawEllipse(d->_hoverGradient->center(), d->_hoverGradient->radius(), d->_hoverGradient->radius());
+    painter.setOpacity(d->m_HoverOpacity);
+    painter.setBrush(*d->m_HoverGradient);
+    painter.drawEllipse(d->m_HoverGradient->center(), d->m_HoverGradient->radius(), d->m_HoverGradient->radius());
   } else {
     //点击阴影绘制
-    painter.setOpacity(d->_pPressOpacity);
-    painter.setBrush(*d->_pressGradient);
-    painter.drawEllipse(d->_pressGradient->center(), d->_pPressRadius, d->_pPressRadius / 1.1);
+    painter.setOpacity(d->m_PressOpacity);
+    painter.setBrush(*d->m_PressGradient);
+    painter.drawEllipse(d->m_PressGradient->center(), d->m_PressRadius, d->m_PressRadius / 1.1);
   }
   painter.restore();
 }

@@ -98,8 +98,7 @@ T_NewComponents2::T_NewComponents2(QWidget *parent)
   gaugeSlider->setFixedWidth(260);
   NXText *gaugeValueLabel = new NXText(QStringLiteral("80"), this);
   gaugeValueLabel->setTextPixelSize(12);
-  connect(gaugeSlider, &NXSlider::valueChanged, this, [=](int v)
-  {
+  connect(gaugeSlider, &NXSlider::valueChanged, this, [=](int v) {
     _gauge->setValue(v);
     gaugeValueLabel->setText(QString::number(v));
   });
@@ -133,55 +132,33 @@ T_NewComponents2::T_NewComponents2(QWidget *parent)
   _terminal->appendSuccess(QStringLiteral("NXTerminalWidget 已启动"));
   _terminal->appendOutput(QStringLiteral("输入 help 查看可用命令，输入 clear 清屏。"));
 
-  connect(_terminal, &NXTerminalWidget::commandSubmitted, this, [=](const QString &cmd)
-  {
-    if (cmd == QStringLiteral("help"))
-    {
+  connect(_terminal, &NXTerminalWidget::commandSubmitted, this, [=](QString const &cmd) {
+    if (cmd == QStringLiteral("help")) {
       _terminal->appendOutput(QStringLiteral("可用命令: help, clear, version, echo <text>, gauge <value>"));
-    }
-    else if (cmd == QStringLiteral("clear"))
-    {
+    } else if (cmd == QStringLiteral("clear")) {
       _terminal->clear();
-    }
-    else if (cmd == QStringLiteral("version"))
-    {
+    } else if (cmd == QStringLiteral("version")) {
       _terminal->appendOutput(QString(QStringLiteral("NexUs %1")).arg(QStringLiteral("1.0.0")));
-    }
-    else if (cmd.startsWith(QStringLiteral("echo ")))
-    {
+    } else if (cmd.startsWith(QStringLiteral("echo "))) {
       _terminal->appendOutput(cmd.mid(5));
-    }
-    else if (cmd.startsWith(QStringLiteral("gauge ")))
-    {
+    } else if (cmd.startsWith(QStringLiteral("gauge "))) {
       bool ok;
       double val = cmd.mid(6).toDouble(&ok);
-      if (ok)
-      {
+      if (ok) {
         qreal clamped = qBound(_gauge->getMinimum(), val, _gauge->getMaximum());
         _gauge->setValue(clamped);
         gaugeSlider->setValue(static_cast<int>(clamped));
-        if (val < _gauge->getMinimum())
-        {
-          _terminal->appendOutput(QString(QStringLiteral("值 %1 低于最小值，已设置为 %2")).arg(val).arg(clamped),
-                                  QColor(0xF7, 0x94, 0x0B));
-        }
-        else if (val > _gauge->getMaximum())
-        {
-          _terminal->appendOutput(QString(QStringLiteral("值 %1 超过最大值，已设置为 %2")).arg(val).arg(clamped),
-                                  QColor(0xF7, 0x94, 0x0B));
-        }
-        else
-        {
+        if (val < _gauge->getMinimum()) {
+          _terminal->appendOutput(QString(QStringLiteral("值 %1 低于最小值，已设置为 %2")).arg(val).arg(clamped), QColor(0xF7, 0x94, 0x0B));
+        } else if (val > _gauge->getMaximum()) {
+          _terminal->appendOutput(QString(QStringLiteral("值 %1 超过最大值，已设置为 %2")).arg(val).arg(clamped), QColor(0xF7, 0x94, 0x0B));
+        } else {
           _terminal->appendSuccess(QString(QStringLiteral("仪表盘值已设置为 %1")).arg(clamped));
         }
-      }
-      else
-      {
+      } else {
         _terminal->appendError(QStringLiteral("无效数值"));
       }
-    }
-    else
-    {
+    } else {
       _terminal->appendError(QString(QStringLiteral("未知命令: %1")).arg(cmd));
     }
   });

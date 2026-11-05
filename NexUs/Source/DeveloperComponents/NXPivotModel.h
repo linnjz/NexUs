@@ -20,29 +20,29 @@ public:
   explicit NXPivotModel(QObject *parent = nullptr);
   ~NXPivotModel() override;
 
-  void appendPivot(const QPixmap &pixmap);
-  void appendPivot(const QString &text, const QPixmap &pixmap = {});
+  void appendPivot(QPixmap const &pixmap);
+  void appendPivot(QString const &text, QPixmap const &pixmap = {});
 
-  void insertPivot(int index, const QPixmap &pixmap);
-  void insertPivot(int index, const QString &text, const QPixmap &pixmap = {});
+  void insertPivot(int index, QPixmap const &pixmap);
+  void insertPivot(int index, QString const &text, QPixmap const &pixmap = {});
 
   void removePivot(int index);
-  void removePivot(const QString &text);
+  void removePivot(QString const &text);
 
-  void setPivot(int index, const QPixmap &pixmap);
-  void setPivot(int index, const QString &text, const QPixmap &pixmap = {});
+  void setPivot(int index, QPixmap const &pixmap);
+  void setPivot(int index, QString const &text, QPixmap const &pixmap = {});
 
   void clearPivot();
 
   int getPivotListCount() const;
-  const QList<PivotItem> &getPivotList() const;
-  int getPivotIndex(const QString &text) const;
+  QList<PivotItem> const &getPivotList() const;
+  int getPivotIndex(QString const &text) const;
 
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  QVariant data(const QModelIndex &index, int role) const override;
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  QVariant data(QModelIndex const &index, int role) const override;
 
 private:
-  QList<PivotItem> _pivotList;
+  QList<PivotItem> m_PivotList;
 };
 
 Q_DECLARE_METATYPE(NXPivotModel::PivotItem);

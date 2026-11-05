@@ -26,15 +26,15 @@ public:
   NXRibbonTabBar *activeTabBar() const;
 
 private:
-  bool _isCollapsed { false };
-  bool _isPinned { false };
-  NXThemeType::ThemeMode _themeMode;
-  int _animationDuration { 200 };
-  QPointer<NXRibbonTabBar> _externalTabBar;
-  QStackedWidget *_stack { nullptr };
-  NXRibbonTabBar *_internalTabBar { nullptr };
-  QVariantAnimation *_heightAnim { nullptr };
-  QTimer *_autoHideTimer { nullptr };
+  bool m_IsCollapsed { false };
+  bool m_IsPinned { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_AnimationDuration { 200 };
+  QPointer<NXRibbonTabBar> m_ExternalTabBar;
+  QStackedWidget *m_Stack { nullptr };
+  NXRibbonTabBar *m_InternalTabBar { nullptr };
+  QVariantAnimation *m_HeightAnim { nullptr };
+  QTimer *m_AutoHideTimer { nullptr };
 };
 
 #endif // NXRIBBONBARPRIVATE_H

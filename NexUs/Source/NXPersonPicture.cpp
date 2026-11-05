@@ -5,20 +5,20 @@
 
 #include "NXTheme.h"
 #include "private/NXPersonPicturePrivate.h"
-Q_PROPERTY_CREATE_CPP(NXPersonPicture, QS_SET_CREF(QString), DisplayName)
-Q_PROPERTY_CREATE_CPP(NXPersonPicture, QS_SET_CREF(QPixmap), Picture)
+Q_PROPERTY_CREATE_CPP(NXPersonPicture, QPS_SCREF_PAEMIT(QString), DisplayName)
+Q_PROPERTY_CREATE_CPP(NXPersonPicture, QPS_SCREF_PAEMIT(QPixmap), Picture)
 
 void NXPersonPicture::setPictureSize(int PictureSize)
 {
   Q_D(NXPersonPicture);
-  d->_pPictureSize = PictureSize;
+  d->m_PictureSize = PictureSize;
   setFixedSize(PictureSize, PictureSize);
-  Q_EMIT pPictureSizeChanged();
+  Q_EMIT signalPictureSizeChanged();
 }
 
-int NXPersonPicture::getPictureSize() const
+int NXPersonPicture::getPictureSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  return d_ptr->_pPictureSize;
+  return d_ptr->m_PictureSize;
 }
 
 NXPersonPicture::NXPersonPicture(QWidget *parent)
@@ -27,12 +27,12 @@ NXPersonPicture::NXPersonPicture(QWidget *parent)
 {
   Q_D(NXPersonPicture);
   d->q_ptr         = this;
-  d->_pPictureSize = 40;
-  setFixedSize(d->_pPictureSize, d->_pPictureSize);
+  d->m_PictureSize = 40;
+  setFixedSize(d->m_PictureSize, d->m_PictureSize);
   setObjectName("NXPersonPicture");
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -43,7 +43,7 @@ NXPersonPicture::~NXPersonPicture()
 
 QSize NXPersonPicture::sizeHint() const
 {
-  int size = d_ptr->_pPictureSize;
+  int size = d_ptr->m_PictureSize;
   return QSize(size, size);
 }
 
@@ -54,13 +54,13 @@ void NXPersonPicture::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  int size          = d->_pPictureSize;
+  int size          = d->m_PictureSize;
   qreal borderWidth = 2.0;
   QRectF circleRect(borderWidth / 2, borderWidth / 2, size - borderWidth, size - borderWidth);
   QPointF center = circleRect.center();
   qreal radius   = circleRect.width() / 2;
 
-  if (!d->_pPicture.isNull()) {
+  if (!d->m_Picture.isNull()) {
     // Draw circular-clipped pixmap
     painter.save();
     QPainterPath clipPath;
@@ -68,18 +68,18 @@ void NXPersonPicture::paintEvent(QPaintEvent *event)
     painter.setClipPath(clipPath);
     painter.drawPixmap(
         circleRect.toRect(),
-        d->_pPicture.scaled(circleRect.size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+        d->m_Picture.scaled(circleRect.size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
     painter.restore();
-  } else if (!d->_pDisplayName.isEmpty()) {
+  } else if (!d->m_DisplayName.isEmpty()) {
     // Draw circle with PrimaryNormal background and white initials
     painter.save();
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(d->_themeMode, PrimaryNormal));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
     painter.drawEllipse(center, radius, radius);
     painter.restore();
 
     painter.save();
-    QString initials = d->_pDisplayName.left(2);
+    QString initials = d->m_DisplayName.left(2);
     QFont font       = this->font();
     font.setPixelSize(size / 3);
     font.setWeight(QFont::Bold);
@@ -91,7 +91,7 @@ void NXPersonPicture::paintEvent(QPaintEvent *event)
     // Draw circle with BasicBase background and user icon
     painter.save();
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBase));
     painter.drawEllipse(center, radius, radius);
     painter.restore();
 
@@ -99,14 +99,14 @@ void NXPersonPicture::paintEvent(QPaintEvent *event)
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(size / 3);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     painter.drawText(circleRect.toRect(), Qt::AlignCenter, QChar((unsigned short) NXIconType::User));
     painter.restore();
   }
 
   // Draw 2px circular border
   painter.save();
-  painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), borderWidth));
+  painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), borderWidth));
   painter.setBrush(Qt::NoBrush);
   painter.drawEllipse(center, radius, radius);
   painter.restore();

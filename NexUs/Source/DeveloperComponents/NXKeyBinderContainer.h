@@ -9,7 +9,7 @@ class NXKeyBinder;
 class NXKeyBinderContainer : public QWidget
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), BinderKeyText)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), BinderKeyText)
   Q_PRIVATE_CREATE(quint32, NativeVirtualBinderKey)
 
 public:
@@ -25,10 +25,10 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  quint32 _historyNativeVirtualBinderKey { 0 };
-  NXThemeType::ThemeMode _themeMode;
-  QString _historyBinderKeyText;
-  NXKeyBinder *_keyBinder { nullptr };
+  quint32 m_HistoryNativeVirtualBinderKey { 0 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QString m_HistoryBinderKeyText;
+  NXKeyBinder *m_KeyBinder { nullptr };
 };
 
 #endif //NEXUS_SRC_DEVELOPERCOMPONENTS_NXKEYBINDERCONTAINER_H_

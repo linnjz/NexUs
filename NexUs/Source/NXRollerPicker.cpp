@@ -8,7 +8,7 @@
 #include "NXTheme.h"
 #include "private/NXRollerPickerPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXRollerPicker, int, BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXRollerPicker, QPS_PAEMIT(int), BorderRadius)
 
 NXRollerPicker::NXRollerPicker(QWidget *parent)
     : QPushButton { parent }
@@ -16,7 +16,7 @@ NXRollerPicker::NXRollerPicker(QWidget *parent)
 {
   Q_D(NXRollerPicker);
   d->q_ptr          = this;
-  d->_pBorderRadius = 3;
+  d->m_BorderRadius = 3;
   setMouseTracking(true);
   setFixedSize(90, 30);
   setObjectName("NXRollerPicker");
@@ -25,20 +25,20 @@ NXRollerPicker::NXRollerPicker(QWidget *parent)
   font.setPixelSize(nxApp->getFontPixelSize() + 3);
   setFont(font);
 
-  d->_rollerPickerContainer = new NXRollerPickerContainer(this);
-  d->_rollerPickerContainer->resize(90, d->_pickerRollerHeight + d->_rollerPickerContainer->getButtonAreaHeight());
-  d->_rollerPickerContainer->hide();
+  d->m_RollerPickerContainer = new NXRollerPickerContainer(this);
+  d->m_RollerPickerContainer->resize(90, d->m_PickerRollerHeight + d->m_RollerPickerContainer->getButtonAreaHeight());
+  d->m_RollerPickerContainer->hide();
   connect(this, &QPushButton::clicked, d, &NXRollerPickerPrivate::onRollerPickerClicked);
-  connect(d->_rollerPickerContainer, &NXRollerPickerContainer::overButtonClicked, d, &NXRollerPickerPrivate::onOverButtonClicked);
-  connect(d->_rollerPickerContainer, &NXRollerPickerContainer::cancelButtonClicked, d, &NXRollerPickerPrivate::onCancelButtonClicked);
+  connect(d->m_RollerPickerContainer, &NXRollerPickerContainer::overButtonClicked, d, &NXRollerPickerPrivate::onOverButtonClicked);
+  connect(d->m_RollerPickerContainer, &NXRollerPickerContainer::cancelButtonClicked, d, &NXRollerPickerPrivate::onCancelButtonClicked);
 
-  d->_containerLayout = new QHBoxLayout(d->_rollerPickerContainer);
-  d->_containerLayout->setSpacing(0);
-  d->_containerLayout->setContentsMargins(0, 0, 0, 0);
+  d->m_ContainerLayout = new QHBoxLayout(d->m_RollerPickerContainer);
+  d->m_ContainerLayout->setSpacing(0);
+  d->m_ContainerLayout->setContentsMargins(0, 0, 0, 0);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
@@ -46,7 +46,7 @@ NXRollerPicker::~NXRollerPicker()
 {
 }
 
-void NXRollerPicker::addRoller(const QStringList &itemList, bool isEnableLoop)
+void NXRollerPicker::addRoller(QStringList const &itemList, bool isEnableLoop)
 {
   Q_D(NXRollerPicker);
   if (itemList.isEmpty()) {
@@ -58,84 +58,84 @@ void NXRollerPicker::addRoller(const QStringList &itemList, bool isEnableLoop)
   roller->setMaxVisibleItems(7);
   roller->setIsEnableLoop(isEnableLoop);
   roller->setItemHeight(35);
-  roller->setFixedHeight(d->_pickerRollerHeight);
+  roller->setFixedHeight(d->m_PickerRollerHeight);
   connect(roller, &NXRoller::currentDataChanged, this, [=]() {
     Q_EMIT currentDataSelectionChanged(getCurrentData());
   });
-  d->_rollerPickerContainer->_rollerList.append(roller);
-  d->_containerLayout->addWidget(roller);
+  d->m_RollerPickerContainer->m_RollerList.append(roller);
+  d->m_ContainerLayout->addWidget(roller);
   setFixedWidth(d->_getRollerTotalWidth());
 }
 
 void NXRollerPicker::removeRoller(int index)
 {
   Q_D(NXRollerPicker);
-  if (index >= d->_rollerPickerContainer->_rollerList.count()) {
+  if (index >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return;
   }
-  auto roller = d->_rollerPickerContainer->_rollerList[index];
-  d->_rollerPickerContainer->_rollerList.removeAt(index);
-  d->_containerLayout->removeWidget(roller);
+  auto roller = d->m_RollerPickerContainer->m_RollerList[index];
+  d->m_RollerPickerContainer->m_RollerList.removeAt(index);
+  d->m_ContainerLayout->removeWidget(roller);
   roller->deleteLater();
   setFixedWidth(d->_getRollerTotalWidth());
 }
 
-void NXRollerPicker::setRollerItemList(int index, const QStringList &itemList)
+void NXRollerPicker::setRollerItemList(int index, QStringList const &itemList)
 {
   Q_D(NXRollerPicker);
-  if (index >= d->_rollerPickerContainer->_rollerList.count()) {
+  if (index >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return;
   }
-  auto roller = d->_rollerPickerContainer->_rollerList[index];
+  auto roller = d->m_RollerPickerContainer->m_RollerList[index];
   roller->setItemList(itemList);
 }
 
 void NXRollerPicker::setRollerWidth(int index, int width)
 {
   Q_D(NXRollerPicker);
-  if (index >= d->_rollerPickerContainer->_rollerList.count()) {
+  if (index >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return;
   }
-  auto roller = d->_rollerPickerContainer->_rollerList[index];
+  auto roller = d->m_RollerPickerContainer->m_RollerList[index];
   roller->setFixedWidth(width);
   setFixedWidth(d->_getRollerTotalWidth());
 }
 
-void NXRollerPicker::setCurrentData(int index, const QString &data)
+void NXRollerPicker::setCurrentData(int index, QString const &data)
 {
   Q_D(NXRollerPicker);
-  if (index >= d->_rollerPickerContainer->_rollerList.count()) {
+  if (index >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return;
   }
-  d->_rollerPickerContainer->_rollerList[index]->setCurrentData(data);
+  d->m_RollerPickerContainer->m_RollerList[index]->setCurrentData(data);
 }
 
-void NXRollerPicker::setCurrentData(const QStringList &dataList)
+void NXRollerPicker::setCurrentData(QStringList const &dataList)
 {
   Q_D(NXRollerPicker);
-  for (int i = 0; i < d->_rollerPickerContainer->_rollerList.count(); i++) {
+  for (int i = 0; i < d->m_RollerPickerContainer->m_RollerList.count(); i++) {
     if (dataList.count() <= i) {
       return;
     }
-    auto roller = d->_rollerPickerContainer->_rollerList[i];
+    auto roller = d->m_RollerPickerContainer->m_RollerList[i];
     roller->setCurrentData(dataList[i]);
   }
 }
 
 QString NXRollerPicker::getCurrentData(int index) const
 {
-  Q_D(const NXRollerPicker);
-  if (index >= d->_rollerPickerContainer->_rollerList.count()) {
+  Q_CONST_D(NXRollerPicker);
+  if (index >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return {};
   }
-  return d->_rollerPickerContainer->_rollerList[index]->getCurrentData();
+  return d->m_RollerPickerContainer->m_RollerList[index]->getCurrentData();
 }
 
 QStringList NXRollerPicker::getCurrentData() const
 {
-  Q_D(const NXRollerPicker);
+  Q_CONST_D(NXRollerPicker);
   QStringList dataList;
-  for (auto roller : d->_rollerPickerContainer->_rollerList) {
+  for (auto roller : d->m_RollerPickerContainer->m_RollerList) {
     dataList.append(roller->getCurrentData());
   }
   return dataList;
@@ -144,38 +144,38 @@ QStringList NXRollerPicker::getCurrentData() const
 void NXRollerPicker::setCurrentIndex(int rollerIndex, int index)
 {
   Q_D(NXRollerPicker);
-  if (rollerIndex >= d->_rollerPickerContainer->_rollerList.count()) {
+  if (rollerIndex >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return;
   }
-  d->_rollerPickerContainer->_rollerList[rollerIndex]->setCurrentIndex(index);
+  d->m_RollerPickerContainer->m_RollerList[rollerIndex]->setCurrentIndex(index);
 }
 
-void NXRollerPicker::setCurrentIndex(const QList<int> &indexList)
+void NXRollerPicker::setCurrentIndex(QList<int> const &indexList)
 {
   Q_D(NXRollerPicker);
-  for (int i = 0; i < d->_rollerPickerContainer->_rollerList.count(); i++) {
+  for (int i = 0; i < d->m_RollerPickerContainer->m_RollerList.count(); i++) {
     if (indexList.count() <= i) {
       return;
     }
-    auto roller = d->_rollerPickerContainer->_rollerList[i];
+    auto roller = d->m_RollerPickerContainer->m_RollerList[i];
     roller->setCurrentIndex(indexList[i]);
   }
 }
 
 int NXRollerPicker::getCurrentIndex(int rollerIndex) const
 {
-  Q_D(const NXRollerPicker);
-  if (rollerIndex >= d->_rollerPickerContainer->_rollerList.count()) {
+  Q_CONST_D(NXRollerPicker);
+  if (rollerIndex >= d->m_RollerPickerContainer->m_RollerList.count()) {
     return -1;
   }
-  return d->_rollerPickerContainer->_rollerList[rollerIndex]->getCurrentIndex();
+  return d->m_RollerPickerContainer->m_RollerList[rollerIndex]->getCurrentIndex();
 }
 
 QList<int> NXRollerPicker::getCurrentIndex() const
 {
-  Q_D(const NXRollerPicker);
+  Q_CONST_D(NXRollerPicker);
   QList<int> currentIndexList;
-  for (auto roller : d->_rollerPickerContainer->_rollerList) {
+  for (auto roller : d->m_RollerPickerContainer->m_RollerList) {
     currentIndexList.append(roller->getCurrentIndex());
   }
   return currentIndexList;
@@ -190,20 +190,20 @@ void NXRollerPicker::paintEvent(QPaintEvent *event)
   // 边框和背景绘制
   QRect baseRect = rect();
   baseRect.adjust(1, 1, -1, -1);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-  painter.setBrush(underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase));
-  painter.drawRoundedRect(baseRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
+  painter.setBrush(underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase));
+  painter.drawRoundedRect(baseRect, d->m_BorderRadius, d->m_BorderRadius);
 
   // Roller内容绘制
   int rollerXOffset = 0;
-  for (int i = 0; i < d->_rollerPickerContainer->_rollerList.count(); i++) {
-    auto roller = d->_rollerPickerContainer->_rollerList[i];
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  for (int i = 0; i < d->m_RollerPickerContainer->m_RollerList.count(); i++) {
+    auto roller = d->m_RollerPickerContainer->m_RollerList[i];
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     int rollerWidth = roller->width();
     painter.drawText(QRect(rollerXOffset, baseRect.y(), rollerWidth, baseRect.height()), Qt::AlignCenter, roller->getCurrentData());
     rollerXOffset += rollerWidth;
-    if (i != d->_rollerPickerContainer->_rollerList.count() - 1) {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
+    if (i != d->m_RollerPickerContainer->m_RollerList.count() - 1) {
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
       painter.drawLine(rollerXOffset, 0, rollerXOffset, baseRect.bottom());
     }
   }

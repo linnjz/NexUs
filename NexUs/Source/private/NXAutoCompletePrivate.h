@@ -27,25 +27,25 @@ public:
   ~NXAutoCompletePrivate();
 
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
-  Q_SLOT void onTextEdited(const QString &text);
-  Q_SLOT void onItemClicked(const QModelIndex &index);
+  Q_SLOT void onTextEdited(QString const &text);
+  Q_SLOT void onItemClicked(QModelIndex const &index);
 
 private:
-  bool _isAllowHidePopup { false };
-  bool _isPopupVisible { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXAutoComplete::MatchMode _matchMode { NXAutoComplete::Contains };
-  QStringList _completions;
-  NXLineEdit *_lineEdit { nullptr };
-  NXAutoCompleteContainer *_popup { nullptr };
-  NXBaseListView *_listView { nullptr };
-  QVBoxLayout *_popupLayout { nullptr };
-  QStringListModel *_sourceModel { nullptr };
-  QSortFilterProxyModel *_filterModel { nullptr };
+  bool m_IsAllowHidePopup { false };
+  bool m_IsPopupVisible { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXAutoComplete::MatchMode m_MatchMode { NXAutoComplete::Contains };
+  QStringList m_Completions;
+  NXLineEdit *m_LineEdit { nullptr };
+  NXAutoCompleteContainer *m_Popup { nullptr };
+  NXBaseListView *m_ListView { nullptr };
+  QVBoxLayout *m_PopupLayout { nullptr };
+  QStringListModel *m_SourceModel { nullptr };
+  QSortFilterProxyModel *m_FilterModel { nullptr };
 
   void _showPopup();
   void _hidePopup();
-  void _updateFilter(const QString &text);
+  void _updateFilter(QString const &text);
 };
 
 #endif // NXUTOCOMPLETEPRIVATE_H

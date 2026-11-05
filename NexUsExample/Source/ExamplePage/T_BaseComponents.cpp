@@ -40,8 +40,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *toggleSwitchDisableSwitch = new NXToggleSwitch(this);
   NXText *toggleSwitchDisableText           = new NXText(QStringLiteral("禁用"), this);
   toggleSwitchDisableText->setTextPixelSize(15);
-  connect(toggleSwitchDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(toggleSwitchDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _toggleSwitch->setDisabled(checked);
   });
   toggleSwitchLayout->addWidget(toggleSwitchDisableSwitch);
@@ -60,8 +59,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *toggleButtonDisableSwitch = new NXToggleSwitch(this);
   NXText *toggleButtonDisableText           = new NXText(QStringLiteral("禁用"), this);
   toggleButtonDisableText->setTextPixelSize(15);
-  connect(toggleButtonDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(toggleButtonDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _toggleButton->setDisabled(checked);
   });
   toggleButtonLayout->addWidget(toggleButtonDisableSwitch);
@@ -70,8 +68,8 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
 
   _comboBox = new NXComboBox(this);
   QStringList comboList { QStringLiteral("我愿投身前途未卜的群星"), QStringLiteral("潜行 步伐小心翼翼"),
-                          QStringLiteral("不留游走痕迹"),           QStringLiteral("如同一簇幽灵"),
-                          QStringLiteral("所谓 道德加上伦理"),      QStringLiteral("抱歉只能律己") };
+                          QStringLiteral("不留游走痕迹"), QStringLiteral("如同一簇幽灵"),
+                          QStringLiteral("所谓 道德加上伦理"), QStringLiteral("抱歉只能律己") };
   _comboBox->addItems(comboList);
   NXScrollPageArea *comboBoxArea = new NXScrollPageArea(this);
   QHBoxLayout *comboBoxLayout    = new QHBoxLayout(comboBoxArea);
@@ -83,8 +81,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *comboBoxDisableSwitch = new NXToggleSwitch(this);
   NXText *comboBoxDisableText           = new NXText(QStringLiteral("禁用"), this);
   comboBoxDisableText->setTextPixelSize(15);
-  connect(comboBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(comboBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _comboBox->setDisabled(checked);
   });
   comboBoxLayout->addWidget(comboBoxDisableSwitch);
@@ -114,8 +111,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *multiSelectComboBoxDisableSwitch = new NXToggleSwitch(this);
   NXText *multiSelectComboBoxDisableText           = new NXText(QStringLiteral("禁用"), this);
   multiSelectComboBoxDisableText->setTextPixelSize(15);
-  connect(multiSelectComboBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(multiSelectComboBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _multiSelectComboBox->setDisabled(checked);
   });
   multiSelectComboBoxLayout->addWidget(multiSelectComboBoxDisableSwitch);
@@ -158,8 +154,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *messageButtonDisableSwitch = new NXToggleSwitch(this);
   NXText *messageButtonDisableText           = new NXText(QStringLiteral("禁用"), this);
   messageButtonDisableText->setTextPixelSize(15);
-  connect(messageButtonDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(messageButtonDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _messageButton->setDisabled(checked);
     _infoMessageButton->setDisabled(checked);
     _warningMessageButton->setDisabled(checked);
@@ -180,8 +175,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *checkBoxDisableSwitch = new NXToggleSwitch(this);
   NXText *checkBoxDisableText           = new NXText(QStringLiteral("禁用"), this);
   checkBoxDisableText->setTextPixelSize(15);
-  connect(checkBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(checkBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _checkBox->setDisabled(checked);
   });
   checkBoxLayout->addWidget(checkBoxDisableSwitch);
@@ -219,11 +213,8 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   spinButtonGroup->addButton(compactButton, 1);
   spinButtonGroup->addButton(sideButton, 2);
   spinButtonGroup->addButton(pmSideButton, 3);
-  connect(spinButtonGroup, QOverload<QAbstractButton *, bool>::of(&QButtonGroup::buttonToggled), this,
-          [=](QAbstractButton *button, bool isToggled)
-  {
-    if (isToggled)
-    {
+  connect(spinButtonGroup, QOverload<QAbstractButton *, bool>::of(&QButtonGroup::buttonToggled), this, [=](QAbstractButton *button, bool isToggled) {
+    if (isToggled) {
       _spinBox->setButtonMode((NXSpinBoxType::ButtonMode) spinButtonGroup->id(button));
     }
   });
@@ -318,8 +309,7 @@ T_BaseComponents::T_BaseComponents(QWidget *parent)
   NXToggleSwitch *groupBoxDisableSwitch = new NXToggleSwitch(this);
   NXText *groupBoxDisableText           = new NXText(QStringLiteral("禁用"), this);
   groupBoxDisableText->setTextPixelSize(15);
-  connect(groupBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked)
-  {
+  connect(groupBoxDisableSwitch, &NXToggleSwitch::toggled, this, [=](bool checked) {
     _groupBox->setDisabled(checked);
   });
   groupBoxAreaLayout->addWidget(groupBoxDisableSwitch);
@@ -367,34 +357,27 @@ T_BaseComponents::~T_BaseComponents()
 {
 }
 
-void
-T_BaseComponents::mouseReleaseEvent(QMouseEvent *event)
+void T_BaseComponents::mouseReleaseEvent(QMouseEvent *event)
 {
-  switch (event->button())
-  {
-  case Qt::LeftButton :
-  {
+  switch (event->button()) {
+  case Qt::LeftButton : {
     //NXMessageBar::success(NXMessageBarType::TopRight, "Success", "Never Close Your Eyes", 2500);
     //NXMessageBar::success(NXMessageBarType::TopRight, "Success", "Never Close Your Eyes", 1500);
     break;
   }
-  case Qt::BackButton :
-  {
+  case Qt::BackButton : {
     this->navigation(0);
     break;
   }
-  case Qt::ForwardButton :
-  {
+  case Qt::ForwardButton : {
     this->navigation(1);
     break;
   }
-  case Qt::MiddleButton :
-  {
+  case Qt::MiddleButton : {
     this->navigation(2);
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

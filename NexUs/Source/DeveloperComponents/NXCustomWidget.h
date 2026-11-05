@@ -21,13 +21,13 @@ public:
 
 protected:
   void paintEvent(QPaintEvent *event) override;
-  QVBoxLayout *_mainLayout { nullptr };
-  NXAppBar *_appBar { nullptr };
-  QWidget *_centralWidget { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
+  NXAppBar *m_AppBar { nullptr };
+  QWidget *m_CentralWidget { nullptr };
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXApplicationType::WindowDisplayMode _windowDisplayMode;
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXApplicationType::WindowDisplayMode m_WindowDisplayMode;
 };
 
 #endif // NXCUSTOMWIDGET_H

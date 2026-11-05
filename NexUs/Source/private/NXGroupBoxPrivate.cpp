@@ -5,8 +5,8 @@
 
 NXGroupBoxPrivate::NXGroupBoxPrivate(QObject *parent)
     : QObject(parent)
+    , m_BorderRadius { 6 }
 {
-  _pBorderRadius = 6;
 }
 
 NXGroupBoxPrivate::~NXGroupBoxPrivate()
@@ -16,7 +16,7 @@ NXGroupBoxPrivate::~NXGroupBoxPrivate()
 void NXGroupBoxPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXGroupBox);
-  _themeMode       = themeMode;
+  m_ThemeMode       = themeMode;
   QPalette palette = q->palette();
   palette.setColor(QPalette::WindowText, NXThemeColor(themeMode, BasicText));
   q->setPalette(palette);

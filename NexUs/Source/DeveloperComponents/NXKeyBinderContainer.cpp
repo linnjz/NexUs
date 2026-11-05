@@ -12,8 +12,9 @@
 
 NXKeyBinderContainer::NXKeyBinderContainer(QWidget *parent)
     : QWidget(parent)
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_KeyBinder { dynamic_cast<NXKeyBinder *>(parent) }
 {
-  _keyBinder = dynamic_cast<NXKeyBinder *>(parent);
   setStyleSheet(QStringLiteral("#NXKeyBinderContainer{background-color:transparent;}"));
   setFocusPolicy(Qt::StrongFocus);
   setMouseTracking(true);
@@ -22,15 +23,15 @@ NXKeyBinderContainer::NXKeyBinderContainer(QWidget *parent)
   textFont.setLetterSpacing(QFont::AbsoluteSpacing, 0.5);
   textFont.setPixelSize(nxApp->getFontPixelSize() + 3);
   setFont(textFont);
-  _themeMode = nxTheme->getThemeMode();
+
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
     update();
   });
   startFnKeyMonitor([this]() {
     if (hasFocus()) {
-      _pBinderKeyText          = QStringLiteral("Globe");
-      _pNativeVirtualBinderKey = 0x3F;
+      m_BinderKeyText          = QStringLiteral("Globe");
+      m_NativeVirtualBinderKey = 0x3F;
       update();
     }
   });
@@ -44,23 +45,23 @@ NXKeyBinderContainer::~NXKeyBinderContainer()
 void NXKeyBinderContainer::logOrResetHistoryData(bool isLog)
 {
   if (isLog) {
-    _historyBinderKeyText          = _pBinderKeyText;
-    _historyNativeVirtualBinderKey = _pNativeVirtualBinderKey;
+    m_HistoryBinderKeyText          = m_BinderKeyText;
+    m_HistoryNativeVirtualBinderKey = m_NativeVirtualBinderKey;
   } else {
-    _pBinderKeyText          = _historyBinderKeyText;
-    _pNativeVirtualBinderKey = _historyNativeVirtualBinderKey;
+    m_BinderKeyText          = m_HistoryBinderKeyText;
+    m_NativeVirtualBinderKey = m_HistoryNativeVirtualBinderKey;
     update();
   }
 }
 
 void NXKeyBinderContainer::saveBinderChanged()
 {
-  Q_EMIT _keyBinder->binderKeyTextChanged(_pBinderKeyText);
-  Q_EMIT _keyBinder->nativeVirtualBinderKeyChanged(_pNativeVirtualBinderKey);
-  if (_pBinderKeyText.isEmpty()) {
-    _keyBinder->setText(u8"  按键: " + QString(u8"未绑定") + QStringLiteral("      "));
+  Q_EMIT m_KeyBinder->binderKeyTextChanged(m_BinderKeyText);
+  Q_EMIT m_KeyBinder->nativeVirtualBinderKeyChanged(m_NativeVirtualBinderKey);
+  if (m_BinderKeyText.isEmpty()) {
+    m_KeyBinder->setText(u8"  按键: " + QString(u8"未绑定") + QStringLiteral("      "));
   } else {
-    _keyBinder->setText(u8"  按键: " + _pBinderKeyText + QStringLiteral("      "));
+    m_KeyBinder->setText(u8"  按键: " + m_BinderKeyText + QStringLiteral("      "));
   }
 }
 
@@ -72,35 +73,35 @@ bool NXKeyBinderContainer::event(QEvent *event)
     if (!keyEvent->isAutoRepeat()) {
       switch (keyEvent->key()) {
       case Qt::Key_Shift : {
-        _pBinderKeyText = QStringLiteral("Shift");
+        m_BinderKeyText = QStringLiteral("Shift");
         break;
       }
       case Qt::Key_Control : {
-        _pBinderKeyText = QStringLiteral("Ctrl");
+        m_BinderKeyText = QStringLiteral("Ctrl");
         break;
       }
       case Qt::Key_Alt : {
 #ifdef Q_OS_MACOS
-        _pBinderKeyText = QStringLiteral("Option");
+        m_BinderKeyText = QStringLiteral("Option");
 #else
-        _pBinderKeyText = QStringLiteral("Alt");
+        m_BinderKeyText = QStringLiteral("Alt");
 #endif
         break;
       }
       case Qt::Key_Meta : {
 #ifdef Q_OS_MACOS
-        _pBinderKeyText = QStringLiteral("Cmd");
+        m_BinderKeyText = QStringLiteral("Cmd");
 #else
-        _pBinderKeyText = QStringLiteral("Win");
+        m_BinderKeyText = QStringLiteral("Win");
 #endif
         break;
       }
       default : {
-        _pBinderKeyText = QKeySequence(keyEvent->key()).toString();
+        m_BinderKeyText = QKeySequence(keyEvent->key()).toString();
         break;
       }
       }
-      _pNativeVirtualBinderKey = keyEvent->nativeVirtualKey();
+      m_NativeVirtualBinderKey = keyEvent->nativeVirtualKey();
       update();
     }
     event->accept();
@@ -117,28 +118,28 @@ void NXKeyBinderContainer::mousePressEvent(QMouseEvent *event)
 {
   switch (event->button()) {
   case Qt::LeftButton : {
-    _pBinderKeyText          = QStringLiteral("Mouse1");
-    _pNativeVirtualBinderKey = 0x01;
+    m_BinderKeyText          = QStringLiteral("Mouse1");
+    m_NativeVirtualBinderKey = 0x01;
     break;
   }
   case Qt::RightButton : {
-    _pBinderKeyText          = QStringLiteral("Mouse2");
-    _pNativeVirtualBinderKey = 0x02;
+    m_BinderKeyText          = QStringLiteral("Mouse2");
+    m_NativeVirtualBinderKey = 0x02;
     break;
   }
   case Qt::MiddleButton : {
-    _pBinderKeyText          = QStringLiteral("Middle");
-    _pNativeVirtualBinderKey = 0x04;
+    m_BinderKeyText          = QStringLiteral("Middle");
+    m_NativeVirtualBinderKey = 0x04;
     break;
   }
   case Qt::BackButton : {
-    _pBinderKeyText          = QStringLiteral("Back");
-    _pNativeVirtualBinderKey = 0x05;
+    m_BinderKeyText          = QStringLiteral("Back");
+    m_NativeVirtualBinderKey = 0x05;
     break;
   }
   case Qt::ForwardButton : {
-    _pBinderKeyText          = QStringLiteral("Forward");
-    _pNativeVirtualBinderKey = 0x06;
+    m_BinderKeyText          = QStringLiteral("Forward");
+    m_NativeVirtualBinderKey = 0x06;
     break;
   }
   default : {
@@ -161,22 +162,22 @@ void NXKeyBinderContainer::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   // 顶部提示绘制
-  painter.setPen(NXThemeColor(_themeMode, BasicText));
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicText));
   painter.drawText(QRect(20, 20, width(), 50), Qt::AlignLeft | Qt::AlignTop, u8"按下任意按键以进行绑定");
-  if (_pBinderKeyText.isEmpty()) {
+  if (m_BinderKeyText.isEmpty()) {
     painter.restore();
     return;
   }
   // 中心文字背景绘制
-  painter.setPen(NXThemeColor(_themeMode, BasicBorder));
-  painter.setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-  qreal textWidth  = fontMetrics().horizontalAdvance(_pBinderKeyText) * 1.3;
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicBorder));
+  painter.setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+  qreal textWidth  = fontMetrics().horizontalAdvance(m_BinderKeyText) * 1.3;
   qreal textHeight = fontMetrics().height() * 1.2;
   textWidth        = qMax(textWidth, 35.0);
   textHeight       = qMax(textHeight, 35.0);
   painter.drawRoundedRect(QRectF((width() - textWidth) / 2.0, rect().center().y() + 10, textWidth, textHeight), 5, 5);
   // 文字绘制
-  painter.setPen(NXThemeColor(_themeMode, BasicTextInvert));
-  painter.drawText(QRectF((width() - textWidth) / 2.0, rect().center().y() + 10, textWidth, textHeight), Qt::AlignCenter, _pBinderKeyText);
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicTextInvert));
+  painter.drawText(QRectF((width() - textWidth) / 2.0, rect().center().y() + 10, textWidth, textHeight), Qt::AlignCenter, m_BinderKeyText);
   painter.restore();
 }

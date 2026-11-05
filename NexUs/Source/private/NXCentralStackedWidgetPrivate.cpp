@@ -13,30 +13,30 @@ NXCentralStackedWidgetPrivate::~NXCentralStackedWidgetPrivate()
 
 void NXCentralStackedWidgetPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
-  _themeMode = themeMode;
+  m_ThemeMode = themeMode;
 }
 
 void NXCentralStackedWidgetPrivate::_getCurrentStackPix()
 {
-  _targetStackPix        = QPixmap();
-  bool isTransparent     = _isTransparent;
-  _isTransparent         = true;
-  QWidget *currentWidget = _containerStackedWidget->currentWidget();
+  m_TargetStackPix        = QPixmap();
+  bool isTransparent     = m_IsTransparent;
+  m_IsTransparent         = true;
+  QWidget *currentWidget = m_ContainerStackedWidget->currentWidget();
   if (!currentWidget) {
-    _isTransparent = isTransparent;
+    m_IsTransparent = isTransparent;
     return;
   }
   currentWidget->setVisible(true);
-  _currentStackPix = _containerStackedWidget->grab();
+  m_CurrentStackPix = m_ContainerStackedWidget->grab();
   currentWidget->setVisible(false);
-  _isTransparent = isTransparent;
+  m_IsTransparent = isTransparent;
 }
 
 void NXCentralStackedWidgetPrivate::_getTargetStackPix()
 {
-  _targetStackPix    = QPixmap();
-  bool isTransparent = _isTransparent;
-  _isTransparent     = true;
-  _targetStackPix    = _containerStackedWidget->grab();
-  _isTransparent     = isTransparent;
+  m_TargetStackPix    = QPixmap();
+  bool isTransparent = m_IsTransparent;
+  m_IsTransparent     = true;
+  m_TargetStackPix    = m_ContainerStackedWidget->grab();
+  m_IsTransparent     = isTransparent;
 }

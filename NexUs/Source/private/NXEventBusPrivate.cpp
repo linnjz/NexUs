@@ -28,17 +28,17 @@ NXEventBusType::EventBusReturnType NXEventBusPrivate::registerEvent(NXEvent *eve
   if (event->getEventName().isEmpty()) {
     return NXEventBusType::EventBusReturnType::EventNameInvalid;
   }
-  if (_eventMap.contains(event->getEventName())) {
-    QList<NXEvent *> eventList = _eventMap.value(event->getEventName());
+  if (m_EventMap.contains(event->getEventName())) {
+    QList<NXEvent *> eventList = m_EventMap.value(event->getEventName());
     if (eventList.contains(event)) {
       return NXEventBusType::EventBusReturnType::EventInvalid;
     }
     eventList.append(event);
-    _eventMap[event->getEventName()] = eventList;
+    m_EventMap[event->getEventName()] = eventList;
   } else {
     QList<NXEvent *> eventList;
     eventList.append(event);
-    _eventMap.insert(event->getEventName(), eventList);
+    m_EventMap.insert(event->getEventName(), eventList);
   }
   return NXEventBusType::EventBusReturnType::Success;
 }
@@ -51,13 +51,13 @@ void NXEventBusPrivate::unRegisterEvent(NXEvent *event)
   if (event->getEventName().isEmpty()) {
     return;
   }
-  if (_eventMap.contains(event->getEventName())) {
-    if (_eventMap[event->getEventName()].count() == 1) {
-      _eventMap.remove(event->getEventName());
+  if (m_EventMap.contains(event->getEventName())) {
+    if (m_EventMap[event->getEventName()].count() == 1) {
+      m_EventMap.remove(event->getEventName());
     } else {
-      QList<NXEvent *> eventList = _eventMap.value(event->getEventName());
+      QList<NXEvent *> eventList = m_EventMap.value(event->getEventName());
       eventList.removeOne(event);
-      _eventMap[event->getEventName()] = eventList;
+      m_EventMap[event->getEventName()] = eventList;
     }
   }
 }

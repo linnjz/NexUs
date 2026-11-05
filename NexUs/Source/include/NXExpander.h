@@ -1,4 +1,4 @@
-#ifndef NXEXPANDER_H
+﻿#ifndef NXEXPANDER_H
 #define NXEXPANDER_H
 
 #include <QWidget>
@@ -11,8 +11,8 @@ class NX_EXPORT NXExpander : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXExpander)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, AnimationDuration)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, HeaderIcon)
@@ -26,7 +26,7 @@ public:
   Q_ENUM(ExpandDirection)
 
   explicit NXExpander(QWidget *parent = nullptr);
-  explicit NXExpander(const QString &title, QWidget *parent = nullptr);
+  explicit NXExpander(QString const &title, QWidget *parent = nullptr);
   ~NXExpander();
 
   void setExpandDirection(ExpandDirection direction);

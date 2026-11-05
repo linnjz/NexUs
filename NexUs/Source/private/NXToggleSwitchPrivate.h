@@ -16,15 +16,15 @@ public:
   ~NXToggleSwitchPrivate();
 
 private:
-  bool _isToggled { false };
-  int _margin { 1 };
-  qreal _circleCenterX { 0 };
-  qreal _circleRadius { 0 };
-  bool _isLeftButtonPress { false };
-  bool _isMousePressMove { false };
-  int _lastMouseX { 0 };
-  int _pressStartX { 0 };
-  NXThemeType::ThemeMode _themeMode;
+  bool m_IsToggled { false };
+  int m_Margin { 1 };
+  qreal m_CircleCenterX { 0 };
+  qreal m_CircleRadius { 0 };
+  bool m_IsLeftButtonPress { false };
+  bool m_IsMousePressMove { false };
+  int m_LastMouseX { 0 };
+  int m_PressStartX { 0 };
+  NXThemeType::ThemeMode m_ThemeMode;
   void _startPosAnimation(qreal startX, qreal endX, bool isToggle);
   void _startRadiusAnimation(qreal startRadius, qreal endRadius);
   void _adjustCircleCenterX();

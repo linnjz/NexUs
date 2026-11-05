@@ -28,10 +28,10 @@ protected:
   void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  bool _isHover { false };
-  bool _isPressed { false };
-  int _gripLength { 36 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  bool m_IsHover { false };
+  bool m_IsPressed { false };
+  int m_GripLength { 36 };
 };
 
 #endif // NXSPLITTERHANDLE_H

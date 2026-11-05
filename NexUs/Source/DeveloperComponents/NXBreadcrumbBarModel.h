@@ -11,21 +11,21 @@ public:
   explicit NXBreadcrumbBarModel(QObject *parent = nullptr);
   ~NXBreadcrumbBarModel();
 
-  void appendBreadcrumb(const QString &breadcrumb);
-  void removeBreadcrumb(const QString &breadcrumb);
+  void appendBreadcrumb(QString const &breadcrumb);
+  void removeBreadcrumb(QString const &breadcrumb);
   void removeBreadcrumb(int index);
 
-  void setBreadcrumbList(const QStringList &breadcrumbList);
+  void setBreadcrumbList(QStringList const &breadcrumbList);
 
   int getBreadcrumbListCount() const;
   QStringList getBreadcrumbList() const;
 
 protected:
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  QVariant data(const QModelIndex &index, int role) const override;
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  QVariant data(QModelIndex const &index, int role) const override;
 
 private:
-  QStringList _breadcrumbList;
+  QStringList m_BreadcrumbList;
 };
 
 #endif // NXBREADCRUMBBARMODEL_H

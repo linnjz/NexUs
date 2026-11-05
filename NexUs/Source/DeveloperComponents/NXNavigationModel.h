@@ -20,40 +20,40 @@ public:
   void setIsMaximalMode(bool isMaximal);
   bool getIsMaximalMode();
 
-  QModelIndex parent(const QModelIndex &child) const override;
-  QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-  QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-  Qt::ItemFlags flags(const QModelIndex &index) const override;
+  QModelIndex parent(QModelIndex const &child) const override;
+  QModelIndex index(int row, int column, QModelIndex const &parent = QModelIndex()) const override;
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  int columnCount(QModelIndex const &parent = QModelIndex()) const override;
+  QVariant data(QModelIndex const &index, int role = Qt::DisplayRole) const override;
+  Qt::ItemFlags flags(QModelIndex const &index) const override;
 
-  QString addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome);
+  QString addExpanderNode(QString const &expanderTitle, NXIconType::IconName awesome);
   NXNodeResultExpected
-  addExpanderNode(const QString &expanderTitle, const QString &targetExpanderKey, NXIconType::IconName awesome);
+  addExpanderNode(QString const &expanderTitle, QString const &targetExpanderKey, NXIconType::IconName awesome);
 
-  QString addPageNode(const QString &pageTitle, NXIconType::IconName awesome);
+  QString addPageNode(QString const &pageTitle, NXIconType::IconName awesome);
   NXNodeResultExpected
-  addPageNode(const QString &pageTitle, const QString &targetExpanderKey, NXIconType::IconName awesome);
-  QString addPageNode(const QString &pageTitle, int keyPoints, NXIconType::IconName awesome);
+  addPageNode(QString const &pageTitle, QString const &targetExpanderKey, NXIconType::IconName awesome);
+  QString addPageNode(QString const &pageTitle, int keyPoints, NXIconType::IconName awesome);
   NXNodeResultExpected
-  addPageNode(const QString &pageTitle, const QString &targetExpanderKey, int keyPoints, NXIconType::IconName awesome);
+  addPageNode(QString const &pageTitle, QString const &targetExpanderKey, int keyPoints, NXIconType::IconName awesome);
 
-  QString addCategoryNode(const QString &categoryTitle);
-  NXNodeResultExpected addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey);
+  QString addCategoryNode(QString const &categoryTitle);
+  NXNodeResultExpected addCategoryNode(QString const &categoryTitle, QString const &targetExpanderKey);
 
-  QStringList removeNavigationNode(const QString &nodeKey);
+  QStringList removeNavigationNode(QString const &nodeKey);
 
-  const NXNavigationNode *getRootNode() const;
-  NXNavigationNode *getNavigationNode(const QString &nodeKey) const;
+  NXNavigationNode const *getRootNode() const;
+  NXNavigationNode *getNavigationNode(QString const &nodeKey) const;
   QList<NXNavigationNode *> getRootExpanderNodes() const;
   QList<NXNavigationNode *> getRootExpandedNodes() const;
 
   QList<NXNavigationNode *> getRootCategoryNodes() const;
 
 private:
-  bool _isMaximalMode { true };
-  QMap<QString, NXNavigationNode *> _nodesMap;
-  NXNavigationNode *_rootNode { nullptr };
+  bool m_IsMaximalMode { true };
+  QMap<QString, NXNavigationNode *> m_NodesMap;
+  NXNavigationNode *m_RootNode { nullptr };
 };
 
 #endif // NXNAVIGATIONMODEL_H

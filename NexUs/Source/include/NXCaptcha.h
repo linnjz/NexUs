@@ -32,8 +32,8 @@ public:
 
   QString getCode() const;
   void clear();
-  Q_SIGNAL void codeCompleted(const QString &code);
-  Q_SIGNAL void codeChanged(const QString &code);
+  Q_SIGNAL void codeCompleted(QString const &code);
+  Q_SIGNAL void codeChanged(QString const &code);
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;

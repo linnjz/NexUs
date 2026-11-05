@@ -12,62 +12,62 @@
 
 NXFooterDelegate::NXFooterDelegate(QObject *parent)
     : QStyledItemDelegate { parent }
+    , m_NXListView { nullptr }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pNXListView = nullptr;
-  _themeMode   = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
   setProperty("lastSelectMarkTop", 10.0);
   setProperty("lastSelectMarkBottom", 10.0);
   setProperty("selectMarkTop", 10.0);
   setProperty("selectMarkBottom", 10.0);
   // Mark向上
-  _lastSelectMarkTopAnimation = new QPropertyAnimation(this, "lastSelectMarkTop");
-  connect(_lastSelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _lastSelectMarkTop = value.toReal();
-    _pNXListView->viewport()->update();
+  m_LastSelectMarkTopAnimation = new QPropertyAnimation(this, "lastSelectMarkTop");
+  connect(m_LastSelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_LastSelectMarkTop = value.toReal();
+    m_NXListView->viewport()->update();
   });
-  _lastSelectMarkTopAnimation->setDuration(300);
-  _lastSelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  m_LastSelectMarkTopAnimation->setDuration(300);
+  m_LastSelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
 
-  _selectMarkBottomAnimation = new QPropertyAnimation(this, "selectMarkBottom");
-  connect(_selectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _selectMarkBottom = value.toReal();
-    _pNXListView->viewport()->update();
+  m_SelectMarkBottomAnimation = new QPropertyAnimation(this, "selectMarkBottom");
+  connect(m_SelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_SelectMarkBottom = value.toReal();
+    m_NXListView->viewport()->update();
   });
-  _selectMarkBottomAnimation->setDuration(300);
-  _selectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(_lastSelectMarkTopAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _isSelectMarkDisplay = true;
-    _lastSelectedNode    = nullptr;
-    _selectMarkBottomAnimation->setStartValue(0);
-    _selectMarkBottomAnimation->setEndValue(10);
-    _selectMarkBottomAnimation->start();
+  m_SelectMarkBottomAnimation->setDuration(300);
+  m_SelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  connect(m_LastSelectMarkTopAnimation, &QPropertyAnimation::finished, this, [=]() {
+    m_IsSelectMarkDisplay = true;
+    m_LastSelectedNode    = nullptr;
+    m_SelectMarkBottomAnimation->setStartValue(0);
+    m_SelectMarkBottomAnimation->setEndValue(10);
+    m_SelectMarkBottomAnimation->start();
   });
 
   // Mark向下
-  _lastSelectMarkBottomAnimation = new QPropertyAnimation(this, "lastSelectMarkBottom");
-  connect(_lastSelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _lastSelectMarkBottom = value.toReal();
-    _pNXListView->viewport()->update();
+  m_LastSelectMarkBottomAnimation = new QPropertyAnimation(this, "lastSelectMarkBottom");
+  connect(m_LastSelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_LastSelectMarkBottom = value.toReal();
+    m_NXListView->viewport()->update();
   });
-  _lastSelectMarkBottomAnimation->setDuration(300);
-  _lastSelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  m_LastSelectMarkBottomAnimation->setDuration(300);
+  m_LastSelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
 
-  _selectMarkTopAnimation = new QPropertyAnimation(this, "selectMarkTop");
-  connect(_selectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _selectMarkTop = value.toReal();
-    _pNXListView->viewport()->update();
+  m_SelectMarkTopAnimation = new QPropertyAnimation(this, "selectMarkTop");
+  connect(m_SelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_SelectMarkTop = value.toReal();
+    m_NXListView->viewport()->update();
   });
-  _selectMarkTopAnimation->setDuration(300);
-  _selectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(_lastSelectMarkBottomAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _isSelectMarkDisplay = true;
-    _lastSelectedNode    = nullptr;
-    _selectMarkTopAnimation->setStartValue(0);
-    _selectMarkTopAnimation->setEndValue(10);
-    _selectMarkTopAnimation->start();
+  m_SelectMarkTopAnimation->setDuration(300);
+  m_SelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  connect(m_LastSelectMarkBottomAnimation, &QPropertyAnimation::finished, this, [=]() {
+    m_IsSelectMarkDisplay = true;
+    m_LastSelectedNode    = nullptr;
+    m_SelectMarkTopAnimation->setStartValue(0);
+    m_SelectMarkTopAnimation->setEndValue(10);
+    m_SelectMarkTopAnimation->start();
   });
 }
 
@@ -75,37 +75,37 @@ NXFooterDelegate::~NXFooterDelegate()
 {
 }
 
-void NXFooterDelegate::navigationNodeStateChange(const QVariantMap &data)
+void NXFooterDelegate::navigationNodeStateChange(QVariantMap const &data)
 {
   if (data.contains(QStringLiteral("SelectMarkChanged"))) {
-    _lastSelectedNode              = data.value(QStringLiteral("LastSelectedNode")).value<NXNavigationNode *>();
+    m_LastSelectedNode              = data.value(QStringLiteral("LastSelectedNode")).value<NXNavigationNode *>();
     NXNavigationNode *selectedNode = data.value(QStringLiteral("SelectedNode")).value<NXNavigationNode *>();
-    bool direction                 = _compareItemY(selectedNode, _lastSelectedNode);
-    _lastSelectMarkTop             = 10;
-    _lastSelectMarkBottom          = 10;
-    _selectMarkTop                 = 10;
-    _selectMarkBottom              = 10;
+    bool direction                 = _compareItemY(selectedNode, m_LastSelectedNode);
+    m_LastSelectMarkTop             = 10;
+    m_LastSelectMarkBottom          = 10;
+    m_SelectMarkTop                 = 10;
+    m_SelectMarkBottom              = 10;
     if (direction) {
-      _lastSelectMarkTopAnimation->setStartValue(10);
-      _lastSelectMarkTopAnimation->setEndValue(0);
-      _lastSelectMarkTopAnimation->start();
-      _lastSelectMarkBottomAnimation->stop();
-      _selectMarkTopAnimation->stop();
-      _isSelectMarkDisplay = false;
+      m_LastSelectMarkTopAnimation->setStartValue(10);
+      m_LastSelectMarkTopAnimation->setEndValue(0);
+      m_LastSelectMarkTopAnimation->start();
+      m_LastSelectMarkBottomAnimation->stop();
+      m_SelectMarkTopAnimation->stop();
+      m_IsSelectMarkDisplay = false;
     } else {
-      _lastSelectMarkBottomAnimation->setStartValue(10);
-      _lastSelectMarkBottomAnimation->setEndValue(0);
-      _lastSelectMarkBottomAnimation->start();
-      _lastSelectMarkTopAnimation->stop();
-      _selectMarkBottomAnimation->stop();
-      _isSelectMarkDisplay = false;
+      m_LastSelectMarkBottomAnimation->setStartValue(10);
+      m_LastSelectMarkBottomAnimation->setEndValue(0);
+      m_LastSelectMarkBottomAnimation->start();
+      m_LastSelectMarkTopAnimation->stop();
+      m_SelectMarkBottomAnimation->stop();
+      m_IsSelectMarkDisplay = false;
     }
   }
 }
 
-void NXFooterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXFooterDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
-  const int fontPixelSize = nxApp->getFontPixelSize();
+  int const fontPixelSize = nxApp->getFontPixelSize();
   NXFooterModel *model    = dynamic_cast<NXFooterModel *>(const_cast<QAbstractItemModel *>(index.model()));
   NXNavigationNode *node  = index.data(Qt::UserRole).value<NXNavigationNode *>();
   // 背景绘制
@@ -117,26 +117,26 @@ void NXFooterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
   QPainterPath path;
   path.addRoundedRect(itemRect, 8, 8);
   if (option.state & QStyle::State_Selected) {
-    if (index == _pPressIndex) {
+    if (index == m_PressIndex) {
       // 选中时点击
-      painter->fillPath(path, NXThemeColor(_themeMode, BasicHoverAlpha));
+      painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicHoverAlpha));
     } else {
       if (option.state & QStyle::State_MouseOver) {
         // 选中时覆盖
-        painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedHoverAlpha));
+        painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedHoverAlpha));
       } else {
         // 选中
-        painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedAlpha));
+        painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedAlpha));
       }
     }
   } else {
-    if (index == _pPressIndex) {
+    if (index == m_PressIndex) {
       // 点击时颜色
-      painter->fillPath(path, NXThemeColor(_themeMode, BasicPressAlpha));
+      painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicPressAlpha));
     } else {
       if (option.state & QStyle::State_MouseOver) {
         // 覆盖时颜色
-        painter->fillPath(path, NXThemeColor(_themeMode, BasicHoverAlpha));
+        painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicHoverAlpha));
       }
     }
   }
@@ -148,17 +148,17 @@ void NXFooterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
   //顶边线绘制
   if (index.row() == 0) {
-    painter->setPen(NXThemeColor(_themeMode, BasicBaseLine));
+    painter->setPen(NXThemeColor(m_ThemeMode, BasicBaseLine));
     painter->drawLine(option.rect.x(), itemRect.y() + 1, option.rect.x() + option.rect.width(), itemRect.y() + 1);
   }
   // 图标绘制
-  painter->setPen(index == _pPressIndex ? NXThemeColor(_themeMode, BasicTextPress) : NXThemeColor(_themeMode, BasicText));
+  painter->setPen(index == m_PressIndex ? NXThemeColor(m_ThemeMode, BasicTextPress) : NXThemeColor(m_ThemeMode, BasicText));
   if (node->getAwesome() != NXIconType::None) {
     painter->save();
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(fontPixelSize + 4);
     painter->setFont(iconFont);
-    painter->drawText(QRect(itemRect.x(), itemRect.y(), _iconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar((unsigned short) node->getAwesome()));
+    painter->drawText(QRect(itemRect.x(), itemRect.y(), m_IconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar((unsigned short) node->getAwesome()));
     painter->restore();
   }
 
@@ -168,7 +168,7 @@ void NXFooterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::white);
     painter->drawEllipse(QPoint(255, itemRect.y() + itemRect.height() / 2), 10, 10);
-    painter->setBrush(NXThemeColor(_themeMode, StatusDanger));
+    painter->setBrush(NXThemeColor(m_ThemeMode, StatusDanger));
     painter->drawEllipse(QPoint(255, itemRect.y() + itemRect.height() / 2), 9, 9);
     painter->setPen(QPen(Qt::white, 2));
     QFont font = painter->font();
@@ -187,31 +187,31 @@ void NXFooterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
   }
 
   // 文字绘制
-  painter->setPen(index == _pPressIndex ? NXThemeColor(_themeMode, BasicTextPress) : NXThemeColor(_themeMode, BasicText));
+  painter->setPen(index == m_PressIndex ? NXThemeColor(m_ThemeMode, BasicTextPress) : NXThemeColor(m_ThemeMode, BasicText));
   QRect textRect;
   if (node->getAwesome() != NXIconType::None) {
     textRect =
-        QRect(itemRect.x() + _iconAreaWidth, itemRect.y(), itemRect.width() - _textRightSpacing - _indicatorIconAreaWidth - _iconAreaWidth, itemRect.height());
+        QRect(itemRect.x() + m_IconAreaWidth, itemRect.y(), itemRect.width() - m_TextRightSpacing - m_IndicatorIconAreaWidth - m_IconAreaWidth, itemRect.height());
   } else {
-    textRect = QRect(itemRect.x() + _leftPadding, itemRect.y(), itemRect.width() - _textRightSpacing - _indicatorIconAreaWidth - _leftPadding, itemRect.height());
+    textRect = QRect(itemRect.x() + m_LeftPadding, itemRect.y(), itemRect.width() - m_TextRightSpacing - m_IndicatorIconAreaWidth - m_LeftPadding, itemRect.height());
   }
   QString text = painter->fontMetrics().elidedText(node->getNodeTitle(), Qt::ElideRight, textRect.width());
   painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, text);
   // 选中特效
-  if (_isSelectMarkDisplay && (node == model->getSelectedNode())) {
+  if (m_IsSelectMarkDisplay && (node == model->getSelectedNode())) {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + _selectMarkTop, 3, itemRect.height() - _selectMarkTop - _selectMarkBottom), 1.5, 1.5);
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + m_SelectMarkTop, 3, itemRect.height() - m_SelectMarkTop - m_SelectMarkBottom), 1.5, 1.5);
   }
-  if (node == _lastSelectedNode) {
+  if (node == m_LastSelectedNode) {
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + _lastSelectMarkTop, 3, itemRect.height() - _lastSelectMarkTop - _lastSelectMarkBottom), 3, 3);
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+    painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + m_LastSelectMarkTop, 3, itemRect.height() - m_LastSelectMarkTop - m_LastSelectMarkBottom), 3, 3);
   }
   painter->restore();
 }
 
-QSize NXFooterDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXFooterDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   QSize size = QStyledItemDelegate::sizeHint(option, index);
   size.setHeight(40);

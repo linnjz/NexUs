@@ -24,14 +24,14 @@ public:
 
 private:
   friend class NXCopyButton;
-  bool _isPressed { false };
-  bool _isSuccess { false };
-  int _shadowBorderWidth { 3 };
-  NXThemeType::ThemeMode _themeMode;
-  NXIconType::IconName _normalIcon { NXIconType::Copy };
-  NXIconType::IconName _successIcon { NXIconType::ClipboardCheck };
-  qreal _iconOpacity { 1.0 };
-  QTimer *_resetTimer { nullptr };
+  bool m_IsPressed { false };
+  bool m_IsSuccess { false };
+  int m_ShadowBorderWidth { 3 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXIconType::IconName m_NormalIcon { NXIconType::Copy };
+  NXIconType::IconName m_SuccessIcon { NXIconType::ClipboardCheck };
+  qreal m_IconOpacity { 1.0 };
+  QTimer *m_ResetTimer { nullptr };
 };
 
 #endif // NXCOPYBUTTONPRIVATE_H

@@ -24,9 +24,9 @@ public:
   void insertColumns(int column, int count);
   void removeColumns(int column, int count);
 
-  void setItemText(int row, int column, const QString &text);
+  void setItemText(int row, int column, QString const &text);
   QString getItemText(int row, int column) const;
-  void setRowData(int row, const QStringList &data);
+  void setRowData(int row, QStringList const &data);
   QStringList getRowData(int row) const;
   Q_SIGNAL void tableWidgetShow();
   Q_SIGNAL void tableWidgetHide();

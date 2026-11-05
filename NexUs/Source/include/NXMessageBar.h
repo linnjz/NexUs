@@ -14,17 +14,17 @@ class NX_EXPORT NXMessageBar : public QWidget
   Q_Q_CREATE(NXMessageBar)
 
 public:
-  static void success(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent = nullptr);
-  static void warning(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent = nullptr);
-  static void information(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent = nullptr);
-  static void error(NXMessageBarType::PositionPolicy policy, const QString &title, const QString &text, int displayMsec, QWidget *parent = nullptr);
+  static void success(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent = nullptr);
+  static void warning(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent = nullptr);
+  static void information(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent = nullptr);
+  static void error(NXMessageBarType::PositionPolicy policy, QString const &title, QString const &text, int displayMsec, QWidget *parent = nullptr);
 
 protected:
   void paintEvent(QPaintEvent *event) override;
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  explicit NXMessageBar(NXMessageBarType::PositionPolicy policy, NXMessageBarType::MessageMode messageMode, const QString &title, const QString &text, int displayMsec, QWidget *parent = nullptr);
+  explicit NXMessageBar(NXMessageBarType::PositionPolicy policy, NXMessageBarType::MessageMode messageMode, QString const &title, QString const &text, int displayMsec, QWidget *parent = nullptr);
   ~NXMessageBar();
 };
 

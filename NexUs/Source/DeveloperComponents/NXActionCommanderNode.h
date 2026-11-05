@@ -8,11 +8,11 @@
 class NXActionCommanderNode : public QObject
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), NodeName)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), NodeIndexText)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), NodeCreateTime)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), ModelIndex)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QList<NXActionCommanderNode *>), ChildNodes)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), NodeName)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), NodeIndexText)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), NodeCreateTime)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), ModelIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QList<NXActionCommanderNode *>), ChildNodes)
   Q_PRIVATE_CREATE(NXActionCommanderNode *, ParentNode)
   Q_PRIVATE_CREATE(NXMessageBarType::MessageMode, MessageMode)
   Q_PRIVATE_CREATE(int, NodeIndex)

@@ -15,12 +15,12 @@ class NXCentralStackedWidgetPrivate : public QObject
 {
   Q_OBJECT
   Q_D_CREATE(NXCentralStackedWidget)
-  Q_PROPERTY_CREATE(int, LastTargetIndex)
-  Q_PROPERTY_CREATE(int, BlurAnimationRadius)
-  Q_PROPERTY_CREATE(int, PopupAnimationYOffset)
-  Q_PROPERTY_CREATE(qreal, ScaleAnimationRatio)
-  Q_PROPERTY_CREATE(qreal, ScaleAnimationPixOpacity)
-  Q_PROPERTY_CREATE(qreal, FlipAnimationRatio)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), LastTargetIndex)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), BlurAnimationRadius)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), PopupAnimationYOffset)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ScaleAnimationRatio)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ScaleAnimationPixOpacity)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), FlipAnimationRatio)
 
 public:
   explicit NXCentralStackedWidgetPrivate(QObject *parent = nullptr);
@@ -29,17 +29,17 @@ public:
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXWindowType::StackSwitchMode _stackSwitchMode { NXWindowType::StackSwitchMode::Popup };
-  NXThemeType::ThemeMode _themeMode;
-  QPixmap _targetStackPix;
-  QPixmap _currentStackPix;
-  QGraphicsBlurEffect *_blurEffect { nullptr };
-  bool _isTransparent { false };
-  QVBoxLayout *_mainLayout { nullptr };
-  QWidget *_customWidget { nullptr };
-  NXLazyStackedWidget *_containerStackedWidget { nullptr };
-  bool _isHasRadius { true };
-  bool _isDrawNewPix { false };
+  NXWindowType::StackSwitchMode m_StackSwitchMode { NXWindowType::StackSwitchMode::Popup };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QPixmap m_TargetStackPix;
+  QPixmap m_CurrentStackPix;
+  QGraphicsBlurEffect *m_BlurEffect { nullptr };
+  bool m_IsTransparent { false };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QWidget *m_CustomWidget { nullptr };
+  NXLazyStackedWidget *m_ContainerStackedWidget { nullptr };
+  bool m_IsHasRadius { true };
+  bool m_IsDrawNewPix { false };
   void _getTargetStackPix();
   void _getCurrentStackPix();
 };

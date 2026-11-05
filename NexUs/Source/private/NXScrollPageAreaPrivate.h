@@ -17,7 +17,7 @@ public:
   ~NXScrollPageAreaPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXSCROLLPAGEAREAPRIVATE_H

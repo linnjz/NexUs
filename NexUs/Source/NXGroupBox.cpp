@@ -25,7 +25,7 @@ NXGroupBox::NXGroupBox(QWidget *parent)
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXGroupBoxPrivate::onThemeChanged);
 }
 
-NXGroupBox::NXGroupBox(const QString &title, QWidget *parent)
+NXGroupBox::NXGroupBox(QString const &title, QWidget *parent)
     : NXGroupBox(parent)
 {
   setTitle(title);
@@ -39,10 +39,10 @@ NXGroupBox::~NXGroupBox()
 void NXGroupBox::paintEvent(QPaintEvent *event)
 {
   Q_D(NXGroupBox);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
-    d->onThemeChanged(d->_themeMode);
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->m_ThemeMode, BasicText)) {
+    d->onThemeChanged(d->m_ThemeMode);
   }
   QGroupBox::paintEvent(event);
 }
 
-Q_PROPERTY_CREATE_CPP(NXGroupBox, int, BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXGroupBox, QPS_PAEMIT(int), BorderRadius)

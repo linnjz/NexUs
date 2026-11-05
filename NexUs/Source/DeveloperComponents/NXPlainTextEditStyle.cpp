@@ -8,11 +8,11 @@
 #include "NXTheme.h"
 
 NXPlainTextEditStyle::NXPlainTextEditStyle(QStyle *style)
+    : m_ExpandMarkWidth { 0 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pExpandMarkWidth = 0;
-  _themeMode        = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -20,28 +20,28 @@ NXPlainTextEditStyle::~NXPlainTextEditStyle()
 {
 }
 
-void NXPlainTextEditStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXPlainTextEditStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::CE_ShapedFrame : {
-    if (const QStyleOptionFrame *fopt = qstyleoption_cast<const QStyleOptionFrame *>(option)) {
+    if (QStyleOptionFrame const *fopt = qstyleoption_cast<QStyleOptionFrame const *>(option)) {
       //背景绘制
       QRect editRect = option->rect;
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing);
       // 边框绘制
-      painter->setPen(NXThemeColor(_themeMode, BasicBorder));
+      painter->setPen(NXThemeColor(m_ThemeMode, BasicBorder));
       painter->setBrush(Qt::NoBrush);
       painter->drawRoundedRect(editRect.adjusted(1, 1, -1, -1), 6, 6);
       painter->setPen(Qt::NoPen);
 
       // 背景绘制
-      painter->setBrush(NXThemeColor(_themeMode, BasicBaseAlpha));
+      painter->setBrush(NXThemeColor(m_ThemeMode, BasicBaseAlpha));
       painter->drawRoundedRect(
           QRectF(editRect.x() + 1.5, editRect.y() + 1.5, editRect.width() - 3, editRect.height() - 3), 6, 6);
 
       // 底边线绘制
-      painter->setBrush(NXThemeColor(_themeMode, BasicHemline));
+      painter->setBrush(NXThemeColor(m_ThemeMode, BasicHemline));
       QPainterPath path;
       path.moveTo(6, editRect.height());
       path.lineTo(editRect.width() - 6, editRect.height());
@@ -53,9 +53,9 @@ void NXPlainTextEditStyle::drawControl(ControlElement element, const QStyleOptio
 
       //焦点指示器
       painter->setPen(Qt::NoPen);
-      painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+      painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
       painter->drawRoundedRect(
-          QRectF(editRect.width() / 2 - _pExpandMarkWidth, editRect.height() - 2.5, _pExpandMarkWidth * 2, 2.5), 2, 2);
+          QRectF(editRect.width() / 2 - m_ExpandMarkWidth, editRect.height() - 2.5, m_ExpandMarkWidth * 2, 2.5), 2, 2);
 
       painter->restore();
     }

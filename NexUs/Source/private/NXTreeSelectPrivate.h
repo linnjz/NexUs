@@ -21,8 +21,8 @@ class NXTreeSelectPopupWidget : public QWidget
 
 public:
   NXTreeSelectPopupWidget(QWidget *parent = nullptr);
-  NXThemeType::ThemeMode _themeMode;
-  int _borderRadius { 6 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_BorderRadius { 6 };
 
 protected:
   void paintEvent(QPaintEvent *event) override;
@@ -44,34 +44,34 @@ public:
   ~NXTreeSelectPrivate();
 
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
-  Q_SLOT void onItemClicked(const QModelIndex &index);
-  Q_SLOT void onSearchTextChanged(const QString &text);
-  Q_SLOT void onTreeExpanded(const QModelIndex &index);
-  Q_SLOT void onTreeCollapsed(const QModelIndex &index);
+  Q_SLOT void onItemClicked(QModelIndex const &index);
+  Q_SLOT void onSearchTextChanged(QString const &text);
+  Q_SLOT void onTreeExpanded(QModelIndex const &index);
+  Q_SLOT void onTreeCollapsed(QModelIndex const &index);
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
   friend class NXTreeSelect;
-  bool _isHover { false };
-  bool _isPopupVisible { false };
-  bool _isPressed { false };
-  NXThemeType::ThemeMode _themeMode;
-  qreal _expandIconRotate { 0 };
-  QString _currentText;
-  QModelIndex _currentIndex;
-  QStandardItemModel *_model { nullptr };
-  QSortFilterProxyModel *_proxyModel { nullptr };
-  NXTreeView *_treeView { nullptr };
-  NXLineEdit *_searchEdit { nullptr };
-  NXTreeSelectPopupWidget *_popupContainer { nullptr };
+  bool m_IsHover { false };
+  bool m_IsPopupVisible { false };
+  bool m_IsPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  qreal m_ExpandIconRotate { 0 };
+  QString m_CurrentText;
+  QModelIndex m_CurrentIndex;
+  QStandardItemModel *m_Model { nullptr };
+  QSortFilterProxyModel *m_ProxyModel { nullptr };
+  NXTreeView *m_TreeView { nullptr };
+  NXLineEdit *m_SearchEdit { nullptr };
+  NXTreeSelectPopupWidget *m_PopupContainer { nullptr };
   void _showPopup();
   void _hidePopup();
   void _updateDisplayText();
   void _updatePopupHeight();
   int _calculatePopupHeight() const;
-  int _countVisibleItems(const QModelIndex &parent = QModelIndex()) const;
+  int _countVisibleItems(QModelIndex const &parent = QModelIndex()) const;
 };
 
 #endif // NXTREESELECTPRIVATE_H

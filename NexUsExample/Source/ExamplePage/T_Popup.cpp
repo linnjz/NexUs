@@ -65,12 +65,10 @@ T_Popup::T_Popup(QWidget *parent)
   colorDialogButton->setDarkDefaultColor(_colorDialog->getCurrentColor());
   colorDialogButton->setDarkHoverColor(_colorDialog->getCurrentColor());
   colorDialogButton->setDarkPressColor(_colorDialog->getCurrentColor());
-  connect(colorDialogButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(colorDialogButton, &NXPushButton::clicked, this, [=]() {
     _colorDialog->exec();
   });
-  connect(_colorDialog, &NXColorDialog::colorSelected, this, [=](const QColor &color)
-  {
+  connect(_colorDialog, &NXColorDialog::colorSelected, this, [=](QColor const &color) {
     colorDialogButton->setLightDefaultColor(color);
     colorDialogButton->setLightHoverColor(color);
     colorDialogButton->setLightPressColor(color);
@@ -97,13 +95,10 @@ T_Popup::T_Popup(QWidget *parent)
 
   NXPushButton *textInputButton = new NXPushButton(QStringLiteral("文本"), this);
   textInputButton->setFixedSize(80, 38);
-  connect(textInputButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(textInputButton, &NXPushButton::clicked, this, [=]() {
     bool ok;
-    QString text = NXInputDialog::getText(this, QStringLiteral("输入对话框"), QStringLiteral("请输入您的信息"),
-                                          QStringLiteral("名称:"), QStringLiteral(""), &ok);
-    if (ok && !text.isEmpty())
-    {
+    QString text = NXInputDialog::getText(this, QStringLiteral("输入对话框"), QStringLiteral("请输入您的信息"), QStringLiteral("名称:"), QStringLiteral(""), &ok);
+    if (ok && !text.isEmpty()) {
       qDebug() << "文本输入:" << text;
     }
   });
@@ -111,13 +106,10 @@ T_Popup::T_Popup(QWidget *parent)
 
   NXPushButton *intInputButton = new NXPushButton(QStringLiteral("整数"), this);
   intInputButton->setFixedSize(80, 38);
-  connect(intInputButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(intInputButton, &NXPushButton::clicked, this, [=]() {
     bool ok;
-    int value = NXInputDialog::getInt(this, QStringLiteral("输入年龄"), QStringLiteral("请提供您的个人信息"),
-                                      QStringLiteral("年龄:"), 18, 0, 150, 1, &ok);
-    if (ok)
-    {
+    int value = NXInputDialog::getInt(this, QStringLiteral("输入年龄"), QStringLiteral("请提供您的个人信息"), QStringLiteral("年龄:"), 18, 0, 150, 1, &ok);
+    if (ok) {
       qDebug() << "整数输入:" << value;
     }
   });
@@ -125,13 +117,10 @@ T_Popup::T_Popup(QWidget *parent)
 
   NXPushButton *doubleInputButton = new NXPushButton(QStringLiteral("小数"), this);
   doubleInputButton->setFixedSize(80, 38);
-  connect(doubleInputButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(doubleInputButton, &NXPushButton::clicked, this, [=]() {
     bool ok;
-    double value = NXInputDialog::getDouble(this, QStringLiteral("输入价格"), QStringLiteral("商品定价系统"),
-                                            QStringLiteral("价格:"), 99.99, 0.0, 9999.99, 2, &ok);
-    if (ok)
-    {
+    double value = NXInputDialog::getDouble(this, QStringLiteral("输入价格"), QStringLiteral("商品定价系统"), QStringLiteral("价格:"), 99.99, 0.0, 9999.99, 2, &ok);
+    if (ok) {
       qDebug() << "小数输入:" << value;
     }
   });
@@ -139,14 +128,11 @@ T_Popup::T_Popup(QWidget *parent)
 
   NXPushButton *multiLineInputButton = new NXPushButton(QStringLiteral("多行"), this);
   multiLineInputButton->setFixedSize(80, 38);
-  connect(multiLineInputButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(multiLineInputButton, &NXPushButton::clicked, this, [=]() {
     bool ok;
     QString text =
-        NXInputDialog::getMultiLineText(this, QStringLiteral("输入备注"), QStringLiteral("请详细描述您的需求"),
-                                        QStringLiteral("详细描述:"), QStringLiteral(""), &ok);
-    if (ok && !text.isEmpty())
-    {
+        NXInputDialog::getMultiLineText(this, QStringLiteral("输入备注"), QStringLiteral("请详细描述您的需求"), QStringLiteral("详细描述:"), QStringLiteral(""), &ok);
+    if (ok && !text.isEmpty()) {
       qDebug() << "多行输入:" << text;
     }
   });
@@ -175,8 +161,7 @@ T_Popup::T_Popup(QWidget *parent)
 
   _roller = new NXRoller(this);
   QStringList rollerItemList;
-  for (int i = 0; i < 100; i++)
-  {
+  for (int i = 0; i < 100; i++) {
     rollerItemList.append(QString::number(i + 1));
   }
   _roller->setItemList(rollerItemList);
@@ -198,13 +183,11 @@ T_Popup::T_Popup(QWidget *parent)
   QString currentMinute = QString(QStringLiteral("%1")).arg(currentTime.minute(), 2, 10, QChar('0'));
   _timeRollerPicker     = new NXRollerPicker(this);
   QStringList hourItemList;
-  for (int i = 0; i < 24; i++)
-  {
+  for (int i = 0; i < 24; i++) {
     hourItemList.append(QString(QStringLiteral("%1")).arg(i, 2, 10, QChar('0')));
   }
   QStringList minuteList;
-  for (int i = 0; i < 61; i++)
-  {
+  for (int i = 0; i < 61; i++) {
     minuteList.append(QString(QStringLiteral("%1")).arg(i, 2, 10, QChar('0')));
   }
   _timeRollerPicker->addRoller(hourItemList);
@@ -239,21 +222,16 @@ T_Popup::T_Popup(QWidget *parent)
   NXToggleSwitch *drawerSwitch = new NXToggleSwitch(this);
   NXText *drawerSwitchText     = new NXText(QStringLiteral("关"), this);
   drawerSwitchText->setTextPixelSize(15);
-  connect(drawerSwitch, &NXToggleSwitch::toggled, this, [=](bool toggled)
-  {
-    if (toggled)
-    {
+  connect(drawerSwitch, &NXToggleSwitch::toggled, this, [=](bool toggled) {
+    if (toggled) {
       drawerSwitchText->setText(QStringLiteral("开"));
       _drawer->expand();
-    }
-    else
-    {
+    } else {
       drawerSwitchText->setText(QStringLiteral("关"));
       _drawer->collapse();
     }
   });
-  connect(_drawer, &NXDrawerArea::expandStateChanged, this, [=](bool isExpand)
-  {
+  connect(_drawer, &NXDrawerArea::expandStateChanged, this, [=](bool isExpand) {
     drawerSwitch->setIsToggled(isExpand);
   });
 
@@ -298,12 +276,10 @@ T_Popup::T_Popup(QWidget *parent)
   _messageDialog->setAttribute(Qt::WA_TranslucentBackground);
 
   // 连接信号以判断点击了哪个按钮
-  connect(_messageDialog, &NXMessageDialog::confirmed, this, [=]()
-  {
+  connect(_messageDialog, &NXMessageDialog::confirmed, this, [=]() {
     qDebug() << "确认按钮被点击";
   });
-  connect(_messageDialog, &NXMessageDialog::cancelled, this, [=]()
-  {
+  connect(_messageDialog, &NXMessageDialog::cancelled, this, [=]() {
     qDebug() << "取消按钮被点击";
   });
 
@@ -315,8 +291,7 @@ T_Popup::T_Popup(QWidget *parent)
 
   NXPushButton *showMessageDialogButton = new NXPushButton(QStringLiteral("显示对话框"), this);
   showMessageDialogButton->setFixedSize(120, 38);
-  connect(showMessageDialogButton, &NXPushButton::clicked, this, [=]()
-  {
+  connect(showMessageDialogButton, &NXPushButton::clicked, this, [=]() {
     QPoint globalPos = showMessageDialogButton->mapToGlobal(QPoint(0, showMessageDialogButton->height() + 5));
     _messageDialog->move(globalPos);
     _messageDialog->show();

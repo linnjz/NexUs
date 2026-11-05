@@ -18,8 +18,8 @@ void NXPopularCardPrivate::_showFloater()
 {
   Q_Q(NXPopularCard);
   q->update();
-  _isFloating    = true;
-  _pHoverYOffset = 0;
-  _floatTimer->stop();
-  _floater->showFloater();
+  m_IsFloating    = true;
+  m_HoverYOffset = 0;
+  m_FloatTimer->stop();
+  m_Floater->showFloater();
 }

@@ -10,10 +10,10 @@ class T_TableViewModel : public QAbstractTableModel
 public:
   explicit T_TableViewModel(QObject *parent = nullptr);
   ~T_TableViewModel();
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+  int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  int columnCount(QModelIndex const &parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex &index, int role) const override;
+  QVariant data(QModelIndex const &index, int role) const override;
   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 private:

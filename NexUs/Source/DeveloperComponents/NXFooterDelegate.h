@@ -12,34 +12,34 @@ class NXBaseListView;
 class NXFooterDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), PressIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), PressIndex)
   Q_PRIVATE_CREATE(NXBaseListView *, NXListView)
 
 public:
   explicit NXFooterDelegate(QObject *parent = nullptr);
   ~NXFooterDelegate();
-  void navigationNodeStateChange(const QVariantMap &data);
+  void navigationNodeStateChange(QVariantMap const &data);
 
 protected:
-  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-  QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+  void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const override;
+  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 
 private:
-  bool _isSelectMarkDisplay { true };
-  int _leftPadding { 11 };
-  int _iconAreaWidth { 40 };
-  int _textRightSpacing { 3 };
-  int _indicatorIconAreaWidth { 24 };
-  NXThemeType::ThemeMode _themeMode;
-  qreal _lastSelectMarkTop { 10 };
-  qreal _lastSelectMarkBottom { 10 };
-  qreal _selectMarkTop { 10 };
-  qreal _selectMarkBottom { 10 };
-  NXNavigationNode *_lastSelectedNode { nullptr };
-  QPropertyAnimation *_lastSelectMarkTopAnimation { nullptr };
-  QPropertyAnimation *_lastSelectMarkBottomAnimation { nullptr };
-  QPropertyAnimation *_selectMarkTopAnimation { nullptr };
-  QPropertyAnimation *_selectMarkBottomAnimation { nullptr };
+  bool m_IsSelectMarkDisplay { true };
+  int m_LeftPadding { 11 };
+  int m_IconAreaWidth { 40 };
+  int m_TextRightSpacing { 3 };
+  int m_IndicatorIconAreaWidth { 24 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  qreal m_LastSelectMarkTop { 10 };
+  qreal m_LastSelectMarkBottom { 10 };
+  qreal m_SelectMarkTop { 10 };
+  qreal m_SelectMarkBottom { 10 };
+  NXNavigationNode *m_LastSelectedNode { nullptr };
+  QPropertyAnimation *m_LastSelectMarkTopAnimation { nullptr };
+  QPropertyAnimation *m_LastSelectMarkBottomAnimation { nullptr };
+  QPropertyAnimation *m_SelectMarkTopAnimation { nullptr };
+  QPropertyAnimation *m_SelectMarkBottomAnimation { nullptr };
   bool _compareItemY(NXNavigationNode *node1, NXNavigationNode *node2);
 };
 

@@ -80,20 +80,15 @@ MainWindow::MainWindow(QWidget *parent)
   exitBtn->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
   exitBtn->setDarkTextColor(Qt::black);
 
-  connect(_closeDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn)
-  {
-    if (btn == exitBtn)
-    {
+  connect(_closeDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn) {
+    if (btn == exitBtn) {
       close();
-    }
-    else if (btn == minBtn)
-    {
+    } else if (btn == minBtn) {
       showMinimized();
     }
   });
   this->setIsDefaultClosed(false);
-  connect(this, &MainWindow::closeButtonClicked, this, [=]()
-  {
+  connect(this, &MainWindow::closeButtonClicked, this, [=]() {
     _closeDialog->exec();
   });
 
@@ -116,8 +111,7 @@ MainWindow::~MainWindow()
   delete this->_aboutPage;
 }
 
-void
-MainWindow::initWindow()
+void MainWindow::initWindow()
 {
   setFocusPolicy(Qt::StrongFocus);
   // setIsCentralStackedWidgetTransparent(true);
@@ -150,31 +144,23 @@ MainWindow::initWindow()
   // 自定义AppBar菜单
   NXMenu *appBarMenu = new NXMenu(this);
   appBarMenu->setMenuItemHeight(27);
-  connect(appBarMenu->addAction(QStringLiteral("跳转到一级主要堆栈")), &QAction::triggered, this, [=]()
-  {
+  connect(appBarMenu->addAction(QStringLiteral("跳转到一级主要堆栈")), &QAction::triggered, this, [=]() {
     setCurrentStackIndex(0);
   });
-  connect(appBarMenu->addAction(QStringLiteral("跳转到二级主要堆栈")), &QAction::triggered, this, [=]()
-  {
+  connect(appBarMenu->addAction(QStringLiteral("跳转到二级主要堆栈")), &QAction::triggered, this, [=]() {
     setCurrentStackIndex(1);
   });
-  connect(appBarMenu->addAction(QStringLiteral("更改页面切换特效(Scale)")), &QAction::triggered, this, [=]()
-  {
+  connect(appBarMenu->addAction(QStringLiteral("更改页面切换特效(Scale)")), &QAction::triggered, this, [=]() {
     setStackSwitchMode(NXWindowType::StackSwitchMode::Scale);
   });
-  connect(appBarMenu->addNXIconAction(NXIconType::GearComplex, QStringLiteral("自定义主窗口设置")), &QAction::triggered,
-          this, [=]()
-  {
+  connect(appBarMenu->addNXIconAction(NXIconType::GearComplex, QStringLiteral("自定义主窗口设置")), &QAction::triggered, this, [=]() {
     navigation(_settingKey);
   });
   appBarMenu->addSeparator();
-  connect(appBarMenu->addNXIconAction(NXIconType::MoonStars, QStringLiteral("更改项目主题")), &QAction::triggered, this,
-          [=]()
-  {
+  connect(appBarMenu->addNXIconAction(NXIconType::MoonStars, QStringLiteral("更改项目主题")), &QAction::triggered, this, [=]() {
     nxTheme->setThemeMode(nxTheme->getThemeMode() == NXThemeType::Light ? NXThemeType::Dark : NXThemeType::Light);
   });
-  connect(appBarMenu->addAction(QStringLiteral("使用原生菜单")), &QAction::triggered, this, [=]()
-  {
+  connect(appBarMenu->addAction(QStringLiteral("使用原生菜单")), &QAction::triggered, this, [=]() {
     setCustomMenu(nullptr);
   });
   setCustomMenu(appBarMenu);
@@ -186,39 +172,30 @@ MainWindow::initWindow()
   NXToolButton *leftButton = new NXToolButton(this);
   leftButton->setNXIcon(NXIconType::AngleLeft);
   leftButton->setEnabled(false);
-  connect(leftButton, &NXToolButton::clicked, this, [=]()
-  {
+  connect(leftButton, &NXToolButton::clicked, this, [=]() {
     NXNavigationRouter::getInstance()->navigationRouteBack();
   });
   NXToolButton *rightButton = new NXToolButton(this);
   rightButton->setNXIcon(NXIconType::AngleRight);
   rightButton->setEnabled(false);
-  connect(rightButton, &NXToolButton::clicked, this, [=]()
-  {
+  connect(rightButton, &NXToolButton::clicked, this, [=]() {
     NXNavigationRouter::getInstance()->navigationRouteForward();
   });
-  connect(NXNavigationRouter::getInstance(), &NXNavigationRouter::navigationRouterStateChanged, this,
-          [=](NXNavigationRouterType::RouteMode routeMode)
-  {
-    switch (routeMode)
-    {
-    case NXNavigationRouterType::BackValid :
-    {
+  connect(NXNavigationRouter::getInstance(), &NXNavigationRouter::navigationRouterStateChanged, this, [=](NXNavigationRouterType::RouteMode routeMode) {
+    switch (routeMode) {
+    case NXNavigationRouterType::BackValid : {
       leftButton->setEnabled(true);
       break;
     }
-    case NXNavigationRouterType::BackInvalid :
-    {
+    case NXNavigationRouterType::BackInvalid : {
       leftButton->setEnabled(false);
       break;
     }
-    case NXNavigationRouterType::ForwardValid :
-    {
+    case NXNavigationRouterType::ForwardValid : {
       rightButton->setEnabled(true);
       break;
     }
-    case NXNavigationRouterType::ForwardInvalid :
-    {
+    case NXNavigationRouterType::ForwardInvalid : {
       rightButton->setEnabled(false);
       break;
     }
@@ -227,8 +204,7 @@ MainWindow::initWindow()
   _windowSuggestBox = new NXSuggestBox(this);
   _windowSuggestBox->setFixedHeight(32);
   _windowSuggestBox->setPlaceholderText(QStringLiteral("搜索关键字"));
-  connect(_windowSuggestBox, &NXSuggestBox::suggestionClicked, this, [=](const NXSuggestBox::SuggestData &suggestData)
-  {
+  connect(_windowSuggestBox, &NXSuggestBox::suggestionClicked, this, [=](NXSuggestBox::SuggestData const &suggestData) {
     navigation(suggestData.getSuggestData().value(QStringLiteral("NXPageKey")).toString());
   });
 
@@ -250,8 +226,7 @@ MainWindow::initWindow()
   setCentralCustomWidget(centralCustomWidget);
 }
 
-void
-MainWindow::initEdgeLayout()
+void MainWindow::initEdgeLayout()
 {
   //菜单栏
   NXMenuBar *menuBar = new NXMenuBar(this);
@@ -350,8 +325,7 @@ MainWindow::initEdgeLayout()
   toolBar->addSeparator();
   NXCheckBox *ribbonToggle = new NXCheckBox(QStringLiteral("启用 Ribbon"), this);
   ribbonToggle->setChecked(false);
-  connect(ribbonToggle, &QCheckBox::toggled, this, [=](bool checked)
-  {
+  connect(ribbonToggle, &QCheckBox::toggled, this, [=](bool checked) {
     setRibbonMode(checked);
   });
   toolBar->addWidget(ribbonToggle);
@@ -383,8 +357,7 @@ MainWindow::initEdgeLayout()
   this->setStatusBar(statusBar);
 }
 
-void
-MainWindow::initContent()
+void MainWindow::initContent()
 {
   _homePage = new T_Home(this);
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
@@ -446,8 +419,7 @@ MainWindow::initContent()
   QString testKey_1 = addExpanderNode(QStringLiteral("TEST_EXPAND_NODE1"), NXIconType::Acorn);
   QString testKey_2 = *addExpanderNode(QStringLiteral("TEST_EXPAND_NODE2"), testKey_1, NXIconType::Acorn);
   addPageNode(QStringLiteral("TEST_NODE3"), new QWidget(this), testKey_2, NXIconType::Acorn);
-  for (int i = 0; i < 10; i++)
-  {
+  for (int i = 0; i < 10; i++) {
     addExpanderNode(QString(QStringLiteral("TEST_EXPAND_NODE%1")).arg(i + 4), testKey_2, NXIconType::Acorn);
   }
   addExpanderNode(QStringLiteral("TEST_EXPAND_NODE14"), testKey_1, NXIconType::Acorn);
@@ -458,40 +430,31 @@ MainWindow::initContent()
   _aboutPage = new T_About();
 
   _aboutPage->hide();
-  connect(this, &NXWindow::navigationNodeClicked, this,
-          [=](NXNavigationType::NavigationNodeType nodeType, QString nodeKey)
-  {
-    if (_aboutKey == nodeKey)
-    {
+  connect(this, &NXWindow::navigationNodeClicked, this, [=](NXNavigationType::NavigationNodeType nodeType, QString nodeKey) {
+    if (_aboutKey == nodeKey) {
       _aboutPage->moveToCenter();
       _aboutPage->show();
     }
   });
   _settingKey = *addFooterNode(QStringLiteral("Setting"), _settingPage, 0, NXIconType::GearComplex);
-  connect(this, &MainWindow::userInfoCardClicked, this, [=]()
-  {
+  connect(this, &MainWindow::userInfoCardClicked, this, [=]() {
     this->navigation(_homePage->property("NXPageKey").toString());
   });
 #ifdef Q_OS_WIN
-  connect(_homePage, &T_Home::screenNavigation, this, [=]()
-  {
+  connect(_homePage, &T_Home::screenNavigation, this, [=]() {
     this->navigation(_screenPage->property("NXPageKey").toString());
   });
 #endif
-  connect(_homePage, &T_Home::baseComponentNavigation, this, [=]()
-  {
+  connect(_homePage, &T_Home::baseComponentNavigation, this, [=]() {
     this->navigation(_baseComponentsPage->property("NXPageKey").toString());
   });
-  connect(_homePage, &T_Home::sceneNavigation, this, [=]()
-  {
+  connect(_homePage, &T_Home::sceneNavigation, this, [=]() {
     this->navigation(_graphicsPage->property("NXPageKey").toString());
   });
-  connect(_homePage, &T_Home::iconNavigation, this, [=]()
-  {
+  connect(_homePage, &T_Home::iconNavigation, this, [=]() {
     this->navigation(_iconPage->property("NXPageKey").toString());
   });
-  connect(_homePage, &T_Home::cardNavigation, this, [=]()
-  {
+  connect(_homePage, &T_Home::cardNavigation, this, [=]() {
     this->navigation(_cardPage->property("NXPageKey").toString());
   });
 
@@ -499,8 +462,7 @@ MainWindow::initContent()
   qDebug() << "已注册的事件列表" << NXEventBus::getInstance()->getRegisteredEventsName();
 }
 
-void
-MainWindow::initRibbon()
+void MainWindow::initRibbon()
 {
   NXRibbonTabBar *ribbonTabBar = new NXRibbonTabBar(this);
   QWidget *tabBarWrapper       = new QWidget(this);
@@ -609,8 +571,7 @@ MainWindow::initRibbon()
   NXText *zoomValue = new NXText(QStringLiteral("100%"), this);
   zoomValue->setTextPixelSize(11);
   zoomValue->setAlignment(Qt::AlignCenter);
-  connect(zoomSlider, &QSlider::valueChanged, zoomValue, [=](int v)
-  {
+  connect(zoomSlider, &QSlider::valueChanged, zoomValue, [=](int v) {
     zoomValue->setText(QString(QStringLiteral("%1%")).arg(v));
   });
   zoomColumnLayout->addWidget(zoomLabel);
@@ -627,91 +588,69 @@ MainWindow::initRibbon()
   ribbonToolBar->addWidget(ribbonBar);
 
   QToolBar *existingTopBar = nullptr;
-  for (QObject *child : this->children())
-  {
+  for (QObject *child : this->children()) {
     QToolBar *bar = qobject_cast<QToolBar *>(child);
-    if (bar && bar != ribbonToolBar && this->toolBarArea(bar) == Qt::TopToolBarArea)
-    {
+    if (bar && bar != ribbonToolBar && this->toolBarArea(bar) == Qt::TopToolBarArea) {
       existingTopBar = bar;
       break;
     }
   }
-  if (existingTopBar)
-  {
+  if (existingTopBar) {
     insertToolBar(existingTopBar, ribbonToolBar);
     insertToolBarBreak(existingTopBar);
-  }
-  else
-  {
+  } else {
     addToolBar(Qt::TopToolBarArea, ribbonToolBar);
   }
   ribbonToolBar->hide();
   _ribbonToolBar = ribbonToolBar;
 
   ribbonToolBar->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(ribbonToolBar, &QWidget::customContextMenuRequested, this, [=](const QPoint &pos)
-  {
+  connect(ribbonToolBar, &QWidget::customContextMenuRequested, this, [=](QPoint const &pos) {
     ribbonBar->showPinContextMenu(ribbonToolBar->mapToGlobal(pos));
   });
 }
 
-void
-MainWindow::setRibbonMode(bool enabled)
+void MainWindow::setRibbonMode(bool enabled)
 {
   _isRibbonMode = enabled;
-  if (enabled)
-  {
-    if (_menuBarWrapper)
-    {
+  if (enabled) {
+    if (_menuBarWrapper) {
       _menuBarWrapper->hide();
     }
-    if (_ribbonTabBarWrapper)
-    {
+    if (_ribbonTabBarWrapper) {
       _ribbonTabBarWrapper->show();
       this->setCustomWidget(NXAppBarType::MiddleArea, _ribbonTabBarWrapper);
     }
-    if (_ribbonToolBar)
-    {
+    if (_ribbonToolBar) {
       _ribbonToolBar->show();
     }
-  }
-  else
-  {
-    if (_ribbonTabBarWrapper)
-    {
+  } else {
+    if (_ribbonTabBarWrapper) {
       _ribbonTabBarWrapper->hide();
     }
-    if (_ribbonToolBar)
-    {
+    if (_ribbonToolBar) {
       _ribbonToolBar->hide();
     }
-    if (_menuBarWrapper)
-    {
+    if (_menuBarWrapper) {
       _menuBarWrapper->show();
       this->setCustomWidget(NXAppBarType::MiddleArea, _menuBarWrapper);
     }
   }
 }
 
-void
-MainWindow::mouseReleaseEvent(QMouseEvent *event)
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-  if (getCurrentNavigationIndex() != 2)
-  {
-    switch (event->button())
-    {
-    case Qt::BackButton :
-    {
+  if (getCurrentNavigationIndex() != 2) {
+    switch (event->button()) {
+    case Qt::BackButton : {
       this->setCurrentStackIndex(0);
       break;
     }
-    case Qt::ForwardButton :
-    {
+    case Qt::ForwardButton : {
       this->setCurrentStackIndex(1);
       break;
     }
-    default :
-    {
+    default : {
       break;
     }
     }

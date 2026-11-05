@@ -10,8 +10,8 @@
 #include "NXTheme.h"
 #include "private/NXWizardPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXWizard, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXWizard, int, CurrentStep)
+Q_PROPERTY_CREATE_CPP(NXWizard, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXWizard, QPS_PAEMIT(int), CurrentStep)
 
 NXWizard::NXWizard(QWidget *parent)
     : QWidget { nullptr }
@@ -19,23 +19,23 @@ NXWizard::NXWizard(QWidget *parent)
 {
   Q_D(NXWizard);
   d->q_ptr          = this;
-  d->_pBorderRadius = 10;
-  d->_pCurrentStep  = 0;
+  d->m_BorderRadius = 10;
+  d->m_CurrentStep  = 0;
   setObjectName("NXWizard");
   setFixedSize(600, 450);
   setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
 
-  d->_stackedWidget = new QStackedWidget(this);
+  d->m_StackedWidget = new QStackedWidget(this);
 
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
-  int sw                  = d->_shadowBorderWidth;
+  int sw                  = d->m_ShadowBorderWidth;
   mainLayout->setContentsMargins(sw, sw + 70, sw, sw + 50);
-  mainLayout->addWidget(d->_stackedWidget);
+  mainLayout->addWidget(d->m_StackedWidget);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 
@@ -53,34 +53,34 @@ NXWizard::~NXWizard()
 {
 }
 
-void NXWizard::addStep(const QString &title, QWidget *page)
+void NXWizard::addStep(QString const &title, QWidget *page)
 {
   Q_D(NXWizard);
-  d->_stepTitles.append(title);
-  d->_stepPages.append(page);
-  d->_stackedWidget->addWidget(page);
+  d->m_StepTitles.append(title);
+  d->m_StepPages.append(page);
+  d->m_StackedWidget->addWidget(page);
   update();
 }
 
 void NXWizard::next()
 {
   Q_D(NXWizard);
-  if (d->_pCurrentStep < d->_stepPages.count() - 1) {
-    d->_pCurrentStep++;
-    d->_stackedWidget->setCurrentIndex(d->_pCurrentStep);
+  if (d->m_CurrentStep < d->m_StepPages.count() - 1) {
+    d->m_CurrentStep++;
+    d->m_StackedWidget->setCurrentIndex(d->m_CurrentStep);
     update();
-    Q_EMIT currentStepChanged(d->_pCurrentStep);
+    Q_EMIT currentStepChanged(d->m_CurrentStep);
   }
 }
 
 void NXWizard::previous()
 {
   Q_D(NXWizard);
-  if (d->_pCurrentStep > 0) {
-    d->_pCurrentStep--;
-    d->_stackedWidget->setCurrentIndex(d->_pCurrentStep);
+  if (d->m_CurrentStep > 0) {
+    d->m_CurrentStep--;
+    d->m_StackedWidget->setCurrentIndex(d->m_CurrentStep);
     update();
-    Q_EMIT currentStepChanged(d->_pCurrentStep);
+    Q_EMIT currentStepChanged(d->m_CurrentStep);
   }
 }
 
@@ -92,8 +92,8 @@ void NXWizard::finish()
 
 int NXWizard::getStepCount() const
 {
-  Q_D(const NXWizard);
-  return d->_stepPages.count();
+  Q_CONST_D(NXWizard);
+  return d->m_StepPages.count();
 }
 
 void NXWizard::paintEvent(QPaintEvent *event)
@@ -103,16 +103,16 @@ void NXWizard::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  int sw = d->_shadowBorderWidth;
+  int sw = d->m_ShadowBorderWidth;
 
   // Shadow
-  nxTheme->drawEffectShadow(&painter, rect(), sw, d->_pBorderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), sw, d->m_BorderRadius);
 
   // Background
   QRect foregroundRect = rect().adjusted(sw, sw, -sw, -sw);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
 
   int fgX = foregroundRect.x();
   int fgY = foregroundRect.y();
@@ -121,7 +121,7 @@ void NXWizard::paintEvent(QPaintEvent *event)
 
   // --- Top area: step indicator (70px) ---
   int topAreaHeight = 70;
-  int stepCount     = d->_stepPages.count();
+  int stepCount     = d->m_StepPages.count();
 
   if (stepCount > 0) {
     int circleDiameter = 28;
@@ -134,10 +134,10 @@ void NXWizard::paintEvent(QPaintEvent *event)
     qreal usableWidth = fgW - margin * 2;
     qreal spacing     = (stepCount > 1) ? usableWidth / (stepCount - 1) : 0;
 
-    QColor primaryNormal    = NXThemeColor(d->_themeMode, PrimaryNormal);
-    QColor basicBase        = NXThemeColor(d->_themeMode, BasicBase);
-    QColor basicBorder      = NXThemeColor(d->_themeMode, BasicBorder);
-    QColor basicDetailsText = NXThemeColor(d->_themeMode, BasicDetailsText);
+    QColor primaryNormal    = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
+    QColor basicBase        = NXThemeColor(d->m_ThemeMode, BasicBase);
+    QColor basicBorder      = NXThemeColor(d->m_ThemeMode, BasicBorder);
+    QColor basicDetailsText = NXThemeColor(d->m_ThemeMode, BasicDetailsText);
     QColor whiteColor       = Qt::white;
 
     QFont iconFont(QStringLiteral("NXAwesome"));
@@ -159,7 +159,7 @@ void NXWizard::paintEvent(QPaintEvent *event)
         qreal nextCx     = (fgX + margin + (i + 1) * spacing);
         qreal lineEndX   = nextCx - circleRadius;
 
-        if (i < d->_pCurrentStep) {
+        if (i < d->m_CurrentStep) {
           painter.setPen(QPen(primaryNormal, 2));
         } else {
           painter.setPen(QPen(basicBorder, 2));
@@ -171,14 +171,14 @@ void NXWizard::paintEvent(QPaintEvent *event)
       QRectF circleRect(cx - circleRadius, circleY, circleDiameter, circleDiameter);
       painter.setPen(Qt::NoPen);
 
-      if (i < d->_pCurrentStep) {
+      if (i < d->m_CurrentStep) {
         // Completed
         painter.setBrush(primaryNormal);
         painter.drawEllipse(circleRect);
         painter.setPen(whiteColor);
         painter.setFont(iconFont);
         painter.drawText(circleRect, Qt::AlignCenter, QChar((unsigned short) 0xea'6c));
-      } else if (i == d->_pCurrentStep) {
+      } else if (i == d->m_CurrentStep) {
         // Active
         painter.setBrush(primaryNormal);
         painter.drawEllipse(circleRect);
@@ -198,18 +198,18 @@ void NXWizard::paintEvent(QPaintEvent *event)
       }
 
       // Title
-      if (i < d->_stepTitles.size()) {
-        painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+      if (i < d->m_StepTitles.size()) {
+        painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
         painter.setFont(titleFont);
         int titleWidth = 120;
         QRectF titleRect(cx - titleWidth / 2.0, titleY, titleWidth, 20);
-        painter.drawText(titleRect, Qt::AlignHCenter | Qt::AlignTop, d->_stepTitles[i]);
+        painter.drawText(titleRect, Qt::AlignHCenter | Qt::AlignTop, d->m_StepTitles[i]);
       }
     }
   }
 
   // --- Separator line: top / middle ---
-  QColor separatorColor = NXThemeColor(d->_themeMode, BasicBorder);
+  QColor separatorColor = NXThemeColor(d->m_ThemeMode, BasicBorder);
   painter.setPen(QPen(separatorColor, 1));
   int topSepY = fgY + topAreaHeight;
   painter.drawLine(fgX + 1, topSepY, fgX + fgW - 1, topSepY);
@@ -230,16 +230,16 @@ void NXWizard::paintEvent(QPaintEvent *event)
   painter.setFont(btnFont);
   QFontMetrics fm(btnFont);
 
-  QColor basicBase     = NXThemeColor(d->_themeMode, BasicBase);
-  QColor basicText     = NXThemeColor(d->_themeMode, BasicText);
-  QColor basicBorder   = NXThemeColor(d->_themeMode, BasicBorder);
-  QColor primaryNormal = NXThemeColor(d->_themeMode, PrimaryNormal);
+  QColor basicBase     = NXThemeColor(d->m_ThemeMode, BasicBase);
+  QColor basicText     = NXThemeColor(d->m_ThemeMode, BasicText);
+  QColor basicBorder   = NXThemeColor(d->m_ThemeMode, BasicBorder);
+  QColor primaryNormal = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
 
   // Cancel button (left)
   QString cancelText = QStringLiteral("\u53D6\u6D88");
   int cancelW        = fm.horizontalAdvance(cancelText) + 24;
   QRect cancelRect(fgX + btnMargin, btnY, cancelW, btnH);
-  d->_cancelButtonRect = cancelRect;
+  d->m_CancelButtonRect = cancelRect;
   painter.setPen(QPen(basicBorder, 1));
   painter.setBrush(basicBase);
   painter.drawRoundedRect(cancelRect, 4, 4);
@@ -247,11 +247,11 @@ void NXWizard::paintEvent(QPaintEvent *event)
   painter.drawText(cancelRect, Qt::AlignCenter, cancelText);
 
   // Next/Finish button (rightmost)
-  bool isLastStep  = (d->_pCurrentStep >= d->_stepPages.count() - 1) && (d->_stepPages.count() > 0);
+  bool isLastStep  = (d->m_CurrentStep >= d->m_StepPages.count() - 1) && (d->m_StepPages.count() > 0);
   QString nextText = isLastStep ? QStringLiteral("\u5B8C\u6210") : QStringLiteral("\u4E0B\u4E00\u6B65");
   int nextW        = fm.horizontalAdvance(nextText) + 24;
   QRect nextRect(fgX + fgW - btnMargin - nextW, btnY, nextW, btnH);
-  d->_nextButtonRect = nextRect;
+  d->m_NextButtonRect = nextRect;
   painter.setPen(Qt::NoPen);
   painter.setBrush(primaryNormal);
   painter.drawRoundedRect(nextRect, 4, 4);
@@ -262,8 +262,8 @@ void NXWizard::paintEvent(QPaintEvent *event)
   QString prevText = QStringLiteral("\u4E0A\u4E00\u6B65");
   int prevW        = fm.horizontalAdvance(prevText) + 24;
   QRect prevRect(nextRect.x() - btnSpacing - prevW, btnY, prevW, btnH);
-  d->_prevButtonRect = prevRect;
-  bool prevDisabled  = (d->_pCurrentStep == 0);
+  d->m_PrevButtonRect = prevRect;
+  bool prevDisabled  = (d->m_CurrentStep == 0);
   painter.setPen(QPen(basicBorder, 1));
   painter.setBrush(basicBase);
   painter.drawRoundedRect(prevRect, 4, 4);
@@ -281,17 +281,17 @@ void NXWizard::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXWizard);
   QPoint pos = event->pos();
-  if (d->_cancelButtonRect.contains(pos)) {
+  if (d->m_CancelButtonRect.contains(pos)) {
     Q_EMIT cancelled();
     hide();
     return;
   }
-  if (d->_prevButtonRect.contains(pos) && d->_pCurrentStep > 0) {
+  if (d->m_PrevButtonRect.contains(pos) && d->m_CurrentStep > 0) {
     previous();
     return;
   }
-  if (d->_nextButtonRect.contains(pos)) {
-    bool isLastStep = (d->_pCurrentStep >= d->_stepPages.count() - 1) && (d->_stepPages.count() > 0);
+  if (d->m_NextButtonRect.contains(pos)) {
+    bool isLastStep = (d->m_CurrentStep >= d->m_StepPages.count() - 1) && (d->m_StepPages.count() > 0);
     if (isLastStep) {
       finish();
     } else {

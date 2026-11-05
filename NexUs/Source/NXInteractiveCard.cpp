@@ -5,16 +5,16 @@
 
 #include "NXTheme.h"
 #include "private/NXInteractiveCardPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QS_SET_CREF(QString), SubTitle)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QS_SET_CREF(QPixmap), CardPixmap)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QSize, CardPixmapSize)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, int, TitlePixelSize)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, int, SubTitlePixelSize)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, int, TitleSpacing)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, int, CardPixmapBorderRadius)
-Q_PROPERTY_CREATE_CPP(NXInteractiveCard, NXCardPixType::PixMode, CardPixMode)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_SCREF_PAEMIT(QString), SubTitle)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_SCREF_PAEMIT(QPixmap), CardPixmap)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(QSize), CardPixmapSize)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(int), TitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(int), SubTitlePixelSize)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(int), TitleSpacing)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(int), CardPixmapBorderRadius)
+Q_PROPERTY_CREATE_CPP(NXInteractiveCard, QPS_PAEMIT(NXCardPixType::PixMode), CardPixMode)
 
 NXInteractiveCard::NXInteractiveCard(QWidget *parent)
     : QPushButton(parent)
@@ -22,18 +22,18 @@ NXInteractiveCard::NXInteractiveCard(QWidget *parent)
 {
   Q_D(NXInteractiveCard);
   d->q_ptr               = this;
-  d->_pBorderRadius      = 6;
-  d->_pTitlePixelSize    = 15;
-  d->_pSubTitlePixelSize = 12;
+  d->m_BorderRadius      = 6;
+  d->m_TitlePixelSize    = 15;
+  d->m_SubTitlePixelSize = 12;
   setMinimumSize(270, 80);
-  d->_pCardPixmapSize         = QSize(64, 64);
-  d->_pTitleSpacing           = 2;
-  d->_pCardPixmapBorderRadius = 6;
-  d->_pCardPixMode            = NXCardPixType::PixMode::Ellipse;
-  d->_themeMode               = nxTheme->getThemeMode();
+  d->m_CardPixmapSize         = QSize(64, 64);
+  d->m_TitleSpacing           = 2;
+  d->m_CardPixmapBorderRadius = 6;
+  d->m_CardPixMode            = NXCardPixType::PixMode::Ellipse;
+  d->m_ThemeMode               = nxTheme->getThemeMode();
   setMouseTracking(true);
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
@@ -44,8 +44,8 @@ NXInteractiveCard::~NXInteractiveCard()
 void NXInteractiveCard::setCardPixmapSize(int width, int height)
 {
   Q_D(NXInteractiveCard);
-  d->_pCardPixmapSize = QSize(width, height);
-  Q_EMIT pCardPixmapSizeChanged();
+  d->m_CardPixmapSize = QSize(width, height);
+  Q_EMIT signalCardPixmapSizeChanged();
 }
 
 void NXInteractiveCard::paintEvent(QPaintEvent *event)
@@ -55,38 +55,38 @@ void NXInteractiveCard::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(underMouse() ? NXThemeColor(d->_themeMode, BasicHoverAlpha) : Qt::transparent);
-  painter.drawRoundedRect(rect(), d->_pBorderRadius, d->_pBorderRadius);
+  painter.setBrush(underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHoverAlpha) : Qt::transparent);
+  painter.drawRoundedRect(rect(), d->m_BorderRadius, d->m_BorderRadius);
   // 图片绘制
-  if (!d->_pCardPixmap.isNull()) {
+  if (!d->m_CardPixmap.isNull()) {
     painter.save();
     QPainterPath path;
-    if (d->_pCardPixMode == NXCardPixType::PixMode::Ellipse) {
-      path.addEllipse(QPointF(d->_pCardPixmapSize.width() / 2 + 10, height() / 2), d->_pCardPixmapSize.width() / 2, d->_pCardPixmapSize.height() / 2);
+    if (d->m_CardPixMode == NXCardPixType::PixMode::Ellipse) {
+      path.addEllipse(QPointF(d->m_CardPixmapSize.width() / 2 + 10, height() / 2), d->m_CardPixmapSize.width() / 2, d->m_CardPixmapSize.height() / 2);
       painter.setClipPath(path);
-      painter.drawPixmap(QRect(10, (height() - d->_pCardPixmapSize.height()) / 2, d->_pCardPixmapSize.width(), d->_pCardPixmapSize.height()),
-                         d->_pCardPixmap); // rect为绘制区域，image为要绘制的图片
-    } else if (d->_pCardPixMode == NXCardPixType::PixMode::Default) {
-      painter.drawPixmap(10, (height() - d->_pCardPixmapSize.height()) / 2, d->_pCardPixmapSize.width(), d->_pCardPixmapSize.height(), d->_pCardPixmap);
-    } else if (d->_pCardPixMode == NXCardPixType::PixMode::RoundedRect) {
-      path.addRoundedRect(QRectF(10, (height() - d->_pCardPixmapSize.height()) / 2, d->_pCardPixmapSize.width(), d->_pCardPixmapSize.height()), d->_pCardPixmapBorderRadius, d->_pCardPixmapBorderRadius);
+      painter.drawPixmap(QRect(10, (height() - d->m_CardPixmapSize.height()) / 2, d->m_CardPixmapSize.width(), d->m_CardPixmapSize.height()),
+                         d->m_CardPixmap); // rect为绘制区域，image为要绘制的图片
+    } else if (d->m_CardPixMode == NXCardPixType::PixMode::Default) {
+      painter.drawPixmap(10, (height() - d->m_CardPixmapSize.height()) / 2, d->m_CardPixmapSize.width(), d->m_CardPixmapSize.height(), d->m_CardPixmap);
+    } else if (d->m_CardPixMode == NXCardPixType::PixMode::RoundedRect) {
+      path.addRoundedRect(QRectF(10, (height() - d->m_CardPixmapSize.height()) / 2, d->m_CardPixmapSize.width(), d->m_CardPixmapSize.height()), d->m_CardPixmapBorderRadius, d->m_CardPixmapBorderRadius);
       painter.setClipPath(path);
-      painter.drawPixmap(10, (height() - d->_pCardPixmapSize.height()) / 2, d->_pCardPixmapSize.width(), d->_pCardPixmapSize.height(), d->_pCardPixmap);
+      painter.drawPixmap(10, (height() - d->m_CardPixmapSize.height()) / 2, d->m_CardPixmapSize.width(), d->m_CardPixmapSize.height(), d->m_CardPixmap);
     }
     painter.restore();
   }
   // 文字绘制
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
   QFont font = this->font();
   font.setWeight(QFont::Bold);
-  font.setPixelSize(d->_pTitlePixelSize);
+  font.setPixelSize(d->m_TitlePixelSize);
   painter.setFont(font);
-  int textStartX = d->_pCardPixmapSize.width() + 26;
+  int textStartX = d->m_CardPixmapSize.width() + 26;
   int textWidth  = width() - textStartX;
-  painter.drawText(QRect(textStartX, rect().y(), textWidth, height() / 2 - d->_pTitleSpacing), Qt::TextWordWrap | Qt::AlignBottom | Qt::AlignLeft, d->_pTitle);
+  painter.drawText(QRect(textStartX, rect().y(), textWidth, height() / 2 - d->m_TitleSpacing), Qt::TextWordWrap | Qt::AlignBottom | Qt::AlignLeft, d->m_Title);
   font.setWeight(QFont::Normal);
-  font.setPixelSize(d->_pSubTitlePixelSize);
+  font.setPixelSize(d->m_SubTitlePixelSize);
   painter.setFont(font);
-  painter.drawText(QRect(textStartX, height() / 2 + d->_pTitleSpacing, textWidth, height() / 2 - d->_pTitleSpacing), Qt::TextWordWrap | Qt::AlignTop | Qt::AlignLeft, d->_pSubTitle);
+  painter.drawText(QRect(textStartX, height() / 2 + d->m_TitleSpacing, textWidth, height() / 2 - d->m_TitleSpacing), Qt::TextWordWrap | Qt::AlignTop | Qt::AlignLeft, d->m_SubTitle);
   painter.restore();
 }

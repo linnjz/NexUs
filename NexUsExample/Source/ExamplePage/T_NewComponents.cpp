@@ -112,8 +112,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   badgeSlider->setFixedWidth(200);
   NXText *badgeValueText = new NXText(QStringLiteral("5"), this);
   badgeValueText->setTextPixelSize(13);
-  connect(badgeSlider, &NXSlider::valueChanged, this, [=](int v)
-  {
+  connect(badgeSlider, &NXSlider::valueChanged, this, [=](int v) {
     _valueBadge->setValue(v);
     badgeValueText->setText(QString::number(v));
   });
@@ -137,8 +136,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   severityGroup->addButton(cautionRadio, 3);
   severityGroup->addButton(criticalRadio, 4);
   infoRadio->setChecked(true);
-  connect(severityGroup, QOverload<int>::of(&QButtonGroup::idClicked), this, [=](int id)
-  {
+  connect(severityGroup, QOverload<int>::of(&QButtonGroup::idClicked), this, [=](int id) {
     _valueBadge->setSeverity(static_cast<NXInfoBadge::Severity>(id));
   });
   severityLayout->addWidget(attentionRadio);
@@ -195,20 +193,17 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _teachingTip->setContent(QStringLiteral("现在支持区域截图、延时截图和 OCR 文字识别。"));
   _teachingTip->setTipIcon(NXIconType::CameraRetro);
   _teachingTip->setTailPosition(NXTeachingTip::Bottom);
-  _teachingTip->addAction(QStringLiteral("跳过"), [=]()
-  {
+  _teachingTip->addAction(QStringLiteral("跳过"), [=]() {
     _teachingTip->closeTip();
   });
-  _teachingTip->addAction(QStringLiteral("了解更多"), [=]()
-  {
+  _teachingTip->addAction(QStringLiteral("了解更多"), [=]() {
     _teachingTip->closeTip();
   });
 
   _teachingTipTarget = new NXPushButton(QStringLiteral("显示 TeachingTip"), this);
   _teachingTipTarget->setFixedSize(160, 38);
   _teachingTip->setTarget(_teachingTipTarget);
-  connect(_teachingTipTarget, &NXPushButton::clicked, this, [=]()
-  {
+  connect(_teachingTipTarget, &NXPushButton::clicked, this, [=]() {
     _teachingTip->showTip();
   });
 
@@ -234,8 +229,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   tipPosGroup->addButton(leftRadio, 3);
   tipPosGroup->addButton(rightRadio, 4);
   bottomRadio->setChecked(true);
-  connect(tipPosGroup, QOverload<int>::of(&QButtonGroup::idClicked), this, [=](int id)
-  {
+  connect(tipPosGroup, QOverload<int>::of(&QButtonGroup::idClicked), this, [=](int id) {
     _teachingTip->setTailPosition(static_cast<NXTeachingTip::TailPosition>(id));
   });
   tipPosLayout->addWidget(autoRadio);
@@ -272,8 +266,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXText *numberValue = new NXText(QStringLiteral("25"), this);
   numberValue->setTextPixelSize(13);
-  connect(_numberBox, &NXNumberBox::valueChanged, this, [=](double v)
-  {
+  connect(_numberBox, &NXNumberBox::valueChanged, this, [=](double v) {
     numberValue->setText(QString::number(v, 'f', 0));
   });
 
@@ -325,16 +318,13 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   NXTag *closableTag3 = new NXTag(this);
   closableTag3->setTagText(QStringLiteral("上海"));
   closableTag3->setIsClosable(true);
-  connect(_closableTag, &NXTag::closed, this, [=]()
-  {
+  connect(_closableTag, &NXTag::closed, this, [=]() {
     _closableTag->hide();
   });
-  connect(closableTag2, &NXTag::closed, this, [=]()
-  {
+  connect(closableTag2, &NXTag::closed, this, [=]() {
     closableTag2->hide();
   });
-  connect(closableTag3, &NXTag::closed, this, [=]()
-  {
+  connect(closableTag3, &NXTag::closed, this, [=]() {
     closableTag3->hide();
   });
 
@@ -407,8 +397,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _ratingControl->setRating(5);
   NXText *ratingValue = new NXText(QStringLiteral("5"), this);
   ratingValue->setTextPixelSize(15);
-  connect(_ratingControl, &NXRatingControl::ratingChanged, this, [=](int r)
-  {
+  connect(_ratingControl, &NXRatingControl::ratingChanged, this, [=](int r) {
     ratingValue->setText(QString::number(r));
   });
 
@@ -429,8 +418,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _flyout->setContent(QStringLiteral("轻量级弹出面板，点击外部自动关闭。"));
   NXPushButton *flyoutBtn = new NXPushButton(QStringLiteral("显示 Flyout"), this);
   flyoutBtn->setFixedSize(120, 38);
-  connect(flyoutBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(flyoutBtn, &NXPushButton::clicked, this, [=]() {
     _flyout->showFlyout(flyoutBtn);
   });
 
@@ -445,8 +433,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *customFlyoutBtn = new NXPushButton(QStringLiteral("自定义 Flyout"), this);
   customFlyoutBtn->setFixedSize(130, 38);
-  connect(customFlyoutBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(customFlyoutBtn, &NXPushButton::clicked, this, [=]() {
     customFlyout->showFlyout(customFlyoutBtn);
   });
 
@@ -521,8 +508,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   QStackedWidget *pageStack = new QStackedWidget(this);
   pageStack->setFixedHeight(160);
   int totalPages = 50;
-  for (int p = 1; p <= totalPages; p++)
-  {
+  for (int p = 1; p <= totalPages; p++) {
     QWidget *page     = new QWidget(this);
     QVBoxLayout *pLay = new QVBoxLayout(page);
     pLay->setContentsMargins(15, 10, 15, 10);
@@ -538,8 +524,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _pagination->setJumperVisible(true);
   NXText *pageInfo = new NXText(QString(QStringLiteral("第 1 / %1 页")).arg(totalPages), this);
   pageInfo->setTextPixelSize(13);
-  connect(_pagination, &NXPagination::currentPageChanged, this, [=](int pg)
-  {
+  connect(_pagination, &NXPagination::currentPageChanged, this, [=](int pg) {
     pageStack->setCurrentIndex(pg - 1);
     pageInfo->setText(QString(QStringLiteral("第 %1 / %2 页")).arg(pg).arg(totalPages));
   });
@@ -553,10 +538,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   // ========== NXTimeline 示例 ==========
   _timeline = new NXTimeline(this);
-  _timeline->addItem({ QStringLiteral("项目启动"), QStringLiteral("完成需求分析和技术选型"),
-                       QStringLiteral("2026-01-15"), NXIconType::RocketLaunch });
-  _timeline->addItem({ QStringLiteral("开发阶段"), QStringLiteral("完成核心模块开发"), QStringLiteral("2026-02-20"),
-                       NXIconType::Code });
+  _timeline->addItem({ QStringLiteral("项目启动"), QStringLiteral("完成需求分析和技术选型"), QStringLiteral("2026-01-15"), NXIconType::RocketLaunch });
+  _timeline->addItem({ QStringLiteral("开发阶段"), QStringLiteral("完成核心模块开发"), QStringLiteral("2026-02-20"), NXIconType::Code });
   _timeline->addItem(
       { QStringLiteral("测试阶段"), QStringLiteral("集成测试和验收测试"), QStringLiteral("2026-03-01") });
   _timeline->addItem({ QStringLiteral("发布上线"), QStringLiteral("部署到生产环境"), QStringLiteral("2026-03-15") });
@@ -564,26 +547,22 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   // ========== NXToast 示例 ==========
   NXPushButton *toastSuccessBtn = new NXPushButton(QStringLiteral("成功"), this);
   toastSuccessBtn->setFixedSize(70, 32);
-  connect(toastSuccessBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(toastSuccessBtn, &NXPushButton::clicked, this, [=]() {
     NXToast::success(QStringLiteral("操作成功完成!"), 2000, window());
   });
   NXPushButton *toastInfoBtn = new NXPushButton(QStringLiteral("信息"), this);
   toastInfoBtn->setFixedSize(70, 32);
-  connect(toastInfoBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(toastInfoBtn, &NXPushButton::clicked, this, [=]() {
     NXToast::info(QStringLiteral("这是一条提示信息"), 2000, window());
   });
   NXPushButton *toastWarnBtn = new NXPushButton(QStringLiteral("警告"), this);
   toastWarnBtn->setFixedSize(70, 32);
-  connect(toastWarnBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(toastWarnBtn, &NXPushButton::clicked, this, [=]() {
     NXToast::warning(QStringLiteral("请注意检查输入"), 2000, window());
   });
   NXPushButton *toastErrorBtn = new NXPushButton(QStringLiteral("错误"), this);
   toastErrorBtn->setFixedSize(70, 32);
-  connect(toastErrorBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(toastErrorBtn, &NXPushButton::clicked, this, [=]() {
     NXToast::error(QStringLiteral("操作失败，请重试"), 2000, window());
   });
 
@@ -624,8 +603,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *wizardBtn = new NXPushButton(QStringLiteral("打开向导"), this);
   wizardBtn->setFixedSize(100, 38);
-  connect(wizardBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(wizardBtn, &NXPushButton::clicked, this, [=]() {
     _wizard->show();
   });
 
@@ -639,15 +617,12 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _notificationCenter = new NXNotificationCenter(this);
   _notificationCenter->addNotification(
       { QStringLiteral("系统更新"), QStringLiteral("NexUs 已更新到 v2.1"), QStringLiteral("10:30") });
-  _notificationCenter->addNotification({ QStringLiteral("构建完成"), QStringLiteral("项目编译成功，耗时 12 秒"),
-                                         QStringLiteral("10:25"), NXIconType::Check });
-  _notificationCenter->addNotification({ QStringLiteral("新消息"), QStringLiteral("收到来自 Qt 社区的新回复"),
-                                         QStringLiteral("09:45"), NXIconType::Envelope });
+  _notificationCenter->addNotification({ QStringLiteral("构建完成"), QStringLiteral("项目编译成功，耗时 12 秒"), QStringLiteral("10:25"), NXIconType::Check });
+  _notificationCenter->addNotification({ QStringLiteral("新消息"), QStringLiteral("收到来自 Qt 社区的新回复"), QStringLiteral("09:45"), NXIconType::Envelope });
 
   NXPushButton *notifBtn = new NXPushButton(QStringLiteral("通知中心"), this);
   notifBtn->setFixedSize(100, 38);
-  connect(notifBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(notifBtn, &NXPushButton::clicked, this, [=]() {
     if (_notificationCenter->isPanelVisible())
       _notificationCenter->hidePanel();
     else
@@ -679,12 +654,10 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   NXText *captchaResult = new NXText(QStringLiteral(""), this);
   _captcha->setCodeLength(4);
   captchaResult->setTextPixelSize(13);
-  connect(_captcha, &NXCaptcha::codeCompleted, this, [=](const QString &code)
-  {
+  connect(_captcha, &NXCaptcha::codeCompleted, this, [=](QString const &code) {
     captchaResult->setText(QStringLiteral("输入完成: ") + code);
   });
-  connect(_captcha, &NXCaptcha::codeChanged, this, [=](const QString &code)
-  {
+  connect(_captcha, &NXCaptcha::codeChanged, this, [=](QString const &code) {
     if (code.length() < _captcha->getCodeLength())
       captchaResult->setText(QStringLiteral(""));
   });
@@ -774,8 +747,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXText *selectorInfo = new NXText(QStringLiteral("选中: 全部"), this);
   selectorInfo->setTextPixelSize(13);
-  connect(_selectorBar, &NXSelectorBar::currentIndexChanged, this, [=](int idx)
-  {
+  connect(_selectorBar, &NXSelectorBar::currentIndexChanged, this, [=](int idx) {
     QStringList names = { QStringLiteral("全部"), QStringLiteral("未读"), QStringLiteral("已标记"),
                           QStringLiteral("归档") };
     selectorInfo->setText(QStringLiteral("选中: ") + names.value(idx));
@@ -793,8 +765,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   // ========== NXVirtualList 示例 ==========
   _virtualList                     = new NXVirtualList(this);
   QStandardItemModel *virtualModel = new QStandardItemModel(this);
-  for (int i = 0; i < 10000; ++i)
-  {
+  for (int i = 0; i < 10000; ++i) {
     QStandardItem *item = new QStandardItem(QString(QStringLiteral("虚拟列表项 #%1 - 支持万级数据量")).arg(i + 1));
     virtualModel->appendRow(item);
   }
@@ -823,29 +794,25 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *splashBtn = new NXPushButton(QStringLiteral("显示启动屏"), this);
   splashBtn->setFixedSize(120, 38);
-  connect(splashBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(splashBtn, &NXPushButton::clicked, this, [=]() {
     _splashScreen->setValue(0);
     _splashScreen->setStatusText(QStringLiteral("正在初始化..."));
     _splashScreen->show();
     // 模拟加载过程
     QTimer *timer = new QTimer(this);
     int *progress = new int(0);
-    connect(timer, &QTimer::timeout, this, [=]()
-    {
+    connect(timer, &QTimer::timeout, this, [=]() {
       *progress += 5;
       _splashScreen->setValue(*progress);
       if (*progress >= 30)
         _splashScreen->setStatusText(QStringLiteral("正在加载组件..."));
       if (*progress >= 60)
         _splashScreen->setStatusText(QStringLiteral("正在准备界面..."));
-      if (*progress >= 100)
-      {
+      if (*progress >= 100) {
         timer->stop();
         timer->deleteLater();
         _splashScreen->setStatusText(QStringLiteral("加载完成!"));
-        QTimer::singleShot(500, this, [=]()
-        {
+        QTimer::singleShot(500, this, [=]() {
           _splashScreen->close();
           delete progress;
         });
@@ -865,10 +832,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *sheetPeekBtn = new NXPushButton(QStringLiteral("Peek"), this);
   sheetPeekBtn->setFixedSize(70, 32);
-  connect(sheetPeekBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!_sheetPanel)
-    {
+  connect(sheetPeekBtn, &NXPushButton::clicked, this, [=]() {
+    if (!_sheetPanel) {
       _sheetPanel = new NXSheetPanel(window());
       _sheetPanel->setDragHandleVisible(true);
       _sheetPanel->setCloseOnOverlayClick(true);
@@ -890,10 +855,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   });
   NXPushButton *sheetHalfBtn = new NXPushButton(QStringLiteral("Half"), this);
   sheetHalfBtn->setFixedSize(70, 32);
-  connect(sheetHalfBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!_sheetPanel)
-    {
+  connect(sheetHalfBtn, &NXPushButton::clicked, this, [=]() {
+    if (!_sheetPanel) {
       sheetPeekBtn->click();
       return;
     }
@@ -901,10 +864,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   });
   NXPushButton *sheetFullBtn = new NXPushButton(QStringLiteral("Full"), this);
   sheetFullBtn->setFixedSize(70, 32);
-  connect(sheetFullBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!_sheetPanel)
-    {
+  connect(sheetFullBtn, &NXPushButton::clicked, this, [=]() {
+    if (!_sheetPanel) {
       sheetPeekBtn->click();
       return;
     }
@@ -926,16 +887,14 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _transfer->setSourceTitle(QStringLiteral("可选项目"));
   _transfer->setTargetTitle(QStringLiteral("已选项目"));
   QStringList transferItems;
-  for (int i = 1; i <= 20; ++i)
-  {
+  for (int i = 1; i <= 20; ++i) {
     transferItems.append(QString(QStringLiteral("项目 %1")).arg(i));
   }
   _transfer->setSourceItems(transferItems);
 
   NXText *transferResult = new NXText(QStringLiteral("已选: 0 项"), this);
   transferResult->setTextPixelSize(13);
-  connect(_transfer, &NXTransfer::transferChanged, this, [=](const QStringList &, const QStringList &target)
-  {
+  connect(_transfer, &NXTransfer::transferChanged, this, [=](QStringList const &, QStringList const &target) {
     transferResult->setText(QString(QStringLiteral("已选: %1 项")).arg(target.size()));
   });
 
@@ -949,10 +908,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *spotlightSingleBtn = new NXPushButton(QStringLiteral("单目标聚光"), this);
   spotlightSingleBtn->setFixedSize(110, 38);
-  connect(spotlightSingleBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!_spotlight)
-    {
+  connect(spotlightSingleBtn, &NXPushButton::clicked, this, [=]() {
+    if (!_spotlight) {
       _spotlight = new NXSpotlight(window());
     }
     _spotlight->setTitle(QStringLiteral("NXSplashScreen"));
@@ -962,10 +919,8 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *spotlightTourBtn = new NXPushButton(QStringLiteral("多步骤引导"), this);
   spotlightTourBtn->setFixedSize(110, 38);
-  connect(spotlightTourBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!_spotlight)
-    {
+  connect(spotlightTourBtn, &NXPushButton::clicked, this, [=]() {
+    if (!_spotlight) {
       _spotlight = new NXSpotlight(window());
     }
     QList<NXSpotlight::SpotlightStep> steps;
@@ -995,16 +950,14 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   countdownPauseBtn->setFixedSize(60, 32);
   NXPushButton *countdownResetBtn = new NXPushButton(QStringLiteral("重置"), this);
   countdownResetBtn->setFixedSize(60, 32);
-  connect(countdownStartBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(countdownStartBtn, &NXPushButton::clicked, this, [=]() {
     if (_countdown->isRunning())
       _countdown->resume();
     else
       _countdown->start();
   });
   connect(countdownPauseBtn, &NXPushButton::clicked, _countdown, &NXCountdown::pause);
-  connect(countdownResetBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(countdownResetBtn, &NXPushButton::clicked, this, [=]() {
     _countdown->stop();
     _countdown->setRemainingSeconds(86400 + 3661);
   });
@@ -1039,19 +992,16 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *popconfirmBtn = new NXPushButton(QStringLiteral("删除项目"), this);
   popconfirmBtn->setFixedSize(100, 38);
-  connect(popconfirmBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(popconfirmBtn, &NXPushButton::clicked, this, [=]() {
     _popconfirm->showPopconfirm(popconfirmBtn);
   });
 
   NXText *popconfirmResult = new NXText(QStringLiteral(""), this);
   popconfirmResult->setTextPixelSize(13);
-  connect(_popconfirm, &NXPopconfirm::confirmed, this, [=]()
-  {
+  connect(_popconfirm, &NXPopconfirm::confirmed, this, [=]() {
     popconfirmResult->setText(QStringLiteral("已确认删除"));
   });
-  connect(_popconfirm, &NXPopconfirm::cancelled, this, [=]()
-  {
+  connect(_popconfirm, &NXPopconfirm::cancelled, this, [=]() {
     popconfirmResult->setText(QStringLiteral("已取消"));
   });
 
@@ -1064,8 +1014,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *customPopconfirmBtn = new NXPushButton(QStringLiteral("提交代码"), this);
   customPopconfirmBtn->setFixedSize(100, 38);
-  connect(customPopconfirmBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(customPopconfirmBtn, &NXPushButton::clicked, this, [=]() {
     customPopconfirm->showPopconfirm(customPopconfirmBtn);
   });
 
@@ -1086,20 +1035,17 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   watermarkShowBtn->setFixedSize(60, 36);
   NXPushButton *watermarkHideBtn = new NXPushButton(QStringLiteral("隐藏"), this);
   watermarkHideBtn->setFixedSize(60, 36);
-  connect(watermarkShowBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(watermarkShowBtn, &NXPushButton::clicked, this, [=]() {
     _watermark->setVisible(true);
   });
-  connect(watermarkHideBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(watermarkHideBtn, &NXPushButton::clicked, this, [=]() {
     _watermark->setVisible(false);
   });
 
   NXLineEdit *watermarkTextEdit = new NXLineEdit(this);
   watermarkTextEdit->setText(QStringLiteral("NexUs"));
   watermarkTextEdit->setFixedWidth(140);
-  connect(watermarkTextEdit, &NXLineEdit::textChanged, this, [=](const QString &text)
-  {
+  connect(watermarkTextEdit, &NXLineEdit::textChanged, this, [=](QString const &text) {
     _watermark->setText(text);
   });
 
@@ -1107,8 +1053,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   watermarkOpacitySlider->setRange(1, 100);
   watermarkOpacitySlider->setValue(50);
   watermarkOpacitySlider->setFixedWidth(120);
-  connect(watermarkOpacitySlider, &NXSlider::valueChanged, this, [=](int v)
-  {
+  connect(watermarkOpacitySlider, &NXSlider::valueChanged, this, [=](int v) {
     _watermark->setOpacity(v / 100.0);
   });
 
@@ -1116,8 +1061,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   watermarkRotationSlider->setRange(-90, 90);
   watermarkRotationSlider->setValue(-22);
   watermarkRotationSlider->setFixedWidth(120);
-  connect(watermarkRotationSlider, &NXSlider::valueChanged, this, [=](int v)
-  {
+  connect(watermarkRotationSlider, &NXSlider::valueChanged, this, [=](int v) {
     _watermark->setRotation(v);
   });
 
@@ -1140,33 +1084,28 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   // ========== NXSnackbar 示例 ==========
   NXPushButton *snackSuccessBtn = new NXPushButton(QStringLiteral("成功"), this);
   snackSuccessBtn->setFixedSize(70, 32);
-  connect(snackSuccessBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(snackSuccessBtn, &NXPushButton::clicked, this, [=]() {
     NXSnackbar::success(QStringLiteral("文件保存成功!"), QStringLiteral(""), 3000, window());
   });
 
   NXPushButton *snackUndoBtn = new NXPushButton(QStringLiteral("撤销操作"), this);
   snackUndoBtn->setFixedSize(90, 32);
-  connect(snackUndoBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(snackUndoBtn, &NXPushButton::clicked, this, [=]() {
     NXSnackbar *snackbar = NXSnackbar::info(QStringLiteral("已删除 3 个项目"), QStringLiteral("撤销"), 5000, window());
-    connect(snackbar, &NXSnackbar::actionClicked, this, [=]()
-    {
+    connect(snackbar, &NXSnackbar::actionClicked, this, [=]() {
       NXToast::success(QStringLiteral("已撤销删除操作"), 2000, window());
     });
   });
 
   NXPushButton *snackWarnBtn = new NXPushButton(QStringLiteral("警告"), this);
   snackWarnBtn->setFixedSize(70, 32);
-  connect(snackWarnBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(snackWarnBtn, &NXPushButton::clicked, this, [=]() {
     NXSnackbar::warning(QStringLiteral("磁盘空间不足"), QStringLiteral("查看详情"), 4000, window());
   });
 
   NXPushButton *snackErrorBtn = new NXPushButton(QStringLiteral("错误"), this);
   snackErrorBtn->setFixedSize(70, 32);
-  connect(snackErrorBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(snackErrorBtn, &NXPushButton::clicked, this, [=]() {
     NXSnackbar::error(QStringLiteral("网络连接失败"), QStringLiteral("重试"), 4000, window());
   });
 
@@ -1190,8 +1129,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   NXText *leftTitle = new NXText(QStringLiteral("左侧面板"), this);
   leftTitle->setTextPixelSize(14);
   leftLayout->addWidget(leftTitle);
-  for (int i = 1; i <= 5; ++i)
-  {
+  for (int i = 1; i <= 5; ++i) {
     leftLayout->addWidget(new NXText(QString(QStringLiteral("  列表项 #%1")).arg(i), 13, this));
   }
   leftLayout->addStretch();
@@ -1250,20 +1188,17 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _infoBarSuccess = new NXInfoBar(NXInfoBarType::Success, this);
   _infoBarSuccess->setTitle(QStringLiteral("成功"));
   _infoBarSuccess->setMessage(QStringLiteral("文件已成功保存到指定路径。"));
-  _infoBarSuccess->addAction(QStringLiteral("查看"), [=]()
-  {
+  _infoBarSuccess->addAction(QStringLiteral("查看"), [=]() {
     qDebug() << "查看按钮被点击";
   });
 
   _infoBarWarning = new NXInfoBar(NXInfoBarType::Warning, this);
   _infoBarWarning->setTitle(QStringLiteral("警告"));
   _infoBarWarning->setMessage(QStringLiteral("你的许可证将在 7 天后过期。"));
-  _infoBarWarning->addAction(QStringLiteral("续费"), [=]()
-  {
+  _infoBarWarning->addAction(QStringLiteral("续费"), [=]() {
     qDebug() << "续费按钮被点击";
   });
-  _infoBarWarning->addAction(QStringLiteral("稍后提醒"), [=]()
-  {
+  _infoBarWarning->addAction(QStringLiteral("稍后提醒"), [=]() {
     qDebug() << "稍后提醒按钮被点击";
   });
 
@@ -1271,8 +1206,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _infoBarError->setTitle(QStringLiteral("错误"));
   _infoBarError->setMessage(QStringLiteral("无法连接到服务器，请检查网络设置。"));
   _infoBarError->setIsClosable(false);
-  _infoBarError->addAction(QStringLiteral("重试"), [=]()
-  {
+  _infoBarError->addAction(QStringLiteral("重试"), [=]() {
     qDebug() << "重试按钮被点击";
   });
 
@@ -1337,17 +1271,14 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   qrInput->setText(QStringLiteral("https://github.com/RainbowCandyX/NexUs"));
   qrInput->setFixedHeight(35);
   qrInput->setMinimumWidth(300);
-  connect(qrInput, &NXLineEdit::textChanged, this, [=](const QString &text)
-  {
+  connect(qrInput, &NXLineEdit::textChanged, this, [=](QString const &text) {
     _qrCode->setText(text);
   });
 
   NXComboBox *qrEcLevel = new NXComboBox(this);
-  qrEcLevel->addItems({ QStringLiteral("低 (7%)"), QStringLiteral("中 (15%)"), QStringLiteral("较高 (25%)"),
-                        QStringLiteral("高 (30%)") });
+  qrEcLevel->addItems({ QStringLiteral("低 (7%)"), QStringLiteral("中 (15%)"), QStringLiteral("较高 (25%)"), QStringLiteral("高 (30%)") });
   qrEcLevel->setCurrentIndex(1);
-  connect(qrEcLevel, &NXComboBox::currentIndexChanged, this, [=](int index)
-  {
+  connect(qrEcLevel, &NXComboBox::currentIndexChanged, this, [=](int index) {
     _qrCode->setErrorCorrectionLevel(static_cast<NXQRCode::ErrorCorrectionLevel>(index));
   });
 
@@ -1377,12 +1308,10 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXPushButton *emojiBtn = new NXPushButton(QString::fromUtf8("😀"), this);
   emojiBtn->setFixedSize(40, 35);
-  connect(emojiBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(emojiBtn, &NXPushButton::clicked, this, [=]() {
     _emojiPicker->popup(emojiBtn);
   });
-  connect(_emojiPicker, &NXEmojiPicker::emojiSelected, this, [=](const QString &emoji)
-  {
+  connect(_emojiPicker, &NXEmojiPicker::emojiSelected, this, [=](QString const &emoji) {
     emojiInput->setText(emojiInput->text() + emoji);
   });
 
@@ -1410,8 +1339,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   NXComboBox *floatPosCombo = new NXComboBox(this);
   floatPosCombo->addItems(
       { QStringLiteral("右下"), QStringLiteral("左下"), QStringLiteral("右上"), QStringLiteral("左上") });
-  connect(floatPosCombo, &NXComboBox::currentIndexChanged, this, [=](int index)
-  {
+  connect(floatPosCombo, &NXComboBox::currentIndexChanged, this, [=](int index) {
     _floatButton->setPosition(static_cast<NXFloatButton::Position>(index));
   });
   floatBtnLayout->addWidget(floatPosCombo);
@@ -1421,8 +1349,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   floatMarginSlider->setRange(10, 100);
   floatMarginSlider->setValue(30);
   floatMarginSlider->setFixedWidth(150);
-  connect(floatMarginSlider, &NXSlider::valueChanged, this, [=](int value)
-  {
+  connect(floatMarginSlider, &NXSlider::valueChanged, this, [=](int value) {
     _floatButton->setMargin(value);
   });
   floatBtnLayout->addWidget(floatMarginSlider);
@@ -1440,35 +1367,32 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   _autoComplete = new NXAutoComplete(this);
   _autoComplete->setPlaceholderText(QStringLiteral("输入城市名称..."));
   _autoComplete->setCompletions(
-      { QStringLiteral("北京"),          QStringLiteral("北京大兴机场"), QStringLiteral("北京西站"),
-        QStringLiteral("上海"),          QStringLiteral("上海虹桥"),     QStringLiteral("上海浦东"),
-        QStringLiteral("广州"),          QStringLiteral("广州南站"),     QStringLiteral("深圳"),
-        QStringLiteral("深圳北站"),      QStringLiteral("杭州"),         QStringLiteral("杭州西湖"),
-        QStringLiteral("成都"),          QStringLiteral("成都天府"),     QStringLiteral("武汉"),
-        QStringLiteral("南京"),          QStringLiteral("南京南站"),     QStringLiteral("西安"),
-        QStringLiteral("重庆"),          QStringLiteral("天津"),         QStringLiteral("苏州"),
-        QStringLiteral("长沙"),          QStringLiteral("Singapore"),    QStringLiteral("Hong Kong"),
-        QStringLiteral("Taiwan"),        QStringLiteral("Tokyo"),        QStringLiteral("Seoul"),
-        QStringLiteral("Bangkok"),       QStringLiteral("New York"),     QStringLiteral("London"),
-        QStringLiteral("Paris"),         QStringLiteral("Sydney"),       QStringLiteral("Los Angeles"),
-        QStringLiteral("San Francisco"), QStringLiteral("Chicago"),      QStringLiteral("Toronto"),
-        QStringLiteral("Vancouver"),     QStringLiteral("Berlin"),       QStringLiteral("Amsterdam"),
-        QStringLiteral("Dubai"),         QStringLiteral("Mumbai"),       QStringLiteral("Melbourne"),
-        QStringLiteral("Oslo"),          QStringLiteral("Stockholm"),    QStringLiteral("Helsinki"),
-        QStringLiteral("Lisbon"),        QStringLiteral("Barcelona") });
+      { QStringLiteral("北京"), QStringLiteral("北京大兴机场"), QStringLiteral("北京西站"),
+        QStringLiteral("上海"), QStringLiteral("上海虹桥"), QStringLiteral("上海浦东"),
+        QStringLiteral("广州"), QStringLiteral("广州南站"), QStringLiteral("深圳"),
+        QStringLiteral("深圳北站"), QStringLiteral("杭州"), QStringLiteral("杭州西湖"),
+        QStringLiteral("成都"), QStringLiteral("成都天府"), QStringLiteral("武汉"),
+        QStringLiteral("南京"), QStringLiteral("南京南站"), QStringLiteral("西安"),
+        QStringLiteral("重庆"), QStringLiteral("天津"), QStringLiteral("苏州"),
+        QStringLiteral("长沙"), QStringLiteral("Singapore"), QStringLiteral("Hong Kong"),
+        QStringLiteral("Taiwan"), QStringLiteral("Tokyo"), QStringLiteral("Seoul"),
+        QStringLiteral("Bangkok"), QStringLiteral("New York"), QStringLiteral("London"),
+        QStringLiteral("Paris"), QStringLiteral("Sydney"), QStringLiteral("Los Angeles"),
+        QStringLiteral("San Francisco"), QStringLiteral("Chicago"), QStringLiteral("Toronto"),
+        QStringLiteral("Vancouver"), QStringLiteral("Berlin"), QStringLiteral("Amsterdam"),
+        QStringLiteral("Dubai"), QStringLiteral("Mumbai"), QStringLiteral("Melbourne"),
+        QStringLiteral("Oslo"), QStringLiteral("Stockholm"), QStringLiteral("Helsinki"),
+        QStringLiteral("Lisbon"), QStringLiteral("Barcelona") });
 
   NXText *autoCompleteResult = new NXText(QStringLiteral(""), this);
   autoCompleteResult->setTextPixelSize(13);
-  connect(_autoComplete, &NXAutoComplete::completionSelected, this, [=](const QString &text)
-  {
+  connect(_autoComplete, &NXAutoComplete::completionSelected, this, [=](QString const &text) {
     autoCompleteResult->setText(QString(QStringLiteral("已选择: %1")).arg(text));
   });
 
   NXComboBox *matchModeCombo = new NXComboBox(this);
-  matchModeCombo->addItems({ QStringLiteral("包含匹配"), QStringLiteral("前缀匹配"), QStringLiteral("后缀匹配"),
-                             QStringLiteral("正则表达式") });
-  connect(matchModeCombo, &NXComboBox::currentIndexChanged, this, [=](int index)
-  {
+  matchModeCombo->addItems({ QStringLiteral("包含匹配"), QStringLiteral("前缀匹配"), QStringLiteral("后缀匹配"), QStringLiteral("正则表达式") });
+  connect(matchModeCombo, &NXComboBox::currentIndexChanged, this, [=](int index) {
     _autoComplete->setMatchMode(static_cast<NXAutoComplete::MatchMode>(index));
   });
 
@@ -1520,8 +1444,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXText *treeSelectResult = new NXText(QStringLiteral(""), this);
   treeSelectResult->setTextPixelSize(13);
-  connect(_treeSelect, &NXTreeSelect::currentTextChanged, this, [=](const QString &text)
-  {
+  connect(_treeSelect, &NXTreeSelect::currentTextChanged, this, [=](QString const &text) {
     treeSelectResult->setText(QString(QStringLiteral("已选择: %1")).arg(text));
   });
 
@@ -1538,9 +1461,7 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   // ========== NXUploadArea 示例 ==========
   _uploadArea = new NXUploadArea(this);
   _uploadArea->setFixedHeight(200);
-  _uploadArea->setAcceptedSuffixes({ QStringLiteral("png"), QStringLiteral("jpg"), QStringLiteral("jpeg"),
-                                     QStringLiteral("gif"), QStringLiteral("bmp"), QStringLiteral("pdf"),
-                                     QStringLiteral("txt") });
+  _uploadArea->setAcceptedSuffixes({ QStringLiteral("png"), QStringLiteral("jpg"), QStringLiteral("jpeg"), QStringLiteral("gif"), QStringLiteral("bmp"), QStringLiteral("pdf"), QStringLiteral("txt") });
   _uploadArea->setMaxFileCount(5);
   _uploadArea->setTitle(QStringLiteral("拖拽文件到此处"));
   _uploadArea->setSubTitle(QStringLiteral("支持 png, jpg, gif, bmp, pdf, txt (最多5个)"));
@@ -1548,20 +1469,17 @@ T_NewComponents::T_NewComponents(QWidget *parent)
 
   NXText *uploadInfo = new NXText(QStringLiteral("已选择 0 个文件"), this);
   uploadInfo->setTextPixelSize(13);
-  connect(_uploadArea, &NXUploadArea::filesSelected, this, [=](const QStringList &files)
-  {
+  connect(_uploadArea, &NXUploadArea::filesSelected, this, [=](QStringList const &files) {
     uploadInfo->setText(QString(QStringLiteral("已选择 %1 个文件")).arg(files.size()));
   });
-  connect(_uploadArea, &NXUploadArea::fileRejected, this, [=](const QString &path, const QString &reason)
-  {
+  connect(_uploadArea, &NXUploadArea::fileRejected, this, [=](QString const &path, QString const &reason) {
     Q_UNUSED(path)
     NXToast::warning(reason, 2000, window());
   });
 
   NXPushButton *clearUploadBtn = new NXPushButton(QStringLiteral("清空文件"), this);
   clearUploadBtn->setFixedSize(100, 35);
-  connect(clearUploadBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(clearUploadBtn, &NXPushButton::clicked, this, [=]() {
     _uploadArea->clearFiles();
     uploadInfo->setText(QStringLiteral("已选择 0 个文件"));
   });
@@ -1587,19 +1505,16 @@ T_NewComponents::T_NewComponents(QWidget *parent)
   copyInput->setText(QStringLiteral("https://github.com/RainbowCandyX/NexUs"));
   copyInput->setFixedHeight(35);
   copyInput->setMinimumWidth(350);
-  connect(copyInput, &NXLineEdit::textChanged, this, [=](const QString &text)
-  {
+  connect(copyInput, &NXLineEdit::textChanged, this, [=](QString const &text) {
     _copyButton->setCopyText(text);
   });
 
   NXText *copyStatus = new NXText(QStringLiteral(""), this);
   copyStatus->setTextPixelSize(13);
-  connect(_copyButton, &NXCopyButton::copyCompleted, this, [=](const QString &text)
-  {
+  connect(_copyButton, &NXCopyButton::copyCompleted, this, [=](QString const &text) {
     Q_UNUSED(text)
     copyStatus->setText(QStringLiteral("已复制!"));
-    QTimer::singleShot(2000, this, [=]()
-    {
+    QTimer::singleShot(2000, this, [=]() {
       copyStatus->setText(QStringLiteral(""));
     });
   });

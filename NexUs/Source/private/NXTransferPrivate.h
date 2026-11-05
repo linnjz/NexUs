@@ -31,8 +31,8 @@ public:
 
   Q_SLOT void onMoveToTarget();
   Q_SLOT void onMoveToSource();
-  Q_SLOT void onSourceSearchTextChanged(const QString &text);
-  Q_SLOT void onTargetSearchTextChanged(const QString &text);
+  Q_SLOT void onSourceSearchTextChanged(QString const &text);
+  Q_SLOT void onTargetSearchTextChanged(QString const &text);
   Q_SLOT void onSourceSelectAllChanged(int state);
   Q_SLOT void onTargetSelectAllChanged(int state);
 
@@ -40,21 +40,21 @@ public:
 
 private:
   friend class NXTransfer;
-  NXThemeType::ThemeMode _themeMode;
-  NXCheckBox *_sourceSelectAll { nullptr };
-  NXText *_sourceTitleText { nullptr };
-  NXText *_sourceCountText { nullptr };
-  NXLineEdit *_sourceSearchEdit { nullptr };
-  NXBaseListView *_sourceListView { nullptr };
-  QStandardItemModel *_sourceModel { nullptr };
-  NXCheckBox *_targetSelectAll { nullptr };
-  NXText *_targetTitleText { nullptr };
-  NXText *_targetCountText { nullptr };
-  NXLineEdit *_targetSearchEdit { nullptr };
-  NXBaseListView *_targetListView { nullptr };
-  QStandardItemModel *_targetModel { nullptr };
-  NXIconButton *_moveToTargetButton { nullptr };
-  NXIconButton *_moveToSourceButton { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXCheckBox *m_SourceSelectAll { nullptr };
+  NXText *m_SourceTitleText { nullptr };
+  NXText *m_SourceCountText { nullptr };
+  NXLineEdit *m_SourceSearchEdit { nullptr };
+  NXBaseListView *m_SourceListView { nullptr };
+  QStandardItemModel *m_SourceModel { nullptr };
+  NXCheckBox *m_TargetSelectAll { nullptr };
+  NXText *m_TargetTitleText { nullptr };
+  NXText *m_TargetCountText { nullptr };
+  NXLineEdit *m_TargetSearchEdit { nullptr };
+  NXBaseListView *m_TargetListView { nullptr };
+  QStandardItemModel *m_TargetModel { nullptr };
+  NXIconButton *m_MoveToTargetButton { nullptr };
+  NXIconButton *m_MoveToSourceButton { nullptr };
 };
 
 #endif // NXTRANSFERPRIVATE_H

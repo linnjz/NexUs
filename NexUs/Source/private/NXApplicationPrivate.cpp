@@ -25,8 +25,8 @@ NXApplicationPrivate::~NXApplicationPrivate()
 
 void NXApplicationPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
-  _themeMode = themeMode;
-  switch (_pWindowDisplayMode) {
+  m_ThemeMode = themeMode;
+  switch (m_WindowDisplayMode) {
   case NXApplicationType::Normal : {
     break;
   }
@@ -36,8 +36,8 @@ void NXApplicationPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
   }
   default : {
 #ifdef Q_OS_WIN
-    for (auto widget : _micaWidgetList) {
-      NXWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), _themeMode == NXThemeType::Light);
+    for (auto widget : m_MicaWidgetList) {
+      NXWinShadowHelper::getInstance()->setWindowThemeMode(widget->winId(), m_ThemeMode == NXThemeType::Light);
     }
 #endif
     break;
@@ -49,16 +49,16 @@ bool NXApplicationPrivate::eventFilter(QObject *watched, QEvent *event)
 {
   switch (event->type()) {
   case QEvent::Show : {
-    if (_pWindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
+    if (m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
       QWidget *widget = qobject_cast<QWidget *>(watched);
       if (widget) {
         _updateMica(widget);
       }
-    } else if (_pWindowDisplayMode != NXApplicationType::WindowDisplayMode::Normal) {
+    } else if (m_WindowDisplayMode != NXApplicationType::WindowDisplayMode::Normal) {
 #ifdef Q_OS_WIN
       QWidget *widget = qobject_cast<QWidget *>(watched);
       if (widget) {
-        NXWinShadowHelper::getInstance()->setWindowDisplayMode(widget, _pWindowDisplayMode, _pWindowDisplayMode);
+        NXWinShadowHelper::getInstance()->setWindowDisplayMode(widget, m_WindowDisplayMode, m_WindowDisplayMode);
       }
 #endif
     }
@@ -66,7 +66,7 @@ bool NXApplicationPrivate::eventFilter(QObject *watched, QEvent *event)
   }
   case QEvent::Move :
   case QEvent::Resize : {
-    if (_pWindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
+    if (m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
       QWidget *widget = qobject_cast<QWidget *>(watched);
       if (widget) {
         _updateMica(widget);
@@ -77,7 +77,7 @@ bool NXApplicationPrivate::eventFilter(QObject *watched, QEvent *event)
   case QEvent::Destroy : {
     QWidget *widget = qobject_cast<QWidget *>(watched);
     if (widget) {
-      _micaWidgetList.removeOne(widget);
+      m_MicaWidgetList.removeOne(widget);
     }
     break;
   }
@@ -92,7 +92,7 @@ bool NXApplicationPrivate::eventFilter(QObject *watched, QEvent *event)
   return QObject::eventFilter(watched, event);
 }
 
-void NXApplicationPrivate::_initMicaBaseImage(const QImage &img)
+void NXApplicationPrivate::_initMicaBaseImage(QImage const &img)
 {
   Q_Q(NXApplication);
   if (img.isNull()) {
@@ -102,7 +102,7 @@ void NXApplicationPrivate::_initMicaBaseImage(const QImage &img)
   NXMicaBaseInitObject *initObject = new NXMicaBaseInitObject(this);
   connect(initThread, &QThread::finished, initObject, &NXMicaBaseInitObject::deleteLater);
   connect(initObject, &NXMicaBaseInitObject::initFinished, initThread, [=]() {
-    Q_EMIT q->pWindowDisplayModeChanged();
+    Q_EMIT q->signalWindowDisplayModeChanged();
     _updateAllMicaWidget();
     initThread->quit();
     initThread->wait();
@@ -123,16 +123,16 @@ QRect NXApplicationPrivate::_calculateWindowVirtualGeometry(QWidget *widget)
     QScreen *currentScreen = qApp->screenAt(geometry.topLeft());
     if (currentScreen) {
       QRect screenGeometry = currentScreen->availableGeometry();
-      xImageRatio          = (qreal) _lightBaseImage.width() / screenGeometry.width();
-      yImageRatio          = (qreal) _lightBaseImage.height() / screenGeometry.height();
+      xImageRatio          = (qreal) m_LightBaseImage.width() / screenGeometry.width();
+      yImageRatio          = (qreal) m_LightBaseImage.height() / screenGeometry.height();
       relativeGeometry =
           QRect((geometry.x() - screenGeometry.x()) * xImageRatio, (geometry.y() - screenGeometry.y()) * yImageRatio, geometry.width() * xImageRatio, geometry.height() * yImageRatio);
       return relativeGeometry;
     }
   }
   QRect primaryScreenGeometry = qApp->primaryScreen()->availableGeometry();
-  xImageRatio                 = (qreal) _lightBaseImage.width() / primaryScreenGeometry.width();
-  yImageRatio                 = (qreal) _lightBaseImage.height() / primaryScreenGeometry.height();
+  xImageRatio                 = (qreal) m_LightBaseImage.width() / primaryScreenGeometry.width();
+  yImageRatio                 = (qreal) m_LightBaseImage.height() / primaryScreenGeometry.height();
   relativeGeometry            = QRect((geometry.x() - primaryScreenGeometry.x()) * xImageRatio, (geometry.y() - primaryScreenGeometry.y()) * yImageRatio, geometry.width() * xImageRatio, geometry.height() * yImageRatio);
   return relativeGeometry;
 }
@@ -141,10 +141,10 @@ void NXApplicationPrivate::_updateMica(QWidget *widget, bool isProcessEvent)
 {
   if (widget->isVisible()) {
     QPalette palette = widget->palette();
-    if (_themeMode == NXThemeType::Light) {
-      palette.setBrush(QPalette::Window, _lightBaseImage.copy(_calculateWindowVirtualGeometry(widget)).scaled(widget->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    if (m_ThemeMode == NXThemeType::Light) {
+      palette.setBrush(QPalette::Window, m_LightBaseImage.copy(_calculateWindowVirtualGeometry(widget)).scaled(widget->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     } else {
-      palette.setBrush(QPalette::Window, _darkBaseImage.copy(_calculateWindowVirtualGeometry(widget)).scaled(widget->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+      palette.setBrush(QPalette::Window, m_DarkBaseImage.copy(_calculateWindowVirtualGeometry(widget)).scaled(widget->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     }
     widget->setPalette(palette);
     if (isProcessEvent) {
@@ -155,8 +155,8 @@ void NXApplicationPrivate::_updateMica(QWidget *widget, bool isProcessEvent)
 
 void NXApplicationPrivate::_updateAllMicaWidget()
 {
-  if (_pWindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
-    for (auto widget : _micaWidgetList) {
+  if (m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::NXMica) {
+    for (auto widget : m_MicaWidgetList) {
       _updateMica(widget, false);
     }
   }
@@ -164,7 +164,7 @@ void NXApplicationPrivate::_updateAllMicaWidget()
 
 void NXApplicationPrivate::_resetAllMicaWidget()
 {
-  for (auto widget : _micaWidgetList) {
+  for (auto widget : m_MicaWidgetList) {
     QPalette palette = widget->palette();
     palette.setBrush(QPalette::Window, Qt::transparent);
     widget->setPalette(palette);

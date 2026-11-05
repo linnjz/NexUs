@@ -19,15 +19,15 @@ class NXGraphicsItemPrivate : public QObject
   Q_PROPERTY_CREATE_D(int, MaxLinkPortCount)
 
 public:
-  friend QDataStream &operator<< (QDataStream &stream, const NXGraphicsItemPrivate *data);
+  friend QDataStream &operator<< (QDataStream &stream, NXGraphicsItemPrivate const *data);
   friend QDataStream &operator>> (QDataStream &stream, NXGraphicsItemPrivate *data);
   explicit NXGraphicsItemPrivate(QObject *parent = nullptr);
   ~NXGraphicsItemPrivate();
 
 
 private:
-  QString _itemUID;
-  QVector<bool> _currentLinkPortState;
+  QString m_ItemUID;
+  QVector<bool> m_CurrentLinkPortState;
 };
 
 #endif // NXGRAPHICSITEMPRIVATE_H

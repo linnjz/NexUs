@@ -36,15 +36,15 @@ NXActionCommanderView::NXActionCommanderView(QWidget *parent)
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, &NXActionCommanderView::customContextMenuRequested, this, &NXActionCommanderView::onCustomContextMenuRequested);
 
-  _style = new NXActionCommanderViewStyle(style());
-  setStyle(_style);
+  m_Style = new NXActionCommanderViewStyle(style());
+  setStyle(m_Style);
 }
 
 NXActionCommanderView::~NXActionCommanderView()
 {
 }
 
-void NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
+void NXActionCommanderView::onCustomContextMenuRequested(QPoint const &pos)
 {
   auto modelIndex      = indexAt(pos);
   auto actionCommander = NXActionCommander::getInstance();
@@ -59,8 +59,8 @@ void NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
     auto vScrollBar = verticalScrollBar();
     int startValue  = vScrollBar->value();
     scrollTo(selectedIndexList[0], QAbstractItemView::PositionAtCenter);
-    int endValue                        = vScrollBar->value();
-    QPropertyAnimation *scrollAnimation = new QPropertyAnimation(vScrollBar, "value");
+    int endValue { vScrollBar->value() };
+    QPropertyAnimation *scrollAnimation { new QPropertyAnimation(vScrollBar, "value") };
     scrollAnimation->setEasingCurve(QEasingCurve::OutSine);
     scrollAnimation->setDuration(255);
     scrollAnimation->setStartValue(startValue);
@@ -74,14 +74,14 @@ void NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
     collapseAll();
   });
   auto undoAction = menu.addNXIconAction(NXIconType::RotateLeft, QStringLiteral("撤销"));
-  undoAction->setEnabled(actionCommander->getCommanderUndoState(_pDomainName) == NXActionCommanderType::UndoValid);
+  undoAction->setEnabled(actionCommander->getCommanderUndoState(m_DomainName) == NXActionCommanderType::UndoValid);
   connect(undoAction, &QAction::triggered, this, [=]() {
-    actionCommander->undoCommand(_pDomainName);
+    actionCommander->undoCommand(m_DomainName);
   });
   auto redoAction = menu.addNXIconAction(NXIconType::RotateRight, QStringLiteral("重做"));
-  redoAction->setEnabled(actionCommander->getCommanderRedoState(_pDomainName) == NXActionCommanderType::RedoValid);
+  redoAction->setEnabled(actionCommander->getCommanderRedoState(m_DomainName) == NXActionCommanderType::RedoValid);
   connect(redoAction, &QAction::triggered, this, [=]() {
-    actionCommander->redoCommand(_pDomainName);
+    actionCommander->redoCommand(m_DomainName);
   });
   if (modelIndex.isValid()) {
     // 如果是次要行 定位到主要行
@@ -89,7 +89,7 @@ void NXActionCommanderView::onCustomContextMenuRequested(const QPoint &pos)
       modelIndex = modelIndex.parent();
     }
     connect(menu.addNXIconAction(NXIconType::ArrowsRotate, QStringLiteral("运行到此处")), &QAction::triggered, this, [=]() {
-      Q_EMIT runToCommand(_pDomainName, modelIndex.row());
+      Q_EMIT runToCommand(m_DomainName, modelIndex.row());
     });
   }
   menu.exec(QCursor::pos());
@@ -102,7 +102,7 @@ void NXActionCommanderView::paintEvent(QPaintEvent *event)
   auto viewPort = viewport();
   QPainter painter(viewPort);
   painter.save();
-  painter.setPen(NXThemeColor(_style->getThemeMode(), BasicBorder));
+  painter.setPen(NXThemeColor(m_Style->getThemeMode(), BasicBorder));
   QRect viewPortRect = viewPort->rect();
   painter.drawLine(viewPortRect.x(), viewPortRect.bottom(), viewPortRect.right(), viewPortRect.bottom());
   painter.restore();

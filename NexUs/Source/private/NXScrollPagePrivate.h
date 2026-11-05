@@ -22,19 +22,19 @@ class NXScrollPagePrivate : public QObject
 public:
   explicit NXScrollPagePrivate(QObject *parent = nullptr);
   ~NXScrollPagePrivate();
-  Q_INVOKABLE void onNavigationRoute(const QVariantMap &routeData);
+  Q_INVOKABLE void onNavigationRoute(QVariantMap const &routeData);
 
 private:
-  bool _isGrabGesture { false };
-  int _navigationTargetIndex { 0 };
-  int _pageTitleSpacing { 0 };
-  QMap<QString, int> _centralWidgetMap;
-  QWidget *_topCustomWidget { nullptr };
-  QWidget *_bottomCustomWidget { nullptr };
-  QHBoxLayout *_pageTitleLayout { nullptr };
-  QVBoxLayout *_mainLayout { nullptr };
-  QStackedWidget *_centralStackedWidget { nullptr };
-  NXBreadcrumbBar *_breadcrumbBar { nullptr };
+  bool m_IsGrabGesture { false };
+  int m_NavigationTargetIndex { 0 };
+  int m_PageTitleSpacing { 0 };
+  QMap<QString, int> m_CentralWidgetMap;
+  QWidget *m_TopCustomWidget { nullptr };
+  QWidget *m_BottomCustomWidget { nullptr };
+  QHBoxLayout *m_PageTitleLayout { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QStackedWidget *m_CentralStackedWidget { nullptr };
+  NXBreadcrumbBar *m_BreadcrumbBar { nullptr };
   void _switchCentralStackIndex(int targetIndex, int lastIndex);
 };
 

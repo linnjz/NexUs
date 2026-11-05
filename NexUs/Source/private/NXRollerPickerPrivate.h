@@ -22,10 +22,10 @@ public:
   Q_SLOT void onCancelButtonClicked();
 
 private:
-  int _pickerRollerHeight { 245 };
-  NXThemeType::ThemeMode _themeMode;
-  QHBoxLayout *_containerLayout { nullptr };
-  NXRollerPickerContainer *_rollerPickerContainer { nullptr };
+  int m_PickerRollerHeight { 245 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QHBoxLayout *m_ContainerLayout { nullptr };
+  NXRollerPickerContainer *m_RollerPickerContainer { nullptr };
   int _getRollerTotalWidth() const;
 };
 

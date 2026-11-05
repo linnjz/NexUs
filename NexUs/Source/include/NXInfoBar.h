@@ -1,4 +1,4 @@
-#ifndef NXINFOBAR_H
+﻿#ifndef NXINFOBAR_H
 #define NXINFOBAR_H
 
 #include <functional>
@@ -14,8 +14,8 @@ class NX_EXPORT NXInfoBar : public QFrame
 {
   Q_OBJECT
   Q_Q_CREATE(NXInfoBar)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Message)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Message)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(NXInfoBarType::InfoBarSeverity, Severity)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, InfoBarIcon)
@@ -26,7 +26,7 @@ public:
   explicit NXInfoBar(NXInfoBarType::InfoBarSeverity severity, QWidget *parent = nullptr);
   ~NXInfoBar();
 
-  void addAction(const QString &text, const std::function<void()> &callback);
+  void addAction(QString const &text, std::function<void()> const &callback);
   void clearActions();
 
   void closeInfoBar();

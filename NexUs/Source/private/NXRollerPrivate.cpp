@@ -1,4 +1,4 @@
-#include "NXRollerPrivate.h"
+﻿#include "NXRollerPrivate.h"
 
 #include <QPropertyAnimation>
 
@@ -14,18 +14,18 @@ NXRollerPrivate::~NXRollerPrivate()
 void NXRollerPrivate::_scroll(int delta)
 {
   int steps = delta / 120;
-  _targetScrollOffset -= steps * _pItemHeight;
-  _targetScrollOffset = qRound(_targetScrollOffset / _pItemHeight) * _pItemHeight;
-  if (!_pIsEnableLoop) {
-    if (_targetScrollOffset < 0) {
-      _targetScrollOffset = 0;
+  m_TargetScrollOffset -= steps * m_ItemHeight;
+  m_TargetScrollOffset = qRound(m_TargetScrollOffset / m_ItemHeight) * m_ItemHeight;
+  if (!m_IsEnableLoop) {
+    if (m_TargetScrollOffset < 0) {
+      m_TargetScrollOffset = 0;
     }
-    if (_targetScrollOffset > (_pItemList.size() - 1) * _pItemHeight) {
-      _targetScrollOffset = (_pItemList.size() - 1) * _pItemHeight;
+    if (m_TargetScrollOffset > (m_ItemList.size() - 1) * m_ItemHeight) {
+      m_TargetScrollOffset = (m_ItemList.size() - 1) * m_ItemHeight;
     }
   }
-  _scrollAnimation->stop();
-  _scrollAnimation->setStartValue(_pScrollOffset);
-  _scrollAnimation->setEndValue(_targetScrollOffset);
-  _scrollAnimation->start();
+  m_ScrollAnimation->stop();
+  m_ScrollAnimation->setStartValue(m_ScrollOffset);
+  m_ScrollAnimation->setEndValue(m_TargetScrollOffset);
+  m_ScrollAnimation->start();
 }

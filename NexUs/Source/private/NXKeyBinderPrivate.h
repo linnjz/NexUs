@@ -20,9 +20,9 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXContentDialog *_binderDialog { nullptr };
-  NXKeyBinderContainer *_binderContainer { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXContentDialog *m_BinderDialog { nullptr };
+  NXKeyBinderContainer *m_BinderContainer { nullptr };
 };
 
 #endif //NEXUS_SRC_PRIVATE_NXKEYBINDERPRIVATE_H_

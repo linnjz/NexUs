@@ -23,17 +23,17 @@ public:
   void startCloseAnimation(NXPushButton *triggeredButton);
 
 private:
-  bool _isClosing { false };
-  NXThemeType::ThemeMode _themeMode;
-  qint64 _currentWinID { 0 };
-  NXAppBar *_appBar { nullptr };
-  NXMaskWidget *_maskWidget { nullptr };
-  QWidget *_centralWidget { nullptr };
-  QWidget *_buttonWidget { nullptr };
-  QVBoxLayout *_mainLayout { nullptr };
-  QHBoxLayout *_buttonLayout { nullptr };
-  NXPushButton *_activeButton { nullptr };
-  QList<NXPushButton *> _buttons;
+  bool m_IsClosing { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  qint64 m_CurrentWinID { 0 };
+  NXAppBar *m_AppBar { nullptr };
+  NXMaskWidget *m_MaskWidget { nullptr };
+  QWidget *m_CentralWidget { nullptr };
+  QWidget *m_ButtonWidget { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
+  QHBoxLayout *m_ButtonLayout { nullptr };
+  NXPushButton *m_ActiveButton { nullptr };
+  QList<NXPushButton *> m_Buttons;
 
   void _handleCloseAnimation();
   void _moveToCenter();

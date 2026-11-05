@@ -17,9 +17,9 @@ public:
   ~NXExponentialBlurPrivate();
 
 private:
-  static int _aprec;
-  static int _zprec;
-  static void _drawExponentialBlur(QImage &image, const quint16 &qRadius);
+  static int m_Aprec;
+  static int m_Zprec;
+  static void _drawExponentialBlur(QImage &image, quint16 const &qRadius);
   static void _drawRowBlur(QImage &image, int row, int alpha);
   static void _drawColumnBlur(QImage &image, int column, int alpha);
   static void _drawInnerBlur(unsigned char *bptr, int &zR, int &zG, int &zB, int &zA, int alpha);

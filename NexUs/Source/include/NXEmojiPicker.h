@@ -20,7 +20,7 @@ public:
 
   void popup(QWidget *anchor);
   void popup(QPoint pos);
-  Q_SIGNAL void emojiSelected(const QString &emoji);
+  Q_SIGNAL void emojiSelected(QString const &emoji);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

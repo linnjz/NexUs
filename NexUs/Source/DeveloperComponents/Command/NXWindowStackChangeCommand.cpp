@@ -14,14 +14,14 @@ NXWindowStackChangeCommand::~NXWindowStackChangeCommand()
 
 void NXWindowStackChangeCommand::undo()
 {
-  _pWindowPrivate->_centerStackedWidget->doWindowStackSwitch(_pWindowPrivate->_pStackSwitchMode, _pUndoStackIndex, false);
-  Q_EMIT _pWindowPrivate->q_ptr->pCurrentStackIndexChanged();
+  m_WindowPrivate->m_CenterStackedWidget->doWindowStackSwitch(m_WindowPrivate->m_StackSwitchMode, m_UndoStackIndex, false);
+  Q_EMIT m_WindowPrivate->q_ptr->signalCurrentStackIndexChanged();
   setCommandDesc(QStringLiteral("撤销堆栈页面切换操作"));
 }
 
 void NXWindowStackChangeCommand::redo()
 {
-  _pWindowPrivate->_centerStackedWidget->doWindowStackSwitch(_pWindowPrivate->_pStackSwitchMode, _pRedoStackIndex, false);
-  Q_EMIT _pWindowPrivate->q_ptr->pCurrentStackIndexChanged();
+  m_WindowPrivate->m_CenterStackedWidget->doWindowStackSwitch(m_WindowPrivate->m_StackSwitchMode, m_RedoStackIndex, false);
+  Q_EMIT m_WindowPrivate->q_ptr->signalCurrentStackIndexChanged();
   setCommandDesc(QStringLiteral("执行堆栈页面切换操作"));
 }

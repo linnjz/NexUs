@@ -17,9 +17,9 @@ class NX_EXPORT NXPasswordBox : public QLineEdit
 public:
   explicit NXPasswordBox(QWidget *parent = nullptr);
   ~NXPasswordBox();
-  Q_SIGNAL void focusIn(const QString &text);
-  Q_SIGNAL void focusOut(const QString &text);
-  Q_SIGNAL void wmFocusOut(const QString &text);
+  Q_SIGNAL void focusIn(QString const &text);
+  Q_SIGNAL void focusOut(QString const &text);
+  Q_SIGNAL void wmFocusOut(QString const &text);
 
 protected:
   void focusInEvent(QFocusEvent *event) override;

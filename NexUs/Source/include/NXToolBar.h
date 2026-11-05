@@ -13,7 +13,7 @@ class NX_EXPORT NXToolBar : public QToolBar
 
 public:
   explicit NXToolBar(QWidget *parent = nullptr);
-  explicit NXToolBar(const QString &title, QWidget *parent = nullptr);
+  explicit NXToolBar(QString const &title, QWidget *parent = nullptr);
   ~NXToolBar();
 
   void setToolBarSpacing(int spacing);
@@ -22,8 +22,8 @@ public:
   void setToolButtonSize(QSize size);
   QSize getToolButtonSize() const;
 
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text);
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

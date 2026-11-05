@@ -24,11 +24,11 @@ void NXTreeSelectPopupWidget::paintEvent(QPaintEvent *event)
   Q_UNUSED(event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing);
-  painter.setPen(QPen(NXThemeColor(_themeMode, PopupBorder), 1));
-  painter.setBrush(NXThemeColor(_themeMode, PopupBase));
+  painter.setPen(QPen(NXThemeColor(m_ThemeMode, PopupBorder), 1));
+  painter.setBrush(NXThemeColor(m_ThemeMode, PopupBase));
   QRectF bgRect(0, 0, width(), height());
   QPainterPath path;
-  path.addRoundedRect(bgRect, _borderRadius, _borderRadius);
+  path.addRoundedRect(bgRect, m_BorderRadius, m_BorderRadius);
   painter.drawPath(path);
 }
 
@@ -43,7 +43,7 @@ NXTreeSelectPrivate::~NXTreeSelectPrivate()
 
 bool NXTreeSelectPrivate::eventFilter(QObject *watched, QEvent *event)
 {
-  if (_isPopupVisible && event->type() == QEvent::MouseButtonPress) {
+  if (m_IsPopupVisible && event->type() == QEvent::MouseButtonPress) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint globalPos = mouseEvent->globalPosition().toPoint();
@@ -51,7 +51,7 @@ bool NXTreeSelectPrivate::eventFilter(QObject *watched, QEvent *event)
     QPoint globalPos = mouseEvent->globalPos();
 #endif
     Q_Q(NXTreeSelect);
-    QRect popupRect(_popupContainer->mapToGlobal(QPoint(0, 0)), _popupContainer->size());
+    QRect popupRect(m_PopupContainer->mapToGlobal(QPoint(0, 0)), m_PopupContainer->size());
     QRect triggerRect(q->mapToGlobal(QPoint(0, 0)), q->size());
     if (!popupRect.contains(globalPos) && !triggerRect.contains(globalPos)) {
       _hidePopup();
@@ -63,52 +63,52 @@ bool NXTreeSelectPrivate::eventFilter(QObject *watched, QEvent *event)
 void NXTreeSelectPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXTreeSelect);
-  _themeMode                  = themeMode;
-  _popupContainer->_themeMode = themeMode;
+  m_ThemeMode                  = themeMode;
+  m_PopupContainer->m_ThemeMode = themeMode;
   q->update();
 }
 
-void NXTreeSelectPrivate::onItemClicked(const QModelIndex &index)
+void NXTreeSelectPrivate::onItemClicked(QModelIndex const &index)
 {
   Q_Q(NXTreeSelect);
   if (!index.isValid()) {
     return;
   }
   QModelIndex sourceIndex = index;
-  if (_proxyModel) {
-    sourceIndex = _proxyModel->mapToSource(index);
+  if (m_ProxyModel) {
+    sourceIndex = m_ProxyModel->mapToSource(index);
   }
   if (!sourceIndex.isValid()) {
     return;
   }
-  if (_model && _model->hasChildren(sourceIndex)) {
+  if (m_Model && m_Model->hasChildren(sourceIndex)) {
     return;
   }
-  _currentIndex = sourceIndex;
+  m_CurrentIndex = sourceIndex;
   _updateDisplayText();
   _hidePopup();
-  Q_EMIT q->currentIndexChanged(_currentIndex);
-  Q_EMIT q->currentTextChanged(_currentText);
+  Q_EMIT q->currentIndexChanged(m_CurrentIndex);
+  Q_EMIT q->currentTextChanged(m_CurrentText);
 }
 
-void NXTreeSelectPrivate::onSearchTextChanged(const QString &text)
+void NXTreeSelectPrivate::onSearchTextChanged(QString const &text)
 {
-  if (_proxyModel) {
-    _proxyModel->setFilterFixedString(text);
+  if (m_ProxyModel) {
+    m_ProxyModel->setFilterFixedString(text);
     if (!text.isEmpty()) {
-      _treeView->expandAll();
+      m_TreeView->expandAll();
     }
     _updatePopupHeight();
   }
 }
 
-void NXTreeSelectPrivate::onTreeExpanded(const QModelIndex &index)
+void NXTreeSelectPrivate::onTreeExpanded(QModelIndex const &index)
 {
   Q_UNUSED(index)
   _updatePopupHeight();
 }
 
-void NXTreeSelectPrivate::onTreeCollapsed(const QModelIndex &index)
+void NXTreeSelectPrivate::onTreeCollapsed(QModelIndex const &index)
 {
   Q_UNUSED(index)
   _updatePopupHeight();
@@ -117,10 +117,10 @@ void NXTreeSelectPrivate::onTreeCollapsed(const QModelIndex &index)
 void NXTreeSelectPrivate::_showPopup()
 {
   Q_Q(NXTreeSelect);
-  if (_isPopupVisible || !_model) {
+  if (m_IsPopupVisible || !m_Model) {
     return;
   }
-  _isPopupVisible = true;
+  m_IsPopupVisible = true;
 
   int popupHeight      = _calculatePopupHeight();
   QPoint globalPos     = q->mapToGlobal(QPoint(0, 0));
@@ -136,23 +136,23 @@ void NXTreeSelectPrivate::_showPopup()
     containerPos = QPoint(globalPos.x(), globalPos.y() + q->height() + 3);
   }
 
-  _popupContainer->setFixedWidth(q->width());
-  _popupContainer->move(containerPos);
-  _popupContainer->setFixedHeight(1);
-  _popupContainer->show();
-  _popupContainer->raise();
+  m_PopupContainer->setFixedWidth(q->width());
+  m_PopupContainer->move(containerPos);
+  m_PopupContainer->setFixedHeight(1);
+  m_PopupContainer->show();
+  m_PopupContainer->raise();
 
-  if (_searchEdit && _pIsSearchVisible) {
-    _searchEdit->setVisible(true);
-    _searchEdit->clear();
-    _searchEdit->setFocus();
+  if (m_SearchEdit && m_IsSearchVisible) {
+    m_SearchEdit->setVisible(true);
+    m_SearchEdit->clear();
+    m_SearchEdit->setFocus();
   }
 
   qApp->installEventFilter(this);
 
-  QPropertyAnimation *heightAnimation = new QPropertyAnimation(_popupContainer, "maximumHeight");
-  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](const QVariant &value) {
-    _popupContainer->setFixedHeight(value.toInt());
+  QPropertyAnimation *heightAnimation = new QPropertyAnimation(m_PopupContainer, "maximumHeight");
+  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](QVariant const &value) {
+    m_PopupContainer->setFixedHeight(value.toInt());
   });
   heightAnimation->setStartValue(1);
   heightAnimation->setEndValue(popupHeight);
@@ -161,11 +161,11 @@ void NXTreeSelectPrivate::_showPopup()
   heightAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "");
-  connect(rotateAnimation, &QPropertyAnimation::valueChanged, q, [=](const QVariant &value) {
-    _expandIconRotate = value.toReal();
+  connect(rotateAnimation, &QPropertyAnimation::valueChanged, q, [=](QVariant const &value) {
+    m_ExpandIconRotate = value.toReal();
     q->update();
   });
-  rotateAnimation->setStartValue(_expandIconRotate);
+  rotateAnimation->setStartValue(m_ExpandIconRotate);
   rotateAnimation->setEndValue(-180.0);
   rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
   rotateAnimation->setDuration(300);
@@ -177,22 +177,22 @@ void NXTreeSelectPrivate::_showPopup()
 void NXTreeSelectPrivate::_hidePopup()
 {
   Q_Q(NXTreeSelect);
-  if (!_isPopupVisible) {
+  if (!m_IsPopupVisible) {
     return;
   }
-  _isPopupVisible = false;
+  m_IsPopupVisible = false;
 
   qApp->removeEventFilter(this);
 
-  int currentHeight                   = _popupContainer->height();
-  QPropertyAnimation *heightAnimation = new QPropertyAnimation(_popupContainer, "maximumHeight");
-  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](const QVariant &value) {
-    _popupContainer->setFixedHeight(value.toInt());
+  int currentHeight                   = m_PopupContainer->height();
+  QPropertyAnimation *heightAnimation = new QPropertyAnimation(m_PopupContainer, "maximumHeight");
+  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](QVariant const &value) {
+    m_PopupContainer->setFixedHeight(value.toInt());
   });
   connect(heightAnimation, &QPropertyAnimation::finished, q, [=]() {
-    _popupContainer->hide();
-    if (_proxyModel) {
-      _proxyModel->setFilterFixedString(QStringLiteral(""));
+    m_PopupContainer->hide();
+    if (m_ProxyModel) {
+      m_ProxyModel->setFilterFixedString(QStringLiteral(""));
     }
   });
   heightAnimation->setStartValue(currentHeight);
@@ -202,11 +202,11 @@ void NXTreeSelectPrivate::_hidePopup()
   heightAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "");
-  connect(rotateAnimation, &QPropertyAnimation::valueChanged, q, [=](const QVariant &value) {
-    _expandIconRotate = value.toReal();
+  connect(rotateAnimation, &QPropertyAnimation::valueChanged, q, [=](QVariant const &value) {
+    m_ExpandIconRotate = value.toReal();
     q->update();
   });
-  rotateAnimation->setStartValue(_expandIconRotate);
+  rotateAnimation->setStartValue(m_ExpandIconRotate);
   rotateAnimation->setEndValue(0.0);
   rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
   rotateAnimation->setDuration(300);
@@ -217,31 +217,31 @@ void NXTreeSelectPrivate::_hidePopup()
 
 void NXTreeSelectPrivate::_updateDisplayText()
 {
-  if (_currentIndex.isValid() && _model) {
+  if (m_CurrentIndex.isValid() && m_Model) {
     QStringList pathParts;
-    QModelIndex index = _currentIndex;
+    QModelIndex index = m_CurrentIndex;
     while (index.isValid()) {
       pathParts.prepend(index.data(Qt::DisplayRole).toString());
       index = index.parent();
     }
-    _currentText = pathParts.join(QStringLiteral(" / "));
+    m_CurrentText = pathParts.join(QStringLiteral(" / "));
   } else {
-    _currentText.clear();
+    m_CurrentText.clear();
   }
 }
 
 void NXTreeSelectPrivate::_updatePopupHeight()
 {
   Q_Q(NXTreeSelect);
-  if (!_isPopupVisible) {
+  if (!m_IsPopupVisible) {
     return;
   }
   int newHeight                       = _calculatePopupHeight();
-  QPropertyAnimation *heightAnimation = new QPropertyAnimation(_popupContainer, "maximumHeight");
-  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](const QVariant &value) {
-    _popupContainer->setFixedHeight(value.toInt());
+  QPropertyAnimation *heightAnimation = new QPropertyAnimation(m_PopupContainer, "maximumHeight");
+  connect(heightAnimation, &QPropertyAnimation::valueChanged, q, [=](QVariant const &value) {
+    m_PopupContainer->setFixedHeight(value.toInt());
   });
-  heightAnimation->setStartValue(_popupContainer->height());
+  heightAnimation->setStartValue(m_PopupContainer->height());
   heightAnimation->setEndValue(newHeight);
   heightAnimation->setEasingCurve(QEasingCurve::OutCubic);
   heightAnimation->setDuration(250);
@@ -251,19 +251,19 @@ void NXTreeSelectPrivate::_updatePopupHeight()
 int NXTreeSelectPrivate::_calculatePopupHeight() const
 {
   int visibleCount = _countVisibleItems();
-  int maxItems     = _pMaxVisibleItems > 0 ? _pMaxVisibleItems : 8;
+  int maxItems     = m_MaxVisibleItems > 0 ? m_MaxVisibleItems : 8;
   int itemCount    = qMin(visibleCount, maxItems);
   if (itemCount < 1) {
     itemCount = 1;
   }
-  int searchHeight = (_pIsSearchVisible && _searchEdit) ? 40 : 0;
-  return itemCount * _pItemHeight + searchHeight + 16;
+  int searchHeight = (m_IsSearchVisible && m_SearchEdit) ? 40 : 0;
+  return itemCount * m_ItemHeight + searchHeight + 16;
 }
 
-int NXTreeSelectPrivate::_countVisibleItems(const QModelIndex &parent) const
+int NXTreeSelectPrivate::_countVisibleItems(QModelIndex const &parent) const
 {
   QAbstractItemModel *viewModel =
-      _proxyModel ? static_cast<QAbstractItemModel *>(_proxyModel) : static_cast<QAbstractItemModel *>(_model);
+      m_ProxyModel ? static_cast<QAbstractItemModel *>(m_ProxyModel) : static_cast<QAbstractItemModel *>(m_Model);
   if (!viewModel) {
     return 0;
   }
@@ -272,7 +272,7 @@ int NXTreeSelectPrivate::_countVisibleItems(const QModelIndex &parent) const
   for (int i = 0; i < rowCount; ++i) {
     count++;
     QModelIndex childIndex = viewModel->index(i, 0, parent);
-    if (_treeView && _treeView->isExpanded(childIndex)) {
+    if (m_TreeView && m_TreeView->isExpanded(childIndex)) {
       count += _countVisibleItems(childIndex);
     }
   }

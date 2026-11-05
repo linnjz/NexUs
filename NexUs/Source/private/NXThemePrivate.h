@@ -23,10 +23,10 @@ protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  NXThemeType::ThemeMode _themeMode { NXThemeType::Light };
-  QMetaObject::Connection _colorSchemeConnection;
-  QColor _lightThemeColorList[48];
-  QColor _darkThemeColorList[48];
+  NXThemeType::ThemeMode m_ThemeMode { NXThemeType::Light };
+  QMetaObject::Connection m_ColorSchemeConnection;
+  QColor m_LightThemeColorList[48];
+  QColor m_DarkThemeColorList[48];
   void _initThemeColor();
 
   NXThemeType::ThemeMode _detectSystemThemeMode() const;

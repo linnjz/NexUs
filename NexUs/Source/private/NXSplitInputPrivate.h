@@ -27,19 +27,19 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  bool _allCompleted { false };
-  NXThemeType::ThemeMode _themeMode;
-  int _segmentCount { 1 };
-  int _defaultMaxLength { 999999 };
-  int _hoveredIndex { -1 };
-  QString _separatorText;
-  QHBoxLayout *_boxLayout { nullptr };
-  QVector<QLineEdit *> _lineEdits;
-  QVector<QLabel *> _separators;
-  QVector<int> _maxLengths;
-  QVector<qreal> _segmentMarks;
-  QVector<bool> _segmentCompleted;
-  QVector<QVariantAnimation *> _markAnimations;
+  bool m_AllCompleted { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_SegmentCount { 1 };
+  int m_DefaultMaxLength { 999999 };
+  int m_HoveredIndex { -1 };
+  QString m_SeparatorText;
+  QHBoxLayout *m_BoxLayout { nullptr };
+  QVector<QLineEdit *> m_LineEdits;
+  QVector<QLabel *> m_Separators;
+  QVector<int> m_MaxLengths;
+  QVector<qreal> m_SegmentMarks;
+  QVector<bool> m_SegmentCompleted;
+  QVector<QVariantAnimation *> m_MarkAnimations;
 
   void _buildWidgets();
   void _updateCompletedState();

@@ -24,10 +24,10 @@ public:
   int tabAt(QPoint pos) const;
 
 private:
-  int _hoveredIndex { -1 };
-  NXThemeType::ThemeMode _themeMode;
-  QStringList _tabTitles;
-  QList<bool> _tabEnableds;
+  int m_HoveredIndex { -1 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QStringList m_TabTitles;
+  QList<bool> m_TabEnableds;
 };
 
 #endif // NXRIBBONTABBARPRIVATE_H

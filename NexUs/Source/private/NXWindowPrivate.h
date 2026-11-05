@@ -31,44 +31,44 @@ public:
   explicit NXWindowPrivate(QObject *parent = nullptr);
   ~NXWindowPrivate();
   Q_SLOT void onNavigationButtonClicked();
-  Q_INVOKABLE void onWMWindowClickedEvent(const QVariantMap &data);
+  Q_INVOKABLE void onWMWindowClickedEvent(QVariantMap const &data);
   Q_SLOT void onThemeReadyChange();
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
   Q_SLOT void onWindowDisplayModeChanged();
   Q_SLOT void
-  onNavigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, bool isRouteBack);
+  onNavigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, bool isRouteBack);
   Q_SLOT void
-  onNavigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, QWidget *page);
-  Q_SLOT void onNavigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey);
+  onNavigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, QWidget *page);
+  Q_SLOT void onNavigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey);
   Q_SLOT void onNavigationRouterStateChanged(NXNavigationRouterType::RouteMode routeMode);
-  Q_INVOKABLE void onNavigationRoute(const QVariantMap &routeData);
+  Q_INVOKABLE void onNavigationRoute(QVariantMap const &routeData);
 
 private:
-  bool _isInitFinished { false };
-  bool _isNavigationDisplayModeChanged { false };
-  bool _isNavigationEnable { true };
-  bool _isNavigationBarExpanded { false };
-  bool _isNavigationBarFloat { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXApplicationType::WindowDisplayMode _windowDisplayMode;
-  int _contentsMargins { 5 };
-  NXNavigationType::NavigationDisplayMode _currentNavigationBarDisplayMode { NXNavigationType::Maximal };
-  int _centralStackTargetIndex { 0 };
-  int _navigationTargetIndex { 0 };
-  QMap<QString, const QMetaObject *> _pageMetaMap;
-  QMap<QString, QWidget *> _routeMap; // key__nodeKey title可以一致  value__Page
-  QString _lightWindowMoviePath { QStringLiteral("") };
-  QString _darkWindowMoviePath { QStringLiteral("") };
-  QMovie *_windowPaintMovie { nullptr };
-  QPixmap *_lightWindowPix;
-  QPixmap *_darkWindowPix;
-  NXEvent *_focusEvent { nullptr };
-  NXNavigationBar *_navigationBar { nullptr };
-  NXCentralStackedWidget *_centerStackedWidget { nullptr };
-  NXCentralStackedWidget *_navigationCenterStackedWidget { nullptr };
-  NXAppBar *_appBar { nullptr };
-  QHBoxLayout *_centerLayout { nullptr };
-  NXThemeAnimationWidget *_animationWidget { nullptr };
+  bool m_IsInitFinished { false };
+  bool m_IsNavigationDisplayModeChanged { false };
+  bool m_IsNavigationEnable { true };
+  bool m_IsNavigationBarExpanded { false };
+  bool m_IsNavigationBarFloat { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXApplicationType::WindowDisplayMode m_WindowDisplayMode;
+  int m_ContentsMargins { 5 };
+  NXNavigationType::NavigationDisplayMode m_CurrentNavigationBarDisplayMode { NXNavigationType::Maximal };
+  int m_CentralStackTargetIndex { 0 };
+  int m_NavigationTargetIndex { 0 };
+  QMap<QString, QMetaObject const *> m_PageMetaMap;
+  QMap<QString, QWidget *> m_RouteMap; // key__nodeKey title可以一致  value__Page
+  QString m_LightWindowMoviePath { QStringLiteral("") };
+  QString m_DarkWindowMoviePath { QStringLiteral("") };
+  QMovie *m_WindowPaintMovie { nullptr };
+  QPixmap *m_LightWindowPix;
+  QPixmap *m_DarkWindowPix;
+  NXEvent *m_FocusEvent { nullptr };
+  NXNavigationBar *m_NavigationBar { nullptr };
+  NXCentralStackedWidget *m_CenterStackedWidget { nullptr };
+  NXCentralStackedWidget *m_NavigationCenterStackedWidget { nullptr };
+  NXAppBar *m_AppBar { nullptr };
+  QHBoxLayout *m_CenterLayout { nullptr };
+  NXThemeAnimationWidget *m_AnimationWidget { nullptr };
 
 
   qreal _distance(QPoint point1, QPoint point2);

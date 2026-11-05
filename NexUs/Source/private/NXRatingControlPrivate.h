@@ -21,8 +21,8 @@ public:
   ~NXRatingControlPrivate();
 
 private:
-  int _hoveredStar { -1 };
-  NXThemeType::ThemeMode _themeMode;
+  int m_HoveredStar { -1 };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXRATINGCONTROLPRIVATE_H

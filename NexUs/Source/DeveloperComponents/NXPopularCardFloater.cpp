@@ -14,35 +14,35 @@
 
 NXPopularCardFloater::NXPopularCardFloater(NXPopularCard *card, NXPopularCardPrivate *cardPrivate, QWidget *parent)
     : QWidget { parent }
+    , m_HoverYOffset { 0.0 }
+    , m_HoverOpacity { 0.0 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_OverButton { new NXPushButton(QStringLiteral("获取"), this) }
+    , m_OpacityEffect { new QGraphicsOpacityEffect(m_OverButton) }
+    , m_Card { card }
+    , m_CardPrivate { cardPrivate }
 {
-  _card          = card;
-  _cardPrivate   = cardPrivate;
-  _pHoverOpacity = 0;
-  _pHoverYOffset = 0;
   setObjectName("NXPopularCardFloater");
   setStyleSheet(QStringLiteral("#NXPopularCardFloater{background-color:transparent}"));
   setMouseTracking(true);
 
-  _overButton    = new NXPushButton(QStringLiteral("获取"), this);
-  _opacityEffect = new QGraphicsOpacityEffect(_overButton);
-  _opacityEffect->setOpacity(1);
-  _overButton->setGraphicsEffect(_opacityEffect);
-  _overButton->move(0, 0);
-  _overButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
-  _overButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
-  _overButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
-  _overButton->setLightTextColor(Qt::white);
-  _overButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
-  _overButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
-  _overButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
-  _overButton->setDarkTextColor(Qt::white);
-  _overButton->setMinimumSize(0, 0);
-  _overButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
-  connect(_overButton, &NXPushButton::clicked, _card, &NXPopularCard::popularCardButtonClicked);
+  m_OpacityEffect->setOpacity(1);
+  m_OverButton->setGraphicsEffect(m_OpacityEffect);
+  m_OverButton->move(0, 0);
+  m_OverButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
+  m_OverButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
+  m_OverButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
+  m_OverButton->setLightTextColor(Qt::white);
+  m_OverButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
+  m_OverButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
+  m_OverButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
+  m_OverButton->setDarkTextColor(Qt::white);
+  m_OverButton->setMinimumSize(0, 0);
+  m_OverButton->setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+  connect(m_OverButton, &NXPushButton::clicked, m_Card, &NXPopularCard::popularCardButtonClicked);
 
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
   setVisible(false);
 }
@@ -53,10 +53,10 @@ NXPopularCardFloater::~NXPopularCardFloater()
 
 void NXPopularCardFloater::showFloater()
 {
-  _isHideAnimationFinished = true;
-  _pHoverYOffset           = 6;
-  _pHoverOpacity           = 1;
-  _opacityEffect->setOpacity(1);
+  m_IsHideAnimationFinished = true;
+  m_HoverYOffset           = 6;
+  m_HoverOpacity           = 1;
+  m_OpacityEffect->setOpacity(1);
 
   QPropertyAnimation *geometryAnimation = new QPropertyAnimation(this, "geometry");
   connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
@@ -64,73 +64,73 @@ void NXPopularCardFloater::showFloater()
   });
   geometryAnimation->setEasingCurve(QEasingCurve::OutQuad);
   geometryAnimation->setDuration(300);
-  QRect cardGeometry  = QRect(_card->mapTo(_cardPrivate->_pCardFloatArea, QPoint(0, 0)), _card->size());
+  QRect cardGeometry  = QRect(m_Card->mapTo(m_CardPrivate->m_CardFloatArea, QPoint(0, 0)), m_Card->size());
   QRect endGeometry   = _calculateTargetGeometry(cardGeometry);
-  QRect startGeometry = QRect(endGeometry.x() + _floatGeometryOffset, endGeometry.y() + _floatGeometryOffset, _card->width(), _card->height());
+  QRect startGeometry = QRect(endGeometry.x() + m_FloatGeometryOffset, endGeometry.y() + m_FloatGeometryOffset, m_Card->width(), m_Card->height());
   geometryAnimation->setStartValue(startGeometry);
   geometryAnimation->setEndValue(endGeometry);
   geometryAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   //Button动画
-  QPropertyAnimation *buttonAnimation = new QPropertyAnimation(_overButton, "geometry");
+  QPropertyAnimation *buttonAnimation = new QPropertyAnimation(m_OverButton, "geometry");
   buttonAnimation->setEasingCurve(QEasingCurve::OutQuad);
   buttonAnimation->setDuration(300);
-  buttonAnimation->setStartValue(_cardPrivate->_interactiveTipsBaseRect);
-  buttonAnimation->setEndValue(_cardPrivate->_buttonTargetRect);
+  buttonAnimation->setStartValue(m_CardPrivate->m_InteractiveTipsBaseRect);
+  buttonAnimation->setEndValue(m_CardPrivate->m_ButtonTargetRect);
   buttonAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   setVisible(true);
 }
 
 void NXPopularCardFloater::hideFloater()
 {
-  if (!_isHideAnimationFinished) {
+  if (!m_IsHideAnimationFinished) {
     return;
   }
-  _isHideAnimationFinished              = false;
+  m_IsHideAnimationFinished              = false;
   QPropertyAnimation *geometryAnimation = new QPropertyAnimation(this, "geometry");
   connect(geometryAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
-    QRect endGeometry = QRect(_card->mapTo(_cardPrivate->_pCardFloatArea, QPoint(0, 0)), _card->size());
+    QRect endGeometry = QRect(m_Card->mapTo(m_CardPrivate->m_CardFloatArea, QPoint(0, 0)), m_Card->size());
     geometryAnimation->setEndValue(endGeometry);
   });
   connect(geometryAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _cardPrivate->_isFloating = false;
+    m_CardPrivate->m_IsFloating = false;
     setVisible(false);
-    _card->update();
+    m_Card->update();
   });
   geometryAnimation->setEasingCurve(QEasingCurve::InOutSine);
   geometryAnimation->setDuration(300);
-  QRect endGeometry = QRect(_card->mapTo(_cardPrivate->_pCardFloatArea, QPoint(0, 0)), _card->size());
+  QRect endGeometry = QRect(m_Card->mapTo(m_CardPrivate->m_CardFloatArea, QPoint(0, 0)), m_Card->size());
   geometryAnimation->setStartValue(geometry());
   geometryAnimation->setEndValue(endGeometry);
   geometryAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pHoverOpacity");
+  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "HoverOpacity");
   opacityAnimation->setDuration(300);
-  opacityAnimation->setStartValue(_pHoverOpacity);
+  opacityAnimation->setStartValue(m_HoverOpacity);
   opacityAnimation->setEndValue(0);
   opacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   //内容调整动画
-  QPropertyAnimation *hoverAnimation = new QPropertyAnimation(this, "pHoverYOffset");
+  QPropertyAnimation *hoverAnimation = new QPropertyAnimation(this, "HoverYOffset");
   connect(hoverAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
     update();
   });
   hoverAnimation->setDuration(300);
-  hoverAnimation->setStartValue(_pHoverYOffset);
+  hoverAnimation->setStartValue(m_HoverYOffset);
   hoverAnimation->setEndValue(0);
   hoverAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
   //Button动画
-  QPropertyAnimation *buttonAnimation = new QPropertyAnimation(_overButton, "geometry");
+  QPropertyAnimation *buttonAnimation = new QPropertyAnimation(m_OverButton, "geometry");
   buttonAnimation->setEasingCurve(QEasingCurve::InOutSine);
   buttonAnimation->setDuration(300);
-  buttonAnimation->setStartValue(_overButton->geometry());
-  QRectF endRect = _cardPrivate->_interactiveTipsBaseRect;
+  buttonAnimation->setStartValue(m_OverButton->geometry());
+  QRectF endRect = m_CardPrivate->m_InteractiveTipsBaseRect;
   endRect.adjust(0, 6, 0, 6);
   buttonAnimation->setEndValue(endRect);
   buttonAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-  QPropertyAnimation *buttonOpacityAnimation = new QPropertyAnimation(_overButton->graphicsEffect(), "opacity");
+  QPropertyAnimation *buttonOpacityAnimation = new QPropertyAnimation(m_OverButton->graphicsEffect(), "opacity");
   buttonOpacityAnimation->setEasingCurve(QEasingCurve::InOutSine);
   buttonOpacityAnimation->setDuration(350);
   buttonOpacityAnimation->setStartValue(1);
@@ -146,7 +146,7 @@ bool NXPopularCardFloater::event(QEvent *event)
     break;
   }
   case QEvent::MouseButtonRelease : {
-    Q_EMIT _card->popularCardClicked();
+    Q_EMIT m_Card->popularCardClicked();
     break;
   }
   default : {
@@ -158,25 +158,25 @@ bool NXPopularCardFloater::event(QEvent *event)
 
 void NXPopularCardFloater::paintEvent(QPaintEvent *event)
 {
-  const int fontPixelSize = nxApp->getFontPixelSize();
+  int const fontPixelSize = nxApp->getFontPixelSize();
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
   // 阴影绘制
-  painter.setOpacity(_pHoverOpacity);
+  painter.setOpacity(m_HoverOpacity);
   QRect shadowRect = rect();
-  shadowRect.adjust(0, 0, 0, -_pHoverYOffset);
-  nxTheme->drawEffectShadow(&painter, shadowRect, _cardPrivate->_shadowBorderWidth, _cardPrivate->_pBorderRadius);
-  QRectF foregroundRect(_cardPrivate->_shadowBorderWidth, _cardPrivate->_shadowBorderWidth - _pHoverYOffset + 1, width() - 2 * _cardPrivate->_shadowBorderWidth, height() - 2 * _cardPrivate->_shadowBorderWidth);
+  shadowRect.adjust(0, 0, 0, -m_HoverYOffset);
+  nxTheme->drawEffectShadow(&painter, shadowRect, m_CardPrivate->m_ShadowBorderWidth, m_CardPrivate->m_BorderRadius);
+  QRectF foregroundRect(m_CardPrivate->m_ShadowBorderWidth, m_CardPrivate->m_ShadowBorderWidth - m_HoverYOffset + 1, width() - 2 * m_CardPrivate->m_ShadowBorderWidth, height() - 2 * m_CardPrivate->m_ShadowBorderWidth);
   QRectF cardForegroundRect(
-      _cardPrivate->_shadowBorderWidth, _cardPrivate->_shadowBorderWidth - _cardPrivate->_pHoverYOffset + 1,
-      _card->width() - 2 * _cardPrivate->_shadowBorderWidth, _card->height() - 2 * _cardPrivate->_shadowBorderWidth);
+      m_CardPrivate->m_ShadowBorderWidth, m_CardPrivate->m_ShadowBorderWidth - m_CardPrivate->m_HoverYOffset + 1,
+      m_Card->width() - 2 * m_CardPrivate->m_ShadowBorderWidth, m_Card->height() - 2 * m_CardPrivate->m_ShadowBorderWidth);
 
   //背景绘制
   painter.setOpacity(1);
-  painter.setPen(NXThemeColor(_themeMode, PopupBorderHover));
-  painter.setBrush(NXThemeColor(_themeMode, DialogBase));
-  painter.drawRoundedRect(foregroundRect, _cardPrivate->_pBorderRadius, _cardPrivate->_pBorderRadius);
+  painter.setPen(NXThemeColor(m_ThemeMode, PopupBorderHover));
+  painter.setBrush(NXThemeColor(m_ThemeMode, DialogBase));
+  painter.drawRoundedRect(foregroundRect, m_CardPrivate->m_BorderRadius, m_CardPrivate->m_BorderRadius);
   painter.setClipRect(foregroundRect);
   //图片绘制
   painter.save();
@@ -185,19 +185,19 @@ void NXPopularCardFloater::paintEvent(QPaintEvent *event)
   QPainterPath pixPath;
   pixPath.addRoundedRect(pixRect, 4, 4);
   painter.setClipPath(pixPath);
-  painter.drawPixmap(pixRect, _cardPrivate->_pCardPixmap, _cardPrivate->_pCardPixmap.rect());
+  painter.drawPixmap(pixRect, m_CardPrivate->m_CardPixmap, m_CardPrivate->m_CardPixmap.rect());
   painter.restore();
 
   //文字绘制
   //Title
-  painter.setPen(NXThemeColor(_themeMode, BasicText));
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicText));
   QFont font = painter.font();
   font.setWeight(QFont::Bold);
   font.setPixelSize(fontPixelSize + 2);
   painter.setFont(font);
   int titleHeight = painter.fontMetrics().height();
-  QRectF titleRect(pixRect.right() + _cardPrivate->_textHSpacing, pixRect.y(), _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 - _cardPrivate->_buttonTargetRect.width(), titleHeight);
-  QString titleText = painter.fontMetrics().elidedText(_cardPrivate->_pTitle, Qt::ElideRight, titleRect.width());
+  QRectF titleRect(pixRect.right() + m_CardPrivate->m_TextHSpacing, pixRect.y(), m_FloatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - m_CardPrivate->m_TextHSpacing * 2 - cardForegroundRect.height() * 0.15 - m_CardPrivate->m_ButtonTargetRect.width(), titleHeight);
+  QString titleText = painter.fontMetrics().elidedText(m_CardPrivate->m_Title, Qt::ElideRight, titleRect.width());
   painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, titleText);
 
   //SubTitle
@@ -205,33 +205,33 @@ void NXPopularCardFloater::paintEvent(QPaintEvent *event)
   font.setPixelSize(fontPixelSize);
   painter.setFont(font);
   int subTitleHeight = painter.fontMetrics().height();
-  QRectF subTitleRect(pixRect.right() + _cardPrivate->_textHSpacing, titleRect.bottom() + _cardPrivate->_textVSpacing, _floatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - _cardPrivate->_textHSpacing * 2 - cardForegroundRect.height() * 0.15 - _cardPrivate->_buttonTargetRect.width(), subTitleHeight);
+  QRectF subTitleRect(pixRect.right() + m_CardPrivate->m_TextHSpacing, titleRect.bottom() + m_CardPrivate->m_TextVSpacing, m_FloatGeometryOffset * 2 + cardForegroundRect.width() - pixRect.width() - m_CardPrivate->m_TextHSpacing * 2 - cardForegroundRect.height() * 0.15 - m_CardPrivate->m_ButtonTargetRect.width(), subTitleHeight);
   QString subTitleText =
-      painter.fontMetrics().elidedText(_cardPrivate->_pSubTitle, Qt::ElideRight, subTitleRect.width());
+      painter.fontMetrics().elidedText(m_CardPrivate->m_SubTitle, Qt::ElideRight, subTitleRect.width());
   painter.drawText(subTitleRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextSingleLine, subTitleText);
 
   //DetailedText
-  painter.setPen(NXThemeColor(_themeMode, BasicDetailsText));
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicDetailsText));
   int detailedTextHeight = painter.fontMetrics().height() * 2 + 2;
-  QRectF detailedTextRect(pixRect.x(), pixRect.bottom() + cardForegroundRect.height() * 0.15, cardForegroundRect.width() + 2 * _floatGeometryOffset - _cardPrivate->_textHSpacing - cardForegroundRect.height() * 0.15, detailedTextHeight);
+  QRectF detailedTextRect(pixRect.x(), pixRect.bottom() + cardForegroundRect.height() * 0.15, cardForegroundRect.width() + 2 * m_FloatGeometryOffset - m_CardPrivate->m_TextHSpacing - cardForegroundRect.height() * 0.15, detailedTextHeight);
   QString detailedText =
-      painter.fontMetrics().elidedText(_cardPrivate->_pDetailedText, Qt::ElideRight, detailedTextRect.width() * 1.9);
+      painter.fontMetrics().elidedText(m_CardPrivate->m_DetailedText, Qt::ElideRight, detailedTextRect.width() * 1.9);
   painter.drawText(detailedTextRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, detailedText);
 
   //分割线绘制
-  painter.setPen(NXThemeColor(_themeMode, BasicBaseLine));
+  painter.setPen(NXThemeColor(m_ThemeMode, BasicBaseLine));
   painter.drawLine(foregroundRect.x(), detailedTextRect.bottom() + 5, foregroundRect.right(), detailedTextRect.bottom() + 5);
 
   //CardFloatPixmap
-  painter.drawPixmap(QRect(pixRect.x(), detailedTextRect.bottom() + 15, cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - _cardPrivate->_shadowBorderWidth - 10, cardForegroundRect.bottom() + _floatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - _cardPrivate->_shadowBorderWidth - 10), _cardPrivate->_pCardFloatPixmap);
+  painter.drawPixmap(QRect(pixRect.x(), detailedTextRect.bottom() + 15, cardForegroundRect.bottom() + m_FloatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - m_CardPrivate->m_ShadowBorderWidth - 10, cardForegroundRect.bottom() + m_FloatGeometryOffset + 90 - detailedTextRect.bottom() - 15 - m_CardPrivate->m_ShadowBorderWidth - 10), m_CardPrivate->m_CardFloatPixmap);
   painter.restore();
 }
 
 QRect NXPopularCardFloater::_calculateTargetGeometry(QRect cardGeometry)
 {
   QRect targetGeometry = cardGeometry;
-  targetGeometry.adjust(-_floatGeometryOffset, -_floatGeometryOffset, _floatGeometryOffset, 90);
-  QRect windowRect = _cardPrivate->_pCardFloatArea->rect();
+  targetGeometry.adjust(-m_FloatGeometryOffset, -m_FloatGeometryOffset, m_FloatGeometryOffset, 90);
+  QRect windowRect = m_CardPrivate->m_CardFloatArea->rect();
   if (targetGeometry.bottom() > windowRect.bottom()) {
     int offset = targetGeometry.bottom() - windowRect.bottom();
     targetGeometry.adjust(0, -offset, 0, -offset);

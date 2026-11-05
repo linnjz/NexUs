@@ -11,7 +11,7 @@ class NXSkeletonPrivate : public QObject
 {
   Q_OBJECT
   Q_D_CREATE(NXSkeleton)
-  Q_PROPERTY_CREATE(qreal, ShimmerPosition)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ShimmerPosition)
   Q_PROPERTY_CREATE_D(int, BorderRadius)
   Q_PROPERTY_CREATE_D(bool, IsAnimated)
 
@@ -20,9 +20,9 @@ public:
   ~NXSkeletonPrivate();
 
 private:
-  NXSkeleton::SkeletonType _skeletonType { NXSkeleton::Text };
-  NXThemeType::ThemeMode _themeMode;
-  QVariantAnimation *_shimmerAnimation { nullptr };
+  NXSkeleton::SkeletonType m_SkeletonType { NXSkeleton::Text };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QVariantAnimation *m_ShimmerAnimation { nullptr };
   void _startShimmerAnimation();
   void _stopShimmerAnimation();
 };

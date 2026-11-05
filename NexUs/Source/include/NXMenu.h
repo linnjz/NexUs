@@ -17,16 +17,16 @@ class NX_EXPORT NXMenu : public QMenu
 
 public:
   explicit NXMenu(QWidget *parent = nullptr);
-  explicit NXMenu(const QString &title, QWidget *parent = nullptr);
+  explicit NXMenu(QString const &title, QWidget *parent = nullptr);
   ~NXMenu();
 
   QAction *addMenu(QMenu *menu);
-  NXMenu *addMenu(const QString &title);
-  NXMenu *addMenu(const QIcon &icon, const QString &title);
-  NXMenu *addMenu(NXIconType::IconName icon, const QString &title);
+  NXMenu *addMenu(QString const &title);
+  NXMenu *addMenu(QIcon const &icon, QString const &title);
+  NXMenu *addMenu(NXIconType::IconName icon, QString const &title);
 
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text);
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut);
 
   bool isHasParentMenu() const;
   bool isHasChildMenu() const;

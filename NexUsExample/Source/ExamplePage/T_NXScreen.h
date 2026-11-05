@@ -41,8 +41,8 @@ private:
   T_RecvScreen *_recvScreen { nullptr };
   QThread *_packetIOSendThread { nullptr };
   QThread *_packetIORecvThread { nullptr };
-  void _initSendThread(const QString &interfaceIP);
-  void _initRecvThread(const QString &interfaceIP);
+  void _initSendThread(QString const &interfaceIP);
+  void _initRecvThread(QString const &interfaceIP);
   void _unInitThread(bool isSend);
 #  endif
 };

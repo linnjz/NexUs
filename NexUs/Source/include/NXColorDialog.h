@@ -11,19 +11,19 @@ class NX_EXPORT NXColorDialog : public QDialog
 {
   Q_OBJECT
   Q_Q_CREATE(NXColorDialog)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), CurrentColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), CurrentColor)
   Q_PROPERTY_CREATE_H(NXColorSchemeType::ColorSchemeType, ColorSchemeType)
   Q_TAKEOVER_NATIVEEVENT_H
 
 public:
   explicit NXColorDialog(QWidget *parent = nullptr);
-  explicit NXColorDialog(const QColor &currentColor, QWidget *parent = nullptr);
+  explicit NXColorDialog(QColor const &currentColor, QWidget *parent = nullptr);
   ~NXColorDialog();
 
   QList<QColor> getCustomColorList() const;
   QColor getCustomColor(int index) const;
   QString getCurrent4ChannelColor() const;
-  Q_SIGNAL void colorSelected(const QColor &color);
+  Q_SIGNAL void colorSelected(QColor const &color);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

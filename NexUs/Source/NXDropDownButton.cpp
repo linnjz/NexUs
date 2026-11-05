@@ -10,9 +10,9 @@
 #include "NXTheme.h"
 #include "private/NXDropDownButtonPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXDropDownButton, QS_SET_CREF(QString), Text)
-Q_PROPERTY_CREATE_CPP(NXDropDownButton, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXDropDownButton, NXIconType::IconName, NXIcon)
+Q_PROPERTY_CREATE_CPP(NXDropDownButton, QPS_SCREF_PAEMIT(QString), Text)
+Q_PROPERTY_CREATE_CPP(NXDropDownButton, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXDropDownButton, QPS_PAEMIT(NXIconType::IconName), NXIcon)
 
 NXDropDownButton::NXDropDownButton(QWidget *parent)
     : QWidget { parent }
@@ -20,14 +20,14 @@ NXDropDownButton::NXDropDownButton(QWidget *parent)
 {
   Q_D(NXDropDownButton);
   d->q_ptr          = this;
-  d->_pBorderRadius = 6;
-  d->_pNXIcon       = NXIconType::None;
+  d->m_BorderRadius = 6;
+  d->m_NXIcon       = NXIconType::None;
   setObjectName("NXDropDownButton");
   setFixedHeight(35);
   setMouseTracking(true);
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -39,12 +39,12 @@ NXDropDownButton::~NXDropDownButton()
 void NXDropDownButton::setMenu(NXMenu *menu)
 {
   Q_D(NXDropDownButton);
-  d->_menu = menu;
+  d->m_Menu = menu;
 }
 
-NXMenu * NXDropDownButton::getMenu() const
+NXMenu *NXDropDownButton::getMenu() const
 {
-  return d_ptr->_menu;
+  return d_ptr->m_Menu;
 }
 
 bool NXDropDownButton::event(QEvent *event)
@@ -52,12 +52,12 @@ bool NXDropDownButton::event(QEvent *event)
   Q_D(NXDropDownButton);
   switch (event->type()) {
   case QEvent::HoverEnter : {
-    d->_isHover = true;
+    d->m_IsHover = true;
     update();
     break;
   }
   case QEvent::HoverLeave : {
-    d->_isHover = false;
+    d->m_IsHover = false;
     update();
     break;
   }
@@ -72,7 +72,7 @@ void NXDropDownButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXDropDownButton);
   if (event->button() == Qt::LeftButton) {
-    d->_isPressed = true;
+    d->m_IsPressed = true;
     update();
   }
   QWidget::mousePressEvent(event);
@@ -82,10 +82,10 @@ void NXDropDownButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXDropDownButton);
   if (event->button() == Qt::LeftButton) {
-    d->_isPressed = false;
+    d->m_IsPressed = false;
     update();
-    if (d->_menu && rect().contains(event->pos())) {
-      d->_menu->popup(mapToGlobal(QPoint(0, height())));
+    if (d->m_Menu && rect().contains(event->pos())) {
+      d->m_Menu->popup(mapToGlobal(QPoint(0, height())));
     }
   }
   QWidget::mouseReleaseEvent(event);
@@ -94,8 +94,8 @@ void NXDropDownButton::mouseReleaseEvent(QMouseEvent *event)
 void NXDropDownButton::leaveEvent(QEvent *event)
 {
   Q_D(NXDropDownButton);
-  d->_isHover   = false;
-  d->_isPressed = false;
+  d->m_IsHover   = false;
+  d->m_IsPressed = false;
   update();
   QWidget::leaveEvent(event);
 }
@@ -110,18 +110,18 @@ void NXDropDownButton::paintEvent(QPaintEvent *event)
 
   // Background
   QPainterPath backgroundPath;
-  backgroundPath.addRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->_pBorderRadius, d->_pBorderRadius);
-  if (d->_isPressed) {
-    painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicPress));
-  } else if (d->_isHover) {
-    painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicHover));
+  backgroundPath.addRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->m_BorderRadius, d->m_BorderRadius);
+  if (d->m_IsPressed) {
+    painter.fillPath(backgroundPath, NXThemeColor(d->m_ThemeMode, BasicPress));
+  } else if (d->m_IsHover) {
+    painter.fillPath(backgroundPath, NXThemeColor(d->m_ThemeMode, BasicHover));
   } else {
-    painter.fillPath(backgroundPath, NXThemeColor(d->_themeMode, BasicBase));
+    painter.fillPath(backgroundPath, NXThemeColor(d->m_ThemeMode, BasicBase));
   }
 
   // Border (light mode only)
-  if (d->_themeMode == NXThemeType::Light) {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
+  if (d->m_ThemeMode == NXThemeType::Light) {
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
     painter.drawPath(backgroundPath);
   }
 
@@ -139,16 +139,16 @@ void NXDropDownButton::paintEvent(QPaintEvent *event)
   int iconTextGap = 6;
   int textWidth   = 0;
 
-  if (d->_pNXIcon != NXIconType::None) {
+  if (d->m_NXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
-    iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->_pNXIcon)));
+    iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->m_NXIcon)));
   }
 
-  if (!d->_pText.isEmpty()) {
+  if (!d->m_Text.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
-    textWidth = QFontMetrics(textFont).horizontalAdvance(d->_pText);
+    textWidth = QFontMetrics(textFont).horizontalAdvance(d->m_Text);
   }
 
   int totalContentWidth = iconWidth;
@@ -160,38 +160,38 @@ void NXDropDownButton::paintEvent(QPaintEvent *event)
   int drawX = contentLeft + (contentWidth - totalContentWidth) / 2;
 
   // Draw icon
-  if (d->_pNXIcon != NXIconType::None) {
+  if (d->m_NXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     QRect iconRect(drawX, 0, iconWidth, height());
-    painter.drawText(iconRect, Qt::AlignCenter, QString(QChar(static_cast<int>(d->_pNXIcon))));
+    painter.drawText(iconRect, Qt::AlignCenter, QString(QChar(static_cast<int>(d->m_NXIcon))));
     drawX += iconWidth + iconTextGap;
   }
 
   // Draw text
-  if (!d->_pText.isEmpty()) {
+  if (!d->m_Text.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
     painter.setFont(textFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     QRect textRect(drawX, 0, textWidth, height());
-    painter.drawText(textRect, Qt::AlignCenter, d->_pText);
+    painter.drawText(textRect, Qt::AlignCenter, d->m_Text);
   }
 
   // Draw arrow (AngleDown)
   QFont arrowFont(QStringLiteral("NXAwesome"));
   arrowFont.setPixelSize(16);
   painter.setFont(arrowFont);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
   QRect arrowRect(width() - arrowAreaWidth - arrowRightMargin, 0, arrowAreaWidth, height());
   painter.drawText(arrowRect, Qt::AlignCenter, QString(QChar(static_cast<int>(NXIconType::AngleDown))));
 }
 
 QSize NXDropDownButton::sizeHint() const
 {
-  Q_D(const NXDropDownButton);
+  Q_CONST_D(NXDropDownButton);
 
   int iconWidth        = 0;
   int iconTextGap      = 6;
@@ -201,16 +201,16 @@ QSize NXDropDownButton::sizeHint() const
   int leftPadding      = 10;
   int rightPadding     = 10;
 
-  if (d->_pNXIcon != NXIconType::None) {
+  if (d->m_NXIcon != NXIconType::None) {
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
-    iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->_pNXIcon)));
+    iconWidth = QFontMetrics(iconFont).horizontalAdvance(QChar(static_cast<int>(d->m_NXIcon)));
   }
 
-  if (!d->_pText.isEmpty()) {
+  if (!d->m_Text.isEmpty()) {
     QFont textFont = font();
     textFont.setPixelSize(14);
-    textWidth = QFontMetrics(textFont).horizontalAdvance(d->_pText);
+    textWidth = QFontMetrics(textFont).horizontalAdvance(d->m_Text);
   }
 
   int totalWidth = leftPadding + iconWidth;

@@ -20,9 +20,9 @@ public:
   ~NXPivotPrivate();
 
 private:
-  NXPivotModel *_listModel { nullptr };
-  NXPivotStyle *_listStyle { nullptr };
-  NXPivotView *_listView { nullptr };
+  NXPivotModel *m_ListModel { nullptr };
+  NXPivotStyle *m_ListStyle { nullptr };
+  NXPivotView *m_ListView { nullptr };
 };
 
 #endif // NXPIVOTPRIVATE_H

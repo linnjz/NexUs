@@ -22,7 +22,7 @@ class NXWinShadowHelper : public QObject
   Q_OBJECT
   Q_PRIVATE_CREATE(bool, IsWinVersionGreater10)
   Q_PRIVATE_CREATE(bool, IsWinVersionGreater11)
-  Q_SINGLETON_CREATE(QS_S_UNIQUE(NXWinShadowHelper))
+  Q_SINGLETON_CREATE(QSS_UNIQUE(NXWinShadowHelper))
 
 private:
   explicit NXWinShadowHelper(QObject *parent = nullptr);
@@ -39,8 +39,8 @@ public:
   MONITORINFOEXW getMonitorForWindow(const HWND &hwnd);
   quint32 getResizeBorderThickness(const HWND &hwnd);
   quint32 getDpiForWindow(const HWND &hwnd);
-  int getSystemMetricsForDpi(const HWND &hwnd, const int index);
-  bool compareWindowsVersion(const QString &windowsVersion) const;
+  int getSystemMetricsForDpi(const HWND &hwnd, int const index);
+  bool compareWindowsVersion(QString const &windowsVersion) const;
 
 private:
   enum _DWM_SYSTEMBACKDROP_TYPE
@@ -148,15 +148,15 @@ private:
   using GetDpiForWindowFunc               = UINT(WINAPI *)(HWND hwnd);
   using GetDpiForMonitorFunc              = HRESULT(WINAPI *)(HMONITOR hmonitor, _MONITOR_DPI_TYPE dpiType, UINT *dpiX, UINT *dpiY);
   using GetSystemMetricsForDpiFunc        = int(WINAPI *)(int index, UINT dpi);
-  DwmExtendFrameIntoClientAreaFunc _dwmExtendFrameIntoClientArea { nullptr };
-  DwmSetWindowAttributeFunc _dwmSetWindowAttribute { nullptr };
-  DwmIsCompositionEnabledFunc _dwmIsCompositionEnabled { nullptr };
-  DwmEnableBlurBehindWindowFunc _dwmEnableBlurBehindWindow { nullptr };
-  SetWindowCompositionAttributeFunc _setWindowCompositionAttribute { nullptr };
-  GetDpiForWindowFunc _getDpiForWindow { nullptr };
-  GetDpiForMonitorFunc _getDpiForMonitor { nullptr };
-  GetSystemMetricsForDpiFunc _getSystemMetricsForDpi { nullptr };
-  RTL_OSVERSIONINFOW _windowsVersion {};
+  DwmExtendFrameIntoClientAreaFunc m_DwmExtendFrameIntoClientArea { nullptr };
+  DwmSetWindowAttributeFunc m_DwmSetWindowAttribute { nullptr };
+  DwmIsCompositionEnabledFunc m_DwmIsCompositionEnabled { nullptr };
+  DwmEnableBlurBehindWindowFunc m_DwmEnableBlurBehindWindow { nullptr };
+  SetWindowCompositionAttributeFunc m_SetWindowCompositionAttribute { nullptr };
+  GetDpiForWindowFunc m_GetDpiForWindow { nullptr };
+  GetDpiForMonitorFunc m_GetDpiForMonitor { nullptr };
+  GetSystemMetricsForDpiFunc m_GetSystemMetricsForDpi { nullptr };
+  RTL_OSVERSIONINFOW m_WindowsVersion {};
 
 
   void _externWindowMargins(HWND hwnd);

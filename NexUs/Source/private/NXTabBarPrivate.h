@@ -15,8 +15,8 @@ class NXTabBarPrivate : public QObject
 {
   Q_OBJECT
   Q_D_CREATE(NXTabBar)
-  Q_PROPERTY_CREATE(qreal, ScrollOffset)
-  Q_PROPERTY_CREATE(qreal, TargetScrollOffset)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ScrollOffset)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), TargetScrollOffset)
 
 public:
   explicit NXTabBarPrivate(QObject *parent = nullptr);
@@ -26,10 +26,10 @@ public:
   void restoreScrollOffset(qreal offset);
 
 private:
-  QMimeData *_mimeData { nullptr };
-  NXTabBarStyle *_style { nullptr };
-  QTabBarPrivate *_tabBarPrivate { nullptr };
-  QPropertyAnimation *_scrollAnimation { nullptr };
+  QMimeData *m_MimeData { nullptr };
+  NXTabBarStyle *m_Style { nullptr };
+  QTabBarPrivate *m_TabBarPrivate { nullptr };
+  QPropertyAnimation *m_ScrollAnimation { nullptr };
 };
 
 #endif // NXTABBARPRIVATE_H

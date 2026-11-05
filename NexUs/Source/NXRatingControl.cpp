@@ -7,26 +7,26 @@
 #include "NXTheme.h"
 #include "private/NXRatingControlPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXRatingControl, int, MaxRating)
-Q_PROPERTY_CREATE_CPP(NXRatingControl, int, StarSize)
-Q_PROPERTY_CREATE_CPP(NXRatingControl, int, Spacing)
-Q_PROPERTY_CREATE_CPP(NXRatingControl, bool, IsReadOnly)
+Q_PROPERTY_CREATE_CPP(NXRatingControl, QPS_PAEMIT(int), MaxRating)
+Q_PROPERTY_CREATE_CPP(NXRatingControl, QPS_PAEMIT(int), StarSize)
+Q_PROPERTY_CREATE_CPP(NXRatingControl, QPS_PAEMIT(int), Spacing)
+Q_PROPERTY_CREATE_CPP(NXRatingControl, QPS_PAEMIT(bool), IsReadOnly)
 
 void NXRatingControl::setRating(int Rating)
 {
   Q_D(NXRatingControl);
-  if (d->_pRating == Rating) {
+  if (d->m_Rating == Rating) {
     return;
   }
-  d->_pRating = Rating;
-  Q_EMIT pRatingChanged();
+  d->m_Rating = Rating;
+  Q_EMIT signalRatingChanged();
   Q_EMIT ratingChanged(Rating);
   update();
 }
 
-int NXRatingControl::getRating() const
+int NXRatingControl::getRating() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  return d_ptr->_pRating;
+  return d_ptr->m_Rating;
 }
 
 NXRatingControlPrivate::NXRatingControlPrivate(QObject *parent)
@@ -44,17 +44,17 @@ NXRatingControl::NXRatingControl(QWidget *parent)
 {
   Q_D(NXRatingControl);
   d->q_ptr        = this;
-  d->_pMaxRating  = 5;
-  d->_pRating     = 0;
-  d->_pStarSize   = 24;
-  d->_pSpacing    = 4;
-  d->_pIsReadOnly = false;
+  d->m_MaxRating  = 5;
+  d->m_Rating     = 0;
+  d->m_StarSize   = 24;
+  d->m_Spacing    = 4;
+  d->m_IsReadOnly = false;
   setObjectName("NXRatingControl");
   setMouseTracking(true);
-  setFixedHeight(d->_pStarSize + 4);
-  d->_themeMode = nxTheme->getThemeMode();
+  setFixedHeight(d->m_StarSize + 4);
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -71,20 +71,20 @@ void NXRatingControl::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
-  iconFont.setPixelSize(d->_pStarSize - 4);
+  iconFont.setPixelSize(d->m_StarSize - 4);
   painter.setFont(iconFont);
 
-  int effectiveRating = d->_pRating;
-  if (!d->_pIsReadOnly && d->_hoveredStar >= 0) {
-    effectiveRating = d->_hoveredStar + 1;
+  int effectiveRating = d->m_Rating;
+  if (!d->m_IsReadOnly && d->m_HoveredStar >= 0) {
+    effectiveRating = d->m_HoveredStar + 1;
   }
 
-  for (int i = 0; i < d->_pMaxRating; ++i) {
-    QRect starRect(i * (d->_pStarSize + d->_pSpacing), 2, d->_pStarSize, d->_pStarSize);
+  for (int i = 0; i < d->m_MaxRating; ++i) {
+    QRect starRect(i * (d->m_StarSize + d->m_Spacing), 2, d->m_StarSize, d->m_StarSize);
     if (i < effectiveRating) {
-      painter.setPen(NXThemeColor(d->_themeMode, PrimaryNormal));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
     } else {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicBorderDeep));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorderDeep));
     }
     painter.drawText(starRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::Star));
   }
@@ -93,21 +93,21 @@ void NXRatingControl::paintEvent(QPaintEvent *event)
 void NXRatingControl::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXRatingControl);
-  if (d->_pIsReadOnly) {
+  if (d->m_IsReadOnly) {
     QWidget::mouseMoveEvent(event);
     return;
   }
   int x           = event->pos().x();
-  int starUnit    = d->_pStarSize + d->_pSpacing;
+  int starUnit    = d->m_StarSize + d->m_Spacing;
   int hoveredStar = -1;
   if (x >= 0 && starUnit > 0) {
     hoveredStar = x / starUnit;
-    if (hoveredStar >= d->_pMaxRating) {
+    if (hoveredStar >= d->m_MaxRating) {
       hoveredStar = -1;
     }
   }
-  if (d->_hoveredStar != hoveredStar) {
-    d->_hoveredStar = hoveredStar;
+  if (d->m_HoveredStar != hoveredStar) {
+    d->m_HoveredStar = hoveredStar;
     update();
   }
   QWidget::mouseMoveEvent(event);
@@ -116,8 +116,8 @@ void NXRatingControl::mouseMoveEvent(QMouseEvent *event)
 void NXRatingControl::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXRatingControl);
-  if (!d->_pIsReadOnly && d->_hoveredStar >= 0) {
-    setRating(d->_hoveredStar + 1);
+  if (!d->m_IsReadOnly && d->m_HoveredStar >= 0) {
+    setRating(d->m_HoveredStar + 1);
   }
   QWidget::mousePressEvent(event);
 }
@@ -125,15 +125,15 @@ void NXRatingControl::mousePressEvent(QMouseEvent *event)
 void NXRatingControl::leaveEvent(QEvent *event)
 {
   Q_D(NXRatingControl);
-  d->_hoveredStar = -1;
+  d->m_HoveredStar = -1;
   update();
   QWidget::leaveEvent(event);
 }
 
 QSize NXRatingControl::sizeHint() const
 {
-  Q_D(const NXRatingControl);
-  int w = d->_pMaxRating * (d->_pStarSize + d->_pSpacing) - d->_pSpacing;
-  int h = d->_pStarSize + 4;
+  Q_CONST_D(NXRatingControl);
+  int w = d->m_MaxRating * (d->m_StarSize + d->m_Spacing) - d->m_Spacing;
+  int h = d->m_StarSize + 4;
   return QSize(w, h);
 }

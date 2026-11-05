@@ -25,9 +25,9 @@ private:
     QVector<QVariantMap> routeList;
   };
 
-  int _currentIndex { -1 };
-  QMap<QObject *, RouteContext> _contextMap;
-  QVector<QVariantMap> _routeList;
+  int m_CurrentIndex { -1 };
+  QMap<QObject *, RouteContext> m_ContextMap;
+  QVector<QVariantMap> m_RouteList;
 };
 
 #endif // NXNAVIGATIONROUTERPRIVATE_H

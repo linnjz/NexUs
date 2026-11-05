@@ -7,30 +7,25 @@ T_IconModel::T_IconModel(QObject *parent)
 {
   _metaEnum      = QMetaEnum::fromType<NXIconType::IconName>();
   _rowCount      = _metaEnum.keyCount() - 1;
-  _pIsSearchMode = false;
+  m_IsSearchMode = false;
 }
 
 T_IconModel::~T_IconModel()
 {
 }
 
-int
-T_IconModel::rowCount(const QModelIndex &parent) const
+int T_IconModel::rowCount(QModelIndex const &parent) const
 {
   return _rowCount;
 }
 
-void
-T_IconModel::setSearchKeyList(const QStringList &list)
+void T_IconModel::setSearchKeyList(QStringList const &list)
 {
   beginResetModel();
   this->_searchKeyList = list;
-  if (_pIsSearchMode)
-  {
+  if (m_IsSearchMode) {
     _rowCount = this->getSearchKeyList().count();
-  }
-  else
-  {
+  } else {
     _rowCount = _metaEnum.keyCount() - 1;
   }
   endResetModel();
@@ -43,23 +38,17 @@ T_IconModel::getSearchKeyList()
 }
 
 QVariant
-T_IconModel::data(const QModelIndex &index, int role) const
+T_IconModel::data(QModelIndex const &index, int role) const
 {
-  if (role == Qt::UserRole)
-  {
-    if (!_pIsSearchMode)
-    {
-      if (index.row() >= _metaEnum.keyCount() - 1)
-      {
+  if (role == Qt::UserRole) {
+    if (!m_IsSearchMode) {
+      if (index.row() >= _metaEnum.keyCount() - 1) {
         return QVariant();
       }
       return QStringList { _metaEnum.key(index.row() + 1), QChar(_metaEnum.value(index.row() + 1)) };
-    }
-    else
-    {
+    } else {
       QStringList iconList;
-      if (index.row() >= _searchKeyList.count())
-      {
+      if (index.row() >= _searchKeyList.count()) {
         return QVariant();
       }
       iconList.append(_searchKeyList.at(index.row()));
@@ -71,20 +60,15 @@ T_IconModel::data(const QModelIndex &index, int role) const
 }
 
 QString
-T_IconModel::getIconNameFromModelIndex(const QModelIndex &index) const
+T_IconModel::getIconNameFromModelIndex(QModelIndex const &index) const
 {
   QString iconName;
-  if (_pIsSearchMode)
-  {
-    if (index.row() < _searchKeyList.count())
-    {
+  if (m_IsSearchMode) {
+    if (index.row() < _searchKeyList.count()) {
       iconName = QString(QStringLiteral("NXIconType::")) + _searchKeyList.at(index.row());
     }
-  }
-  else
-  {
-    if (index.row() < _metaEnum.keyCount() - 1)
-    {
+  } else {
+    if (index.row() < _metaEnum.keyCount() - 1) {
       iconName = QString(QStringLiteral("NXIconType::")) + _metaEnum.key(index.row() + 1);
     }
   }

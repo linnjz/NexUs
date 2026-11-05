@@ -18,12 +18,12 @@ public:
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  qint64 _currentWinID { 0 };
-  int _margins { 8 };
-  NXThemeType::ThemeMode _themeMode;
-  NXApplicationType::WindowDisplayMode _windowDisplayMode;
-  int _shadowBorderWidth { 6 };
-  NXDockWidgetTitleBar *_titleBar { nullptr };
+  qint64 m_CurrentWinID { 0 };
+  int m_Margins { 8 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXApplicationType::WindowDisplayMode m_WindowDisplayMode;
+  int m_ShadowBorderWidth { 6 };
+  NXDockWidgetTitleBar *m_TitleBar { nullptr };
 };
 
 #endif // NXDOCKWIDGETPRIVATE_H

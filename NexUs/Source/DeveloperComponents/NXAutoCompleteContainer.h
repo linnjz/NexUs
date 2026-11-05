@@ -24,8 +24,8 @@ protected:
   void hideEvent(QHideEvent *event) override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXLineEdit *_forwardTarget { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXLineEdit *m_ForwardTarget { nullptr };
 };
 
 #endif // NXAUTOCOMPLETECONTAINER_H

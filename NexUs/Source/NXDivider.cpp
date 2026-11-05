@@ -6,9 +6,9 @@
 #include "NXTheme.h"
 #include "private/NXDividerPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXDivider, QS_SET_CREF(QString), Text)
-Q_PROPERTY_CREATE_CPP(NXDivider, Qt::Orientation, Orientation)
-Q_PROPERTY_CREATE_CPP(NXDivider, int, ContentPosition)
+Q_PROPERTY_CREATE_CPP(NXDivider, QPS_SCREF_PAEMIT(QString), Text)
+Q_PROPERTY_CREATE_CPP(NXDivider, QPS_PAEMIT(Qt::Orientation), Orientation)
+Q_PROPERTY_CREATE_CPP(NXDivider, QPS_PAEMIT(int), ContentPosition)
 
 NXDividerPrivate::NXDividerPrivate(QObject *parent)
     : QObject(parent)
@@ -25,19 +25,19 @@ NXDivider::NXDivider(QWidget *parent)
 {
   Q_D(NXDivider);
   d->q_ptr             = this;
-  d->_pOrientation     = Qt::Horizontal;
-  d->_pText            = QStringLiteral("");
-  d->_pContentPosition = Center;
+  d->m_Orientation     = Qt::Horizontal;
+  d->m_Text            = QStringLiteral("");
+  d->m_ContentPosition = Center;
   setObjectName("NXDivider");
   setFixedHeight(20);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
-  connect(this, &NXDivider::pOrientationChanged, this, [=]() {
-    if (d->_pOrientation == Qt::Horizontal) {
+  connect(this, &NXDivider::signalOrientationChanged, this, [=]() {
+    if (d->m_Orientation == Qt::Horizontal) {
       setFixedHeight(20);
       setMinimumWidth(0);
       setMaximumWidth(QWIDGETSIZE_MAX);
@@ -53,19 +53,19 @@ NXDivider::NXDivider(QWidget *parent)
     updateGeometry();
     update();
   });
-  connect(this, &NXDivider::pTextChanged, this, [=]() {
+  connect(this, &NXDivider::signalTextChanged, this, [=]() {
     update();
   });
-  connect(this, &NXDivider::pContentPositionChanged, this, [=]() {
+  connect(this, &NXDivider::signalContentPositionChanged, this, [=]() {
     update();
   });
 }
 
-NXDivider::NXDivider(const QString &text, QWidget *parent)
+NXDivider::NXDivider(QString const &text, QWidget *parent)
     : NXDivider(parent)
 {
   Q_D(NXDivider);
-  d->_pText = text;
+  d->m_Text = text;
 }
 
 NXDivider::~NXDivider()
@@ -79,10 +79,10 @@ void NXDivider::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  QColor lineColor = NXThemeColor(d->_themeMode, BasicBorder);
+  QColor lineColor = NXThemeColor(d->m_ThemeMode, BasicBorder);
   QPen linePen(lineColor, 1);
 
-  if (d->_pOrientation == Qt::Vertical) {
+  if (d->m_Orientation == Qt::Vertical) {
     // Vertical line at horizontal center
     int centerX = width() / 2;
     painter.setPen(linePen);
@@ -93,7 +93,7 @@ void NXDivider::paintEvent(QPaintEvent *event)
   // Horizontal mode
   int centerY = height() / 2;
 
-  if (d->_pText.isEmpty()) {
+  if (d->m_Text.isEmpty()) {
     // Simple horizontal line
     painter.setPen(linePen);
     painter.drawLine(0, centerY, width(), centerY);
@@ -105,14 +105,14 @@ void NXDivider::paintEvent(QPaintEvent *event)
   textFont.setPixelSize(12);
   painter.setFont(textFont);
   QFontMetrics fm(textFont);
-  int textWidth  = fm.horizontalAdvance(d->_pText);
+  int textWidth  = fm.horizontalAdvance(d->m_Text);
   int textHeight = fm.height();
   int padding    = 8;
 
   int textX = 0;
-  if (d->_pContentPosition == Left) {
+  if (d->m_ContentPosition == Left) {
     textX = 20;
-  } else if (d->_pContentPosition == Center) {
+  } else if (d->m_ContentPosition == Center) {
     textX = (width() - textWidth) / 2;
   } else {
     // Right
@@ -134,16 +134,16 @@ void NXDivider::paintEvent(QPaintEvent *event)
   }
 
   // Draw text
-  QColor textColor = NXThemeColor(d->_themeMode, BasicDetailsText);
+  QColor textColor = NXThemeColor(d->m_ThemeMode, BasicDetailsText);
   painter.setPen(textColor);
   QRectF textRect(textX, (height() - textHeight) / 2, textWidth, textHeight);
-  painter.drawText(textRect, Qt::AlignCenter, d->_pText);
+  painter.drawText(textRect, Qt::AlignCenter, d->m_Text);
 }
 
 QSize NXDivider::sizeHint() const
 {
-  Q_D(const NXDivider);
-  if (d->_pOrientation == Qt::Horizontal) {
+  Q_CONST_D(NXDivider);
+  if (d->m_Orientation == Qt::Horizontal) {
     return QSize(200, 20);
   }
   return QSize(20, 200);

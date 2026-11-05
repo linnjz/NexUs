@@ -35,12 +35,12 @@ qreal NXPromotionCardPrivate::_distance(QPoint point1, QPoint point2)
 void NXPromotionCardPrivate::_startHoverOpacityAnimation(bool isVisible)
 {
   Q_Q(NXPromotionCard);
-  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pHoverOpacity");
-  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "HoverOpacity");
+  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     q->update();
   });
   opacityAnimation->setDuration(250);
-  opacityAnimation->setStartValue(_pHoverOpacity);
+  opacityAnimation->setStartValue(m_HoverOpacity);
   opacityAnimation->setEndValue(isVisible ? 1 : 0);
   opacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }

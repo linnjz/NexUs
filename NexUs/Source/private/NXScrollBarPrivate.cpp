@@ -18,12 +18,12 @@ NXScrollBarPrivate::~NXScrollBarPrivate()
 void NXScrollBarPrivate::onRangeChanged(int min, int max)
 {
   Q_Q(NXScrollBar);
-  if (q->isVisible() && _pIsAnimation && max != 0) {
-    QPropertyAnimation *rangeSmoothAnimation = new QPropertyAnimation(this, "pTargetMaximum");
+  if (q->isVisible() && m_IsAnimation && max != 0) {
+    QPropertyAnimation *rangeSmoothAnimation = new QPropertyAnimation(this, "TargetMaximum");
     connect(rangeSmoothAnimation, &QPropertyAnimation::finished, this, [=]() {
       Q_EMIT q->rangeAnimationFinished();
     });
-    connect(rangeSmoothAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+    connect(rangeSmoothAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
       q->blockSignals(true);
       q->setMaximum(value.toUInt());
       q->blockSignals(false);
@@ -31,14 +31,14 @@ void NXScrollBarPrivate::onRangeChanged(int min, int max)
     });
     rangeSmoothAnimation->setEasingCurve(QEasingCurve::OutSine);
     rangeSmoothAnimation->setDuration(250);
-    rangeSmoothAnimation->setStartValue(_pTargetMaximum);
+    rangeSmoothAnimation->setStartValue(m_TargetMaximum);
     rangeSmoothAnimation->setEndValue(max);
     rangeSmoothAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   } else {
     if (max == 0) {
-      _scrollValue = -1;
+      m_ScrollValue = -1;
     }
-    _pTargetMaximum = max;
+    m_TargetMaximum = max;
   }
 }
 
@@ -54,19 +54,19 @@ void NXScrollBarPrivate::_scroll(Qt::KeyboardModifiers modifiers, int delta)
   } else {
     stepsToScroll = QApplication::wheelScrollLines() * offset * singleStep;
   }
-  if (abs(_scrollValue - q->value()) > abs(stepsToScroll * _pSpeedLimit)) {
-    _scrollValue = q->value();
+  if (abs(m_ScrollValue - q->value()) > abs(stepsToScroll * m_SpeedLimit)) {
+    m_ScrollValue = q->value();
   }
-  _scrollValue -= stepsToScroll;
-  _slideSmoothAnimation->stop();
-  _slideSmoothAnimation->setStartValue(q->value());
-  _slideSmoothAnimation->setEndValue(_scrollValue);
-  _slideSmoothAnimation->start();
+  m_ScrollValue -= stepsToScroll;
+  m_SlideSmoothAnimation->stop();
+  m_SlideSmoothAnimation->setStartValue(q->value());
+  m_SlideSmoothAnimation->setEndValue(m_ScrollValue);
+  m_SlideSmoothAnimation->start();
 }
 
 int NXScrollBarPrivate::_pixelPosToRangeValue(int pos) const
 {
-  Q_Q(const NXScrollBar);
+  Q_Q(NXScrollBar const);
   QStyleOptionSlider opt;
   q->initStyleOption(&opt);
   QRect gr = q->style()->subControlRect(QStyle::CC_ScrollBar, &opt, QStyle::SC_ScrollBarGroove, q);
@@ -90,9 +90,9 @@ int NXScrollBarPrivate::_pixelPosToRangeValue(int pos) const
 void NXScrollBarPrivate::_initAllConfig()
 {
   Q_Q(NXScrollBar);
-  _handleScrollBarRangeChanged(_originScrollBar->minimum(), _originScrollBar->maximum());
-  q->setSingleStep(_originScrollBar->singleStep());
-  q->setPageStep(_originScrollBar->pageStep());
+  _handleScrollBarRangeChanged(m_OriginScrollBar->minimum(), m_OriginScrollBar->maximum());
+  q->setSingleStep(m_OriginScrollBar->singleStep());
+  q->setPageStep(m_OriginScrollBar->pageStep());
 }
 
 void NXScrollBarPrivate::_handleScrollBarValueChanged(QScrollBar *scrollBar, int value)
@@ -115,15 +115,15 @@ void NXScrollBarPrivate::_handleScrollBarGeometry()
 {
   Q_Q(NXScrollBar);
   q->raise();
-  q->setSingleStep(_originScrollBar->singleStep());
-  q->setPageStep(_originScrollBar->pageStep());
+  q->setSingleStep(m_OriginScrollBar->singleStep());
+  q->setPageStep(m_OriginScrollBar->pageStep());
 
   // 从样式中获取滚动条宽度，而不是硬编码
   int scrollBarExtent = q->style()->pixelMetric(QStyle::PM_ScrollBarExtent, nullptr, q);
 
   if (q->orientation() == Qt::Horizontal) {
-    q->setGeometry(0, _originScrollArea->height() - scrollBarExtent, _originScrollArea->width(), scrollBarExtent);
+    q->setGeometry(0, m_OriginScrollArea->height() - scrollBarExtent, m_OriginScrollArea->width(), scrollBarExtent);
   } else {
-    q->setGeometry(_originScrollArea->width() - scrollBarExtent, 0, scrollBarExtent, _originScrollArea->height());
+    q->setGeometry(m_OriginScrollArea->width() - scrollBarExtent, 0, scrollBarExtent, m_OriginScrollArea->height());
   }
 }

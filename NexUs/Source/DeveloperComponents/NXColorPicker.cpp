@@ -11,9 +11,9 @@
 
 NXColorPicker::NXColorPicker(QWidget *parent)
     : QWidget { parent }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
   setFixedSize(260, 260);
-  _pThemeMode = nxTheme->getThemeMode();
   // 初始化色相图
   QPixmap colorPickerPix(QSize(360, 360));
   QImage colorPickerImage = colorPickerPix.toImage();
@@ -27,64 +27,63 @@ NXColorPicker::NXColorPicker(QWidget *parent)
       colorPickerImage.setPixelColor(x, y, pixColor);
     }
   }
-  _colorPickerImage = colorPickerImage;
+  m_ColorPickerImage = colorPickerImage;
 }
 
 NXColorPicker::~NXColorPicker()
 {
 }
 
-void NXColorPicker::setSelectedColor(const QColor &color)
+void NXColorPicker::setSelectedColor(QColor const &color)
 {
-  _selectedColor = std::move(color);
-  _selectedPoint =
-      QPoint(qRound(3 + 254 * _selectedColor.hueF() + 0.5f), qRound(257 - 254 * _selectedColor.saturationF() + 0.5f));
+  m_SelectedColor = std::move(color);
+  m_SelectedPoint = QPoint(qRound(3 + 254 * m_SelectedColor.hueF() + 0.5f), qRound(257 - 254 * m_SelectedColor.saturationF() + 0.5f));
   update();
 }
 
 QColor NXColorPicker::getSelectedColor() const
 {
-  return _selectedColor;
+  return m_SelectedColor;
 }
 
 void NXColorPicker::mousePressEvent(QMouseEvent *event)
 {
-  _selectedPoint = _adjustPointLimit(event->pos());
-  QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
+  m_SelectedPoint = _adjustPointLimit(event->pos());
+  QPointF colorPoint((m_SelectedPoint.x() - 3) / 254.0 * 359, (m_SelectedPoint.y() - 3) / 254.0 * 359);
   QColor pixColor;
-  qreal h = qBound(0.0, colorPoint.x() / _colorPickerImage.width(), 1.0);
-  qreal s = qBound(0.0, 1 - colorPoint.y() / (_colorPickerImage.height() - 1), 1.0);
+  qreal h = qBound(0.0, colorPoint.x() / m_ColorPickerImage.width(), 1.0);
+  qreal s = qBound(0.0, 1 - colorPoint.y() / (m_ColorPickerImage.height() - 1), 1.0);
   pixColor.setHsvF(h, s, 1);
-  _selectedColor = pixColor.toRgb();
-  Q_EMIT selectedColorChanged(_selectedColor);
+  m_SelectedColor = pixColor.toRgb();
+  Q_EMIT selectedColorChanged(m_SelectedColor);
   QWidget::mousePressEvent(event);
   update();
 }
 
 void NXColorPicker::mouseReleaseEvent(QMouseEvent *event)
 {
-  _selectedPoint = _adjustPointLimit(event->pos());
-  QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
+  m_SelectedPoint = _adjustPointLimit(event->pos());
+  QPointF colorPoint((m_SelectedPoint.x() - 3) / 254.0 * 359, (m_SelectedPoint.y() - 3) / 254.0 * 359);
   QColor pixColor;
-  qreal h = qBound(0.0, colorPoint.x() / _colorPickerImage.width(), 1.0);
-  qreal s = qBound(0.0, 1 - colorPoint.y() / (_colorPickerImage.height() - 1), 1.0);
+  qreal h = qBound(0.0, colorPoint.x() / m_ColorPickerImage.width(), 1.0);
+  qreal s = qBound(0.0, 1 - colorPoint.y() / (m_ColorPickerImage.height() - 1), 1.0);
   pixColor.setHsvF(h, s, 1);
-  _selectedColor = pixColor.toRgb();
-  Q_EMIT selectedColorChanged(_selectedColor);
+  m_SelectedColor = pixColor.toRgb();
+  Q_EMIT selectedColorChanged(m_SelectedColor);
   QWidget::mouseReleaseEvent(event);
   update();
 }
 
 void NXColorPicker::mouseMoveEvent(QMouseEvent *event)
 {
-  _selectedPoint = _adjustPointLimit(event->pos());
-  QPointF colorPoint((_selectedPoint.x() - 3) / 254.0 * 359, (_selectedPoint.y() - 3) / 254.0 * 359);
+  m_SelectedPoint = _adjustPointLimit(event->pos());
+  QPointF colorPoint((m_SelectedPoint.x() - 3) / 254.0 * 359, (m_SelectedPoint.y() - 3) / 254.0 * 359);
   QColor pixColor;
-  qreal h = qBound(0.0, colorPoint.x() / _colorPickerImage.width(), 1.0);
-  qreal s = qBound(0.0, 1 - colorPoint.y() / (_colorPickerImage.height() - 1), 1.0);
+  qreal h = qBound(0.0, colorPoint.x() / m_ColorPickerImage.width(), 1.0);
+  qreal s = qBound(0.0, 1 - colorPoint.y() / (m_ColorPickerImage.height() - 1), 1.0);
   pixColor.setHsvF(h, s, 1);
-  _selectedColor = pixColor.toRgb();
-  Q_EMIT selectedColorChanged(_selectedColor);
+  m_SelectedColor = pixColor.toRgb();
+  Q_EMIT selectedColorChanged(m_SelectedColor);
   QWidget::mouseMoveEvent(event);
   update();
 }
@@ -99,18 +98,18 @@ void NXColorPicker::paintEvent(QPaintEvent *event)
   // 色相图绘制
   QRect pickerRect = rect();
   pickerRect.adjust(penWidth, penWidth, -penWidth, -penWidth);
-  painter.setPen(QPen(NXThemeColor(_pThemeMode, BasicBorder), penWidth));
+  painter.setPen(QPen(NXThemeColor(m_ThemeMode, BasicBorder), penWidth));
   painter.drawRoundedRect(pickerRect, borderRadius, borderRadius);
   QPainterPath path;
   path.addRoundedRect(pickerRect, borderRadius, borderRadius);
   painter.setClipPath(path);
-  painter.drawImage(pickerRect, _colorPickerImage);
+  painter.drawImage(pickerRect, m_ColorPickerImage);
 
   // 取色点绘制
-  if (!_selectedPoint.isNull()) {
+  if (!m_SelectedPoint.isNull()) {
     painter.setPen(QPen(Qt::black, 2));
     painter.setBrush(Qt::NoBrush);
-    painter.drawEllipse(_selectedPoint, 8, 8);
+    painter.drawEllipse(m_SelectedPoint, 8, 8);
   }
   painter.restore();
 }

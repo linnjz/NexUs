@@ -19,22 +19,22 @@ NXCalendarPickerPrivate::~NXCalendarPickerPrivate()
 void NXCalendarPickerPrivate::onCalendarPickerClicked()
 {
   Q_Q(NXCalendarPicker);
-  QPoint endPoint(q->mapToGlobal(QPoint((q->width() - _calendarPickerContainer->width()) / 2, q->height() + 5)));
-  QPropertyAnimation *showAnimation = new QPropertyAnimation(_calendarPickerContainer, "pos");
+  QPoint endPoint(q->mapToGlobal(QPoint((q->width() - m_CalendarPickerContainer->width()) / 2, q->height() + 5)));
+  QPropertyAnimation *showAnimation = new QPropertyAnimation(m_CalendarPickerContainer, "pos");
   showAnimation->setEasingCurve(QEasingCurve::OutCubic);
   showAnimation->setDuration(250);
   showAnimation->setStartValue(QPoint(endPoint.x(), endPoint.y() - 10));
   showAnimation->setEndValue(endPoint);
-  _calendarPickerContainer->show();
+  m_CalendarPickerContainer->show();
   showAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void NXCalendarPickerPrivate::onCalendarSelectedDateChanged()
 {
   Q_Q(NXCalendarPicker);
-  Q_EMIT q->selectedDateChanged(_calendar->getSelectedDate());
+  Q_EMIT q->selectedDateChanged(m_Calendar->getSelectedDate());
   q->update();
-  if (_calendarPickerContainer->isVisible()) {
-    _calendarPickerContainer->hide();
+  if (m_CalendarPickerContainer->isVisible()) {
+    m_CalendarPickerContainer->hide();
   }
 }

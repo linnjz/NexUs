@@ -10,8 +10,8 @@
 #include "DeveloperComponents/NXScrollBarStyle.h"
 #include "NXMenu.h"
 #include "private/NXScrollBarPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXScrollBar, qreal, SpeedLimit)
-Q_PROPERTY_CREATE_CPP(NXScrollBar, bool, IsAnimation)
+Q_PROPERTY_CREATE_CPP(NXScrollBar, QPS_PAEMIT(qreal), SpeedLimit)
+Q_PROPERTY_CREATE_CPP(NXScrollBar, QPS_PAEMIT(bool), IsAnimation)
 
 NXScrollBar::NXScrollBar(QWidget *parent)
     : QScrollBar(parent)
@@ -22,25 +22,25 @@ NXScrollBar::NXScrollBar(QWidget *parent)
   setSingleStep(1);
   setObjectName("NXScrollBar");
   setAttribute(Qt::WA_OpaquePaintEvent, false);
-  d->_pSpeedLimit    = 20;
-  d->_pTargetMaximum = 0;
-  d->_pIsAnimation   = false;
+  d->m_SpeedLimit    = 20;
+  d->m_TargetMaximum = 0;
+  d->m_IsAnimation   = false;
   connect(this, &NXScrollBar::rangeChanged, d, &NXScrollBarPrivate::onRangeChanged);
   NXScrollBarStyle *scrollBarStyle = new NXScrollBarStyle(style());
   scrollBarStyle->setScrollBar(this);
   setStyle(scrollBarStyle);
-  d->_slideSmoothAnimation = new QPropertyAnimation(this, "value");
-  d->_slideSmoothAnimation->setEasingCurve(QEasingCurve::OutSine);
-  d->_slideSmoothAnimation->setDuration(300);
-  connect(d->_slideSmoothAnimation, &QPropertyAnimation::finished, this, [=]() {
-    d->_scrollValue = value();
+  d->m_SlideSmoothAnimation = new QPropertyAnimation(this, "value");
+  d->m_SlideSmoothAnimation->setEasingCurve(QEasingCurve::OutSine);
+  d->m_SlideSmoothAnimation->setDuration(300);
+  connect(d->m_SlideSmoothAnimation, &QPropertyAnimation::finished, this, [=]() {
+    d->m_ScrollValue = value();
   });
 
-  d->_expandTimer = new QTimer(this);
-  connect(d->_expandTimer, &QTimer::timeout, this, [=]() {
-    d->_expandTimer->stop();
-    d->_isExpand = underMouse();
-    scrollBarStyle->startExpandAnimation(d->_isExpand);
+  d->m_ExpandTimer = new QTimer(this);
+  connect(d->m_ExpandTimer, &QTimer::timeout, this, [=]() {
+    d->m_ExpandTimer->stop();
+    d->m_IsExpand = underMouse();
+    scrollBarStyle->startExpandAnimation(d->m_IsExpand);
   });
 }
 
@@ -58,23 +58,23 @@ NXScrollBar::NXScrollBar(QScrollBar *originScrollBar, QAbstractScrollArea *paren
     qCritical() << "Invalid origin or parent!";
     return;
   }
-  d->_originScrollArea        = parent;
+  d->m_OriginScrollArea        = parent;
   Qt::Orientation orientation = originScrollBar->orientation();
   setOrientation(orientation);
   orientation == Qt::Horizontal ? parent->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff)
                                 : parent->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   parent->installEventFilter(this);
 
-  d->_originScrollBar = originScrollBar;
+  d->m_OriginScrollBar = originScrollBar;
   d->_initAllConfig();
 
-  connect(d->_originScrollBar, &QScrollBar::valueChanged, this, [=](int value) {
+  connect(d->m_OriginScrollBar, &QScrollBar::valueChanged, this, [=](int value) {
     d->_handleScrollBarValueChanged(this, value);
   });
   connect(this, &QScrollBar::valueChanged, this, [=](int value) {
-    d->_handleScrollBarValueChanged(d->_originScrollBar, value);
+    d->_handleScrollBarValueChanged(d->m_OriginScrollBar, value);
   });
-  connect(d->_originScrollBar, &QScrollBar::rangeChanged, this, [=](int min, int max) {
+  connect(d->m_OriginScrollBar, &QScrollBar::rangeChanged, this, [=](int min, int max) {
     d->_handleScrollBarRangeChanged(min, max);
   });
 }
@@ -89,16 +89,16 @@ bool NXScrollBar::event(QEvent *event)
   Q_D(NXScrollBar);
   switch (event->type()) {
   case QEvent::Enter : {
-    d->_expandTimer->stop();
-    if (!d->_isExpand) {
-      d->_expandTimer->start(350);
+    d->m_ExpandTimer->stop();
+    if (!d->m_IsExpand) {
+      d->m_ExpandTimer->start(350);
     }
     break;
   }
   case QEvent::Leave : {
-    d->_expandTimer->stop();
-    if (d->_isExpand) {
-      d->_expandTimer->start(350);
+    d->m_ExpandTimer->stop();
+    if (d->m_IsExpand) {
+      d->m_ExpandTimer->start(350);
     }
     break;
   }
@@ -129,33 +129,33 @@ bool NXScrollBar::eventFilter(QObject *watched, QEvent *event)
 void NXScrollBar::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXScrollBar);
-  d->_slideSmoothAnimation->stop();
+  d->m_SlideSmoothAnimation->stop();
   QScrollBar::mousePressEvent(event);
-  d->_scrollValue = value();
+  d->m_ScrollValue = value();
 }
 
 void NXScrollBar::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXScrollBar);
-  d->_slideSmoothAnimation->stop();
+  d->m_SlideSmoothAnimation->stop();
   QScrollBar::mouseReleaseEvent(event);
-  d->_scrollValue = value();
+  d->m_ScrollValue = value();
 }
 
 void NXScrollBar::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXScrollBar);
-  d->_slideSmoothAnimation->stop();
+  d->m_SlideSmoothAnimation->stop();
   QScrollBar::mouseMoveEvent(event);
-  d->_scrollValue = value();
+  d->m_ScrollValue = value();
 }
 
 void NXScrollBar::wheelEvent(QWheelEvent *event)
 {
   Q_D(NXScrollBar);
   int verticalDelta = event->angleDelta().y();
-  if (d->_slideSmoothAnimation->state() == QAbstractAnimation::Stopped) {
-    d->_scrollValue = value();
+  if (d->m_SlideSmoothAnimation->state() == QAbstractAnimation::Stopped) {
+    d->m_ScrollValue = value();
   }
   if (verticalDelta != 0) {
     if ((value() == minimum() && verticalDelta > 0) || (value() == maximum() && verticalDelta < 0)) {

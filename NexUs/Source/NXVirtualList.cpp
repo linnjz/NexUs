@@ -7,9 +7,9 @@
 #include "NXScrollBar.h"
 #include "NXTheme.h"
 #include "private/NXVirtualListPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXVirtualList, int, ItemHeight)
-Q_PROPERTY_CREATE_CPP(NXVirtualList, bool, IsTransparent)
-Q_PROPERTY_CREATE_CPP(NXVirtualList, bool, IsAlternatingRowColors)
+Q_PROPERTY_CREATE_CPP(NXVirtualList, QPS_PAEMIT(int), ItemHeight)
+Q_PROPERTY_CREATE_CPP(NXVirtualList, QPS_PAEMIT(bool), IsTransparent)
+Q_PROPERTY_CREATE_CPP(NXVirtualList, QPS_PAEMIT(bool), IsAlternatingRowColors)
 
 NXVirtualList::NXVirtualList(QWidget *parent)
     : QListView(parent)
@@ -17,18 +17,18 @@ NXVirtualList::NXVirtualList(QWidget *parent)
 {
   Q_D(NXVirtualList);
   d->q_ptr                    = this;
-  d->_pItemHeight             = 40;
-  d->_pIsTransparent          = true;
-  d->_pIsAlternatingRowColors = false;
-  d->_themeMode               = nxTheme->getThemeMode();
+  d->m_ItemHeight             = 40;
+  d->m_IsTransparent          = true;
+  d->m_IsAlternatingRowColors = false;
+  d->m_ThemeMode               = nxTheme->getThemeMode();
   setObjectName("NXVirtualList");
   setStyleSheet(QStringLiteral("#NXVirtualList{background-color:transparent;}"));
   setMouseTracking(true);
   setSpacing(0);
 
-  d->_listViewStyle = new NXVirtualListStyle(style());
-  d->_listViewStyle->setItemHeight(d->_pItemHeight);
-  setStyle(d->_listViewStyle);
+  d->m_ListViewStyle = new NXVirtualListStyle(style());
+  d->m_ListViewStyle->setItemHeight(d->m_ItemHeight);
+  setStyle(d->m_ListViewStyle);
 
   NXScrollBar *vScrollBar = new NXScrollBar(this);
   vScrollBar->setIsAnimation(true);
@@ -46,7 +46,7 @@ NXVirtualList::NXVirtualList(QWidget *parent)
   setBatchSize(100);
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     viewport()->update();
   });
 }
@@ -58,23 +58,23 @@ NXVirtualList::~NXVirtualList()
 void NXVirtualList::setItemCount(int count)
 {
   Q_D(NXVirtualList);
-  d->_itemCount = count;
+  d->m_ItemCount = count;
 }
 
 int NXVirtualList::getItemCount() const
 {
-  return d_ptr->_itemCount;
+  return d_ptr->m_ItemCount;
 }
 
 void NXVirtualList::paintEvent(QPaintEvent *event)
 {
   Q_D(NXVirtualList);
-  if (!d->_pIsTransparent) {
+  if (!d->m_IsTransparent) {
     QPainter painter(viewport());
     painter.save();
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
     painter.drawRect(rect());
     painter.restore();
   }

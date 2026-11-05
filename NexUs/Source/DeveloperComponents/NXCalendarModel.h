@@ -19,13 +19,13 @@ struct NXCalendarData : public QObjectData
 public:
   NXCalendarData() { };
   ~NXCalendarData() { };
-  NXCalendarData(int year, int month, int day, const QString &desText = {})
+  NXCalendarData(int year, int month, int day, QString const &desText = {})
       : year(year)
       , month(month)
       , day(day)
       , desText(desText) { };
 
-  NXCalendarData(const NXCalendarData &other)
+  NXCalendarData(NXCalendarData const &other)
   {
     year    = other.year;
     month   = other.month;
@@ -55,20 +55,20 @@ public:
   NXCalendarType getDisplayMode() const;
 
   QModelIndex getIndexFromDate(QDate date);
-  QDate getDateFromIndex(const QModelIndex &index) const;
-  QVariant data(const QModelIndex &index, int role) const override;
-  Q_SIGNAL void currentYearMonthChanged(const QString &date);
+  QDate getDateFromIndex(QModelIndex const &index) const;
+  QVariant data(QModelIndex const &index, int role) const override;
+  Q_SIGNAL void currentYearMonthChanged(QString const &date);
   Q_SIGNAL void displayModeChanged();
 
 protected:
-  virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+  virtual int rowCount(QModelIndex const &parent = QModelIndex()) const override;
 
 private:
-  int _offset { 0 };
-  QDate _pMinimumDate;
-  QDate _pMaximumDate;
-  NXCalendarType _displayMode { NXCalendarType::DayMode };
-  int _dayRowCount { 0 };
+  int m_Offset { 0 };
+  QDate m_MinimumDate;
+  QDate m_MaximumDate;
+  NXCalendarType m_DisplayMode { NXCalendarType::DayMode };
+  int m_DayRowCount { 0 };
   void _initRowCount();
   int _getCurrentDay(int row) const;
 };

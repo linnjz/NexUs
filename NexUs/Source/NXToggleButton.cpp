@@ -8,16 +8,17 @@
 #include "NXApplication.h"
 #include "NXTheme.h"
 #include "private/NXToggleButtonPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXToggleButton, QS_SET_CREF(QString), Text)
-Q_PROPERTY_CREATE_CPP(NXToggleButton, int, BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXToggleButton, QPS_SCREF_PAEMIT(QString), Text)
+Q_PROPERTY_CREATE_CPP(NXToggleButton, QPS_PAEMIT(int), BorderRadius)
 
 NXToggleButton::NXToggleButton(QWidget *parent)
     : QWidget(parent)
     , d_ptr(new NXToggleButtonPrivate())
 {
   Q_D(NXToggleButton);
-  d->q_ptr      = this;
-  d->_themeMode = nxTheme->getThemeMode();
+  d->q_ptr         = this;
+  d->m_ToggleAlpha = {};
+  d->m_ThemeMode   = nxTheme->getThemeMode();
   setMouseTracking(true);
   setFixedSize(80, 32);
   QFont font = this->font();
@@ -26,15 +27,15 @@ NXToggleButton::NXToggleButton(QWidget *parent)
   setObjectName("NXToggleButton");
   setStyleSheet(QStringLiteral("#NXToggleButton{background-color:transparent;}"));
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
-NXToggleButton::NXToggleButton(const QString &text, QWidget *parent)
+NXToggleButton::NXToggleButton(QString const &text, QWidget *parent)
     : NXToggleButton(parent)
 {
   Q_D(NXToggleButton);
-  d->_pText = text;
+  d->m_Text = text;
 }
 
 NXToggleButton::~NXToggleButton()
@@ -44,23 +45,23 @@ NXToggleButton::~NXToggleButton()
 void NXToggleButton::setIsToggled(bool isToggled)
 {
   Q_D(NXToggleButton);
-  d->_isToggled                = isToggled;
-  d->_pToggleAlpha             = isToggled ? 255 : 0;
-  d->_isAlphaAnimationFinished = true;
+  d->m_IsToggled                = isToggled;
+  d->m_ToggleAlpha             = isToggled ? 255 : 0;
+  d->m_IsAlphaAnimationFinished = true;
   update();
   Q_EMIT toggled(isToggled);
 }
 
 bool NXToggleButton::getIsToggled() const
 {
-  Q_D(const NXToggleButton);
-  return d->_isToggled;
+  Q_CONST_D(NXToggleButton);
+  return d->m_IsToggled;
 }
 
 void NXToggleButton::setNXIcon(NXIconType::IconName icon)
 {
   Q_D(NXToggleButton);
-  d->_pNXIcon = icon;
+  d->m_NXIcon = icon;
 }
 
 bool NXToggleButton::event(QEvent *event)
@@ -81,7 +82,7 @@ bool NXToggleButton::event(QEvent *event)
 void NXToggleButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXToggleButton);
-  d->_isPressed = true;
+  d->m_IsPressed = true;
   update();
   QWidget::mouseReleaseEvent(event);
 }
@@ -89,25 +90,25 @@ void NXToggleButton::mousePressEvent(QMouseEvent *event)
 void NXToggleButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXToggleButton);
-  d->_isPressed                      = false;
-  d->_isAlphaAnimationFinished       = false;
-  d->_isToggled                      = !d->_isToggled;
-  QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "pToggleAlpha");
-  connect(alphaAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  d->m_IsPressed                      = false;
+  d->m_IsAlphaAnimationFinished       = false;
+  d->m_IsToggled                      = !d->m_IsToggled;
+  QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "ToggleAlpha");
+  connect(alphaAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     update();
   });
   connect(alphaAnimation, &QPropertyAnimation::finished, this, [=]() {
-    d->_isAlphaAnimationFinished = true;
+    d->m_IsAlphaAnimationFinished = true;
   });
   alphaAnimation->setDuration(250);
-  alphaAnimation->setStartValue(d->_pToggleAlpha);
-  if (d->_isToggled) {
+  alphaAnimation->setStartValue(d->m_ToggleAlpha);
+  if (d->m_IsToggled) {
     alphaAnimation->setEndValue(255);
   } else {
     alphaAnimation->setEndValue(0);
   }
   alphaAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-  Q_EMIT this->toggled(d->_isToggled);
+  Q_EMIT this->toggled(d->m_IsToggled);
   QWidget::mouseReleaseEvent(event);
 }
 
@@ -119,39 +120,39 @@ void NXToggleButton::paintEvent(QPaintEvent *event)
 
   painter.save();
   QRect foregroundRect(1, 1, width() - 2, height() - 2);
-  if (d->_isAlphaAnimationFinished) {
-    if (d->_isToggled) {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-      painter.setBrush(isEnabled() ? d->_isPressed ? NXThemeColor(d->_themeMode, PrimaryPress) : (underMouse() ? NXThemeColor(d->_themeMode, PrimaryHover) : NXThemeColor(d->_themeMode, PrimaryNormal)) : NXThemeColor(d->_themeMode, BasicDisable));
+  if (d->m_IsAlphaAnimationFinished) {
+    if (d->m_IsToggled) {
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
+      painter.setBrush(isEnabled() ? d->m_IsPressed ? NXThemeColor(d->m_ThemeMode, PrimaryPress) : (underMouse() ? NXThemeColor(d->m_ThemeMode, PrimaryHover) : NXThemeColor(d->m_ThemeMode, PrimaryNormal)) : NXThemeColor(d->m_ThemeMode, BasicDisable));
     } else {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-      painter.setBrush(isEnabled() ? d->_isPressed ? NXThemeColor(d->_themeMode, BasicPress) : (underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase)) : NXThemeColor(d->_themeMode, BasicDisable));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
+      painter.setBrush(isEnabled() ? d->m_IsPressed ? NXThemeColor(d->m_ThemeMode, BasicPress) : (underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase)) : NXThemeColor(d->m_ThemeMode, BasicDisable));
     }
   } else {
     painter.setPen(Qt::NoPen);
-    QColor toggleColor = NXThemeColor(d->_themeMode, PrimaryNormal);
-    toggleColor.setAlpha(d->_pToggleAlpha);
+    QColor toggleColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
+    toggleColor.setAlpha(d->m_ToggleAlpha);
     painter.setBrush(toggleColor);
   }
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
   // 底边线绘制
-  if (!d->_isPressed && !d->_isToggled) {
-    painter.setPen(NXThemeColor(d->_themeMode, BasicBaseLine));
-    painter.drawLine(foregroundRect.x() + d->_pBorderRadius, height() - 1, foregroundRect.x() + foregroundRect.width() - d->_pBorderRadius, height() - 1);
+  if (!d->m_IsPressed && !d->m_IsToggled) {
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBaseLine));
+    painter.drawLine(foregroundRect.x() + d->m_BorderRadius, height() - 1, foregroundRect.x() + foregroundRect.width() - d->m_BorderRadius, height() - 1);
   }
 
   //文字绘制
-  painter.setPen(isEnabled() ? d->_isToggled ? NXThemeColor(d->_themeMode, BasicTextInvert) : NXThemeColor(d->_themeMode, BasicText) : NXThemeColor(d->_themeMode, BasicTextDisable));
-  if (d->_pNXIcon != NXIconType::None) {
+  painter.setPen(isEnabled() ? d->m_IsToggled ? NXThemeColor(d->m_ThemeMode, BasicTextInvert) : NXThemeColor(d->m_ThemeMode, BasicText) : NXThemeColor(d->m_ThemeMode, BasicTextDisable));
+  if (d->m_NXIcon != NXIconType::None) {
     painter.setFont(QFont(QStringLiteral("NXAwesome")));
     QFontMetrics fm(painter.font());
     QRect iconRect = foregroundRect.adjusted(0, 3, -foregroundRect.width() / 3 * 2 - 5, 0);
-    painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignRight, QChar(d->_pNXIcon));
+    painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignRight, QChar(d->m_NXIcon));
     painter.setFont(QFont(QStringLiteral("Microsoft YaHei")));
     QRect textRect = foregroundRect.adjusted(foregroundRect.width() / 3 + 5, 0, 0, 0);
-    painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->_pText);
+    painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->m_Text);
   } else {
-    painter.drawText(foregroundRect, Qt::AlignCenter, d->_pText);
+    painter.drawText(foregroundRect, Qt::AlignCenter, d->m_Text);
   }
   painter.restore();
 }

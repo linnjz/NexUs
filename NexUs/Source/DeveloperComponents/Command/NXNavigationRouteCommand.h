@@ -7,8 +7,8 @@ class NXNavigationBar;
 class NXNavigationRouteCommand : public NXActionCommand
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), UndoPageKey)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), RedoPageKey)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), UndoPageKey)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), RedoPageKey)
   Q_PRIVATE_CREATE(NXNavigationBar *, NavigationBar)
 
 public:

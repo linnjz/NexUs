@@ -25,10 +25,10 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _inputMode { 0 }; // 0=DigitOnly, 1=AlphaNumeric
-  QList<QLineEdit *> _boxes;
-  QHBoxLayout *_boxLayout { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_InputMode { 0 }; // 0=DigitOnly, 1=AlphaNumeric
+  QList<QLineEdit *> m_Boxes;
+  QHBoxLayout *m_BoxLayout { nullptr };
   void _buildBoxes();
   void _updateValidators();
   void _applyThemeStyle();

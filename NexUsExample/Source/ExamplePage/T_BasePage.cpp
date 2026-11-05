@@ -13,10 +13,8 @@
 T_BasePage::T_BasePage(QWidget *parent)
     : NXScrollPage(parent)
 {
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=]()
-  {
-    if (!parent)
-    {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=]() {
+    if (!parent) {
       update();
     }
   });
@@ -27,8 +25,7 @@ T_BasePage::~T_BasePage()
 {
 }
 
-void
-T_BasePage::createCustomWidget(const QString &desText)
+void T_BasePage::createCustomWidget(QString const &desText)
 {
   // 顶部元素
   QWidget *customWidget = new QWidget(this);
@@ -64,8 +61,7 @@ T_BasePage::createCustomWidget(const QString &desText)
   themeButton->setFixedSize(35, 35);
   themeButton->setIsTransparent(false);
   themeButton->setNXIcon(NXIconType::MoonStars);
-  connect(themeButton, &NXToolButton::clicked, this, [=]()
-  {
+  connect(themeButton, &NXToolButton::clicked, this, [=]() {
     nxTheme->setThemeMode(nxTheme->getThemeMode() == NXThemeType::Light ? NXThemeType::Dark : NXThemeType::Light);
   });
 
@@ -73,11 +69,9 @@ T_BasePage::createCustomWidget(const QString &desText)
   backtrackButton->setFixedSize(35, 35);
   backtrackButton->setIsTransparent(false);
   backtrackButton->setNXIcon(NXIconType::Timer);
-  connect(backtrackButton, &NXToolButton::clicked, this, [=]()
-  {
+  connect(backtrackButton, &NXToolButton::clicked, this, [=]() {
     NXWindow *window = dynamic_cast<NXWindow *>(this->window());
-    if (window)
-    {
+    if (window) {
       window->backtrackNavigationNode(property("NXPageKey").toString());
     }
   });

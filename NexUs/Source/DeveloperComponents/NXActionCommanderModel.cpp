@@ -8,24 +8,24 @@
 
 NXActionCommanderModel::NXActionCommanderModel(QObject *parent)
     : QAbstractItemModel(parent)
+    , m_RootNode { new NXActionCommanderNode(nullptr) }
 {
-  _rootNode = new NXActionCommanderNode(nullptr);
-  _rootNode->setIsRootNode(true);
+  m_RootNode->setIsRootNode(true);
 }
 
 NXActionCommanderModel::~NXActionCommanderModel()
 {
-  delete _rootNode;
+  delete m_RootNode;
 }
 
-QModelIndex NXActionCommanderModel::parent(const QModelIndex &child) const
+QModelIndex NXActionCommanderModel::parent(QModelIndex const &child) const
 {
   if (!child.isValid()) {
     return {};
   }
-  const auto childNode              = static_cast<NXActionCommanderNode *>(child.internalPointer());
-  NXActionCommanderNode *parentNode = childNode->getParentNode();
-  if (parentNode == _rootNode) {
+  auto const childNode { static_cast<NXActionCommanderNode *>(child.internalPointer()) };
+  NXActionCommanderNode *parentNode { childNode->getParentNode() };
+  if (parentNode == m_RootNode) {
     return {};
   }
   if (parentNode == nullptr) {
@@ -34,14 +34,14 @@ QModelIndex NXActionCommanderModel::parent(const QModelIndex &child) const
   return createIndex(parentNode->getRow(), 0, parentNode);
 }
 
-QModelIndex NXActionCommanderModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex NXActionCommanderModel::index(int row, int column, QModelIndex const &parent) const
 {
   if (!hasIndex(row, column, parent)) {
     return {};
   }
   NXActionCommanderNode *parentNode;
   if (!parent.isValid()) {
-    parentNode = _rootNode;
+    parentNode = m_RootNode;
   } else {
     parentNode = static_cast<NXActionCommanderNode *>(parent.internalPointer());
   }
@@ -56,14 +56,14 @@ QModelIndex NXActionCommanderModel::index(int row, int column, const QModelIndex
   return {};
 }
 
-int NXActionCommanderModel::rowCount(const QModelIndex &parent) const
+int NXActionCommanderModel::rowCount(QModelIndex const &parent) const
 {
   NXActionCommanderNode *parentNode;
   if (parent.column() > 0) {
     return 0;
   }
   if (!parent.isValid()) {
-    parentNode = _rootNode;
+    parentNode = m_RootNode;
   } else {
     parentNode = static_cast<NXActionCommanderNode *>(parent.internalPointer());
   }
@@ -73,18 +73,18 @@ int NXActionCommanderModel::rowCount(const QModelIndex &parent) const
   return parentNode->getChildNodes().count();
 }
 
-int NXActionCommanderModel::columnCount(const QModelIndex &parent) const
+int NXActionCommanderModel::columnCount(QModelIndex const &parent) const
 {
   Q_UNUSED(parent)
   return 1;
 }
 
-QVariant NXActionCommanderModel::data(const QModelIndex &index, int role) const
+QVariant NXActionCommanderModel::data(QModelIndex const &index, int role) const
 {
   if (index.column() == 0) {
     switch (role) {
     case Qt::DisplayRole : {
-      if (const auto node = static_cast<NXActionCommanderNode *>(index.internalPointer())) {
+      if (auto const node = static_cast<NXActionCommanderNode *>(index.internalPointer())) {
         // 空出图标位置
         if (node->getIsCommandNode()) {
           return QStringLiteral("   ") + node->getNodeName();
@@ -94,7 +94,7 @@ QVariant NXActionCommanderModel::data(const QModelIndex &index, int role) const
       return {};
     }
     case Qt::UserRole : {
-      if (const auto node = static_cast<NXActionCommanderNode *>(index.internalPointer())) {
+      if (auto const node = static_cast<NXActionCommanderNode *>(index.internalPointer())) {
         return node->getMessageMode();
       }
       return {};
@@ -109,17 +109,17 @@ QVariant NXActionCommanderModel::data(const QModelIndex &index, int role) const
 
 void NXActionCommanderModel::addCommand(NXActionCommand *command)
 {
-  if (!command || _commanderNodeMap.contains(command)) {
+  if (!command || m_CommanderNodeMap.contains(command)) {
     return;
   }
-  beginInsertRows(_rootNode->getModelIndex(), _commanderNodeMap.count(), _commanderNodeMap.count());
-  auto commandNode = new NXActionCommanderNode(_rootNode);
+  beginInsertRows(m_RootNode->getModelIndex(), m_CommanderNodeMap.count(), m_CommanderNodeMap.count());
+  auto commandNode = new NXActionCommanderNode(m_RootNode);
 
   commandNode->setMessageMode(command->getMessageMode());
   commandNode->setIsCommandNode(true);
   int nodeIndex = 1;
-  if (!_rootNode->getChildNodes().isEmpty()) {
-    nodeIndex = _rootNode->getChildNodes().last()->getNodeIndex() + 1;
+  if (!m_RootNode->getChildNodes().isEmpty()) {
+    nodeIndex = m_RootNode->getChildNodes().last()->getNodeIndex() + 1;
   }
   commandNode->setNodeIndex(nodeIndex);
   commandNode->setNodeIndexText(QStringLiteral("%1").arg(nodeIndex, 3, 10, QChar('0')));
@@ -129,7 +129,7 @@ void NXActionCommanderModel::addCommand(NXActionCommand *command)
                                .arg(commandNode->getNodeIndexText())
                                .arg(commandNode->getNodeCreateTime())
                                .arg(command->getCommandDesc()));
-  _rootNode->appendChildNode(commandNode);
+  m_RootNode->appendChildNode(commandNode);
   endInsertRows();
   // 次要行
   auto commandTypeNode = new NXActionCommanderNode(commandNode);
@@ -155,20 +155,20 @@ void NXActionCommanderModel::addCommand(NXActionCommand *command)
     break;
   }
   }
-  _commanderNodeMap.insert(command, commandNode);
+  m_CommanderNodeMap.insert(command, commandNode);
   _updateNodeModelIndex();
 }
 
 void NXActionCommanderModel::removeCommand(NXActionCommand *command)
 {
-  if (!command || !_commanderNodeMap.contains(command)) {
+  if (!command || !m_CommanderNodeMap.contains(command)) {
     return;
   }
-  auto commandNode = _commanderNodeMap[command];
-  _commanderNodeMap.remove(command);
-  int removeRow = _rootNode->getChildNodes().indexOf(commandNode);
-  beginRemoveRows(_rootNode->getModelIndex(), removeRow, removeRow);
-  _rootNode->removeChildNode(commandNode);
+  auto commandNode = m_CommanderNodeMap[command];
+  m_CommanderNodeMap.remove(command);
+  int removeRow = m_RootNode->getChildNodes().indexOf(commandNode);
+  beginRemoveRows(m_RootNode->getModelIndex(), removeRow, removeRow);
+  m_RootNode->removeChildNode(commandNode);
   endRemoveRows();
   delete commandNode;
   _updateNodeModelIndex();
@@ -176,10 +176,10 @@ void NXActionCommanderModel::removeCommand(NXActionCommand *command)
 
 void NXActionCommanderModel::updateCommand(NXActionCommand *command, bool isRedo)
 {
-  if (!command || !_commanderNodeMap.contains(command)) {
+  if (!command || !m_CommanderNodeMap.contains(command)) {
     return;
   }
-  auto commandNode = _commanderNodeMap[command];
+  auto commandNode = m_CommanderNodeMap[command];
   commandNode->setMessageMode(command->getMessageMode());
   commandNode->setNodeName(QStringLiteral("%1 [%2] %3")
                                .arg(commandNode->getNodeIndexText())
@@ -212,30 +212,30 @@ void NXActionCommanderModel::updateCommand(NXActionCommand *command, bool isRedo
 void NXActionCommanderModel::clearCommand()
 {
   beginResetModel();
-  _rootNode->setChildNodes({});
-  for (const auto node : _commanderNodeMap) {
+  m_RootNode->setChildNodes({});
+  for (auto const node : m_CommanderNodeMap) {
     delete node;
   }
-  _commanderNodeMap.clear();
+  m_CommanderNodeMap.clear();
   endResetModel();
   _updateNodeModelIndex();
 }
 
-const QModelIndex &NXActionCommanderModel::getCommandModelIndex(NXActionCommand *command)
+QModelIndex const &NXActionCommanderModel::getCommandModelIndex(NXActionCommand *command)
 {
   static QModelIndex invalidModelIndex;
-  if (!_commanderNodeMap.contains(command)) {
+  if (!m_CommanderNodeMap.contains(command)) {
     return invalidModelIndex;
   }
-  return _commanderNodeMap[command]->getModelIndex();
+  return m_CommanderNodeMap[command]->getModelIndex();
 }
 
-void NXActionCommanderModel::_updateNodeModelIndex(const QModelIndex &parentIndex)
+void NXActionCommanderModel::_updateNodeModelIndex(QModelIndex const &parentIndex)
 {
   int indexRowCount = rowCount(parentIndex);
   for (int row = 0; row < indexRowCount; ++row) {
     QModelIndex modelIndex = index(row, 0, parentIndex);
-    const auto childNode   = static_cast<NXActionCommanderNode *>(modelIndex.internalPointer());
+    auto const childNode   = static_cast<NXActionCommanderNode *>(modelIndex.internalPointer());
     childNode->setModelIndex(modelIndex);
     if (hasChildren(modelIndex)) {
       _updateNodeModelIndex(modelIndex);

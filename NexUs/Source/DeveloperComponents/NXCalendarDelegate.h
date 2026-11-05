@@ -20,15 +20,15 @@ public:
 
   Q_SLOT void onCalendarModelDisplayModeChanged();
 
-  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-  QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+  void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const override;
+  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QDate _nowDate;
-  NXCalendarModel *_calendarModel { nullptr };
-  void _drawYearOrMonth(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-  void _drawDays(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+  NXThemeType::ThemeMode m_ThemeMode;
+  QDate m_NowDate;
+  NXCalendarModel *m_CalendarModel { nullptr };
+  void _drawYearOrMonth(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
+  void _drawDays(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const;
 };
 
 #endif // NXCALENDARDELEGATE_H

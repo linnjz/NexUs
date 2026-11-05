@@ -18,45 +18,45 @@ NXShadowGraphicsEffectPrivate::~NXShadowGraphicsEffectPrivate()
 {
 }
 
-void NXShadowGraphicsEffectPrivate::_drawInsetShadow(QPainter *painter, const QPixmap &pixmap, const QPoint &pos)
+void NXShadowGraphicsEffectPrivate::_drawInsetShadow(QPainter *painter, QPixmap const &pixmap, QPoint const &pos)
 {
-  const QSize pixmapSize = pixmap.size();
-  const qreal pixelRatio = pixmap.devicePixelRatioF();
-  const qreal radian     = _pSpread * M_SQRT1_2;
+  QSize const pixmapSize = pixmap.size();
+  qreal const pixelRatio = pixmap.devicePixelRatioF();
+  qreal const radian     = m_Spread * M_SQRT1_2;
   QRectF clearRect(QPointF(0, 0), pixmapSize / pixelRatio);
   clearRect.adjust(radian, radian, -radian, -radian);
   QPointF topLeftOffset = clearRect.topLeft(), bottomRightOffset = clearRect.bottomRight();
   QPointF maskStartPos = topLeftOffset;
-  switch (_pRotateMode) {
+  switch (m_RotateMode) {
   case NXShadowGraphicsEffectType::Rotate45 :
-    maskStartPos += _pLightOffset;
-    topLeftOffset += _pLightOffset;
-    bottomRightOffset += _pDarkOffset;
+    maskStartPos += m_LightOffset;
+    topLeftOffset += m_LightOffset;
+    bottomRightOffset += m_DarkOffset;
     break;
   case NXShadowGraphicsEffectType::Rotate135 :
-    maskStartPos += { -_pLightOffset.y(), _pLightOffset.x() };
-    topLeftOffset += { -_pDarkOffset.y(), _pLightOffset.x() };
-    bottomRightOffset += { -_pLightOffset.y(), _pDarkOffset.x() };
+    maskStartPos += { -m_LightOffset.y(), m_LightOffset.x() };
+    topLeftOffset += { -m_DarkOffset.y(), m_LightOffset.x() };
+    bottomRightOffset += { -m_LightOffset.y(), m_DarkOffset.x() };
     break;
   case NXShadowGraphicsEffectType::Rotate225 :
-    maskStartPos += { -_pLightOffset.x(), -_pLightOffset.y() };
-    topLeftOffset += { -_pDarkOffset.x(), -_pDarkOffset.y() };
-    bottomRightOffset += { -_pLightOffset.x(), -_pLightOffset.y() };
+    maskStartPos += { -m_LightOffset.x(), -m_LightOffset.y() };
+    topLeftOffset += { -m_DarkOffset.x(), -m_DarkOffset.y() };
+    bottomRightOffset += { -m_LightOffset.x(), -m_LightOffset.y() };
     break;
   case NXShadowGraphicsEffectType::Rotate315 :
-    maskStartPos += { _pLightOffset.y(), _pLightOffset.x() };
-    topLeftOffset += { _pLightOffset.y(), -_pDarkOffset.x() };
-    bottomRightOffset += { _pDarkOffset.y(), -_pLightOffset.x() };
+    maskStartPos += { m_LightOffset.y(), m_LightOffset.x() };
+    topLeftOffset += { m_LightOffset.y(), -m_DarkOffset.x() };
+    bottomRightOffset += { m_DarkOffset.y(), -m_LightOffset.x() };
     break;
   default : break;
   }
 
   QImage resultImage(pixmap.size(), QImage::Format_ARGB32_Premultiplied);
   resultImage.setDevicePixelRatio(pixmap.devicePixelRatioF());
-  resultImage.fill(_pLightColor);
+  resultImage.fill(m_LightColor);
   QImage maskImage(pixmap.size(), QImage::Format_ARGB32_Premultiplied);
   maskImage.setDevicePixelRatio(pixmap.devicePixelRatioF());
-  maskImage.fill(_pDarkColor);
+  maskImage.fill(m_DarkColor);
 
   QPainter innerPainter(&resultImage);
   // 组合两种阴影
@@ -68,33 +68,33 @@ void NXShadowGraphicsEffectPrivate::_drawInsetShadow(QPainter *painter, const QP
   innerPainter.fillRect(QRectF { topLeftOffset, bottomRightOffset }, Qt::transparent);
 
   // 应用模糊效果
-  qt_blurImage(resultImage, _pBlur, true);
+  qt_blurImage(resultImage, m_Blur, true);
 
   innerPainter.end();
 
   painter->drawImage(pos, resultImage);
 }
 
-void NXShadowGraphicsEffectPrivate::_drawOutsetShadow(QPainter *painter, const QPixmap &pixmap, const QPoint &pos)
+void NXShadowGraphicsEffectPrivate::_drawOutsetShadow(QPainter *painter, QPixmap const &pixmap, QPoint const &pos)
 {
   QImage pixmapImage = pixmap.toImage();
   QPointF lightOffset, darkOffset;
-  switch (_pRotateMode) {
+  switch (m_RotateMode) {
   case NXShadowGraphicsEffectType::Rotate45 :
-    lightOffset = _pLightOffset;
-    darkOffset  = _pDarkOffset;
+    lightOffset = m_LightOffset;
+    darkOffset  = m_DarkOffset;
     break;
   case NXShadowGraphicsEffectType::Rotate135 :
-    lightOffset = { -_pLightOffset.y(), _pLightOffset.x() };
-    darkOffset  = { -_pDarkOffset.y(), _pDarkOffset.x() };
+    lightOffset = { -m_LightOffset.y(), m_LightOffset.x() };
+    darkOffset  = { -m_DarkOffset.y(), m_DarkOffset.x() };
     break;
   case NXShadowGraphicsEffectType::Rotate225 :
-    lightOffset = { -_pLightOffset.x(), -_pLightOffset.y() };
-    darkOffset  = { -_pDarkOffset.x(), -_pDarkOffset.y() };
+    lightOffset = { -m_LightOffset.x(), -m_LightOffset.y() };
+    darkOffset  = { -m_DarkOffset.x(), -m_DarkOffset.y() };
     break;
   case NXShadowGraphicsEffectType::Rotate315 :
-    lightOffset = { _pLightOffset.y(), -_pLightOffset.x() };
-    darkOffset  = { _pDarkOffset.y(), -_pDarkOffset.x() };
+    lightOffset = { m_LightOffset.y(), -m_LightOffset.x() };
+    darkOffset  = { m_DarkOffset.y(), -m_DarkOffset.x() };
     break;
   default : break;
   }
@@ -104,10 +104,10 @@ void NXShadowGraphicsEffectPrivate::_drawOutsetShadow(QPainter *painter, const Q
   blurImage.fill(0);
 
   QPainter blurPainter(&blurImage);
-  qt_blurImage(&blurPainter, pixmapImage, _pBlur, true, true);
+  qt_blurImage(&blurPainter, pixmapImage, m_Blur, true, true);
   blurPainter.end();
 
-  auto applyColorFunc = [](QImage source, const QColor &color) -> QImage {
+  auto applyColorFunc = [](QImage source, QColor const &color) -> QImage {
     QPainter painter(&source);
     painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
     painter.fillRect(source.rect(), color);
@@ -115,8 +115,8 @@ void NXShadowGraphicsEffectPrivate::_drawOutsetShadow(QPainter *painter, const Q
     return source;
   };
 
-  QImage lightShadow = applyColorFunc(blurImage, _pLightColor);
-  QImage darkShadow  = applyColorFunc(std::move(blurImage), _pDarkColor);
+  QImage lightShadow = applyColorFunc(blurImage, m_LightColor);
+  QImage darkShadow  = applyColorFunc(std::move(blurImage), m_DarkColor);
   painter->drawImage(pos + lightOffset, lightShadow);
   painter->drawImage(pos + darkOffset, darkShadow);
 

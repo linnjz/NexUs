@@ -35,48 +35,48 @@ NXTreeView::NXTreeView(QWidget *parent)
   setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
   setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-  d->_treeViewStyle = new NXTreeViewStyle(style());
-  setStyle(d->_treeViewStyle);
+  d->m_TreeViewStyle = new NXTreeViewStyle(style());
+  setStyle(d->m_TreeViewStyle);
 }
 
 NXTreeView::~NXTreeView()
 {
   Q_D(NXTreeView);
-  delete d->_treeViewStyle;
+  delete d->m_TreeViewStyle;
 }
 
 void NXTreeView::setNXIcon(NXIconType::IconName icon)
 {
   Q_D(NXTreeView);
-  d->_treeViewStyle->setIconName(icon);
+  d->m_TreeViewStyle->setIconName(icon);
 }
 
 void NXTreeView::setItemHeight(int itemHeight)
 {
   Q_D(NXTreeView);
   if (itemHeight > 0) {
-    d->_treeViewStyle->setItemHeight(itemHeight);
+    d->m_TreeViewStyle->setItemHeight(itemHeight);
     doItemsLayout();
   }
 }
 
-int NXTreeView::getItemHeight() const
+int NXTreeView::getItemHeight() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTreeView);
-  return d->_treeViewStyle->getItemHeight();
+  Q_CONST_D(NXTreeView);
+  return d->m_TreeViewStyle->getItemHeight();
 }
 
 void NXTreeView::setHeaderMargin(int headerMargin)
 {
   Q_D(NXTreeView);
   if (headerMargin >= 0) {
-    d->_treeViewStyle->setHeaderMargin(headerMargin);
+    d->m_TreeViewStyle->setHeaderMargin(headerMargin);
     doItemsLayout();
   }
 }
 
-int NXTreeView::getHeaderMargin() const
+int NXTreeView::getHeaderMargin() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTreeView);
-  return d->_treeViewStyle->getHeaderMargin();
+  Q_CONST_D(NXTreeView);
+  return d->m_TreeViewStyle->getHeaderMargin();
 }

@@ -22,45 +22,45 @@ NXTabBar::NXTabBar(QWidget *parent)
   setTabsClosable(true);
   setMovable(true);
   setAcceptDrops(true);
-  d->_style = new NXTabBarStyle(style());
-  setStyle(d->_style);
+  d->m_Style = new NXTabBarStyle(style());
+  setStyle(d->m_Style);
 
-  d->_pTargetScrollOffset = 0;
-  d->_tabBarPrivate       = dynamic_cast<QTabBarPrivate *>(this->QTabBar::d_ptr.data());
+  d->m_TargetScrollOffset = 0;
+  d->m_TabBarPrivate       = dynamic_cast<QTabBarPrivate *>(this->QTabBar::d_ptr.data());
   // 关闭自带滚动按钮，避免 layoutTabs 在 tab 溢出时重置 scrollOffset
   setUsesScrollButtons(false);
-  connect(d, &NXTabBarPrivate::pScrollOffsetChanged, this, [=]() {
+  connect(d, &NXTabBarPrivate::signalScrollOffsetChanged, this, [=]() {
     // 动画每帧将偏移应用到 QTabBar 官方滚动机制
-    d->_tabBarPrivate->scrollOffset = qRound(d->getScrollOffset());
+    d->m_TabBarPrivate->scrollOffset = qRound(d->getScrollOffset());
     update();
   });
   // Qt 内部(refresh/makeVisible 等)修改 scrollOffset 时同步动画状态
   connect(this, &QTabBar::currentChanged, this, [=]() {
-    d->setTargetScrollOffset(d->_tabBarPrivate->scrollOffset);
-    d->setScrollOffset(d->_tabBarPrivate->scrollOffset);
+    d->setTargetScrollOffset(d->m_TabBarPrivate->scrollOffset);
+    d->setScrollOffset(d->m_TabBarPrivate->scrollOffset);
   });
 }
 
 NXTabBar::~NXTabBar()
 {
   Q_D(NXTabBar);
-  delete d->_style;
+  delete d->m_Style;
 }
 
 void NXTabBar::locateCurrentTab()
 {
   Q_D(NXTabBar);
-  const int index = currentIndex();
+  int const index = currentIndex();
   if (index < 0) {
     return;
   }
-  const int tabWidth  = d->_style->getTabSize().width();
-  const int maxOffset = qMax(0, d->_tabBarPrivate->tabList.size() * tabWidth - width());
+  int const tabWidth  = d->m_Style->getTabSize().width();
+  int const maxOffset = qMax(0, d->m_TabBarPrivate->tabList.size() * tabWidth - width());
   d->setTargetScrollOffset(qBound(0.0, static_cast<qreal>(index * tabWidth), static_cast<qreal>(maxOffset)));
   d->startScrollAnimation();
 }
 
-void NXTabBar::setTabText(int index, const QString &text)
+void NXTabBar::setTabText(int index, QString const &text)
 {
   QTabBar::setTabText(index, text);
   Q_EMIT tabBarTextChanged(index, text);
@@ -69,49 +69,49 @@ void NXTabBar::setTabText(int index, const QString &text)
 void NXTabBar::setTabBarStyle(NXTabBarType::TabBarStyle style)
 {
   Q_D(NXTabBar);
-  d->_style->setTabBarStyle(style);
+  d->m_Style->setTabBarStyle(style);
 }
 
-NXTabBarType::TabBarStyle NXTabBar::getTabBarStyle() const
+NXTabBarType::TabBarStyle NXTabBar::getTabBarStyle() const noexcept(std::is_nothrow_copy_constructible_v<NXTabBarType::TabBarStyle>)
 {
-  Q_D(const NXTabBar);
-  return d->_style->getTabBarStyle();
+  Q_CONST_D(NXTabBar);
+  return d->m_Style->getTabBarStyle();
 }
 
 void NXTabBar::setTabCornerRadius(int radius)
 {
   Q_D(NXTabBar);
-  d->_style->setTabCornerRadius(radius);
+  d->m_Style->setTabCornerRadius(radius);
 }
 
-int NXTabBar::getTabCornerRadius() const
+int NXTabBar::getTabCornerRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTabBar);
-  return d->_style->getTabCornerRadius();
+  Q_CONST_D(NXTabBar);
+  return d->m_Style->getTabCornerRadius();
 }
 
 void NXTabBar::setIsSelectedIndicatorVisible(bool isVisible)
 {
   Q_D(NXTabBar);
-  d->_style->setIsSelectedIndicatorVisible(isVisible);
+  d->m_Style->setIsSelectedIndicatorVisible(isVisible);
 }
 
-bool NXTabBar::getIsSelectedIndicatorVisible() const
+bool NXTabBar::getIsSelectedIndicatorVisible() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXTabBar);
-  return d->_style->getIsSelectedIndicatorVisible();
+  Q_CONST_D(NXTabBar);
+  return d->m_Style->getIsSelectedIndicatorVisible();
 }
 
 void NXTabBar::setTabSize(QSize tabSize)
 {
   Q_D(NXTabBar);
-  d->_style->setTabSize(tabSize);
+  d->m_Style->setTabSize(tabSize);
 }
 
-QSize NXTabBar::getTabSize() const
+QSize NXTabBar::getTabSize() const noexcept(std::is_nothrow_copy_constructible_v<QSize>)
 {
-  Q_D(const NXTabBar);
-  return d->_style->getTabSize();
+  Q_CONST_D(NXTabBar);
+  return d->m_Style->getTabSize();
 }
 
 QSize NXTabBar::minimumSizeHint() const
@@ -124,7 +124,7 @@ void NXTabBar::tabInserted(int index)
 {
   Q_D(NXTabBar);
   // 基类 addTab 内部先执行 refresh/makeVisible 再调用本虚函数，
-  // _tabBarPrivate->scrollOffset 已被重置，动画状态仍是插入前的值
+  // m_TabBarPrivate->scrollOffset 已被重置，动画状态仍是插入前的值
   qreal preScrollOffset = d->getScrollOffset();
   QTabBar::tabInserted(index);
   d->restoreScrollOffset(preScrollOffset);
@@ -161,29 +161,29 @@ void NXTabBar::mouseMoveEvent(QMouseEvent *event)
 {
   QTabBar::mouseMoveEvent(event);
   Q_D(NXTabBar);
-  if (d->_tabBarPrivate->pressedIndex >= 0) {
+  if (d->m_TabBarPrivate->pressedIndex >= 0) {
     QPoint currentPos = event->pos();
     if (objectName() == QStringLiteral("NXCustomTabBar") && count() == 1) {
-      if (!d->_mimeData) {
-        d->_mimeData = new QMimeData();
-        d->_mimeData->setProperty("DragType", "NXTabBarDrag");
-        d->_mimeData->setProperty("NXTabBarObject", QVariant::fromValue(this));
-        d->_mimeData->setProperty("IsFloatWidget", true);
-        d->_mimeData->setProperty("IsSelectedIndicatorVisible", d->_style->getIsSelectedIndicatorVisible());
-        d->_mimeData->setProperty("TabCornerRadius", d->_style->getTabCornerRadius());
-        d->_mimeData->setProperty("TabBarStyle", d->_style->getTabBarStyle());
-        d->_mimeData->setProperty("TabSize", d->_style->getTabSize());
+      if (!d->m_MimeData) {
+        d->m_MimeData = new QMimeData();
+        d->m_MimeData->setProperty("DragType", "NXTabBarDrag");
+        d->m_MimeData->setProperty("NXTabBarObject", QVariant::fromValue(this));
+        d->m_MimeData->setProperty("IsFloatWidget", true);
+        d->m_MimeData->setProperty("IsSelectedIndicatorVisible", d->m_Style->getIsSelectedIndicatorVisible());
+        d->m_MimeData->setProperty("TabCornerRadius", d->m_Style->getTabCornerRadius());
+        d->m_MimeData->setProperty("TabBarStyle", d->m_Style->getTabBarStyle());
+        d->m_MimeData->setProperty("TabSize", d->m_Style->getTabSize());
         QRect currentTabRect = tabRect(currentIndex());
-        d->_mimeData->setProperty("DragPos", QPoint(currentPos.x() - currentTabRect.x(), currentPos.y() - currentTabRect.y()));
-        Q_EMIT tabDragCreate(d->_mimeData);
-        d->_mimeData = nullptr;
+        d->m_MimeData->setProperty("DragPos", QPoint(currentPos.x() - currentTabRect.x(), currentPos.y() - currentTabRect.y()));
+        Q_EMIT tabDragCreate(d->m_MimeData);
+        d->m_MimeData = nullptr;
       }
     } else {
-      if (d->_tabBarPrivate->dragInProgress) {
-        auto &pressTabData   = d->_tabBarPrivate->tabList[d->_tabBarPrivate->pressedIndex];
+      if (d->m_TabBarPrivate->dragInProgress) {
+        auto &pressTabData   = d->m_TabBarPrivate->tabList[d->m_TabBarPrivate->pressedIndex];
         QRect firstTabRect   = tabRect(0);
-        const int leftBound  = -firstTabRect.x();
-        const int rightBound = width() - firstTabRect.x();
+        int const leftBound  = -firstTabRect.x();
+        int const rightBound = width() - firstTabRect.x();
 #if (QT_VERSION > QT_VERSION_CHECK(6, 0, 0))
         QRect pressTabRect = pressTabData->rect;
         if (pressTabData->dragOffset > 0 && pressTabRect.right() + pressTabData->dragOffset > rightBound) {
@@ -207,16 +207,16 @@ void NXTabBar::mouseMoveEvent(QMouseEvent *event)
       moveRect.adjust(0, -height(), 0, height());
       if (currentPos.x() < 0 || currentPos.x() > width() || currentPos.y() > moveRect.bottom() ||
           currentPos.y() < moveRect.y()) {
-        if (!d->_mimeData) {
-          d->_mimeData = new QMimeData();
-          d->_mimeData->setProperty("DragType", "NXTabBarDrag");
-          d->_mimeData->setProperty("NXTabBarObject", QVariant::fromValue(this));
-          d->_mimeData->setProperty("IsSelectedIndicatorVisible", d->_style->getIsSelectedIndicatorVisible());
-          d->_mimeData->setProperty("TabCornerRadius", d->_style->getTabCornerRadius());
-          d->_mimeData->setProperty("TabBarStyle", d->_style->getTabBarStyle());
-          d->_mimeData->setProperty("TabSize", d->_style->getTabSize());
-          Q_EMIT tabDragCreate(d->_mimeData);
-          d->_mimeData = nullptr;
+        if (!d->m_MimeData) {
+          d->m_MimeData = new QMimeData();
+          d->m_MimeData->setProperty("DragType", "NXTabBarDrag");
+          d->m_MimeData->setProperty("NXTabBarObject", QVariant::fromValue(this));
+          d->m_MimeData->setProperty("IsSelectedIndicatorVisible", d->m_Style->getIsSelectedIndicatorVisible());
+          d->m_MimeData->setProperty("TabCornerRadius", d->m_Style->getTabCornerRadius());
+          d->m_MimeData->setProperty("TabBarStyle", d->m_Style->getTabBarStyle());
+          d->m_MimeData->setProperty("TabSize", d->m_Style->getTabSize());
+          Q_EMIT tabDragCreate(d->m_MimeData);
+          d->m_MimeData = nullptr;
         }
       }
     }
@@ -229,7 +229,7 @@ void NXTabBar::dragEnterEvent(QDragEnterEvent *event)
   if (event->mimeData()->property("DragType").toString() == QStringLiteral("NXTabBarDrag")) {
     event->acceptProposedAction();
     auto mimeData = const_cast<QMimeData *>(event->mimeData());
-    d->_mimeData  = mimeData;
+    d->m_MimeData  = mimeData;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     mimeData->setProperty("TabDropIndex", tabAt(event->position().toPoint()));
 #else
@@ -238,7 +238,7 @@ void NXTabBar::dragEnterEvent(QDragEnterEvent *event)
     Q_EMIT tabDragEnter(mimeData);
     qApp->processEvents();
 
-    QPoint localPressPos(tabRect(currentIndex()).x() + d->_style->getTabSize().width() / 2, 0);
+    QPoint localPressPos(tabRect(currentIndex()).x() + d->m_Style->getTabSize().width() / 2, 0);
     QPoint globalPressPos = mapToGlobal(localPressPos);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
     QMouseEvent pressEvent(QEvent::MouseButtonPress, QPointF(localPressPos), QPointF(globalPressPos), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
@@ -278,9 +278,9 @@ void NXTabBar::dragMoveEvent(QDragMoveEvent *event)
 void NXTabBar::dragLeaveEvent(QDragLeaveEvent *event)
 {
   Q_D(NXTabBar);
-  if (d->_mimeData) {
-    Q_EMIT tabDragLeave(d->_mimeData);
-    d->_mimeData = nullptr;
+  if (d->m_MimeData) {
+    Q_EMIT tabDragLeave(d->m_MimeData);
+    d->m_MimeData = nullptr;
   }
   QMouseEvent releaseEvent(QEvent::MouseButtonRelease, QPoint(-1, -1), QPoint(-1, -1), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
   QApplication::sendEvent(this, &releaseEvent);
@@ -290,7 +290,7 @@ void NXTabBar::dragLeaveEvent(QDragLeaveEvent *event)
 void NXTabBar::dropEvent(QDropEvent *event)
 {
   Q_D(NXTabBar);
-  d->_mimeData = nullptr;
+  d->m_MimeData = nullptr;
   QMouseEvent releaseEvent(QEvent::MouseButtonRelease, QPoint(-1, -1), QPoint(-1, -1), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
   QApplication::sendEvent(this, &releaseEvent);
   if (objectName() != QStringLiteral("NXCustomTabBar")) {
@@ -309,8 +309,8 @@ void NXTabBar::wheelEvent(QWheelEvent *event)
 {
   Q_D(NXTabBar);
   // 滚轮平滑横向滚动，不切换 tab
-  int maxOffset = qMax(0, d->_tabBarPrivate->tabList.size() * d->_style->getTabSize().width() - width());
-  int step      = qMax(1, d->_style->getTabSize().width() / 4);
+  int maxOffset = qMax(0, d->m_TabBarPrivate->tabList.size() * d->m_Style->getTabSize().width() - width());
+  int step      = qMax(1, d->m_Style->getTabSize().width() / 4);
   d->setTargetScrollOffset(
       qBound(0.0, d->getTargetScrollOffset() - event->angleDelta().y() / 120.0 * step, static_cast<qreal>(maxOffset)));
   d->startScrollAnimation();
@@ -322,25 +322,25 @@ void NXTabBar::resizeEvent(QResizeEvent *event)
   QTabBar::resizeEvent(event);
   Q_D(NXTabBar);
   // 窗口变宽时收敛超出的滚动偏移
-  int maxOffset = qMax(0, d->_tabBarPrivate->tabList.size() * d->_style->getTabSize().width() - width());
+  int maxOffset = qMax(0, d->m_TabBarPrivate->tabList.size() * d->m_Style->getTabSize().width() - width());
   d->setTargetScrollOffset(qMin(d->getTargetScrollOffset(), qreal(maxOffset)));
   d->setScrollOffset(qMin(d->getScrollOffset(), qreal(maxOffset)));
-  d->_tabBarPrivate->scrollOffset = qRound(d->getScrollOffset());
+  d->m_TabBarPrivate->scrollOffset = qRound(d->getScrollOffset());
 }
 
 void NXTabBar::paintEvent(QPaintEvent *event)
 {
   Q_D(NXTabBar);
-  QSize tabSize = d->_style->getTabSize();
-  for (int i = 0; i < d->_tabBarPrivate->tabList.size(); i++) {
+  QSize tabSize = d->m_Style->getTabSize();
+  for (int i = 0; i < d->m_TabBarPrivate->tabList.size(); i++) {
 #if (QT_VERSION > QT_VERSION_CHECK(6, 0, 0))
-    d->_tabBarPrivate->tabList[i]->rect =
-        QRect(tabSize.width() * i, d->_tabBarPrivate->tabList[i]->rect.y(), tabSize.width(), tabSize.height());
+    d->m_TabBarPrivate->tabList[i]->rect =
+        QRect(tabSize.width() * i, d->m_TabBarPrivate->tabList[i]->rect.y(), tabSize.width(), tabSize.height());
 #else
-    d->_tabBarPrivate->tabList[i].rect =
-        QRect(tabSize.width() * i, d->_tabBarPrivate->tabList[i].rect.y(), tabSize.width(), tabSize.height());
+    d->m_TabBarPrivate->tabList[i].rect =
+        QRect(tabSize.width() * i, d->m_TabBarPrivate->tabList[i].rect.y(), tabSize.width(), tabSize.height());
 #endif
   }
-  d->_tabBarPrivate->layoutWidgets();
+  d->m_TabBarPrivate->layoutWidgets();
   QTabBar::paintEvent(event);
 }

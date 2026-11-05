@@ -16,13 +16,13 @@ class NX_EXPORT NXBreadcrumbBar : public QWidget
 public:
   explicit NXBreadcrumbBar(QWidget *parent = nullptr);
   ~NXBreadcrumbBar();
-  void setBreadcrumbList(const QStringList &breadcrumbList);
-  QStringList appendBreadcrumb(const QString &breadcrumb);
-  QStringList removeBreadcrumb(const QString &breadcrumb);
+  void setBreadcrumbList(QStringList const &breadcrumbList);
+  QStringList appendBreadcrumb(QString const &breadcrumb);
+  QStringList removeBreadcrumb(QString const &breadcrumb);
 
   int getBreadcrumbListCount() const;
   QStringList getBreadcrumbList() const;
-  Q_SIGNAL void breadcrumbClicked(const QString &breadcrumb, const QStringList &lastBreadcrumbList);
+  Q_SIGNAL void breadcrumbClicked(QString const &breadcrumb, QStringList const &lastBreadcrumbList);
 };
 
 #endif // NXBREADCRUMBBAR_H

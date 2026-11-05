@@ -19,7 +19,7 @@ public:
   ~NXDividerPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXDIVIDERPRIVATE_H

@@ -20,7 +20,7 @@ class NXIconButtonPrivate : public QObject
   Q_PROPERTY_CREATE_D(QColor, DarkHoverIconColor)
   Q_PROPERTY_CREATE_D(qreal, Opacity)
   Q_PROPERTY_CREATE_D(int, BorderRadius)
-  Q_PROPERTY_CREATE(int, HoverAlpha)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), HoverAlpha)
   Q_PROPERTY_CREATE_D(NXIconType::IconName, Awesome)
   Q_PROPERTY_CREATE_D(bool, IsSelected)
 
@@ -29,9 +29,9 @@ public:
   ~NXIconButtonPrivate();
 
 private:
-  bool _isAlphaAnimationFinished { true };
-  NXThemeType::ThemeMode _themeMode;
-  QPixmap _iconPix;
+  bool m_IsAlphaAnimationFinished { true };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QPixmap m_IconPix;
 };
 
 #endif // NXICONBUTTONPRIVATE_H

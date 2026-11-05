@@ -16,12 +16,12 @@ public:
   ~NXToolBarPrivate();
 
 private:
-  NXToolBarStyle *_toolBarStyle { nullptr };
-  NXThemeType::ThemeMode _themeMode;
+  NXToolBarStyle *m_ToolBarStyle { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  int _shadowBorderWidth { 0 };
+  int m_ShadowBorderWidth { 0 };
 #else
-  int _shadowBorderWidth { 6 };
+  int m_ShadowBorderWidth { 6 };
 #endif
 };
 

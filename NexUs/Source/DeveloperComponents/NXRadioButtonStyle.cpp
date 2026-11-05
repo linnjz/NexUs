@@ -8,19 +8,20 @@
 #include "NXTheme.h"
 
 NXRadioButtonStyle::NXRadioButtonStyle(QStyle *style)
+    : m_CircleScale { 2.0 / 4.0 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_CircleScaleAnimation { new QPropertyAnimation(this, "CircleScale", this) }
 {
-  _pCircleScale         = 2.0 / 4.0;
-  _circleScaleAnimation = new QPropertyAnimation(this, "pCircleScale", this);
-  _circleScaleAnimation->setDuration(200);
-  _circleScaleAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(this, &NXRadioButtonStyle::pCircleScaleChanged, this, [this]() {
-    if (_animationWidget) {
-      _animationWidget->update();
+  m_CircleScaleAnimation->setDuration(200);
+  m_CircleScaleAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  connect(this, &NXRadioButtonStyle::signalCircleScaleChanged, this, [this]() {
+    if (m_AnimationWidget) {
+      m_AnimationWidget->update();
     }
   });
-  _themeMode = nxTheme->getThemeMode();
+
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -28,39 +29,39 @@ NXRadioButtonStyle::~NXRadioButtonStyle()
 {
 }
 
-void NXRadioButtonStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXRadioButtonStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case PE_IndicatorRadioButton : {
-    const QStyleOptionButton *bopt = qstyleoption_cast<const QStyleOptionButton *>(option);
+    QStyleOptionButton const *bopt = qstyleoption_cast<QStyleOptionButton const *>(option);
     if (!bopt) {
       break;
     }
     QRectF buttonRect = bopt->rect;
     buttonRect.adjust(1, 1, -1, -1);
-    const QPointF center = buttonRect.center();
-    const qreal radius   = qMax<qreal>(0, qMin(buttonRect.width(), buttonRect.height()) / 2);
+    QPointF const center = buttonRect.center();
+    qreal const radius   = qMax<qreal>(0, qMin(buttonRect.width(), buttonRect.height()) / 2);
     const_cast<NXRadioButtonStyle *>(this)->_updateCircleScale(bopt->state, widget);
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     if (bopt->state & QStyle::State_Off) {
-      painter->setPen(QPen(NXThemeColor(_themeMode, BasicBorder), 1.5));
+      painter->setPen(QPen(NXThemeColor(m_ThemeMode, BasicBorder), 1.5));
       if (bopt->state & QStyle::State_MouseOver) {
-        painter->setBrush(NXThemeColor(_themeMode, BasicHover));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicHover));
       } else {
-        painter->setBrush(NXThemeColor(_themeMode, BasicBase));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicBase));
       }
-      const qreal borderRadius = qMax<qreal>(0, radius - 0.75);
+      qreal const borderRadius = qMax<qreal>(0, radius - 0.75);
       painter->drawEllipse(center, borderRadius, borderRadius);
     } else {
       painter->setPen(Qt::NoPen);
       // 外圆形
-      painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+      painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
       painter->drawEllipse(center, radius, radius);
       // 内圆形
-      painter->setBrush(NXThemeColor(_themeMode, BasicTextInvert));
-      const qreal circleRadius = radius * _pCircleScale;
+      painter->setBrush(NXThemeColor(m_ThemeMode, BasicTextInvert));
+      qreal const circleRadius = radius * m_CircleScale;
       painter->drawEllipse(center, circleRadius, circleRadius);
     }
     painter->restore();
@@ -74,7 +75,7 @@ void NXRadioButtonStyle::drawPrimitive(PrimitiveElement element, const QStyleOpt
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-int NXRadioButtonStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXRadioButtonStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   switch (metric) {
   case QStyle::PM_ExclusiveIndicatorWidth :
@@ -88,7 +89,7 @@ int NXRadioButtonStyle::pixelMetric(PixelMetric metric, const QStyleOption *opti
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-void NXRadioButtonStyle::_updateCircleScale(QStyle::State state, const QWidget *widget)
+void NXRadioButtonStyle::_updateCircleScale(QStyle::State state, QWidget const *widget)
 {
   qreal targetScale = 2.0 / 3.8;
   if (state.testFlag(QStyle::State_Enabled) && state.testFlag(QStyle::State_On)) {
@@ -99,22 +100,22 @@ void NXRadioButtonStyle::_updateCircleScale(QStyle::State state, const QWidget *
     }
   }
   if (!widget || !widget->isVisible() || !state.testFlag(QStyle::State_Enabled) || !state.testFlag(QStyle::State_On)) {
-    _circleScaleAnimation->stop();
-    _targetCircleScale = targetScale;
-    _animationWidget.clear();
-    if (!qFuzzyCompare(_pCircleScale, targetScale)) {
+    m_CircleScaleAnimation->stop();
+    m_TargetCircleScale = targetScale;
+    m_AnimationWidget.clear();
+    if (!qFuzzyCompare(m_CircleScale, targetScale)) {
       setCircleScale(targetScale);
     }
     return;
   }
-  _animationWidget = const_cast<QWidget *>(widget);
-  if (qFuzzyCompare(_targetCircleScale, targetScale)) {
+  m_AnimationWidget = const_cast<QWidget *>(widget);
+  if (qFuzzyCompare(m_TargetCircleScale, targetScale)) {
     return;
   }
-  _targetCircleScale = targetScale;
+  m_TargetCircleScale = targetScale;
   // 复用同一个动画，并从当前比例续接，快速切换悬停或按下状态时不会跳变。
-  _circleScaleAnimation->stop();
-  _circleScaleAnimation->setStartValue(_pCircleScale);
-  _circleScaleAnimation->setEndValue(targetScale);
-  _circleScaleAnimation->start();
+  m_CircleScaleAnimation->stop();
+  m_CircleScaleAnimation->setStartValue(m_CircleScale);
+  m_CircleScaleAnimation->setEndValue(targetScale);
+  m_CircleScaleAnimation->start();
 }

@@ -14,16 +14,16 @@ class NXToolBarStyle : public QProxyStyle
 public:
   explicit NXToolBarStyle(QStyle *style = nullptr);
   ~NXToolBarStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
-  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
+  QSize sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  void _drawIndicator(QPainter *painter, const QStyleOptionToolButton *bopt, const QWidget *widget) const;
-  void _drawIcon(QPainter *painter, QRectF iconRect, const QStyleOptionToolButton *bopt, const QWidget *widget) const;
-  void _drawText(QPainter *painter, QRect contentRect, const QStyleOptionToolButton *bopt) const;
+  NXThemeType::ThemeMode m_ThemeMode;
+  void _drawIndicator(QPainter *painter, QStyleOptionToolButton const *bopt, QWidget const *widget) const;
+  void _drawIcon(QPainter *painter, QRectF iconRect, QStyleOptionToolButton const *bopt, QWidget const *widget) const;
+  void _drawText(QPainter *painter, QRect contentRect, QStyleOptionToolButton const *bopt) const;
 };
 
 #endif // NXTOOLBARSTYLE_H

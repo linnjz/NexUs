@@ -24,14 +24,14 @@ public:
   ~NXNumberBoxPrivate();
 
 private:
-  bool _isMinusHovered { false };
-  bool _isPlusHovered { false };
-  bool _isMinusPressed { false };
-  bool _isPlusPressed { false };
-  bool _isEditing { false };
-  NXThemeType::ThemeMode _themeMode;
-  QLineEdit *_lineEdit { nullptr };
-  static const int _buttonWidth = 32;
+  bool m_IsMinusHovered { false };
+  bool m_IsPlusHovered { false };
+  bool m_IsMinusPressed { false };
+  bool m_IsPlusPressed { false };
+  bool m_IsEditing { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QLineEdit *m_LineEdit { nullptr };
+  static int const m_ButtonWidth = 32;
   QRect _minusRect() const;
   QRect _plusRect() const;
   QRect _valueRect() const;

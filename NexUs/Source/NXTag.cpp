@@ -8,11 +8,11 @@
 #include "NXTheme.h"
 #include "private/NXTagPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXTag, QS_SET_CREF(QString), TagText)
-Q_PROPERTY_CREATE_CPP(NXTag, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXTag, bool, IsClosable)
-Q_PROPERTY_CREATE_CPP(NXTag, bool, IsCheckable)
-Q_PROPERTY_CREATE_CPP(NXTag, bool, IsChecked)
+Q_PROPERTY_CREATE_CPP(NXTag, QPS_SCREF_PAEMIT(QString), TagText)
+Q_PROPERTY_CREATE_CPP(NXTag, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXTag, QPS_PAEMIT(bool), IsClosable)
+Q_PROPERTY_CREATE_CPP(NXTag, QPS_PAEMIT(bool), IsCheckable)
+Q_PROPERTY_CREATE_CPP(NXTag, QPS_PAEMIT(bool), IsChecked)
 
 NXTagPrivate::NXTagPrivate(QObject *parent)
     : QObject(parent)
@@ -25,10 +25,10 @@ NXTagPrivate::~NXTagPrivate()
 
 QColor NXTagPrivate::_getBackgroundColor() const
 {
-  switch (_tagColor) {
-  case NXTag::Default : return NXThemeColor(_themeMode, BasicBase);
+  switch (m_TagColor) {
+  case NXTag::Default : return NXThemeColor(m_ThemeMode, BasicBase);
   case NXTag::Primary : {
-    QColor c = NXThemeColor(_themeMode, PrimaryNormal);
+    QColor c = NXThemeColor(m_ThemeMode, PrimaryNormal);
     c.setAlpha(30);
     return c;
   }
@@ -43,24 +43,24 @@ QColor NXTagPrivate::_getBackgroundColor() const
     return c;
   }
   case NXTag::Danger : {
-    QColor c = NXThemeColor(_themeMode, StatusDanger);
+    QColor c = NXThemeColor(m_ThemeMode, StatusDanger);
     c.setAlpha(30);
     return c;
   }
   }
-  return NXThemeColor(_themeMode, BasicBase);
+  return NXThemeColor(m_ThemeMode, BasicBase);
 }
 
 QColor NXTagPrivate::_getForegroundColor() const
 {
-  switch (_tagColor) {
-  case NXTag::Default : return NXThemeColor(_themeMode, BasicText);
-  case NXTag::Primary : return NXThemeColor(_themeMode, PrimaryNormal);
+  switch (m_TagColor) {
+  case NXTag::Default : return NXThemeColor(m_ThemeMode, BasicText);
+  case NXTag::Primary : return NXThemeColor(m_ThemeMode, PrimaryNormal);
   case NXTag::Success : return QColor(0x0F, 0x7B, 0x0F);
   case NXTag::Warning : return QColor(0xF7, 0x93, 0x0E);
-  case NXTag::Danger  : return NXThemeColor(_themeMode, StatusDanger);
+  case NXTag::Danger  : return NXThemeColor(m_ThemeMode, StatusDanger);
   }
-  return NXThemeColor(_themeMode, BasicText);
+  return NXThemeColor(m_ThemeMode, BasicText);
 }
 
 NXTag::NXTag(QWidget *parent)
@@ -69,46 +69,46 @@ NXTag::NXTag(QWidget *parent)
 {
   Q_D(NXTag);
   d->q_ptr          = this;
-  d->_pBorderRadius = 4;
-  d->_pTagText      = QStringLiteral("");
-  d->_pIsClosable   = false;
-  d->_pIsCheckable  = false;
-  d->_pIsChecked    = false;
+  d->m_BorderRadius = 4;
+  d->m_TagText      = QStringLiteral("");
+  d->m_IsClosable   = false;
+  d->m_IsCheckable  = false;
+  d->m_IsChecked    = false;
   setObjectName("NXTag");
   setFixedHeight(28);
   setMouseTracking(true);
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
-  connect(this, &NXTag::pTagTextChanged, this, [=]() {
+  connect(this, &NXTag::signalTagTextChanged, this, [=]() {
     updateGeometry();
     adjustSize();
     update();
   });
-  connect(this, &NXTag::pIsClosableChanged, this, [=]() {
+  connect(this, &NXTag::signalIsClosableChanged, this, [=]() {
     updateGeometry();
     adjustSize();
     update();
   });
-  connect(this, &NXTag::pIsCheckableChanged, this, [=]() {
+  connect(this, &NXTag::signalIsCheckableChanged, this, [=]() {
     updateGeometry();
     adjustSize();
     update();
   });
-  connect(this, &NXTag::pIsCheckedChanged, this, [=]() {
+  connect(this, &NXTag::signalIsCheckedChanged, this, [=]() {
     updateGeometry();
     adjustSize();
     update();
   });
 }
 
-NXTag::NXTag(const QString &text, QWidget *parent)
+NXTag::NXTag(QString const &text, QWidget *parent)
     : NXTag(parent)
 {
   Q_D(NXTag);
-  d->_pTagText = text;
+  d->m_TagText = text;
 }
 
 NXTag::~NXTag()
@@ -118,30 +118,30 @@ NXTag::~NXTag()
 void NXTag::setTagColor(TagColor color)
 {
   Q_D(NXTag);
-  d->_tagColor = color;
+  d->m_TagColor = color;
   update();
 }
 
 NXTag::TagColor NXTag::getTagColor() const
 {
-  return d_ptr->_tagColor;
+  return d_ptr->m_TagColor;
 }
 
 void NXTag::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXTag);
   if (event->button() == Qt::LeftButton) {
-    if (d->_pIsClosable) {
+    if (d->m_IsClosable) {
       // Check if click is in the close button area (right side)
-      int closeAreaX = width() - d->_closeButtonWidth - d->_padding / 2;
+      int closeAreaX = width() - d->m_CloseButtonWidth - d->m_Padding / 2;
       if (event->pos().x() >= closeAreaX) {
         Q_EMIT closed();
         return;
       }
     }
-    if (d->_pIsCheckable) {
-      setIsChecked(!d->_pIsChecked);
-      Q_EMIT checkedChanged(d->_pIsChecked);
+    if (d->m_IsCheckable) {
+      setIsChecked(!d->m_IsChecked);
+      Q_EMIT checkedChanged(d->m_IsChecked);
     }
     Q_EMIT clicked();
   }
@@ -159,8 +159,8 @@ void NXTag::paintEvent(QPaintEvent *event)
   QColor fgColor = d->_getForegroundColor();
 
   // When checkable and checked, override to primary color
-  if (d->_pIsCheckable && d->_pIsChecked) {
-    QColor primaryColor = NXThemeColor(d->_themeMode, PrimaryNormal);
+  if (d->m_IsCheckable && d->m_IsChecked) {
+    QColor primaryColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
     bgColor             = primaryColor;
     bgColor.setAlpha(30);
     fgColor = primaryColor;
@@ -170,21 +170,21 @@ void NXTag::paintEvent(QPaintEvent *event)
   painter.setPen(Qt::NoPen);
   painter.setBrush(bgColor);
   QPainterPath path;
-  path.addRoundedRect(QRectF(0, 0, width(), height()), d->_pBorderRadius, d->_pBorderRadius);
+  path.addRoundedRect(QRectF(0, 0, width(), height()), d->m_BorderRadius, d->m_BorderRadius);
   painter.drawPath(path);
 
   // Calculate text draw area
-  int xOffset = d->_padding;
+  int xOffset = d->m_Padding;
 
   // Draw check mark if checkable and checked
-  if (d->_pIsCheckable && d->_pIsChecked) {
+  if (d->m_IsCheckable && d->m_IsChecked) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(12);
     painter.setFont(iconFont);
     painter.setPen(fgColor);
-    QRectF checkRect(xOffset, 0, d->_checkIconWidth, height());
+    QRectF checkRect(xOffset, 0, d->m_CheckIconWidth, height());
     painter.drawText(checkRect, Qt::AlignCenter, QChar((unsigned short) 0xea'6c));
-    xOffset += d->_checkIconWidth;
+    xOffset += d->m_CheckIconWidth;
   }
 
   // Draw text
@@ -192,38 +192,38 @@ void NXTag::paintEvent(QPaintEvent *event)
   textFont.setPixelSize(13);
   painter.setFont(textFont);
   painter.setPen(fgColor);
-  int textWidth = width() - xOffset - d->_padding;
-  if (d->_pIsClosable) {
-    textWidth -= d->_closeButtonWidth;
+  int textWidth = width() - xOffset - d->m_Padding;
+  if (d->m_IsClosable) {
+    textWidth -= d->m_CloseButtonWidth;
   }
   QRectF textRect(xOffset, 0, textWidth, height());
-  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->_pTagText);
+  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->m_TagText);
 
   // Draw close button if closable
-  if (d->_pIsClosable) {
+  if (d->m_IsClosable) {
     QFont iconFont = QFont("NXAwesome");
     iconFont.setPixelSize(10);
     painter.setFont(iconFont);
     painter.setPen(fgColor);
-    int closeX = width() - d->_closeButtonWidth - d->_padding / 2;
-    QRectF closeRect(closeX, 0, d->_closeButtonWidth, height());
+    int closeX = width() - d->m_CloseButtonWidth - d->m_Padding / 2;
+    QRectF closeRect(closeX, 0, d->m_CloseButtonWidth, height());
     painter.drawText(closeRect, Qt::AlignCenter, QChar((unsigned short) 0xf4'ce));
   }
 }
 
 QSize NXTag::sizeHint() const
 {
-  Q_D(const NXTag);
+  Q_CONST_D(NXTag);
   QFont textFont = this->font();
   textFont.setPixelSize(13);
   QFontMetrics fm(textFont);
-  int textWidth = fm.horizontalAdvance(d->_pTagText);
-  int w         = textWidth + d->_padding * 2;
-  if (d->_pIsClosable) {
-    w += d->_closeButtonWidth;
+  int textWidth = fm.horizontalAdvance(d->m_TagText);
+  int w         = textWidth + d->m_Padding * 2;
+  if (d->m_IsClosable) {
+    w += d->m_CloseButtonWidth;
   }
-  if (d->_pIsCheckable && d->_pIsChecked) {
-    w += d->_checkIconWidth;
+  if (d->m_IsCheckable && d->m_IsChecked) {
+    w += d->m_CheckIconWidth;
   }
   return QSize(qMax(w, 32), 28);
 }

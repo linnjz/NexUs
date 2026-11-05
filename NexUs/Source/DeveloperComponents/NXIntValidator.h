@@ -19,7 +19,7 @@ public:
   void fixup(QString &input) const override;
 
 private:
-  QString _completeInput(const QString &input, int length) const;
+  QString _completeInput(QString const &input, int length) const;
 };
 
 #endif // NXINTVALIDATOR_H

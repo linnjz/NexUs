@@ -28,13 +28,13 @@ public:
     std::function<void()> callback;
   };
 
-  bool _isClosing { false };
-  NXThemeType::ThemeMode _themeMode;
-  int _closeButtonHover { false };
-  int _hoverActionIndex { -1 };
-  QRect _closeButtonRect;
-  QList<ActionItem> _actions;
-  QList<QRect> _actionButtonRects;
+  bool m_IsClosing { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_CloseButtonHover { false };
+  int m_HoverActionIndex { -1 };
+  QRect m_CloseButtonRect;
+  QList<ActionItem> m_Actions;
+  QList<QRect> m_ActionButtonRects;
 
   explicit NXInfoBarPrivate(QObject *parent = nullptr);
   ~NXInfoBarPrivate();

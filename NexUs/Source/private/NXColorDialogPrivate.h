@@ -32,50 +32,50 @@ public:
   explicit NXColorDialogPrivate(QObject *parent = nullptr);
   ~NXColorDialogPrivate();
 
-  Q_SLOT void onColorPickerColorChanged(const QColor &selectedColor);
+  Q_SLOT void onColorPickerColorChanged(QColor const &selectedColor);
   Q_SLOT void onColorValueSliderChanged(int value);
   Q_SLOT void onTransparencyValueSliderChanged(int value);
 
   Q_SLOT void onColorModeChanged(int index);
-  Q_SLOT void onHtmlEditFocusOut(const QString &text);
-  Q_SLOT void onHtmlEditChanged(const QString &text);
-  Q_SLOT void onColorEditChanged(const QString &text);
+  Q_SLOT void onHtmlEditFocusOut(QString const &text);
+  Q_SLOT void onHtmlEditChanged(QString const &text);
+  Q_SLOT void onColorEditChanged(QString const &text);
 
-  Q_SLOT void onBasicColorViewClicked(const QModelIndex &index);
-  Q_SLOT void onCustomColorViewClicked(const QModelIndex &index);
+  Q_SLOT void onBasicColorViewClicked(QModelIndex const &index);
+  Q_SLOT void onCustomColorViewClicked(QModelIndex const &index);
 
   Q_SLOT void onAddCustomColorButtonClicked();
   Q_SLOT void onRemoveCustomColorButtonClicked();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXAppBar *_appBar { nullptr };
-  NXColorPicker *_colorPicker { nullptr };
-  NXColorPreview *_colorPreview { nullptr };
-  QSlider *_colorValueSlider { nullptr };
-  QSlider *_transparencyValueSlider { nullptr };
-  NXColorValueSliderStyle *_colorValueSliderStyle { nullptr };
-  NXColorValueSliderStyle *_transparencyValueSliderStyle { nullptr };
-  NXLineEdit *_htmlEdit { nullptr };
-  NXComboBox *_modeComboBox { nullptr };
-  NXLineEdit *_firstEdit { nullptr };
-  NXLineEdit *_secondEdit { nullptr };
-  NXLineEdit *_thridEdit { nullptr };
-  NXText *_firstText { nullptr };
-  NXText *_secondText { nullptr };
-  NXText *_thridText { nullptr };
-  NXText *_fourthText { nullptr };
-  NXLineEdit *_fourthEdit { nullptr };
-  NXBaseListView *_basicColorView { nullptr };
-  NXColorDisplayModel *_basicColorModel { nullptr };
-  NXColorDisplayDelegate *_basicColorDelegate { nullptr };
-  NXToolButton *_addCustomColorButton { nullptr };
-  NXToolButton *_removeCustomColorButton { nullptr };
-  NXBaseListView *_customColorView { nullptr };
-  NXColorDisplayModel *_customColorModel { nullptr };
-  NXColorDisplayDelegate *_customColorDelegate { nullptr };
-  NXPushButton *_overButton { nullptr };
-  NXPushButton *_cancelButton { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXAppBar *m_AppBar { nullptr };
+  NXColorPicker *m_ColorPicker { nullptr };
+  NXColorPreview *m_ColorPreview { nullptr };
+  QSlider *m_ColorValueSlider { nullptr };
+  QSlider *m_TransparencyValueSlider { nullptr };
+  NXColorValueSliderStyle *m_ColorValueSliderStyle { nullptr };
+  NXColorValueSliderStyle *m_TransparencyValueSliderStyle { nullptr };
+  NXLineEdit *m_HtmlEdit { nullptr };
+  NXComboBox *m_ModeComboBox { nullptr };
+  NXLineEdit *m_FirstEdit { nullptr };
+  NXLineEdit *m_SecondEdit { nullptr };
+  NXLineEdit *m_ThridEdit { nullptr };
+  NXText *m_FirstText { nullptr };
+  NXText *m_SecondText { nullptr };
+  NXText *m_ThridText { nullptr };
+  NXText *m_FourthText { nullptr };
+  NXLineEdit *m_FourthEdit { nullptr };
+  NXBaseListView *m_BasicColorView { nullptr };
+  NXColorDisplayModel *m_BasicColorModel { nullptr };
+  NXColorDisplayDelegate *m_BasicColorDelegate { nullptr };
+  NXToolButton *m_AddCustomColorButton { nullptr };
+  NXToolButton *m_RemoveCustomColorButton { nullptr };
+  NXBaseListView *m_CustomColorView { nullptr };
+  NXColorDisplayModel *m_CustomColorModel { nullptr };
+  NXColorDisplayDelegate *m_CustomColorDelegate { nullptr };
+  NXPushButton *m_OverButton { nullptr };
+  NXPushButton *m_CancelButton { nullptr };
 
 
   void _initBasicColor();
@@ -85,7 +85,7 @@ private:
   void _updateColorPreview();
   void _updateColorValueSlider();
   void _updateTransparencyValueSlider();
-  QString _completeColorText(const QString &text) const;
+  QString _completeColorText(QString const &text) const;
   QString _getHex4ChannelValue() const;
   QColor _getColorFromEdit() const;
 };

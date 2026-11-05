@@ -16,8 +16,8 @@ class NXStepsPrivate : public QObject
   Q_PROPERTY_CREATE_D(int, StepCount)
 
 public:
-  NXThemeType::ThemeMode _themeMode;
-  QStringList _stepTitles;
+  NXThemeType::ThemeMode m_ThemeMode;
+  QStringList m_StepTitles;
   explicit NXStepsPrivate(QObject *parent = nullptr);
   ~NXStepsPrivate();
 };

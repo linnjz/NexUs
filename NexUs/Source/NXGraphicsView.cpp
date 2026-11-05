@@ -1,12 +1,12 @@
-#include "NXGraphicsView.h"
+﻿#include "NXGraphicsView.h"
 
 #include <QEvent>
 #include <QScrollBar>
 #include <QWheelEvent>
 
 #include "private/NXGraphicsViewPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXGraphicsView, qreal, MaxTransform)
-Q_PROPERTY_CREATE_CPP(NXGraphicsView, qreal, MinTransform)
+Q_PROPERTY_CREATE_CPP(NXGraphicsView, QPS_PAEMIT(qreal), MaxTransform)
+Q_PROPERTY_CREATE_CPP(NXGraphicsView, QPS_PAEMIT(qreal), MinTransform)
 
 NXGraphicsView::NXGraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -14,8 +14,8 @@ NXGraphicsView::NXGraphicsView(QWidget *parent)
 {
   Q_D(NXGraphicsView);
   d->q_ptr          = this;
-  d->_pMaxTransform = 5;
-  d->_pMinTransform = 0.15;
+  d->m_MaxTransform = 5;
+  d->m_MinTransform = 0.15;
   d->_initStyle();
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
@@ -35,9 +35,9 @@ void NXGraphicsView::wheelEvent(QWheelEvent *event)
   Q_D(NXGraphicsView);
   if (event->modifiers() == Qt::CTRL) {
     // 放大
-    if ((event->angleDelta().y() > 0) && transform().m11() <= d->_pMaxTransform) {
+    if ((event->angleDelta().y() > 0) && transform().m11() <= d->m_MaxTransform) {
       this->scale(1.1, 1.1);
-    } else if ((event->angleDelta().y() < 0) && transform().m11() >= d->_pMinTransform) {
+    } else if ((event->angleDelta().y() < 0) && transform().m11() >= d->m_MinTransform) {
       this->scale(1.0 / 1.1, 1.0 / 1.1);
     }
     event->accept();

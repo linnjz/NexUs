@@ -7,11 +7,11 @@
 
 NXSplitterHandle::NXSplitterHandle(Qt::Orientation orientation, QSplitter *parent)
     : QSplitterHandle(orientation, parent)
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
   setMouseTracking(true);
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
     update();
   });
 }
@@ -22,13 +22,13 @@ NXSplitterHandle::~NXSplitterHandle()
 
 void NXSplitterHandle::setGripLength(int length)
 {
-  _gripLength = length;
+  m_GripLength = length;
   update();
 }
 
 int NXSplitterHandle::getGripLength() const
 {
-  return _gripLength;
+  return m_GripLength;
 }
 
 void NXSplitterHandle::paintEvent(QPaintEvent *event)
@@ -37,23 +37,23 @@ void NXSplitterHandle::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing);
 
-  QColor lineColor = NXThemeColor(_themeMode, BasicBorder);
+  QColor lineColor = NXThemeColor(m_ThemeMode, BasicBorder);
   if (orientation() == Qt::Horizontal) {
     int centerX = width() / 2;
     painter.setPen(QPen(lineColor, 1));
     painter.drawLine(centerX, 0, centerX, height());
 
     int gripWidth = 4;
-    int gripY     = (height() - _gripLength) / 2;
-    QRectF gripRect(centerX - gripWidth / 2.0, gripY, gripWidth, _gripLength);
+    int gripY     = (height() - m_GripLength) / 2;
+    QRectF gripRect(centerX - gripWidth / 2.0, gripY, gripWidth, m_GripLength);
 
     QColor gripColor;
-    if (_isPressed) {
-      gripColor = NXThemeColor(_themeMode, PrimaryNormal);
-    } else if (_isHover) {
-      gripColor = NXThemeColor(_themeMode, BasicTextPress);
+    if (m_IsPressed) {
+      gripColor = NXThemeColor(m_ThemeMode, PrimaryNormal);
+    } else if (m_IsHover) {
+      gripColor = NXThemeColor(m_ThemeMode, BasicTextPress);
     } else {
-      gripColor = NXThemeColor(_themeMode, BasicBorderDeep);
+      gripColor = NXThemeColor(m_ThemeMode, BasicBorderDeep);
     }
     painter.setPen(Qt::NoPen);
     painter.setBrush(gripColor);
@@ -64,16 +64,16 @@ void NXSplitterHandle::paintEvent(QPaintEvent *event)
     painter.drawLine(0, centerY, width(), centerY);
 
     int gripHeight = 4;
-    int gripX      = (width() - _gripLength) / 2;
-    QRectF gripRect(gripX, centerY - gripHeight / 2.0, _gripLength, gripHeight);
+    int gripX      = (width() - m_GripLength) / 2;
+    QRectF gripRect(gripX, centerY - gripHeight / 2.0, m_GripLength, gripHeight);
 
     QColor gripColor;
-    if (_isPressed) {
-      gripColor = NXThemeColor(_themeMode, PrimaryNormal);
-    } else if (_isHover) {
-      gripColor = NXThemeColor(_themeMode, BasicTextPress);
+    if (m_IsPressed) {
+      gripColor = NXThemeColor(m_ThemeMode, PrimaryNormal);
+    } else if (m_IsHover) {
+      gripColor = NXThemeColor(m_ThemeMode, BasicTextPress);
     } else {
-      gripColor = NXThemeColor(_themeMode, BasicBorderDeep);
+      gripColor = NXThemeColor(m_ThemeMode, BasicBorderDeep);
     }
     painter.setPen(Qt::NoPen);
     painter.setBrush(gripColor);
@@ -88,27 +88,27 @@ void NXSplitterHandle::enterEvent(QEvent *event)
 #endif
 {
   Q_UNUSED(event);
-  _isHover = true;
+  m_IsHover = true;
   update();
 }
 
 void NXSplitterHandle::leaveEvent(QEvent *event)
 {
   Q_UNUSED(event);
-  _isHover = false;
+  m_IsHover = false;
   update();
 }
 
 void NXSplitterHandle::mousePressEvent(QMouseEvent *event)
 {
-  _isPressed = true;
+  m_IsPressed = true;
   update();
   QSplitterHandle::mousePressEvent(event);
 }
 
 void NXSplitterHandle::mouseReleaseEvent(QMouseEvent *event)
 {
-  _isPressed = false;
+  m_IsPressed = false;
   update();
   QSplitterHandle::mouseReleaseEvent(event);
 }

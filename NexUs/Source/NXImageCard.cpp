@@ -7,8 +7,8 @@
 #include "NXTheme.h"
 #include "private/NXImageCardPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXImageCard, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXImageCard, bool, IsPreserveAspectCrop)
+Q_PROPERTY_CREATE_CPP(NXImageCard, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXImageCard, QPS_PAEMIT(bool), IsPreserveAspectCrop)
 
 NXImageCard::NXImageCard(QWidget *parent)
     : QWidget(parent)
@@ -16,12 +16,12 @@ NXImageCard::NXImageCard(QWidget *parent)
 {
   Q_D(NXImageCard);
   d->q_ptr                  = this;
-  d->_pBorderRadius         = 6;
-  d->_pIsPreserveAspectCrop = true;
+  d->m_BorderRadius         = 6;
+  d->m_IsPreserveAspectCrop = true;
   setMinimumSize(350, 260);
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
@@ -29,18 +29,18 @@ NXImageCard::~NXImageCard()
 {
 }
 
-void NXImageCard::setCardImage(const QImage &cardImage)
+void NXImageCard::setCardImage(QImage const &cardImage)
 {
   Q_D(NXImageCard);
-  d->_pCardImage = cardImage;
+  d->m_CardImage = cardImage;
   update();
-  Q_EMIT pCardImageChanged();
+  Q_EMIT signalCardImageChanged();
 }
 
-QImage NXImageCard::getCardImage() const
+QImage NXImageCard::getCardImage() const noexcept(std::is_nothrow_copy_constructible_v<QImage>)
 {
-  Q_D(const NXImageCard);
-  return d->_pCardImage;
+  Q_CONST_D(NXImageCard);
+  return d->m_CardImage;
 }
 
 void NXImageCard::paintEvent(QPaintEvent *event)
@@ -51,23 +51,23 @@ void NXImageCard::paintEvent(QPaintEvent *event)
   painter.setPen(Qt::NoPen);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
   QPainterPath path;
-  path.addRoundedRect(rect(), d->_pBorderRadius, d->_pBorderRadius);
+  path.addRoundedRect(rect(), d->m_BorderRadius, d->m_BorderRadius);
   painter.setClipPath(path);
   // 图片绘制
-  if (d->_pIsPreserveAspectCrop) {
+  if (d->m_IsPreserveAspectCrop) {
     qreal windowAspectRatio = (qreal) rect().width() / rect().height();
-    qreal pixAspectRatio    = (qreal) d->_pCardImage.width() / d->_pCardImage.height();
+    qreal pixAspectRatio    = (qreal) d->m_CardImage.width() / d->m_CardImage.height();
     int targetPixWidth, targetPixHeight;
     if (windowAspectRatio < pixAspectRatio) {
-      targetPixWidth  = qRound(d->_pCardImage.width() * windowAspectRatio / pixAspectRatio);
-      targetPixHeight = d->_pCardImage.height();
+      targetPixWidth  = qRound(d->m_CardImage.width() * windowAspectRatio / pixAspectRatio);
+      targetPixHeight = d->m_CardImage.height();
     } else {
-      targetPixWidth  = d->_pCardImage.width();
-      targetPixHeight = qRound(d->_pCardImage.height() * pixAspectRatio / windowAspectRatio);
+      targetPixWidth  = d->m_CardImage.width();
+      targetPixHeight = qRound(d->m_CardImage.height() * pixAspectRatio / windowAspectRatio);
     }
-    painter.drawImage(rect(), d->_pCardImage, QRect((d->_pCardImage.width() - targetPixWidth) / 2, (d->_pCardImage.height() - targetPixHeight) / 2, targetPixWidth, targetPixHeight));
+    painter.drawImage(rect(), d->m_CardImage, QRect((d->m_CardImage.width() - targetPixWidth) / 2, (d->m_CardImage.height() - targetPixHeight) / 2, targetPixWidth, targetPixHeight));
   } else {
-    painter.drawImage(rect(), d->_pCardImage);
+    painter.drawImage(rect(), d->m_CardImage);
   }
   painter.restore();
 }

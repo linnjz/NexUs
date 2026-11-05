@@ -6,12 +6,12 @@
 #include "NXTheme.h"
 
 NXMessageDialogButton::NXMessageDialogButton(ButtonType type, QWidget *parent)
-    : QWidget(parent)
-    , _buttonType(type)
+    : QWidget { parent }
+    , m_ButtonType { type }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
     update();
   });
   setCursor(Qt::PointingHandCursor);
@@ -26,18 +26,18 @@ void NXMessageDialogButton::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
-  if (_isPressed) {
+  if (m_IsPressed) {
     painter.fillRect(rect(), QColor(0, 0, 0, 20));
-  } else if (_isHovered) {
+  } else if (m_IsHovered) {
     painter.fillRect(rect(), QColor(0, 0, 0, 10));
   }
 
   int centerX = width() / 2;
   int centerY = height() / 2;
 
-  painter.setPen(QPen(NXThemeColor(_themeMode, BasicText), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+  painter.setPen(QPen(NXThemeColor(m_ThemeMode, BasicText), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
-  if (_buttonType == Confirm) {
+  if (m_ButtonType == Confirm) {
     QPoint p1(centerX - 6, centerY);
     QPoint p2(centerX - 2, centerY + 4);
     QPoint p3(centerX + 6, centerY - 4);
@@ -54,7 +54,7 @@ void NXMessageDialogButton::paintEvent(QPaintEvent *event)
 void NXMessageDialogButton::mousePressEvent(QMouseEvent *event)
 {
   if (event->button() == Qt::LeftButton) {
-    _isPressed = true;
+    m_IsPressed = true;
     update();
   }
   QWidget::mousePressEvent(event);
@@ -62,8 +62,8 @@ void NXMessageDialogButton::mousePressEvent(QMouseEvent *event)
 
 void NXMessageDialogButton::mouseReleaseEvent(QMouseEvent *event)
 {
-  if (event->button() == Qt::LeftButton && _isPressed) {
-    _isPressed = false;
+  if (event->button() == Qt::LeftButton && m_IsPressed) {
+    m_IsPressed = false;
     update();
     if (rect().contains(event->pos())) {
       Q_EMIT clicked();
@@ -78,15 +78,15 @@ void NXMessageDialogButton::enterEvent(QEnterEvent *event)
 void NXMessageDialogButton::enterEvent(QEvent *event)
 #endif
 {
-  _isHovered = true;
+  m_IsHovered = true;
   update();
   QWidget::enterEvent(event);
 }
 
 void NXMessageDialogButton::leaveEvent(QEvent *event)
 {
-  _isHovered = false;
-  _isPressed = false;
+  m_IsHovered = false;
+  m_IsPressed = false;
   update();
   QWidget::leaveEvent(event);
 }

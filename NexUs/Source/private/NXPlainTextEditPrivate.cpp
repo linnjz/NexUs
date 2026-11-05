@@ -13,7 +13,7 @@ NXPlainTextEditPrivate::~NXPlainTextEditPrivate()
 {
 }
 
-void NXPlainTextEditPrivate::onWMWindowClickedEvent(const QVariantMap &data)
+void NXPlainTextEditPrivate::onWMWindowClickedEvent(QVariantMap const &data)
 {
   Q_Q(NXPlainTextEdit);
   NXAppBarType::WMMouseActionType actionType =
@@ -36,9 +36,9 @@ void NXPlainTextEditPrivate::onWMWindowClickedEvent(const QVariantMap &data)
 void NXPlainTextEditPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXPlainTextEdit);
-  _themeMode       = themeMode;
+  m_ThemeMode       = themeMode;
   QPalette palette = q->palette();
-  palette.setColor(QPalette::Text, NXThemeColor(_themeMode, BasicText));
-  palette.setColor(QPalette::PlaceholderText, _themeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
+  palette.setColor(QPalette::Text, NXThemeColor(m_ThemeMode, BasicText));
+  palette.setColor(QPalette::PlaceholderText, m_ThemeMode == NXThemeType::Light ? QColor(0x00, 0x00, 0x00, 128) : QColor(0xBA, 0xBA, 0xBA));
   q->setPalette(palette);
 }

@@ -9,19 +9,19 @@
 #include "NXTheme.h"
 #include "private/NXFloatButtonPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXFloatButton, int, ButtonSize)
+Q_PROPERTY_CREATE_CPP(NXFloatButton, QPS_PAEMIT(int), ButtonSize)
 
 void NXFloatButton::setMargin(int Margin)
 {
   Q_D(NXFloatButton);
-  d->_pMargin = Margin;
+  d->m_Margin = Margin;
   d->updatePosition();
-  Q_EMIT pMarginChanged();
+  Q_EMIT signalMarginChanged();
 }
 
-int NXFloatButton::getMargin() const
+int NXFloatButton::getMargin() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  return d_ptr->_pMargin;
+  return d_ptr->m_Margin;
 }
 
 NXFloatButton::NXFloatButton(QWidget *parent)
@@ -30,12 +30,12 @@ NXFloatButton::NXFloatButton(QWidget *parent)
 {
   Q_D(NXFloatButton);
   d->q_ptr        = this;
-  d->_pButtonSize = 56;
-  d->_pMargin     = 30;
-  d->_pHoverAlpha = 0;
-  d->_themeMode   = nxTheme->getThemeMode();
+  d->m_ButtonSize = 56;
+  d->m_Margin     = 30;
+  d->m_HoverAlpha = 0;
+  d->m_ThemeMode   = nxTheme->getThemeMode();
 
-  setFixedSize(d->_pButtonSize, d->_pButtonSize);
+  setFixedSize(d->m_ButtonSize, d->m_ButtonSize);
   setCursor(Qt::PointingHandCursor);
   setMouseTracking(true);
   raise();
@@ -46,7 +46,7 @@ NXFloatButton::NXFloatButton(QWidget *parent)
   }
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -55,15 +55,15 @@ NXFloatButton::NXFloatButton(NXIconType::IconName icon, QWidget *parent)
     : NXFloatButton(parent)
 {
   Q_D(NXFloatButton);
-  d->_icon = icon;
+  d->m_Icon = icon;
 }
 
 NXFloatButton::NXFloatButton(NXIconType::IconName icon, Position position, QWidget *parent)
     : NXFloatButton(parent)
 {
   Q_D(NXFloatButton);
-  d->_icon     = icon;
-  d->_position = (int) position;
+  d->m_Icon     = icon;
+  d->m_Position = (int) position;
   d->updatePosition();
 }
 
@@ -74,36 +74,36 @@ NXFloatButton::~NXFloatButton()
 void NXFloatButton::setIcon(NXIconType::IconName icon)
 {
   Q_D(NXFloatButton);
-  d->_icon = icon;
+  d->m_Icon = icon;
   update();
 }
 
 NXIconType::IconName NXFloatButton::getIcon() const
 {
-  return d_ptr->_icon;
+  return d_ptr->m_Icon;
 }
 
 void NXFloatButton::setPosition(Position position)
 {
   Q_D(NXFloatButton);
-  d->_position = (int) position;
+  d->m_Position = (int) position;
   d->updatePosition();
 }
 
 NXFloatButton::Position NXFloatButton::getPosition() const
 {
-  return (Position) d_ptr->_position;
+  return (Position) d_ptr->m_Position;
 }
 
 void NXFloatButton::setMenu(NXMenu *menu)
 {
   Q_D(NXFloatButton);
-  d->_menu = menu;
+  d->m_Menu = menu;
 }
 
-NXMenu * NXFloatButton::getMenu() const
+NXMenu *NXFloatButton::getMenu() const
 {
-  return d_ptr->_menu;
+  return d_ptr->m_Menu;
 }
 
 void NXFloatButton::paintEvent(QPaintEvent *event)
@@ -119,15 +119,15 @@ void NXFloatButton::paintEvent(QPaintEvent *event)
   int radius           = foregroundRect.width() / 2;
 
   painter.setPen(Qt::NoPen);
-  if (d->_isPressed) {
-    painter.setBrush(NXThemeColor(d->_themeMode, PrimaryPress));
-  } else if (d->_isAlphaAnimationFinished && underMouse()) {
-    painter.setBrush(NXThemeColor(d->_themeMode, PrimaryHover));
+  if (d->m_IsPressed) {
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, PrimaryPress));
+  } else if (d->m_IsAlphaAnimationFinished && underMouse()) {
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, PrimaryHover));
   } else {
-    QColor baseColor = NXThemeColor(d->_themeMode, PrimaryNormal);
-    if (d->_pHoverAlpha > 0) {
-      QColor hoverColor = NXThemeColor(d->_themeMode, PrimaryHover);
-      qreal t           = d->_pHoverAlpha / 255.0;
+    QColor baseColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
+    if (d->m_HoverAlpha > 0) {
+      QColor hoverColor = NXThemeColor(d->m_ThemeMode, PrimaryHover);
+      qreal t           = d->m_HoverAlpha / 255.0;
       baseColor         = QColor(baseColor.red() + (hoverColor.red() - baseColor.red()) * t, baseColor.green() + (hoverColor.green() - baseColor.green()) * t, baseColor.blue() + (hoverColor.blue() - baseColor.blue()) * t);
     }
     painter.setBrush(baseColor);
@@ -138,14 +138,14 @@ void NXFloatButton::paintEvent(QPaintEvent *event)
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   iconFont.setPixelSize(22);
   painter.setFont(iconFont);
-  painter.drawText(foregroundRect, Qt::AlignCenter, QChar((unsigned short) d->_icon));
+  painter.drawText(foregroundRect, Qt::AlignCenter, QChar((unsigned short) d->m_Icon));
 }
 
 void NXFloatButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXFloatButton);
   if (event->button() == Qt::LeftButton) {
-    d->_isPressed = true;
+    d->m_IsPressed = true;
     update();
   }
   QWidget::mousePressEvent(event);
@@ -154,18 +154,18 @@ void NXFloatButton::mousePressEvent(QMouseEvent *event)
 void NXFloatButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXFloatButton);
-  if (d->_isPressed && event->button() == Qt::LeftButton) {
-    d->_isPressed = false;
+  if (d->m_IsPressed && event->button() == Qt::LeftButton) {
+    d->m_IsPressed = false;
     update();
     if (rect().contains(event->pos())) {
-      if (d->_menu) {
+      if (d->m_Menu) {
         QPoint menuPos;
-        if (d->_position == NXFloatButton::TopLeft || d->_position == NXFloatButton::TopRight) {
+        if (d->m_Position == NXFloatButton::TopLeft || d->m_Position == NXFloatButton::TopRight) {
           menuPos = mapToGlobal(QPoint(0, height() + 5));
         } else {
-          menuPos = mapToGlobal(QPoint(0, -d->_menu->sizeHint().height() - 5));
+          menuPos = mapToGlobal(QPoint(0, -d->m_Menu->sizeHint().height() - 5));
         }
-        d->_menu->popup(menuPos);
+        d->m_Menu->popup(menuPos);
       }
       Q_EMIT clicked();
     }
@@ -187,31 +187,31 @@ bool NXFloatButton::event(QEvent *event)
   Q_D(NXFloatButton);
   switch (event->type()) {
   case QEvent::Enter : {
-    d->_isAlphaAnimationFinished       = false;
-    QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "pHoverAlpha");
+    d->m_IsAlphaAnimationFinished       = false;
+    QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "HoverAlpha");
     connect(alphaAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
       update();
     });
     connect(alphaAnimation, &QPropertyAnimation::finished, this, [=]() {
-      d->_isAlphaAnimationFinished = true;
+      d->m_IsAlphaAnimationFinished = true;
     });
     alphaAnimation->setDuration(200);
-    alphaAnimation->setStartValue(d->_pHoverAlpha);
+    alphaAnimation->setStartValue(d->m_HoverAlpha);
     alphaAnimation->setEndValue(255);
     alphaAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     break;
   }
   case QEvent::Leave : {
-    d->_isAlphaAnimationFinished       = false;
-    QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "pHoverAlpha");
+    d->m_IsAlphaAnimationFinished       = false;
+    QPropertyAnimation *alphaAnimation = new QPropertyAnimation(d, "HoverAlpha");
     connect(alphaAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
       update();
     });
     connect(alphaAnimation, &QPropertyAnimation::finished, this, [=]() {
-      d->_isAlphaAnimationFinished = true;
+      d->m_IsAlphaAnimationFinished = true;
     });
     alphaAnimation->setDuration(200);
-    alphaAnimation->setStartValue(d->_pHoverAlpha);
+    alphaAnimation->setStartValue(d->m_HoverAlpha);
     alphaAnimation->setEndValue(0);
     alphaAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     break;
@@ -239,22 +239,22 @@ void NXFloatButtonPrivate::updatePosition()
   }
   int x = 0;
   int y = 0;
-  switch (_position) {
+  switch (m_Position) {
   case NXFloatButton::BottomRight :
-    x = parent->width() - q->width() - _pMargin;
-    y = parent->height() - q->height() - _pMargin;
+    x = parent->width() - q->width() - m_Margin;
+    y = parent->height() - q->height() - m_Margin;
     break;
   case NXFloatButton::BottomLeft :
-    x = _pMargin;
-    y = parent->height() - q->height() - _pMargin;
+    x = m_Margin;
+    y = parent->height() - q->height() - m_Margin;
     break;
   case NXFloatButton::TopRight :
-    x = parent->width() - q->width() - _pMargin;
-    y = _pMargin;
+    x = parent->width() - q->width() - m_Margin;
+    y = m_Margin;
     break;
   case NXFloatButton::TopLeft :
-    x = _pMargin;
-    y = _pMargin;
+    x = m_Margin;
+    y = m_Margin;
     break;
   }
   q->move(x, y);

@@ -1,4 +1,4 @@
-#ifndef NEXUS_NXLCDNUMBER_H
+﻿#ifndef NEXUS_NXLCDNUMBER_H
 #define NEXUS_NXLCDNUMBER_H
 
 #include <QLCDNumber>
@@ -11,7 +11,7 @@ class NX_EXPORT NXLCDNumber : public QLCDNumber
 {
   Q_OBJECT
   Q_Q_CREATE(NXLCDNumber)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), AutoClockFormat)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), AutoClockFormat)
   Q_PROPERTY_CREATE_H(bool, IsUseAutoClock)
   Q_PROPERTY_CREATE_H(bool, IsTransparent)
 

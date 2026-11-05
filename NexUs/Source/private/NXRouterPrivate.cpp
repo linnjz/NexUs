@@ -11,10 +11,10 @@ NXRouterPrivate::NXRouterPrivate(QObject *parent)
 
 NXRouterPrivate::~NXRouterPrivate()
 {
-  qDeleteAll(_rootNodes);
+  qDeleteAll(m_RootNodes);
 }
 
-QString NXRouterPrivate::normalizePath(const QString &path)
+QString NXRouterPrivate::normalizePath(QString const &path)
 {
   QString p = path;
   if (!p.startsWith('/')) {
@@ -26,7 +26,7 @@ QString NXRouterPrivate::normalizePath(const QString &path)
   return p;
 }
 
-QString NXRouterPrivate::joinPath(const QString &parent, const QString &child)
+QString NXRouterPrivate::joinPath(QString const &parent, QString const &child)
 {
   QString c = child;
   while (c.startsWith('/')) {
@@ -40,19 +40,19 @@ QString NXRouterPrivate::joinPath(const QString &parent, const QString &child)
 
 bool NXRouterPrivate::_isOnRouterPage() const
 {
-  if (!_window || _history.isEmpty() || _historyIndex < 0) {
+  if (!m_Window || m_History.isEmpty() || m_HistoryIndex < 0) {
     return false;
   }
-  QString currentPageKey = _window->getCurrentNavigationPageKey();
-  const auto &entry      = _history[_historyIndex];
-  if (_pathIndex.contains(entry.path)) {
-    NXRouteNode *node = _pathIndex[entry.path];
+  QString currentPageKey = m_Window->getCurrentNavigationPageKey();
+  auto const &entry      = m_History[m_HistoryIndex];
+  if (m_PathIndex.contains(entry.path)) {
+    NXRouteNode *node = m_PathIndex[entry.path];
     return node->pageKey == currentPageKey;
   }
   return false;
 }
 
-NXRouterType::NavigationResult NXRouterPrivate::addRouteToTree(const NXRouteConfig &config, const QString &parentPathPrefix)
+NXRouterType::NavigationResult NXRouterPrivate::addRouteToTree(NXRouteConfig const &config, QString const &parentPathPrefix)
 {
   QString fullPath;
   if (parentPathPrefix.isEmpty()) {
@@ -61,7 +61,7 @@ NXRouterType::NavigationResult NXRouterPrivate::addRouteToTree(const NXRouteConf
     fullPath = joinPath(parentPathPrefix, config.path);
   }
 
-  if (_pathIndex.contains(fullPath)) {
+  if (m_PathIndex.contains(fullPath)) {
     return NXRouterType::RouteAlreadyExists;
   }
 
@@ -73,17 +73,17 @@ NXRouterType::NavigationResult NXRouterPrivate::addRouteToTree(const NXRouteConf
   node->factory     = config.factory;
   node->keyPoints   = config.keyPoints;
 
-  if (!parentPathPrefix.isEmpty() && _pathIndex.contains(parentPathPrefix)) {
-    NXRouteNode *parentNode = _pathIndex[parentPathPrefix];
+  if (!parentPathPrefix.isEmpty() && m_PathIndex.contains(parentPathPrefix)) {
+    NXRouteNode *parentNode = m_PathIndex[parentPathPrefix];
     node->parent            = parentNode;
     parentNode->children.append(node);
   } else {
-    _rootNodes.append(node);
+    m_RootNodes.append(node);
   }
 
-  _pathIndex.insert(fullPath, node);
+  m_PathIndex.insert(fullPath, node);
 
-  for (const auto &child : config.children) {
+  for (auto const &child : config.children) {
     NXRouterType::NavigationResult result = addRouteToTree(child, fullPath);
     if (result != NXRouterType::Success) {
       return result;
@@ -92,9 +92,9 @@ NXRouterType::NavigationResult NXRouterPrivate::addRouteToTree(const NXRouteConf
   return NXRouterType::Success;
 }
 
-bool NXRouterPrivate::runBeforeGuards(const QString &to, const QString &from, const QVariantMap &params, NXRouteNode *toNode)
+bool NXRouterPrivate::runBeforeGuards(QString const &to, QString const &from, QVariantMap const &params, NXRouteNode *toNode)
 {
-  for (const auto &entry : _beforeGuards) {
+  for (auto const &entry : m_BeforeGuards) {
     if (!entry.guard(to, from, params)) {
       return false;
     }
@@ -107,14 +107,14 @@ bool NXRouterPrivate::runBeforeGuards(const QString &to, const QString &from, co
   return true;
 }
 
-void NXRouterPrivate::runAfterHooks(const QString &to, const QString &from, const QVariantMap &params)
+void NXRouterPrivate::runAfterHooks(QString const &to, QString const &from, QVariantMap const &params)
 {
-  for (const auto &entry : _afterHooks) {
+  for (auto const &entry : m_AfterHooks) {
     entry.hook(to, from, params);
   }
 }
 
-QWidget * NXRouterPrivate::ensureWidget(NXRouteNode *node)
+QWidget *NXRouterPrivate::ensureWidget(NXRouteNode *node)
 {
   if (node->widget) {
     bool keepAlive = node->meta.value(QStringLiteral("keepAlive"), true).toBool();
@@ -133,7 +133,7 @@ QWidget * NXRouterPrivate::ensureWidget(NXRouteNode *node)
 
 bool NXRouterPrivate::registerNodeInWindow(NXRouteNode *node)
 {
-  if (!_window || node->isRegisteredInWindow) {
+  if (!m_Window || node->isRegisteredInWindow) {
     return node->isRegisteredInWindow;
   }
   if (!node->widget) {
@@ -142,9 +142,9 @@ bool NXRouterPrivate::registerNodeInWindow(NXRouteNode *node)
 
   NXNodeResultExpected result;
   if (node->parent && !node->parent->expanderKey.isEmpty()) {
-    result = _window->addPageNode(node->title, node->widget, node->parent->expanderKey, node->keyPoints, node->icon);
+    result = m_Window->addPageNode(node->title, node->widget, node->parent->expanderKey, node->keyPoints, node->icon);
   } else {
-    result = _window->addPageNode(node->title, node->widget, node->keyPoints, node->icon);
+    result = m_Window->addPageNode(node->title, node->widget, node->keyPoints, node->icon);
   }
 
   if (result.has_value()) {
@@ -155,9 +155,9 @@ bool NXRouterPrivate::registerNodeInWindow(NXRouteNode *node)
   return false;
 }
 
-void NXRouterPrivate::installNodeTree(NXRouteNode *node, const QString &parentExpanderKey)
+void NXRouterPrivate::installNodeTree(NXRouteNode *node, QString const &parentExpanderKey)
 {
-  if (!_window) {
+  if (!m_Window) {
     return;
   }
 
@@ -166,9 +166,9 @@ void NXRouterPrivate::installNodeTree(NXRouteNode *node, const QString &parentEx
   if (hasChildren) {
     if (node->expanderKey.isEmpty()) {
       if (parentExpanderKey.isEmpty()) {
-        node->expanderKey = _window->addExpanderNode(node->title, node->icon);
+        node->expanderKey = m_Window->addExpanderNode(node->title, node->icon);
       } else {
-        node->expanderKey = _window->addExpanderNode(node->title, parentExpanderKey, node->icon).value();
+        node->expanderKey = m_Window->addExpanderNode(node->title, parentExpanderKey, node->icon).value();
       }
     }
 
@@ -180,9 +180,9 @@ void NXRouterPrivate::installNodeTree(NXRouteNode *node, const QString &parentEx
     if (widget) {
       NXNodeResultExpected result;
       if (parentExpanderKey.isEmpty()) {
-        result = _window->addPageNode(node->title, widget, node->keyPoints, node->icon);
+        result = m_Window->addPageNode(node->title, widget, node->keyPoints, node->icon);
       } else {
-        result = _window->addPageNode(node->title, widget, parentExpanderKey, node->keyPoints, node->icon);
+        result = m_Window->addPageNode(node->title, widget, parentExpanderKey, node->keyPoints, node->icon);
       }
       if (result.has_value()) {
         node->pageKey              = widget->property("NXPageKey").toString();
@@ -192,25 +192,25 @@ void NXRouterPrivate::installNodeTree(NXRouteNode *node, const QString &parentEx
   }
 }
 
-NXRouterType::NavigationResult NXRouterPrivate::doNavigation(const QString &path, const QVariantMap &params, bool pushToHistory)
+NXRouterType::NavigationResult NXRouterPrivate::doNavigation(QString const &path, QVariantMap const &params, bool pushToHistory)
 {
   Q_Q(NXRouter);
-  if (!_window) {
+  if (!m_Window) {
     return NXRouterType::WindowNotBound;
   }
 
   QString normalizedPath = normalizePath(path);
-  if (!_pathIndex.contains(normalizedPath)) {
+  if (!m_PathIndex.contains(normalizedPath)) {
     return NXRouterType::RouteNotFound;
   }
 
-  NXRouteNode *node = _pathIndex[normalizedPath];
+  NXRouteNode *node = m_PathIndex[normalizedPath];
 
   if (!node->children.isEmpty()) {
     return NXRouterType::RouteNotFound;
   }
 
-  QString fromPath = _currentPath;
+  QString fromPath = m_CurrentPath;
 
   if (!runBeforeGuards(normalizedPath, fromPath, params, node)) {
     Q_EMIT q->navigationBlocked(normalizedPath);
@@ -228,17 +228,17 @@ NXRouterType::NavigationResult NXRouterPrivate::doNavigation(const QString &path
     }
   }
 
-  _window->navigation(node->pageKey);
+  m_Window->navigation(node->pageKey);
 
-  _currentPath   = normalizedPath;
-  _currentParams = params;
+  m_CurrentPath   = normalizedPath;
+  m_CurrentParams = params;
 
-  if (pushToHistory && !_isNavigatingHistory) {
-    if (_historyIndex < _history.size() - 1) {
-      _history.resize(_historyIndex + 1);
+  if (pushToHistory && !m_IsNavigatingHistory) {
+    if (m_HistoryIndex < m_History.size() - 1) {
+      m_History.resize(m_HistoryIndex + 1);
     }
-    _history.append({ normalizedPath, params });
-    _historyIndex = _history.size() - 1;
+    m_History.append({ normalizedPath, params });
+    m_HistoryIndex = m_History.size() - 1;
   }
 
   runAfterHooks(normalizedPath, fromPath, params);

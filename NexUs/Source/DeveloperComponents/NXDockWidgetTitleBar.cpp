@@ -10,50 +10,50 @@
 
 NXDockWidgetTitleBar::NXDockWidgetTitleBar(QWidget *parent)
     : QWidget { parent }
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_DockWidget { dynamic_cast<NXDockWidget *>(parent) }
+    , m_IconLabel { new QLabel(this) }
+    , m_TitleLabel { new NXText(m_DockWidget->windowTitle(), this) }
+    , m_FloatButton { new NXIconButton(NXIconType::WindowRestore, 13, 32, 26, this) }
+    , m_CloseButton { new NXIconButton(NXIconType::Xmark, 17, 32, 26, this) }
 {
-  _dockWidget = dynamic_cast<NXDockWidget *>(parent);
-  _iconLabel  = new QLabel(this);
-  _iconLabel->setPixmap(_dockWidget->windowIcon().pixmap(QSize(18, 18)));
-  _titleLabel = new NXText(_dockWidget->windowTitle(), this);
-  _titleLabel->setWordWrap(false);
-  _titleLabel->setTextPixelSize(13);
+  m_IconLabel->setPixmap(m_DockWidget->windowIcon().pixmap(QSize(18, 18)));
+  m_TitleLabel->setWordWrap(false);
+  m_TitleLabel->setTextPixelSize(13);
 
-  _floatButton = new NXIconButton(NXIconType::WindowRestore, 13, 32, 26, this);
-  _floatButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, BasicHoverAlpha));
-  _floatButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, BasicHoverAlpha));
-  connect(_floatButton, &NXIconButton::clicked, this, &NXDockWidgetTitleBar::onFloatButtonClicked);
-  _closeButton = new NXIconButton(NXIconType::Xmark, 17, 32, 26, this);
-  _closeButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, StatusDanger));
-  _closeButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, StatusDanger));
-  connect(_closeButton, &NXIconButton::clicked, this, &NXDockWidgetTitleBar::onCloseButtonClicked);
+  m_FloatButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, BasicHoverAlpha));
+  m_FloatButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, BasicHoverAlpha));
+  connect(m_FloatButton, &NXIconButton::clicked, this, &NXDockWidgetTitleBar::onFloatButtonClicked);
 
-  _setVisibleFromFeatures(_dockWidget->features());
-  connect(_dockWidget, &QDockWidget::featuresChanged, this, [=](QDockWidget::DockWidgetFeatures features) {
+  m_CloseButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, StatusDanger));
+  m_CloseButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, StatusDanger));
+  connect(m_CloseButton, &NXIconButton::clicked, this, &NXDockWidgetTitleBar::onCloseButtonClicked);
+
+  _setVisibleFromFeatures(m_DockWidget->features());
+  connect(m_DockWidget, &QDockWidget::featuresChanged, this, [=](QDockWidget::DockWidgetFeatures features) {
     _setVisibleFromFeatures(features);
   });
-  connect(_dockWidget, &QDockWidget::windowTitleChanged, this, [=](const QString &title) {
-    _titleLabel->setText(title);
+  connect(m_DockWidget, &QDockWidget::windowTitleChanged, this, [=](QString const &title) {
+    m_TitleLabel->setText(title);
   });
-  connect(_dockWidget, &QDockWidget::windowIconChanged, this, [=](const QIcon &icon) {
-    _iconLabel->setPixmap(icon.pixmap(QSize(18, 18)));
+  connect(m_DockWidget, &QDockWidget::windowIconChanged, this, [=](QIcon const &icon) {
+    m_IconLabel->setPixmap(icon.pixmap(QSize(18, 18)));
   });
 
   QHBoxLayout *mainLayout = new QHBoxLayout(this);
   mainLayout->setSpacing(0);
   mainLayout->setContentsMargins(0, 0, 0, 0);
   mainLayout->addSpacing(5);
-  mainLayout->addWidget(_iconLabel);
+  mainLayout->addWidget(m_IconLabel);
   mainLayout->addSpacing(10);
-  mainLayout->addWidget(_titleLabel);
+  mainLayout->addWidget(m_TitleLabel);
   mainLayout->addSpacing(10);
   mainLayout->addStretch();
-  mainLayout->addWidget(_floatButton);
-  mainLayout->addWidget(_closeButton);
+  mainLayout->addWidget(m_FloatButton);
+  mainLayout->addWidget(m_CloseButton);
 
-  //主题变更
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -63,12 +63,12 @@ NXDockWidgetTitleBar::~NXDockWidgetTitleBar()
 
 void NXDockWidgetTitleBar::onFloatButtonClicked()
 {
-  _dockWidget->setFloating(_dockWidget->isFloating() ? false : true);
+  m_DockWidget->setFloating(m_DockWidget->isFloating() ? false : true);
 }
 
 void NXDockWidgetTitleBar::onCloseButtonClicked()
 {
-  _dockWidget->close();
+  m_DockWidget->close();
 }
 
 void NXDockWidgetTitleBar::paintEvent(QPaintEvent *event)
@@ -77,13 +77,13 @@ void NXDockWidgetTitleBar::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
-  painter.setBrush(_dockWidget->isFloating() ? Qt::transparent : NXThemeColor(_themeMode, BasicBaseAlpha));
+  painter.setBrush(m_DockWidget->isFloating() ? Qt::transparent : NXThemeColor(m_ThemeMode, BasicBaseAlpha));
   painter.drawRect(rect());
   painter.restore();
 }
 
 void NXDockWidgetTitleBar::_setVisibleFromFeatures(QDockWidget::DockWidgetFeatures features)
 {
-  _floatButton->setVisible(features.testFlag(QDockWidget::DockWidgetFloatable));
-  _closeButton->setVisible(features.testFlag(QDockWidget::DockWidgetClosable));
+  m_FloatButton->setVisible(features.testFlag(QDockWidget::DockWidgetFloatable));
+  m_CloseButton->setVisible(features.testFlag(QDockWidget::DockWidgetClosable));
 }

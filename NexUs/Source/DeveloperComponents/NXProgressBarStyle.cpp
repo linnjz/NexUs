@@ -7,12 +7,12 @@
 #include "NXTheme.h"
 
 NXProgressBarStyle::NXProgressBarStyle(QStyle *style)
+    : m_ThemeMode { nxTheme->getThemeMode() }
 {
   setProperty("busyStartValue", 0);
   setProperty("busyEndValue", 0);
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -20,14 +20,14 @@ NXProgressBarStyle::~NXProgressBarStyle()
 {
 }
 
-void NXProgressBarStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXProgressBarStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::CE_ProgressBarLabel : {
-    if (const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
+    if (QStyleOptionProgressBar const *popt = qstyleoption_cast<QStyleOptionProgressBar const *>(option)) {
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-      painter->setPen(NXThemeColor(_themeMode, BasicText));
+      painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
       painter->drawText(popt->rect, Qt::AlignCenter, popt->text);
       painter->restore();
     }
@@ -37,13 +37,13 @@ void NXProgressBarStyle::drawControl(ControlElement element, const QStyleOption 
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, BasicChute));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicChute));
     painter->drawRoundedRect(option->rect, 3, 3);
     painter->restore();
     return;
   }
   case QStyle::CE_ProgressBarContents : {
-    const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+    QStyleOptionProgressBar const *popt = qstyleoption_cast<QStyleOptionProgressBar const *>(option);
     if (!popt) {
       break;
     }
@@ -51,8 +51,8 @@ void NXProgressBarStyle::drawControl(ControlElement element, const QStyleOption 
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-    const bool inverted = popt->invertedAppearance;
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+    bool const inverted = popt->invertedAppearance;
     bool reverse        = popt->direction == Qt::RightToLeft;
     if (inverted) {
       reverse = !reverse;
@@ -106,11 +106,11 @@ void NXProgressBarStyle::drawControl(ControlElement element, const QStyleOption 
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-QRect NXProgressBarStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
+QRect NXProgressBarStyle::subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::SE_ProgressBarLabel : {
-    const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+    QStyleOptionProgressBar const *popt = qstyleoption_cast<QStyleOptionProgressBar const *>(option);
     if (!popt) {
       break;
     }
@@ -127,7 +127,7 @@ QRect NXProgressBarStyle::subElementRect(SubElement element, const QStyleOption 
   case QStyle::SE_ProgressBarGroove :
   case QStyle::SE_ProgressBarContents : {
     QRect textRect                      = subElementRect(SE_ProgressBarLabel, option, widget);
-    const QStyleOptionProgressBar *popt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+    QStyleOptionProgressBar const *popt = qstyleoption_cast<QStyleOptionProgressBar const *>(option);
     if (!popt) {
       break;
     }

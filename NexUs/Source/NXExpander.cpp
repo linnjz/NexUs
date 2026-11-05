@@ -10,11 +10,11 @@
 #include "NXTheme.h"
 #include "private/NXExpanderPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXExpander, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXExpander, QS_SET_CREF(QString), SubTitle)
-Q_PROPERTY_CREATE_CPP(NXExpander, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXExpander, int, AnimationDuration)
-Q_PROPERTY_CREATE_CPP(NXExpander, NXIconType::IconName, HeaderIcon)
+Q_PROPERTY_CREATE_CPP(NXExpander, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXExpander, QPS_SCREF_PAEMIT(QString), SubTitle)
+Q_PROPERTY_CREATE_CPP(NXExpander, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXExpander, QPS_PAEMIT(int), AnimationDuration)
+Q_PROPERTY_CREATE_CPP(NXExpander, QPS_PAEMIT(NXIconType::IconName), HeaderIcon)
 
 NXExpanderPrivate::NXExpanderPrivate(QObject *parent)
     : QObject(parent)
@@ -27,48 +27,48 @@ NXExpanderPrivate::~NXExpanderPrivate()
 
 void NXExpanderPrivate::_toggleExpand()
 {
-  _isExpanded = !_isExpanded;
-  _startExpandAnimation(_isExpanded);
+  m_IsExpanded = !m_IsExpanded;
+  _startExpandAnimation(m_IsExpanded);
   Q_Q(NXExpander);
-  Q_EMIT q->expandStateChanged(_isExpanded);
+  Q_EMIT q->expandStateChanged(m_IsExpanded);
 }
 
 void NXExpanderPrivate::_startExpandAnimation(bool expand)
 {
   Q_Q(NXExpander);
-  if (!_contentWidget) {
+  if (!m_ContentWidget) {
     return;
   }
-  if (!_expandAnimation) {
-    _expandAnimation = new QVariantAnimation(q);
-    _expandAnimation->setEasingCurve(QEasingCurve::OutCubic);
-    connect(_expandAnimation, &QVariantAnimation::valueChanged, q, [=](const QVariant &value) {
+  if (!m_ExpandAnimation) {
+    m_ExpandAnimation = new QVariantAnimation(q);
+    m_ExpandAnimation->setEasingCurve(QEasingCurve::OutCubic);
+    connect(m_ExpandAnimation, &QVariantAnimation::valueChanged, q, [=](QVariant const &value) {
       q->setFixedHeight(value.toInt());
     });
   }
-  _expandAnimation->stop();
-  _expandAnimation->setDuration(_pAnimationDuration);
+  m_ExpandAnimation->stop();
+  m_ExpandAnimation->setDuration(m_AnimationDuration);
 
   // Ensure content widget is laid out so sizeHint is valid
-  _contentWidget->adjustSize();
-  _contentHeight = _contentWidget->sizeHint().height() + _contentLayout->contentsMargins().top() +
-                   _contentLayout->contentsMargins().bottom();
-  if (_contentHeight < 40) {
-    _contentHeight = 40;
+  m_ContentWidget->adjustSize();
+  m_ContentHeight = m_ContentWidget->sizeHint().height() + m_ContentLayout->contentsMargins().top() +
+                   m_ContentLayout->contentsMargins().bottom();
+  if (m_ContentHeight < 40) {
+    m_ContentHeight = 40;
   }
-  int collapsedHeight = _headerHeight;
-  int expandedHeight  = _headerHeight + _contentHeight;
+  int collapsedHeight = m_HeaderHeight;
+  int expandedHeight  = m_HeaderHeight + m_ContentHeight;
 
   if (expand) {
-    _contentContainer->show();
-    _expandAnimation->setStartValue(collapsedHeight);
-    _expandAnimation->setEndValue(expandedHeight);
+    m_ContentContainer->show();
+    m_ExpandAnimation->setStartValue(collapsedHeight);
+    m_ExpandAnimation->setEndValue(expandedHeight);
   } else {
-    _contentContainer->hide();
-    _expandAnimation->setStartValue(q->height());
-    _expandAnimation->setEndValue(collapsedHeight);
+    m_ContentContainer->hide();
+    m_ExpandAnimation->setStartValue(q->height());
+    m_ExpandAnimation->setEndValue(collapsedHeight);
   }
-  _expandAnimation->start();
+  m_ExpandAnimation->start();
 }
 
 NXExpander::NXExpander(QWidget *parent)
@@ -77,47 +77,47 @@ NXExpander::NXExpander(QWidget *parent)
 {
   Q_D(NXExpander);
   d->q_ptr               = this;
-  d->_pBorderRadius      = 6;
-  d->_pTitle             = QStringLiteral("");
-  d->_pSubTitle          = QStringLiteral("");
-  d->_pHeaderIcon        = NXIconType::None;
-  d->_pAnimationDuration = 250;
+  d->m_BorderRadius      = 6;
+  d->m_Title             = QStringLiteral("");
+  d->m_SubTitle          = QStringLiteral("");
+  d->m_HeaderIcon        = NXIconType::None;
+  d->m_AnimationDuration = 250;
   setObjectName("NXExpander");
   setMouseTracking(true);
   setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
-  d->_mainLayout = new QVBoxLayout(this);
-  d->_mainLayout->setContentsMargins(0, 0, 0, 0);
-  d->_mainLayout->setSpacing(0);
+  d->m_MainLayout = new QVBoxLayout(this);
+  d->m_MainLayout->setContentsMargins(0, 0, 0, 0);
+  d->m_MainLayout->setSpacing(0);
 
   // Header area (painted via paintEvent, not a separate widget)
-  d->_headerWidget = new QWidget(this);
-  d->_headerWidget->setFixedHeight(d->_headerHeight);
-  d->_headerWidget->setAttribute(Qt::WA_TransparentForMouseEvents);
+  d->m_HeaderWidget = new QWidget(this);
+  d->m_HeaderWidget->setFixedHeight(d->m_HeaderHeight);
+  d->m_HeaderWidget->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   // Content container
-  d->_contentContainer = new QWidget(this);
-  d->_contentLayout    = new QVBoxLayout(d->_contentContainer);
-  d->_contentLayout->setContentsMargins(15, 5, 15, 5);
-  d->_contentContainer->hide();
+  d->m_ContentContainer = new QWidget(this);
+  d->m_ContentLayout    = new QVBoxLayout(d->m_ContentContainer);
+  d->m_ContentLayout->setContentsMargins(15, 5, 15, 5);
+  d->m_ContentContainer->hide();
 
-  d->_mainLayout->addWidget(d->_headerWidget);
-  d->_mainLayout->addWidget(d->_contentContainer);
+  d->m_MainLayout->addWidget(d->m_HeaderWidget);
+  d->m_MainLayout->addWidget(d->m_ContentContainer);
 
-  setFixedHeight(d->_headerHeight);
+  setFixedHeight(d->m_HeaderHeight);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
 
-NXExpander::NXExpander(const QString &title, QWidget *parent)
+NXExpander::NXExpander(QString const &title, QWidget *parent)
     : NXExpander(parent)
 {
   Q_D(NXExpander);
-  d->_pTitle = title;
+  d->m_Title = title;
 }
 
 NXExpander::~NXExpander()
@@ -127,55 +127,55 @@ NXExpander::~NXExpander()
 void NXExpander::setExpandDirection(ExpandDirection direction)
 {
   Q_D(NXExpander);
-  d->_expandDirection = direction;
+  d->m_ExpandDirection = direction;
   // Rebuild layout order
-  d->_mainLayout->removeWidget(d->_headerWidget);
-  d->_mainLayout->removeWidget(d->_contentContainer);
+  d->m_MainLayout->removeWidget(d->m_HeaderWidget);
+  d->m_MainLayout->removeWidget(d->m_ContentContainer);
   if (direction == Up) {
-    d->_mainLayout->addWidget(d->_contentContainer);
-    d->_mainLayout->addWidget(d->_headerWidget);
+    d->m_MainLayout->addWidget(d->m_ContentContainer);
+    d->m_MainLayout->addWidget(d->m_HeaderWidget);
   } else {
-    d->_mainLayout->addWidget(d->_headerWidget);
-    d->_mainLayout->addWidget(d->_contentContainer);
+    d->m_MainLayout->addWidget(d->m_HeaderWidget);
+    d->m_MainLayout->addWidget(d->m_ContentContainer);
   }
   update();
 }
 
 NXExpander::ExpandDirection NXExpander::getExpandDirection() const
 {
-  return d_ptr->_expandDirection;
+  return d_ptr->m_ExpandDirection;
 }
 
 void NXExpander::setContentWidget(QWidget *widget)
 {
   Q_D(NXExpander);
-  if (d->_contentWidget) {
-    d->_contentLayout->removeWidget(d->_contentWidget);
-    d->_contentWidget->deleteLater();
+  if (d->m_ContentWidget) {
+    d->m_ContentLayout->removeWidget(d->m_ContentWidget);
+    d->m_ContentWidget->deleteLater();
   }
-  d->_contentWidget = widget;
+  d->m_ContentWidget = widget;
   if (widget) {
-    d->_contentLayout->addWidget(widget);
+    d->m_ContentLayout->addWidget(widget);
   }
 }
 
-QWidget * NXExpander::getContentWidget() const
+QWidget *NXExpander::getContentWidget() const
 {
-  return d_ptr->_contentWidget;
+  return d_ptr->m_ContentWidget;
 }
 
 void NXExpander::setHeaderWidget(QWidget *widget)
 {
   Q_D(NXExpander);
-  if (d->_headerCustomWidget) {
-    d->_headerCustomWidget->deleteLater();
+  if (d->m_HeaderCustomWidget) {
+    d->m_HeaderCustomWidget->deleteLater();
   }
-  d->_headerCustomWidget = widget;
+  d->m_HeaderCustomWidget = widget;
   if (widget) {
-    widget->setParent(d->_headerWidget);
+    widget->setParent(d->m_HeaderWidget);
     widget->setAttribute(Qt::WA_TransparentForMouseEvents);
-    widget->move(d->_headerHeight, 0);
-    widget->setFixedHeight(d->_headerHeight);
+    widget->move(d->m_HeaderHeight, 0);
+    widget->setFixedHeight(d->m_HeaderHeight);
   }
   update();
 }
@@ -183,14 +183,14 @@ void NXExpander::setHeaderWidget(QWidget *widget)
 void NXExpander::setIsExpanded(bool expanded)
 {
   Q_D(NXExpander);
-  if (d->_isExpanded != expanded) {
+  if (d->m_IsExpanded != expanded) {
     d->_toggleExpand();
   }
 }
 
 bool NXExpander::getIsExpanded() const
 {
-  return d_ptr->_isExpanded;
+  return d_ptr->m_IsExpanded;
 }
 
 void NXExpander::paintEvent(QPaintEvent *event)
@@ -201,52 +201,52 @@ void NXExpander::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   // Background
-  painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
-  painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
-  painter.drawRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->_pBorderRadius, d->_pBorderRadius);
+  painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBase));
+  painter.drawRoundedRect(QRectF(0.5, 0.5, width() - 1, height() - 1), d->m_BorderRadius, d->m_BorderRadius);
 
   // Header separator line when expanded
-  if (d->_isExpanded || (d->_expandAnimation && d->_expandAnimation->state() == QVariantAnimation::Running)) {
-    int lineY = (d->_expandDirection == Down) ? d->_headerHeight : height() - d->_headerHeight;
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 1));
-    painter.drawLine(d->_pBorderRadius, lineY, width() - d->_pBorderRadius, lineY);
+  if (d->m_IsExpanded || (d->m_ExpandAnimation && d->m_ExpandAnimation->state() == QVariantAnimation::Running)) {
+    int lineY = (d->m_ExpandDirection == Down) ? d->m_HeaderHeight : height() - d->m_HeaderHeight;
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1));
+    painter.drawLine(d->m_BorderRadius, lineY, width() - d->m_BorderRadius, lineY);
   }
 
   // Header area
-  int headerY = (d->_expandDirection == Down) ? 0 : height() - d->_headerHeight;
+  int headerY = (d->m_ExpandDirection == Down) ? 0 : height() - d->m_HeaderHeight;
 
   // Header icon
   int textStartX = 15;
-  if (d->_pHeaderIcon != NXIconType::None) {
+  if (d->m_HeaderIcon != NXIconType::None) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(16);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-    QRect iconRect(15, headerY, 20, d->_headerHeight);
-    painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignLeft, QChar((unsigned short) d->_pHeaderIcon));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
+    QRect iconRect(15, headerY, 20, d->m_HeaderHeight);
+    painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignLeft, QChar((unsigned short) d->m_HeaderIcon));
     textStartX = 42;
   }
 
   // Title
-  if (!d->_pTitle.isEmpty()) {
+  if (!d->m_Title.isEmpty()) {
     QFont titleFont = font();
     titleFont.setPixelSize(14);
     titleFont.setBold(true);
     painter.setFont(titleFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-    QRect titleRect(textStartX, headerY, width() - textStartX - 40, d->_headerHeight);
-    painter.drawText(titleRect, Qt::AlignVCenter | Qt::AlignLeft, d->_pTitle);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
+    QRect titleRect(textStartX, headerY, width() - textStartX - 40, d->m_HeaderHeight);
+    painter.drawText(titleRect, Qt::AlignVCenter | Qt::AlignLeft, d->m_Title);
 
     // SubTitle
-    if (!d->_pSubTitle.isEmpty()) {
+    if (!d->m_SubTitle.isEmpty()) {
       QFontMetrics fm(titleFont);
-      int titleWidth = fm.horizontalAdvance(d->_pTitle);
+      int titleWidth = fm.horizontalAdvance(d->m_Title);
       QFont subFont  = font();
       subFont.setPixelSize(12);
       painter.setFont(subFont);
-      painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
-      QRect subRect(textStartX + titleWidth + 12, headerY, width() - textStartX - titleWidth - 52, d->_headerHeight);
-      painter.drawText(subRect, Qt::AlignVCenter | Qt::AlignLeft, d->_pSubTitle);
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
+      QRect subRect(textStartX + titleWidth + 12, headerY, width() - textStartX - titleWidth - 52, d->m_HeaderHeight);
+      painter.drawText(subRect, Qt::AlignVCenter | Qt::AlignLeft, d->m_SubTitle);
     }
   }
 
@@ -254,13 +254,13 @@ void NXExpander::paintEvent(QPaintEvent *event)
   QFont arrowFont = QFont(QStringLiteral("NXAwesome"));
   arrowFont.setPixelSize(14);
   painter.setFont(arrowFont);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
-  QRect arrowRect(width() - 35, headerY, 20, d->_headerHeight);
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
+  QRect arrowRect(width() - 35, headerY, 20, d->m_HeaderHeight);
   NXIconType::IconName arrowIcon;
-  if (d->_expandDirection == NXExpander::Down) {
-    arrowIcon = d->_isExpanded ? NXIconType::AngleUp : NXIconType::AngleDown;
+  if (d->m_ExpandDirection == NXExpander::Down) {
+    arrowIcon = d->m_IsExpanded ? NXIconType::AngleUp : NXIconType::AngleDown;
   } else {
-    arrowIcon = d->_isExpanded ? NXIconType::AngleDown : NXIconType::AngleUp;
+    arrowIcon = d->m_IsExpanded ? NXIconType::AngleDown : NXIconType::AngleUp;
   }
   painter.drawText(arrowRect, Qt::AlignVCenter | Qt::AlignCenter, QChar((unsigned short) arrowIcon));
 }
@@ -268,10 +268,10 @@ void NXExpander::paintEvent(QPaintEvent *event)
 void NXExpander::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXExpander);
-  int headerY = (d->_expandDirection == Down) ? 0 : height() - d->_headerHeight;
-  QRect headerRect(0, headerY, width(), d->_headerHeight);
+  int headerY = (d->m_ExpandDirection == Down) ? 0 : height() - d->m_HeaderHeight;
+  QRect headerRect(0, headerY, width(), d->m_HeaderHeight);
   if (headerRect.contains(event->pos()) && event->button() == Qt::LeftButton) {
-    d->_isPressed = true;
+    d->m_IsPressed = true;
   }
   QWidget::mousePressEvent(event);
 }
@@ -279,13 +279,13 @@ void NXExpander::mousePressEvent(QMouseEvent *event)
 void NXExpander::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXExpander);
-  if (d->_isPressed && event->button() == Qt::LeftButton) {
-    int headerY = (d->_expandDirection == Down) ? 0 : height() - d->_headerHeight;
-    QRect headerRect(0, headerY, width(), d->_headerHeight);
+  if (d->m_IsPressed && event->button() == Qt::LeftButton) {
+    int headerY = (d->m_ExpandDirection == Down) ? 0 : height() - d->m_HeaderHeight;
+    QRect headerRect(0, headerY, width(), d->m_HeaderHeight);
     if (headerRect.contains(event->pos())) {
       d->_toggleExpand();
     }
-    d->_isPressed = false;
+    d->m_IsPressed = false;
   }
   QWidget::mouseReleaseEvent(event);
 }

@@ -1,4 +1,4 @@
-#ifndef NXTREESELECT_H
+﻿#ifndef NXTREESELECT_H
 #define NXTREESELECT_H
 
 #include <QWidget>
@@ -15,7 +15,7 @@ class NX_EXPORT NXTreeSelect : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXTreeSelect)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), PlaceholderText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), PlaceholderText)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, ItemHeight)
   Q_PROPERTY_CREATE_H(int, MaxVisibleItems)
@@ -29,15 +29,15 @@ public:
   void setModel(QStandardItemModel *model);
   QStandardItemModel *model() const;
 
-  void setCurrentIndex(const QModelIndex &index);
+  void setCurrentIndex(QModelIndex const &index);
   QModelIndex currentIndex() const;
 
   QString currentText() const;
 
   void expandAll();
   void collapseAll();
-  Q_SIGNAL void currentIndexChanged(const QModelIndex &index);
-  Q_SIGNAL void currentTextChanged(const QString &text);
+  Q_SIGNAL void currentIndexChanged(QModelIndex const &index);
+  Q_SIGNAL void currentTextChanged(QString const &text);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

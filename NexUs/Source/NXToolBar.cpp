@@ -19,14 +19,14 @@ NXToolBar::NXToolBar(QWidget *parent)
   setAttribute(Qt::WA_Hover);
 #endif
   setObjectName("NXToolBar");
-  d->_toolBarStyle = new NXToolBarStyle(style());
-  setStyle(d->_toolBarStyle);
+  d->m_ToolBarStyle = new NXToolBarStyle(style());
+  setStyle(d->m_ToolBarStyle);
   layout()->setSpacing(10);
   layout()->setContentsMargins(3, 3, 3, 3);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     if (this->isFloating()) {
       update();
     }
@@ -35,14 +35,14 @@ NXToolBar::NXToolBar(QWidget *parent)
 
   connect(this, &NXToolBar::topLevelChanged, this, [=](bool topLevel) {
     if (topLevel) {
-      layout()->setContentsMargins(d->_shadowBorderWidth + 3, d->_shadowBorderWidth + 3, d->_shadowBorderWidth + 3, d->_shadowBorderWidth + 3);
+      layout()->setContentsMargins(d->m_ShadowBorderWidth + 3, d->m_ShadowBorderWidth + 3, d->m_ShadowBorderWidth + 3, d->m_ShadowBorderWidth + 3);
     } else {
       layout()->setContentsMargins(3, 3, 3, 3);
     }
   });
 }
 
-NXToolBar::NXToolBar(const QString &title, QWidget *parent)
+NXToolBar::NXToolBar(QString const &title, QWidget *parent)
     : NXToolBar(parent)
 {
   setWindowTitle(title);
@@ -51,8 +51,8 @@ NXToolBar::NXToolBar(const QString &title, QWidget *parent)
 NXToolBar::~NXToolBar()
 {
   Q_D(NXToolBar);
-  QStyle *proxy    = d->_toolBarStyle;
-  d->_toolBarStyle = nullptr;
+  QStyle *proxy    = d->m_ToolBarStyle;
+  d->m_ToolBarStyle = nullptr;
   setStyle(nullptr);
   delete proxy;
 }
@@ -70,16 +70,16 @@ int NXToolBar::getToolBarSpacing() const
 void NXToolBar::setToolButtonSize(QSize size)
 {
   Q_D(NXToolBar);
-  d->_toolBarStyle->setToolButtonSize(size);
+  d->m_ToolBarStyle->setToolButtonSize(size);
 }
 
 QSize NXToolBar::getToolButtonSize() const
 {
-  Q_D(const NXToolBar);
-  return d->_toolBarStyle->getToolButtonSize();
+  Q_CONST_D(NXToolBar);
+  return d->m_ToolBarStyle->getToolButtonSize();
 }
 
-QAction * NXToolBar::addNXIconAction(NXIconType::IconName icon, const QString &text)
+QAction *NXToolBar::addNXIconAction(NXIconType::IconName icon, QString const &text)
 {
   QAction *action = new QAction(text, this);
   action->setProperty("NXIconType", QChar((unsigned short) icon));
@@ -88,7 +88,7 @@ QAction * NXToolBar::addNXIconAction(NXIconType::IconName icon, const QString &t
   return action;
 }
 
-QAction * NXToolBar::addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut)
+QAction *NXToolBar::addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut)
 {
   QAction *action = new QAction(text, this);
   action->setShortcut(shortcut);
@@ -106,11 +106,11 @@ void NXToolBar::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing);
   if (isFloating()) {
     // 高性能阴影
-    nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, 6);
+    nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, 6);
     //背景
-    painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));
-    painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
-    QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
+    painter.setPen(NXThemeColor(d->m_ThemeMode, PopupBorder));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
+    QRect foregroundRect(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, width() - 2 * d->m_ShadowBorderWidth, height() - 2 * d->m_ShadowBorderWidth);
     painter.drawRoundedRect(foregroundRect, 5, 5);
     QStyle *style = this->style();
     QStyleOptionToolBar opt;

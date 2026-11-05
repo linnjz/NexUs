@@ -15,7 +15,7 @@ class NXScrollBarPrivate : public QObject
   Q_OBJECT
   Q_D_CREATE(NXScrollBar)
   Q_PROPERTY_CREATE_D(qreal, SpeedLimit)
-  Q_PROPERTY_CREATE(int, TargetMaximum)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), TargetMaximum)
   Q_PROPERTY_CREATE_D(bool, IsAnimation)
 
 public:
@@ -24,12 +24,12 @@ public:
   Q_SLOT void onRangeChanged(int min, int max);
 
 private:
-  bool _isExpand { false };
-  int _scrollValue { -1 };
-  QScrollBar *_originScrollBar { nullptr };
-  QAbstractScrollArea *_originScrollArea { nullptr };
-  QTimer *_expandTimer { nullptr };
-  QPropertyAnimation *_slideSmoothAnimation { nullptr };
+  bool m_IsExpand { false };
+  int m_ScrollValue { -1 };
+  QScrollBar *m_OriginScrollBar { nullptr };
+  QAbstractScrollArea *m_OriginScrollArea { nullptr };
+  QTimer *m_ExpandTimer { nullptr };
+  QPropertyAnimation *m_SlideSmoothAnimation { nullptr };
   void _scroll(Qt::KeyboardModifiers modifiers, int value);
   int _pixelPosToRangeValue(int pos) const;
 

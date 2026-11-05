@@ -14,7 +14,7 @@ class NX_EXPORT NXPlainTextEdit : public QPlainTextEdit
 
 public:
   explicit NXPlainTextEdit(QWidget *parent = nullptr);
-  explicit NXPlainTextEdit(const QString &text, QWidget *parent = nullptr);
+  explicit NXPlainTextEdit(QString const &text, QWidget *parent = nullptr);
   ~NXPlainTextEdit();
 
 protected:

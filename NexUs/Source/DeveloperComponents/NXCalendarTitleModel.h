@@ -12,8 +12,8 @@ public:
   ~NXCalendarTitleModel();
 
 protected:
-  virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  QVariant data(const QModelIndex &index, int role) const override;
+  virtual int rowCount(QModelIndex const &parent = QModelIndex()) const override;
+  QVariant data(QModelIndex const &index, int role) const override;
 };
 
 #endif // NXCALENDARTITLEMODEL_H

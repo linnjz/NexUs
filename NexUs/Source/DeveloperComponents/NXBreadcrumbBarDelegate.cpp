@@ -6,10 +6,12 @@
 
 NXBreadcrumbBarDelegate::NXBreadcrumbBarDelegate(QObject *parent)
     : QStyledItemDelegate { parent }
+    , m_PressIndex {}
+    , m_ThemeMode { nxTheme->getThemeMode() }
+
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -17,22 +19,22 @@ NXBreadcrumbBarDelegate::~NXBreadcrumbBarDelegate()
 {
 }
 
-void NXBreadcrumbBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXBreadcrumbBarDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-  painter->setPen(NXThemeColor(_themeMode, BasicText));
+  painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
   QRect itemRect                = option.rect;
   QString breadcrumbDisplayData = index.data(Qt::DisplayRole).toString();
   QString breadcrumbUserData    = index.data(Qt::UserRole).toString();
   if (breadcrumbUserData != QStringLiteral("LastBreadcrumb")) {
-    if (_pPressIndex == index) {
+    if (m_PressIndex == index) {
       //鼠标按下
-      painter->setPen(NXThemeColor(_themeMode, BasicTextPress));
+      painter->setPen(NXThemeColor(m_ThemeMode, BasicTextPress));
     } else {
       //不为最后一个 且没有被鼠标覆盖
       if (!(option.state & QStyle::State_MouseOver)) {
-        painter->setPen(NXThemeColor(_themeMode, BasicTextNoFocus));
+        painter->setPen(NXThemeColor(m_ThemeMode, BasicTextNoFocus));
       }
     }
   }

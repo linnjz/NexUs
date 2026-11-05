@@ -13,19 +13,19 @@ class NXToolTip;
 class NXNavigationView : public QTreeView
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(const NXNavigationBarPrivate *, NavigationBarPrivate)
+  Q_PRIVATE_CREATE(NXNavigationBarPrivate const *, NavigationBarPrivate)
 
 public:
   explicit NXNavigationView(QWidget *parent = nullptr);
   ~NXNavigationView();
   NXToolTip *getCompactToolTip() const;
   void setIsDragDropEnable(bool enable);
-  void navigationNodeStateChange(const QVariantMap &data);
+  void navigationNodeStateChange(QVariantMap const &data);
 
   Q_SLOT void onCustomContextMenuRequested(QPoint pos);
-  Q_SIGNAL void navigationClicked(const QModelIndex &index);
-  Q_SIGNAL void navigationOpenNewWindow(const QString &nodeKey);
-  Q_SIGNAL void navigationCloseCurrentWindow(const QString &nodeKey);
+  Q_SIGNAL void navigationClicked(QModelIndex const &index);
+  Q_SIGNAL void navigationOpenNewWindow(QString const &nodeKey);
+  Q_SIGNAL void navigationCloseCurrentWindow(QString const &nodeKey);
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
@@ -34,8 +34,8 @@ protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  NXNavigationStyle *_navigationStyle { nullptr };
-  NXToolTip *_compactToolTip { nullptr };
+  NXNavigationStyle *m_NavigationStyle { nullptr };
+  NXToolTip *m_CompactToolTip { nullptr };
   void _doCompactToolTip();
 };
 

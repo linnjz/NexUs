@@ -21,11 +21,11 @@ public:
   ~NXTagPrivate();
 
 private:
-  NXTag::TagColor _tagColor { NXTag::Default };
-  NXThemeType::ThemeMode _themeMode;
-  int _closeButtonWidth { 16 };
-  int _checkIconWidth { 16 };
-  int _padding { 8 };
+  NXTag::TagColor m_TagColor { NXTag::Default };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_CloseButtonWidth { 16 };
+  int m_CheckIconWidth { 16 };
+  int m_Padding { 8 };
   QColor _getBackgroundColor() const;
   QColor _getForegroundColor() const;
 };

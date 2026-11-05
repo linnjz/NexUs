@@ -31,16 +31,13 @@ T_Icon::T_Icon(QWidget *parent)
   _iconView->setFlow(QListView::LeftToRight);
   _iconView->setViewMode(QListView::IconMode);
   _iconView->setResizeMode(QListView::Adjust);
-  connect(_iconView, &NXListView::clicked, this, [=](const QModelIndex &index)
-  {
+  connect(_iconView, &NXListView::clicked, this, [=](QModelIndex const &index) {
     QString iconName = _iconModel->getIconNameFromModelIndex(index);
-    if (iconName.isEmpty())
-    {
+    if (iconName.isEmpty()) {
       return;
     }
     qApp->clipboard()->setText(iconName);
-    NXMessageBar::success(NXMessageBarType::Top, QStringLiteral("复制完成"),
-                          iconName + QStringLiteral("已被复制到剪贴板"), 1000, this);
+    NXMessageBar::success(NXMessageBarType::Top, QStringLiteral("复制完成"), iconName + QStringLiteral("已被复制到剪贴板"), 1000, this);
   });
   _iconModel    = new T_IconModel(this);
   _iconDelegate = new T_IconDelegate(this);
@@ -64,11 +61,9 @@ T_Icon::~T_Icon()
 {
 }
 
-void
-T_Icon::onSearchEditTextEdit(const QString &searchText)
+void T_Icon::onSearchEditTextEdit(QString const &searchText)
 {
-  if (searchText.isEmpty())
-  {
+  if (searchText.isEmpty()) {
     _iconModel->setIsSearchMode(false);
     _iconModel->setSearchKeyList(QStringList());
     _iconView->clearSelection();
@@ -76,11 +71,9 @@ T_Icon::onSearchEditTextEdit(const QString &searchText)
     return;
   }
   QStringList searchKeyList;
-  for (int i = 1; i < _metaEnum.keyCount(); i++)
-  {
+  for (int i = 1; i < _metaEnum.keyCount(); i++) {
     QString key = QString(_metaEnum.key(i));
-    if (key.contains(searchText, Qt::CaseInsensitive))
-    {
+    if (key.contains(searchText, Qt::CaseInsensitive)) {
       searchKeyList.append(key);
     }
   }

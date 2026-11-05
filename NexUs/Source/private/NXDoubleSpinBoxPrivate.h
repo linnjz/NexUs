@@ -13,7 +13,7 @@ class NXDoubleSpinBoxPrivate : public QObject
 {
   Q_OBJECT
   Q_D_CREATE(NXDoubleSpinBox)
-  Q_PROPERTY_CREATE(qreal, ExpandMarkWidth)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ExpandMarkWidth)
 
 public:
   explicit NXDoubleSpinBoxPrivate(QObject *parent = nullptr);
@@ -21,8 +21,8 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXSpinBoxStyle *_style { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXSpinBoxStyle *m_Style { nullptr };
   NXMenu *_createStandardContextMenu();
   void _changeTheme();
 };

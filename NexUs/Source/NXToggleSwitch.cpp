@@ -18,13 +18,13 @@ NXToggleSwitch::NXToggleSwitch(QWidget *parent)
   setObjectName("NXToggleSwitch");
   setMouseTracking(true);
   setFixedSize(44, 22);
-  d->_circleCenterX = -1;
-  d->_isToggled     = false;
-  d->_themeMode     = nxTheme->getThemeMode();
+  d->m_CircleCenterX = -1;
+  d->m_IsToggled     = false;
+  d->m_ThemeMode     = nxTheme->getThemeMode();
   setProperty("circleCenterX", 0.01);
   setProperty("circleRadius", 0.01);
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
@@ -35,19 +35,19 @@ NXToggleSwitch::~NXToggleSwitch()
 void NXToggleSwitch::setIsToggled(bool isToggled)
 {
   Q_D(NXToggleSwitch);
-  if (d->_isToggled == isToggled) {
+  if (d->m_IsToggled == isToggled) {
     return;
   }
-  if (d->_isToggled) {
-    d->_startPosAnimation(width() - height() / 2 - d->_margin * 2, height() / 2, isToggled);
+  if (d->m_IsToggled) {
+    d->_startPosAnimation(width() - height() / 2 - d->m_Margin * 2, height() / 2, isToggled);
   } else {
-    d->_startPosAnimation(height() / 2, width() - height() / 2 - d->_margin * 2, isToggled);
+    d->_startPosAnimation(height() / 2, width() - height() / 2 - d->m_Margin * 2, isToggled);
   }
 }
 
 bool NXToggleSwitch::getIsToggled() const
 {
-  return d_ptr->_isToggled;
+  return d_ptr->m_IsToggled;
 }
 
 bool NXToggleSwitch::event(QEvent *event)
@@ -81,31 +81,31 @@ void NXToggleSwitch::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXToggleSwitch);
   d->_adjustCircleCenterX();
-  d->_isLeftButtonPress = true;
-  d->_lastMouseX        = event->pos().x();
-  d->_pressStartX       = event->pos().x();
-  d->_isMousePressMove  = false;
-  d->_startRadiusAnimation(d->_circleRadius, height() * 0.25);
+  d->m_IsLeftButtonPress = true;
+  d->m_LastMouseX        = event->pos().x();
+  d->m_PressStartX       = event->pos().x();
+  d->m_IsMousePressMove  = false;
+  d->_startRadiusAnimation(d->m_CircleRadius, height() * 0.25);
   QWidget::mousePressEvent(event);
 }
 
 void NXToggleSwitch::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXToggleSwitch);
-  d->_isLeftButtonPress = false;
+  d->m_IsLeftButtonPress = false;
   QWidget::mouseReleaseEvent(event);
-  if (d->_isMousePressMove) {
-    d->_isMousePressMove = false;
-    if (d->_circleCenterX > width() / 2) {
-      d->_startPosAnimation(d->_circleCenterX, width() - height() / 2 - d->_margin * 2, true);
+  if (d->m_IsMousePressMove) {
+    d->m_IsMousePressMove = false;
+    if (d->m_CircleCenterX > width() / 2) {
+      d->_startPosAnimation(d->m_CircleCenterX, width() - height() / 2 - d->m_Margin * 2, true);
     } else {
-      d->_startPosAnimation(d->_circleCenterX, height() / 2, false);
+      d->_startPosAnimation(d->m_CircleCenterX, height() / 2, false);
     }
   } else {
-    if (d->_isToggled) {
-      d->_startPosAnimation(d->_circleCenterX, height() / 2, false);
+    if (d->m_IsToggled) {
+      d->_startPosAnimation(d->m_CircleCenterX, height() / 2, false);
     } else {
-      d->_startPosAnimation(d->_circleCenterX, width() - height() / 2 - d->_margin * 2, true);
+      d->_startPosAnimation(d->m_CircleCenterX, width() - height() / 2 - d->m_Margin * 2, true);
     }
   }
   d->_startRadiusAnimation(height() * 0.25, height() * 0.35);
@@ -114,17 +114,17 @@ void NXToggleSwitch::mouseReleaseEvent(QMouseEvent *event)
 void NXToggleSwitch::mouseMoveEvent(QMouseEvent *event)
 {
   Q_D(NXToggleSwitch);
-  if (d->_isLeftButtonPress) {
+  if (d->m_IsLeftButtonPress) {
     // 添加移动阈值判断，避免 macOS 上的微小抖动被识别为拖动
-    int totalMoveX = qAbs(event->pos().x() - d->_pressStartX);
+    int totalMoveX = qAbs(event->pos().x() - d->m_PressStartX);
     if (totalMoveX > 3) {
-      d->_isMousePressMove = true;
+      d->m_IsMousePressMove = true;
     }
 
-    if (d->_isMousePressMove) {
-      int moveX      = event->pos().x() - d->_lastMouseX;
-      d->_lastMouseX = event->pos().x();
-      d->_circleCenterX += moveX;
+    if (d->m_IsMousePressMove) {
+      int moveX      = event->pos().x() - d->m_LastMouseX;
+      d->m_LastMouseX = event->pos().x();
+      d->m_CircleCenterX += moveX;
       d->_adjustCircleCenterX();
     }
   }
@@ -138,30 +138,30 @@ void NXToggleSwitch::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   // 背景绘制
-  painter.setPen(d->_isToggled ? QPen(NXThemeColor(d->_themeMode, BasicBorder), 1.5) : QPen(NXThemeColor(d->_themeMode, BasicBorderDeep), 1.5));
-  painter.setBrush(isEnabled() ? d->_isToggled ? NXThemeColor(d->_themeMode, PrimaryNormal) : (underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase)) : NXThemeColor(d->_themeMode, BasicDisable));
+  painter.setPen(d->m_IsToggled ? QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 1.5) : QPen(NXThemeColor(d->m_ThemeMode, BasicBorderDeep), 1.5));
+  painter.setBrush(isEnabled() ? d->m_IsToggled ? NXThemeColor(d->m_ThemeMode, PrimaryNormal) : (underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase)) : NXThemeColor(d->m_ThemeMode, BasicDisable));
   QPainterPath path;
-  path.moveTo(width() - height() - d->_margin, height() - d->_margin);
-  path.arcTo(QRectF(QPointF(width() - height() - d->_margin, d->_margin), QSize(height() - d->_margin * 2, height() - d->_margin * 2)), -90, 180);
-  path.lineTo(height() / 2 + d->_margin, d->_margin);
-  path.arcTo(QRectF(QPointF(d->_margin, d->_margin), QSize(height() - d->_margin * 2, height() - d->_margin * 2)), 90, 180);
-  path.lineTo(width() - height() - d->_margin, height() - d->_margin);
+  path.moveTo(width() - height() - d->m_Margin, height() - d->m_Margin);
+  path.arcTo(QRectF(QPointF(width() - height() - d->m_Margin, d->m_Margin), QSize(height() - d->m_Margin * 2, height() - d->m_Margin * 2)), -90, 180);
+  path.lineTo(height() / 2 + d->m_Margin, d->m_Margin);
+  path.arcTo(QRectF(QPointF(d->m_Margin, d->m_Margin), QSize(height() - d->m_Margin * 2, height() - d->m_Margin * 2)), 90, 180);
+  path.lineTo(width() - height() - d->m_Margin, height() - d->m_Margin);
   path.closeSubpath();
   painter.drawPath(path);
 
   // 圆心绘制
   painter.setPen(Qt::NoPen);
-  painter.setBrush(isEnabled() ? d->_isToggled ? NXThemeColor(d->_themeMode, BasicTextInvert) : NXThemeColor(d->_themeMode, ToggleSwitchNoToggledCenter) : NXThemeColor(d->_themeMode, BasicTextDisable));
-  if (d->_circleRadius == 0) {
-    d->_circleRadius = this->isEnabled() ? (underMouse() ? height() * 0.35 : height() * 0.3) : height() * 0.3;
+  painter.setBrush(isEnabled() ? d->m_IsToggled ? NXThemeColor(d->m_ThemeMode, BasicTextInvert) : NXThemeColor(d->m_ThemeMode, ToggleSwitchNoToggledCenter) : NXThemeColor(d->m_ThemeMode, BasicTextDisable));
+  if (d->m_CircleRadius == 0) {
+    d->m_CircleRadius = this->isEnabled() ? (underMouse() ? height() * 0.35 : height() * 0.3) : height() * 0.3;
   }
-  if (d->_isLeftButtonPress) {
-    painter.drawEllipse(QPointF(d->_circleCenterX, height() / 2), d->_circleRadius, d->_circleRadius);
+  if (d->m_IsLeftButtonPress) {
+    painter.drawEllipse(QPointF(d->m_CircleCenterX, height() / 2), d->m_CircleRadius, d->m_CircleRadius);
   } else {
-    if (d->_circleCenterX == -1) {
-      d->_circleCenterX = d->_isToggled ? width() - height() / 2 - d->_margin * 2 : height() / 2;
+    if (d->m_CircleCenterX == -1) {
+      d->m_CircleCenterX = d->m_IsToggled ? width() - height() / 2 - d->m_Margin * 2 : height() / 2;
     }
-    painter.drawEllipse(QPointF(d->_circleCenterX, height() / 2), d->_circleRadius, d->_circleRadius);
+    painter.drawEllipse(QPointF(d->m_CircleCenterX, height() / 2), d->m_CircleRadius, d->m_CircleRadius);
   }
   painter.restore();
 }

@@ -18,11 +18,11 @@ public:
   ~NXInfoBadgePrivate();
 
 private:
-  NXInfoBadge::BadgeMode _badgeMode { NXInfoBadge::Dot };
-  NXInfoBadge::Severity _severity { NXInfoBadge::Attention };
-  int _maxValue { 99 };
-  NXThemeType::ThemeMode _themeMode;
-  QWidget *_target { nullptr };
+  NXInfoBadge::BadgeMode m_BadgeMode { NXInfoBadge::Dot };
+  NXInfoBadge::Severity m_Severity { NXInfoBadge::Attention };
+  int m_MaxValue { 99 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QWidget *m_Target { nullptr };
   void _updatePosition();
   QColor _getSeverityColor() const;
 };

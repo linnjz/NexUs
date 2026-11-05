@@ -9,32 +9,28 @@ T_LogModel::~T_LogModel()
 {
 }
 
-int
-T_LogModel::rowCount(const QModelIndex &parent) const
+int T_LogModel::rowCount(QModelIndex const &parent) const
 {
   return this->_logList.count();
 }
 
 QVariant
-T_LogModel::data(const QModelIndex &index, int role) const
+T_LogModel::data(QModelIndex const &index, int role) const
 {
-  if (role == Qt::DisplayRole)
-  {
+  if (role == Qt::DisplayRole) {
     return _logList[index.row()];
   }
   return QVariant();
 }
 
-void
-T_LogModel::setLogList(const QStringList &list)
+void T_LogModel::setLogList(QStringList const &list)
 {
   beginResetModel();
   this->_logList = list;
   endResetModel();
 }
 
-void
-T_LogModel::appendLogList(const QString &log)
+void T_LogModel::appendLogList(QString const &log)
 {
   beginResetModel();
   this->_logList.append(log);

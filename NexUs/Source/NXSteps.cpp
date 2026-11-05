@@ -5,8 +5,8 @@
 #include "NXTheme.h"
 #include "private/NXStepsPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXSteps, int, CurrentStep)
-Q_PROPERTY_CREATE_CPP(NXSteps, int, StepCount)
+Q_PROPERTY_CREATE_CPP(NXSteps, QPS_PAEMIT(int), CurrentStep)
+Q_PROPERTY_CREATE_CPP(NXSteps, QPS_PAEMIT(int), StepCount)
 
 NXSteps::NXSteps(QWidget *parent)
     : QWidget { parent }
@@ -17,12 +17,12 @@ NXSteps::NXSteps(QWidget *parent)
   setObjectName("NXSteps");
   setFixedHeight(70);
 
-  d->_pCurrentStep = 0;
-  d->_pStepCount   = 3;
+  d->m_CurrentStep = 0;
+  d->m_StepCount   = 3;
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -31,36 +31,36 @@ NXSteps::~NXSteps()
 {
 }
 
-void NXSteps::setStepTitles(const QStringList &titles)
+void NXSteps::setStepTitles(QStringList const &titles)
 {
   Q_D(NXSteps);
-  d->_stepTitles = titles;
+  d->m_StepTitles = titles;
   update();
 }
 
 QStringList NXSteps::getStepTitles() const
 {
-  Q_D(const NXSteps);
-  return d->_stepTitles;
+  Q_CONST_D(NXSteps);
+  return d->m_StepTitles;
 }
 
 void NXSteps::next()
 {
   Q_D(NXSteps);
-  if (d->_pCurrentStep < d->_pStepCount - 1) {
-    d->_pCurrentStep++;
+  if (d->m_CurrentStep < d->m_StepCount - 1) {
+    d->m_CurrentStep++;
     update();
-    Q_EMIT currentStepChanged(d->_pCurrentStep);
+    Q_EMIT currentStepChanged(d->m_CurrentStep);
   }
 }
 
 void NXSteps::previous()
 {
   Q_D(NXSteps);
-  if (d->_pCurrentStep > 0) {
-    d->_pCurrentStep--;
+  if (d->m_CurrentStep > 0) {
+    d->m_CurrentStep--;
     update();
-    Q_EMIT currentStepChanged(d->_pCurrentStep);
+    Q_EMIT currentStepChanged(d->m_CurrentStep);
   }
 }
 
@@ -71,7 +71,7 @@ void NXSteps::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  int stepCount = d->_pStepCount;
+  int stepCount = d->m_StepCount;
   if (stepCount <= 0) {
     return;
   }
@@ -88,10 +88,10 @@ void NXSteps::paintEvent(QPaintEvent *event)
   qreal usableWidth = w - margin * 2;
   qreal spacing     = (stepCount > 1) ? usableWidth / (stepCount - 1) : 0;
 
-  QColor primaryNormal    = NXThemeColor(d->_themeMode, PrimaryNormal);
-  QColor basicBase        = NXThemeColor(d->_themeMode, BasicBase);
-  QColor basicBorder      = NXThemeColor(d->_themeMode, BasicBorder);
-  QColor basicDetailsText = NXThemeColor(d->_themeMode, BasicDetailsText);
+  QColor primaryNormal    = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
+  QColor basicBase        = NXThemeColor(d->m_ThemeMode, BasicBase);
+  QColor basicBorder      = NXThemeColor(d->m_ThemeMode, BasicBorder);
+  QColor basicDetailsText = NXThemeColor(d->m_ThemeMode, BasicDetailsText);
   QColor whiteColor       = Qt::white;
 
   QFont iconFont(QStringLiteral("NXAwesome"));
@@ -113,7 +113,7 @@ void NXSteps::paintEvent(QPaintEvent *event)
       qreal nextCx     = (margin + (i + 1) * spacing);
       qreal lineEndX   = nextCx - circleRadius;
 
-      if (i < d->_pCurrentStep) {
+      if (i < d->m_CurrentStep) {
         painter.setPen(QPen(primaryNormal, 2));
       } else {
         painter.setPen(QPen(basicBorder, 2));
@@ -125,7 +125,7 @@ void NXSteps::paintEvent(QPaintEvent *event)
     QRectF circleRect(cx - circleRadius, circleY, circleDiameter, circleDiameter);
     painter.setPen(Qt::NoPen);
 
-    if (i < d->_pCurrentStep) {
+    if (i < d->m_CurrentStep) {
       // Completed
       painter.setBrush(primaryNormal);
       painter.drawEllipse(circleRect);
@@ -134,7 +134,7 @@ void NXSteps::paintEvent(QPaintEvent *event)
       painter.setPen(whiteColor);
       painter.setFont(iconFont);
       painter.drawText(circleRect, Qt::AlignCenter, QChar((unsigned short) 0xea'6c));
-    } else if (i == d->_pCurrentStep) {
+    } else if (i == d->m_CurrentStep) {
       // Active
       painter.setBrush(primaryNormal);
       painter.drawEllipse(circleRect);
@@ -158,12 +158,12 @@ void NXSteps::paintEvent(QPaintEvent *event)
     }
 
     // Draw title
-    if (i < d->_stepTitles.size()) {
-      painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    if (i < d->m_StepTitles.size()) {
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
       painter.setFont(titleFont);
       int titleWidth = 120;
       QRectF titleRect(cx - titleWidth / 2.0, titleY, titleWidth, 20);
-      painter.drawText(titleRect, Qt::AlignHCenter | Qt::AlignTop, d->_stepTitles[i]);
+      painter.drawText(titleRect, Qt::AlignHCenter | Qt::AlignTop, d->m_StepTitles[i]);
     }
   }
 }

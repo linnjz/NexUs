@@ -11,10 +11,10 @@
 
 NXSuggestDelegate::NXSuggestDelegate(QObject *parent)
     : QStyledItemDelegate { parent }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -22,7 +22,7 @@ NXSuggestDelegate::~NXSuggestDelegate()
 {
 }
 
-void NXSuggestDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXSuggestDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   int margin = 2;
   QStyleOptionViewItem viewOption(option);
@@ -42,19 +42,19 @@ void NXSuggestDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
   if (option.state & QStyle::State_Selected) {
     if (option.state & QStyle::State_MouseOver) {
       //选中时覆盖
-      painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedHoverAlpha));
+      painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedHoverAlpha));
     } else {
       //选中
-      painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedAlpha));
+      painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedAlpha));
     }
   } else {
     if (option.state & QStyle::State_MouseOver) {
       //覆盖时颜色
-      painter->fillPath(path, NXThemeColor(_themeMode, BasicHoverAlpha));
+      painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicHoverAlpha));
     }
   }
   //文字绘制
-  painter->setPen(NXThemeColor(_themeMode, BasicText));
+  painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
   painter->drawText(option.rect.x() + 37, option.rect.y() + 25, suggest->getSuggestText());
 
   //图标绘制
@@ -67,7 +67,7 @@ void NXSuggestDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
   painter->restore();
 }
 
-QSize NXSuggestDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXSuggestDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   QSize size = QStyledItemDelegate::sizeHint(option, index);
   size.setHeight(40);

@@ -13,7 +13,7 @@ class NX_EXPORT NXDockWidget : public QDockWidget
 
 public:
   explicit NXDockWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  explicit NXDockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+  explicit NXDockWidget(QString const &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
   ~NXDockWidget();
   Q_SIGNAL void dockClosed();
   Q_SIGNAL void dockResized(QSize size);
@@ -25,9 +25,9 @@ protected:
 #ifdef Q_OS_WIN
   bool event(QEvent *event) override;
 #  if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
+  bool nativeEvent(QByteArray const &eventType, void *message, qintptr *result) override;
 #  else
-  bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+  bool nativeEvent(QByteArray const &eventType, void *message, long *result) override;
 #  endif
 #endif
 };

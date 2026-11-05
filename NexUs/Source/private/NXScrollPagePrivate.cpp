@@ -17,7 +17,7 @@ NXScrollPagePrivate::~NXScrollPagePrivate()
 {
 }
 
-void NXScrollPagePrivate::onNavigationRoute(const QVariantMap &routeData)
+void NXScrollPagePrivate::onNavigationRoute(QVariantMap const &routeData)
 {
   // 面包屑
   Q_Q(NXScrollPage);
@@ -26,22 +26,22 @@ void NXScrollPagePrivate::onNavigationRoute(const QVariantMap &routeData)
   if (pageCheckSumKey == QStringLiteral("Navigation")) {
     QString pageTitle = isRouteBack ? routeData.value(QStringLiteral("NXBackPageTitle")).toString()
                                     : routeData.value(QStringLiteral("NXForwardPageTitle")).toString();
-    q->navigation(_centralWidgetMap.value(pageTitle), false);
+    q->navigation(m_CentralWidgetMap.value(pageTitle), false);
   } else if (pageCheckSumKey == QStringLiteral("BreadcrumbClicked")) {
     QStringList breadcrumbList = isRouteBack
                                    ? routeData.value(QStringLiteral("NXBackBreadcrumbList")).toStringList()
                                    : routeData.value(QStringLiteral("NXForwardBreadcrumbList")).toStringList();
-    int widgetIndex            = _centralWidgetMap.value(breadcrumbList.last());
-    _switchCentralStackIndex(widgetIndex, _navigationTargetIndex);
-    _navigationTargetIndex = widgetIndex;
-    _breadcrumbBar->setBreadcrumbList(breadcrumbList);
+    int widgetIndex            = m_CentralWidgetMap.value(breadcrumbList.last());
+    _switchCentralStackIndex(widgetIndex, m_NavigationTargetIndex);
+    m_NavigationTargetIndex = widgetIndex;
+    m_BreadcrumbBar->setBreadcrumbList(breadcrumbList);
   }
 }
 
 void NXScrollPagePrivate::_switchCentralStackIndex(int targetIndex, int lastIndex)
 {
-  QWidget *currentWidget = _centralStackedWidget->widget(lastIndex);
-  QWidget *targetWidget  = _centralStackedWidget->widget(targetIndex);
+  QWidget *currentWidget = m_CentralStackedWidget->widget(lastIndex);
+  QWidget *targetWidget  = m_CentralStackedWidget->widget(targetIndex);
   targetWidget->resize(currentWidget->size());
   targetWidget->setVisible(true);
 
@@ -51,21 +51,21 @@ void NXScrollPagePrivate::_switchCentralStackIndex(int targetIndex, int lastInde
 
   QPropertyAnimation *targetWidgetAnimation = new QPropertyAnimation(targetWidget, "pos");
   connect(targetWidgetAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _centralStackedWidget->setCurrentIndex(targetIndex);
+    m_CentralStackedWidget->setCurrentIndex(targetIndex);
   });
   targetWidgetAnimation->setEasingCurve(QEasingCurve::InExpo);
   targetWidgetAnimation->setDuration(300);
   if (targetIndex > lastIndex) {
     //左滑
     currentWidgetAnimation->setStartValue(currentWidget->pos());
-    currentWidgetAnimation->setEndValue(QPoint(-_centralStackedWidget->width(), 0));
-    targetWidgetAnimation->setStartValue(QPoint(_centralStackedWidget->width(), 0));
+    currentWidgetAnimation->setEndValue(QPoint(-m_CentralStackedWidget->width(), 0));
+    targetWidgetAnimation->setStartValue(QPoint(m_CentralStackedWidget->width(), 0));
     targetWidgetAnimation->setEndValue(QPoint(0, 0));
   } else {
     //右滑
     currentWidgetAnimation->setStartValue(currentWidget->pos());
-    currentWidgetAnimation->setEndValue(QPoint(_centralStackedWidget->width(), 0));
-    targetWidgetAnimation->setStartValue(QPoint(-_centralStackedWidget->width(), 0));
+    currentWidgetAnimation->setEndValue(QPoint(m_CentralStackedWidget->width(), 0));
+    targetWidgetAnimation->setStartValue(QPoint(-m_CentralStackedWidget->width(), 0));
     targetWidgetAnimation->setEndValue(QPoint(0, 0));
   }
   currentWidgetAnimation->start(QAbstractAnimation::DeleteWhenStopped);

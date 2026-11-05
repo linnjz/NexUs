@@ -1,13 +1,10 @@
-#ifndef NXEXPONENTIALBLUR_H
+﻿#ifndef NXEXPONENTIALBLUR_H
 #define NXEXPONENTIALBLUR_H
 
 #include <QObject>
 
 #include "LinnSingleton.h"
 #include "NXProperty.h"
-#pragma push_macro("Q_DISABLE_COPY")
-#undef Q_DISABLE_COPY
-#define Q_DISABLE_COPY(CLASS)
 
 class NXExponentialBlurPrivate;
 
@@ -15,15 +12,14 @@ class NX_EXPORT NXExponentialBlur : public QObject
 {
   Q_OBJECT
   Q_Q_CREATE(NXExponentialBlur)
-  Q_SINGLETON_CREATE(QS_S_UNIQUE(NXExponentialBlur))
+  Q_SINGLETON_CREATE(QSS_UNIQUE(NXExponentialBlur))
 
 private:
   explicit NXExponentialBlur(QObject *parent = nullptr);
   ~NXExponentialBlur();
 
 public:
-  static QPixmap doExponentialBlur(const QImage &img, const quint16 &blurRadius);
+  static QPixmap doExponentialBlur(QImage const &img, quint16 const &blurRadius);
 };
 
-#pragma pop_macro("Q_DISABLE_COPY")
 #endif // NXEXPONENTIALBLUR_H

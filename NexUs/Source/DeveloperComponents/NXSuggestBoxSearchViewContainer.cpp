@@ -6,6 +6,7 @@
 
 NXSuggestBoxSearchViewContainer::NXSuggestBoxSearchViewContainer(QWidget *parent)
     : QWidget { parent }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
   setContentsMargins(2, 2, 2, 2);
@@ -14,9 +15,9 @@ NXSuggestBoxSearchViewContainer::NXSuggestBoxSearchViewContainer(QWidget *parent
 #endif
   setObjectName("NXSuggestBoxSearchViewBaseWidget");
   setStyleSheet(QStringLiteral("#NXSuggestBoxSearchViewBaseWidget{background-color:transparent}"));
-  _themeMode = nxTheme->getThemeMode();
+
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -35,8 +36,8 @@ void NXSuggestBoxSearchViewContainer::paintEvent(QPaintEvent *event)
   nxTheme->drawEffectShadow(&painter, rect(), 6, 8);
   QRect foregroundRect(6, 0, rect().width() - 2 * 6, rect().height() - 6);
 #endif
-  painter.setPen(NXThemeColor(_themeMode, PopupBorder));
-  painter.setBrush(NXThemeColor(_themeMode, PopupBase));
+  painter.setPen(NXThemeColor(m_ThemeMode, PopupBorder));
+  painter.setBrush(NXThemeColor(m_ThemeMode, PopupBase));
   painter.drawRoundedRect(foregroundRect, 8, 8);
   painter.restore();
 }

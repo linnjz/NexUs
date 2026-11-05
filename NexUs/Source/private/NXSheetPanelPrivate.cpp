@@ -25,25 +25,25 @@ void NXSheetPanelPrivate::_doOpenAnimation(NXSheetPanelType::DetentLevel level)
     return;
   }
 
-  if (_pDirection == NXSheetPanelType::Bottom) {
-    _panelWidget->setGeometry(0, parent->height(), parent->width(), 0);
-    QPropertyAnimation *animation = new QPropertyAnimation(_panelWidget, "geometry");
+  if (m_Direction == NXSheetPanelType::Bottom) {
+    m_PanelWidget->setGeometry(0, parent->height(), parent->width(), 0);
+    QPropertyAnimation *animation = new QPropertyAnimation(m_PanelWidget, "geometry");
     animation->setDuration(350);
     animation->setEasingCurve(QEasingCurve::OutCubic);
     animation->setStartValue(QRect(0, parent->height(), parent->width(), 0));
     animation->setEndValue(QRect(0, parent->height() - targetSize, parent->width(), targetSize));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
-  } else if (_pDirection == NXSheetPanelType::Right) {
-    _panelWidget->setGeometry(parent->width(), 0, 0, parent->height());
-    QPropertyAnimation *animation = new QPropertyAnimation(_panelWidget, "geometry");
+  } else if (m_Direction == NXSheetPanelType::Right) {
+    m_PanelWidget->setGeometry(parent->width(), 0, 0, parent->height());
+    QPropertyAnimation *animation = new QPropertyAnimation(m_PanelWidget, "geometry");
     animation->setDuration(350);
     animation->setEasingCurve(QEasingCurve::OutCubic);
     animation->setStartValue(QRect(parent->width(), 0, 0, parent->height()));
     animation->setEndValue(QRect(parent->width() - targetSize, 0, targetSize, parent->height()));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
   } else {
-    _panelWidget->setGeometry(-targetSize, 0, 0, parent->height());
-    QPropertyAnimation *animation = new QPropertyAnimation(_panelWidget, "geometry");
+    m_PanelWidget->setGeometry(-targetSize, 0, 0, parent->height());
+    QPropertyAnimation *animation = new QPropertyAnimation(m_PanelWidget, "geometry");
     animation->setDuration(350);
     animation->setEasingCurve(QEasingCurve::OutCubic);
     animation->setStartValue(QRect(0, 0, 0, parent->height()));
@@ -51,14 +51,14 @@ void NXSheetPanelPrivate::_doOpenAnimation(NXSheetPanelType::DetentLevel level)
     animation->start(QAbstractAnimation::DeleteWhenStopped);
   }
 
-  _panelWidget->setStyleSheet(
+  m_PanelWidget->setStyleSheet(
       QString(QStringLiteral("background-color: %1; border-top-left-radius: %2px; border-top-right-radius: %2px;"))
-          .arg(NXThemeColor(_themeMode, DialogBase).name())
-          .arg(_pBorderRadius));
+          .arg(NXThemeColor(m_ThemeMode, DialogBase).name())
+          .arg(m_BorderRadius));
 
-  _dragHandle->setStyleSheet(QString(QStringLiteral("background-color: %1; border-radius: 2px;"))
-                                 .arg(NXThemeColor(_themeMode, BasicBorderDeep).name()));
-  _dragHandle->setVisible(_pDragHandleVisible);
+  m_DragHandle->setStyleSheet(QString(QStringLiteral("background-color: %1; border-radius: 2px;"))
+                                 .arg(NXThemeColor(m_ThemeMode, BasicBorderDeep).name()));
+  m_DragHandle->setVisible(m_DragHandleVisible);
 }
 
 void NXSheetPanelPrivate::_doCloseAnimation()
@@ -68,22 +68,22 @@ void NXSheetPanelPrivate::_doCloseAnimation()
   if (!parent) {
     return;
   }
-  _maskWidget->doMaskAnimation(0);
+  m_MaskWidget->doMaskAnimation(0);
 
-  QRect startRect = _panelWidget->geometry();
+  QRect startRect = m_PanelWidget->geometry();
   QRect endRect;
-  if (_pDirection == NXSheetPanelType::Bottom) {
+  if (m_Direction == NXSheetPanelType::Bottom) {
     endRect = QRect(0, parent->height(), parent->width(), 0);
-  } else if (_pDirection == NXSheetPanelType::Right) {
+  } else if (m_Direction == NXSheetPanelType::Right) {
     endRect = QRect(parent->width(), 0, 0, parent->height());
   } else {
     endRect = QRect(0, 0, 0, parent->height());
   }
 
-  QPropertyAnimation *animation = new QPropertyAnimation(_panelWidget, "geometry");
+  QPropertyAnimation *animation = new QPropertyAnimation(m_PanelWidget, "geometry");
   connect(animation, &QPropertyAnimation::finished, q, [=]() {
-    _panelWidget->setVisible(false);
-    _isOpened = false;
+    m_PanelWidget->setVisible(false);
+    m_IsOpened = false;
     Q_EMIT q->closed();
   });
   animation->setDuration(300);
@@ -101,44 +101,44 @@ void NXSheetPanelPrivate::_updatePanelGeometry(int targetSize, bool animate)
     return;
   }
   QRect targetRect;
-  if (_pDirection == NXSheetPanelType::Bottom) {
+  if (m_Direction == NXSheetPanelType::Bottom) {
     targetRect = QRect(0, parent->height() - targetSize, parent->width(), targetSize);
-  } else if (_pDirection == NXSheetPanelType::Right) {
+  } else if (m_Direction == NXSheetPanelType::Right) {
     targetRect = QRect(parent->width() - targetSize, 0, targetSize, parent->height());
   } else {
     targetRect = QRect(0, 0, targetSize, parent->height());
   }
 
   if (animate) {
-    QPropertyAnimation *animation = new QPropertyAnimation(_panelWidget, "geometry");
+    QPropertyAnimation *animation = new QPropertyAnimation(m_PanelWidget, "geometry");
     animation->setDuration(250);
     animation->setEasingCurve(QEasingCurve::OutCubic);
-    animation->setStartValue(_panelWidget->geometry());
+    animation->setStartValue(m_PanelWidget->geometry());
     animation->setEndValue(targetRect);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
   } else {
-    _panelWidget->setGeometry(targetRect);
+    m_PanelWidget->setGeometry(targetRect);
   }
 }
 
 int NXSheetPanelPrivate::_getTargetSize(NXSheetPanelType::DetentLevel level) const
 {
-  Q_Q(const NXSheetPanel);
+  Q_Q(NXSheetPanel const);
   QWidget *parent = q->parentWidget();
   if (!parent) {
     return 100;
   }
   int totalSize;
-  if (_pDirection == NXSheetPanelType::Bottom) {
+  if (m_Direction == NXSheetPanelType::Bottom) {
     totalSize = parent->height();
   } else {
     totalSize = parent->width();
   }
   switch (level) {
-  case NXSheetPanelType::Peek : return static_cast<int>(totalSize * _pPeekRatio);
-  case NXSheetPanelType::Half : return static_cast<int>(totalSize * _pHalfRatio);
-  case NXSheetPanelType::Full : return static_cast<int>(totalSize * _pFullRatio);
-  default                     : return static_cast<int>(totalSize * _pHalfRatio);
+  case NXSheetPanelType::Peek : return static_cast<int>(totalSize * m_PeekRatio);
+  case NXSheetPanelType::Half : return static_cast<int>(totalSize * m_HalfRatio);
+  case NXSheetPanelType::Full : return static_cast<int>(totalSize * m_FullRatio);
+  default                     : return static_cast<int>(totalSize * m_HalfRatio);
   }
 }
 

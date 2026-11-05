@@ -21,11 +21,11 @@ public:
 private:
   int _doLayout(QRect rect, bool testOnly) const;
   int _smartSpacing(QStyle::PixelMetric pm) const;
-  mutable QMap<QLayoutItem *, QPoint> _lastGeometryMap;
-  QList<QLayoutItem *> _itemList;
-  bool _isAnimation { false };
-  int _hSpacing;
-  int _vSpacing;
+  mutable QMap<QLayoutItem *, QPoint> m_LastGeometryMap;
+  QList<QLayoutItem *> m_ItemList;
+  bool m_IsAnimation { false };
+  int m_HSpacing;
+  int m_VSpacing;
 };
 
 #endif // NXFLOWLAYOUTPRIVATE_H

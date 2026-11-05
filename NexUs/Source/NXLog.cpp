@@ -4,9 +4,9 @@
 
 #include "private/NXLogPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXLog, QS_SET_CREF(QString), LogSavePath)
-Q_PROPERTY_CREATE_CPP(NXLog, QS_SET_CREF(QString), LogFileName)
-Q_PROPERTY_CREATE_CPP(NXLog, bool, IsLogFileNameWithTime)
+Q_PROPERTY_CREATE_CPP(NXLog, QPS_SCREF_PAEMIT(QString), LogSavePath)
+Q_PROPERTY_CREATE_CPP(NXLog, QPS_SCREF_PAEMIT(QString), LogFileName)
+Q_PROPERTY_CREATE_CPP(NXLog, QPS_PAEMIT(bool), IsLogFileNameWithTime)
 
 NXLog::NXLog(QObject *parent)
     : QObject { parent }
@@ -14,13 +14,13 @@ NXLog::NXLog(QObject *parent)
 {
   Q_D(NXLog);
   d->q_ptr                   = this;
-  d->_pLogFileName           = QStringLiteral("NXLog");
-  d->_pLogSavePath           = QDir::currentPath();
-  d->_pIsLogFileNameWithTime = false;
+  d->m_LogFileName           = QStringLiteral("NXLog");
+  d->m_LogSavePath           = QDir::currentPath();
+  d->m_IsLogFileNameWithTime = false;
   d->_clearLogFile();
-  connect(this, &NXLog::pLogSavePathChanged, d, &NXLogPrivate::_clearLogFile);
-  connect(this, &NXLog::pLogFileNameChanged, d, &NXLogPrivate::_clearLogFile);
-  connect(this, &NXLog::pIsLogFileNameWithTimeChanged, d, &NXLogPrivate::_clearLogFile);
+  connect(this, &NXLog::signalLogSavePathChanged, d, &NXLogPrivate::_clearLogFile);
+  connect(this, &NXLog::signalLogFileNameChanged, d, &NXLogPrivate::_clearLogFile);
+  connect(this, &NXLog::signalIsLogFileNameWithTimeChanged, d, &NXLogPrivate::_clearLogFile);
 }
 
 NXLog::~NXLog()

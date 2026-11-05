@@ -1,4 +1,4 @@
-#ifndef NXACRYLICURLCARD_H
+﻿#ifndef NXACRYLICURLCARD_H
 #define NXACRYLICURLCARD_H
 
 #include <QPixmap>
@@ -12,10 +12,10 @@ class NX_EXPORT NXAcrylicUrlCard : public QPushButton
 {
   Q_OBJECT
   Q_Q_CREATE(NXAcrylicUrlCard);
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Url)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QPixmap), CardPixmap)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Url)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QPixmap), CardPixmap)
   Q_PROPERTY_CREATE_H(qreal, MainOpacity)
   Q_PROPERTY_CREATE_H(qreal, NoiseOpacity)
   Q_PROPERTY_CREATE_H(QSize, CardPixmapSize)

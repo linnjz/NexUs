@@ -1,4 +1,4 @@
-#ifndef NXREMINDERCARD_H
+﻿#ifndef NXREMINDERCARD_H
 #define NXREMINDERCARD_H
 
 #include <QPushButton>
@@ -10,9 +10,9 @@ class NX_EXPORT NXReminderCard : public QPushButton
 {
   Q_OBJECT
   Q_Q_CREATE(NXReminderCard)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QPixmap), CardPixmap)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QPixmap), CardPixmap)
   Q_PROPERTY_CREATE_H(QSize, CardPixmapSize)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, TitlePixelSize)

@@ -25,33 +25,33 @@ NXColorDialogPrivate::~NXColorDialogPrivate()
 {
 }
 
-void NXColorDialogPrivate::onColorPickerColorChanged(const QColor &selectedColor)
+void NXColorDialogPrivate::onColorPickerColorChanged(QColor const &selectedColor)
 {
   Q_Q(NXColorDialog);
   // float <h, s, v, a> range from 0.0 to 1.0
   // int <h> range from 0 to 359, <s, v, a> range from 0 to 255
-  _pCurrentColor = selectedColor;
-  _pCurrentColor.setHsvF(selectedColor.hueF(), selectedColor.saturationF(), _colorValueSlider->value() * INV_255, _transparencyValueSlider->value() * INV_255);
+  m_CurrentColor = selectedColor;
+  m_CurrentColor.setHsvF(selectedColor.hueF(), selectedColor.saturationF(), m_ColorValueSlider->value() * INV_255, m_TransparencyValueSlider->value() * INV_255);
   _updateHtmlEditValue();
   _updateEditValue();
   _updateColorPreview();
   _updateColorValueSlider();
   _updateTransparencyValueSlider();
-  Q_EMIT q->pCurrentColorChanged();
+  Q_EMIT q->signalCurrentColorChanged();
 }
 
 void NXColorDialogPrivate::onColorValueSliderChanged(int value)
 {
   Q_Q(NXColorDialog);
-  QColor baseColor = _pCurrentColor;
-  baseColor.setHsvF(baseColor.hueF(), baseColor.saturationF(), value * INV_255, _transparencyValueSlider->value() * INV_255);
+  QColor baseColor = m_CurrentColor;
+  baseColor.setHsvF(baseColor.hueF(), baseColor.saturationF(), value * INV_255, m_TransparencyValueSlider->value() * INV_255);
   q->setCurrentColor(baseColor);
 }
 
 void NXColorDialogPrivate::onTransparencyValueSliderChanged(int value)
 {
   Q_Q(NXColorDialog);
-  QColor baseColor = _pCurrentColor;
+  QColor baseColor = m_CurrentColor;
   baseColor.setHsvF(baseColor.hueF(), baseColor.saturationF(), baseColor.value() * INV_255, value * INV_255);
   q->setCurrentColor(baseColor);
 }
@@ -59,61 +59,61 @@ void NXColorDialogPrivate::onTransparencyValueSliderChanged(int value)
 void NXColorDialogPrivate::onColorModeChanged(int index)
 {
   if (index == 0) {
-    _firstText->setText(QStringLiteral("红色"));
-    _secondText->setText(QStringLiteral("绿色"));
-    _thridText->setText(QStringLiteral("蓝色"));
-    _fourthText->setText(QStringLiteral("透明度"));
-    _firstEdit->setValidator(new NXIntValidator(0, 255, this));
+    m_FirstText->setText(QStringLiteral("红色"));
+    m_SecondText->setText(QStringLiteral("绿色"));
+    m_ThridText->setText(QStringLiteral("蓝色"));
+    m_FourthText->setText(QStringLiteral("透明度"));
+    m_FirstEdit->setValidator(new NXIntValidator(0, 255, this));
   } else if (index == 1) {
-    _firstText->setText(QStringLiteral("色调"));
-    _secondText->setText(QStringLiteral("饱和度"));
-    _thridText->setText(QStringLiteral("值"));
-    _fourthText->setText(QStringLiteral("透明度"));
-    _firstEdit->setValidator(new NXIntValidator(0, 359, this));
+    m_FirstText->setText(QStringLiteral("色调"));
+    m_SecondText->setText(QStringLiteral("饱和度"));
+    m_ThridText->setText(QStringLiteral("值"));
+    m_FourthText->setText(QStringLiteral("透明度"));
+    m_FirstEdit->setValidator(new NXIntValidator(0, 359, this));
   }
   _updateEditValue();
 }
 
-void NXColorDialogPrivate::onHtmlEditFocusOut(const QString &text)
+void NXColorDialogPrivate::onHtmlEditFocusOut(QString const &text)
 {
   // 自动补全
   if (text == QStringLiteral("#")) {
     Q_Q(NXColorDialog);
-    //_htmlEdit->setText(QStringLiteral("#FF000000"));
+    //m_HtmlEdit->setText(QStringLiteral("#FF000000"));
     // #FF000000 is argb, qcolor(0,0,0,0) is rgba
     q->setCurrentColor(QColor(0xFF, 0xFF, 0xFF, 0xFF));
   } else if (text.length() > 1 && text.length() < 9) {
-    _htmlEdit->setText(_completeColorText(text.toUpper()));
+    m_HtmlEdit->setText(_completeColorText(text.toUpper()));
   }
 }
 
-void NXColorDialogPrivate::onHtmlEditChanged(const QString &text)
+void NXColorDialogPrivate::onHtmlEditChanged(QString const &text)
 {
   Q_Q(NXColorDialog);
   if (text.length() > 1) {
-    if (_pColorSchemeType == NXColorSchemeType::Rgba) {
+    if (m_ColorSchemeType == NXColorSchemeType::Rgba) {
       QString fullHex = _completeColorText(text.toUpper());
       q->setCurrentColor(QColor(QStringLiteral("#") + fullHex.right(2) + fullHex.mid(1, 6)));
-    } else if (_pColorSchemeType == NXColorSchemeType::Argb) {
+    } else if (m_ColorSchemeType == NXColorSchemeType::Argb) {
       q->setCurrentColor(QColor(_completeColorText(text.toUpper())));
     }
   }
 }
 
-void NXColorDialogPrivate::onColorEditChanged(const QString &text)
+void NXColorDialogPrivate::onColorEditChanged(QString const &text)
 {
   Q_Q(NXColorDialog);
   q->setCurrentColor(_getColorFromEdit());
 }
 
-void NXColorDialogPrivate::onBasicColorViewClicked(const QModelIndex &index)
+void NXColorDialogPrivate::onBasicColorViewClicked(QModelIndex const &index)
 {
   Q_Q(NXColorDialog);
   QColor basicColor = index.data(Qt::UserRole).value<QColor>();
   q->setCurrentColor(basicColor);
 }
 
-void NXColorDialogPrivate::onCustomColorViewClicked(const QModelIndex &index)
+void NXColorDialogPrivate::onCustomColorViewClicked(QModelIndex const &index)
 {
   Q_Q(NXColorDialog);
   QColor color = index.data(Qt::UserRole).value<QColor>();
@@ -124,17 +124,17 @@ void NXColorDialogPrivate::onCustomColorViewClicked(const QModelIndex &index)
 
 void NXColorDialogPrivate::onAddCustomColorButtonClicked()
 {
-  QModelIndexList selectedIndexs = _customColorView->selectionModel()->selectedIndexes();
+  QModelIndexList selectedIndexs = m_CustomColorView->selectionModel()->selectedIndexes();
   if (selectedIndexs.count() > 0) {
-    _customColorModel->replaceDisplayColor(_pCurrentColor, selectedIndexs[0].row());
+    m_CustomColorModel->replaceDisplayColor(m_CurrentColor, selectedIndexs[0].row());
   }
 }
 
 void NXColorDialogPrivate::onRemoveCustomColorButtonClicked()
 {
-  QModelIndexList selectedIndexs = _customColorView->selectionModel()->selectedIndexes();
+  QModelIndexList selectedIndexs = m_CustomColorView->selectionModel()->selectedIndexes();
   if (selectedIndexs.count() > 0) {
-    _customColorModel->replaceDisplayColor(QColor(), selectedIndexs[0].row());
+    m_CustomColorModel->replaceDisplayColor(QColor(), selectedIndexs[0].row());
   }
 }
 
@@ -157,7 +157,7 @@ void NXColorDialogPrivate::_initBasicColor()
                  << QColor(0x50, 0x7F, 0x80) << QColor(0x18, 0x3E, 0x0C) << QColor(0x17, 0x3F, 0x3F)
                  << QColor(0x74, 0x1B, 0x7C) << QColor(0x39, 0x10, 0x7B) << QColor(0x00, 0x00, 0x00)
                  << QColor(0x80, 0x80, 0x80) << QColor(0xC0, 0xC0, 0xC0) << QColor(0xFF, 0xFF, 0xFF);
-  _basicColorModel->appendDisplayColor(basicColorList);
+  m_BasicColorModel->appendDisplayColor(basicColorList);
 }
 
 void NXColorDialogPrivate::_initCustomColor()
@@ -166,66 +166,66 @@ void NXColorDialogPrivate::_initCustomColor()
   for (int i = 0; i < 24; i++) {
     customColorList.append(QColor());
   }
-  _customColorModel->appendDisplayColor(customColorList);
+  m_CustomColorModel->appendDisplayColor(customColorList);
 }
 
 void NXColorDialogPrivate::_updateHtmlEditValue()
 {
-  if (!_htmlEdit->hasFocus()) {
+  if (!m_HtmlEdit->hasFocus()) {
     // 非编辑模式下 进行自动补全
-    _htmlEdit->setText(_getHex4ChannelValue());
+    m_HtmlEdit->setText(_getHex4ChannelValue());
   }
 }
 
 void NXColorDialogPrivate::_updateEditValue()
 {
-  if (_modeComboBox->currentIndex() == 0) {
-    _firstEdit->setText(QString::number(_pCurrentColor.red()));
-    _secondEdit->setText(QString::number(_pCurrentColor.green()));
-    _thridEdit->setText(QString::number(_pCurrentColor.blue()));
-    _fourthEdit->setText(QString::number(_pCurrentColor.alpha()));
+  if (m_ModeComboBox->currentIndex() == 0) {
+    m_FirstEdit->setText(QString::number(m_CurrentColor.red()));
+    m_SecondEdit->setText(QString::number(m_CurrentColor.green()));
+    m_ThridEdit->setText(QString::number(m_CurrentColor.blue()));
+    m_FourthEdit->setText(QString::number(m_CurrentColor.alpha()));
   } else {
-    QColor hsvColor = _pCurrentColor.toHsv();
+    QColor hsvColor = m_CurrentColor.toHsv();
     int hue         = hsvColor.hue();
     if (hue < 0) {
       hue = 0;
     }
-    _firstEdit->setText(QString::number(hue));
-    _secondEdit->setText(QString::number(hsvColor.saturation()));
-    _thridEdit->setText(QString::number(hsvColor.value()));
-    _fourthEdit->setText(QString::number(hsvColor.alpha()));
+    m_FirstEdit->setText(QString::number(hue));
+    m_SecondEdit->setText(QString::number(hsvColor.saturation()));
+    m_ThridEdit->setText(QString::number(hsvColor.value()));
+    m_FourthEdit->setText(QString::number(hsvColor.alpha()));
   }
 }
 
 void NXColorDialogPrivate::_updateColorPreview()
 {
-  _colorPreview->setBaseColor(_pCurrentColor);
-  _colorPreview->update();
+  m_ColorPreview->setBaseColor(m_CurrentColor);
+  m_ColorPreview->update();
 }
 
 void NXColorDialogPrivate::_updateColorValueSlider()
 {
-  _colorValueSlider->blockSignals(true);
-  _colorValueSlider->setValue(_pCurrentColor.value());
-  _colorValueSlider->blockSignals(false);
-  _colorValueSliderStyle->setBaseColor(_pCurrentColor);
-  _colorValueSlider->update();
+  m_ColorValueSlider->blockSignals(true);
+  m_ColorValueSlider->setValue(m_CurrentColor.value());
+  m_ColorValueSlider->blockSignals(false);
+  m_ColorValueSliderStyle->setBaseColor(m_CurrentColor);
+  m_ColorValueSlider->update();
 }
 
 void NXColorDialogPrivate::_updateTransparencyValueSlider()
 {
-  _transparencyValueSlider->blockSignals(true);
-  _transparencyValueSlider->setValue(_pCurrentColor.alpha());
-  _transparencyValueSlider->blockSignals(false);
-  _transparencyValueSliderStyle->setBaseColor(_pCurrentColor);
-  _transparencyValueSlider->update();
+  m_TransparencyValueSlider->blockSignals(true);
+  m_TransparencyValueSlider->setValue(m_CurrentColor.alpha());
+  m_TransparencyValueSlider->blockSignals(false);
+  m_TransparencyValueSliderStyle->setBaseColor(m_CurrentColor);
+  m_TransparencyValueSlider->update();
 }
 
-QString NXColorDialogPrivate::_completeColorText(const QString &text) const
+QString NXColorDialogPrivate::_completeColorText(QString const &text) const
 {
   QString result = text;
 
-  if (int len = result.size(), pos = _pColorSchemeType == NXColorSchemeType::Argb ? 1 : len; len == 6) {
+  if (int len = result.size(), pos = m_ColorSchemeType == NXColorSchemeType::Argb ? 1 : len; len == 6) {
     result.insert(pos, QStringLiteral("FF"));
   } else {
     result.insert(pos, QString(8 - len, '0'));
@@ -236,23 +236,23 @@ QString NXColorDialogPrivate::_completeColorText(const QString &text) const
 QString NXColorDialogPrivate::_getHex4ChannelValue() const
 {
   QString colorHex;
-  QString red = QString::number(_pCurrentColor.red(), 16);
+  QString red = QString::number(m_CurrentColor.red(), 16);
   if (red.length() < 2) {
     red.prepend(QStringLiteral("0"));
   }
-  QString green = QString::number(_pCurrentColor.green(), 16);
+  QString green = QString::number(m_CurrentColor.green(), 16);
   if (green.length() < 2) {
     green.prepend(QStringLiteral("0"));
   }
-  QString blue = QString::number(_pCurrentColor.blue(), 16);
+  QString blue = QString::number(m_CurrentColor.blue(), 16);
   if (blue.length() < 2) {
     blue.prepend(QStringLiteral("0"));
   }
-  QString alpha = QString::number(_pCurrentColor.alpha(), 16);
+  QString alpha = QString::number(m_CurrentColor.alpha(), 16);
   if (alpha.length() < 2) {
     alpha.prepend(QStringLiteral("0"));
   }
-  colorHex = _pColorSchemeType == NXColorSchemeType::Argb ? alpha + red + green + blue : red + green + blue + alpha;
+  colorHex = m_ColorSchemeType == NXColorSchemeType::Argb ? alpha + red + green + blue : red + green + blue + alpha;
   colorHex = colorHex.toUpper();
   colorHex.prepend(QStringLiteral("#"));
   return colorHex;
@@ -261,12 +261,12 @@ QString NXColorDialogPrivate::_getHex4ChannelValue() const
 QColor NXColorDialogPrivate::_getColorFromEdit() const
 {
   QColor editColor;
-  if (_modeComboBox->currentIndex() == 0) {
+  if (m_ModeComboBox->currentIndex() == 0) {
     // RGB
-    editColor.setRgba(qRgba(_firstEdit->text().toUInt(), _secondEdit->text().toUInt(), _thridEdit->text().toUInt(), _fourthEdit->text().toUInt()));
+    editColor.setRgba(qRgba(m_FirstEdit->text().toUInt(), m_SecondEdit->text().toUInt(), m_ThridEdit->text().toUInt(), m_FourthEdit->text().toUInt()));
   } else {
     // HSV
-    editColor.setHsv(_firstEdit->text().toUInt(), _secondEdit->text().toUInt(), _thridEdit->text().toUInt(), _fourthEdit->text().toUInt());
+    editColor.setHsv(m_FirstEdit->text().toUInt(), m_SecondEdit->text().toUInt(), m_ThridEdit->text().toUInt(), m_FourthEdit->text().toUInt());
   }
   return editColor;
 }

@@ -9,12 +9,12 @@
 class T_TreeItem : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(QS_SET_CREF(QList<T_TreeItem *>), ChildrenItems)
+  Q_PROPERTY_CREATE(QPS_SCREF(QList<T_TreeItem *>), ChildrenItems)
   Q_PRIVATE_CREATE(T_TreeItem *, ParentItem)
   Q_PROPERTY_CREATE(bool, IsChecked)
 
 public:
-  explicit T_TreeItem(const QString &itemTitle, T_TreeItem *parent = nullptr);
+  explicit T_TreeItem(QString const &itemTitle, T_TreeItem *parent = nullptr);
   ~T_TreeItem();
   QString getItemKey() const;
   QString getItemTitle() const;

@@ -31,13 +31,13 @@ public:
   void trimOutput();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _historyIndex { -1 };
-  QStringList _commandHistory;
-  QString _savedInput;
-  QPlainTextEdit *_outputArea { nullptr };
-  QLineEdit *_inputLine { nullptr };
-  QLabel *_promptLabel { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_HistoryIndex { -1 };
+  QStringList m_CommandHistory;
+  QString m_SavedInput;
+  QPlainTextEdit *m_OutputArea { nullptr };
+  QLineEdit *m_InputLine { nullptr };
+  QLabel *m_PromptLabel { nullptr };
 };
 
 #endif // NXTERMINALWIDGETPRIVATE_H

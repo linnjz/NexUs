@@ -16,7 +16,7 @@ class T_Icon : public T_BasePage
 public:
   Q_INVOKABLE explicit T_Icon(QWidget *parent = nullptr);
   ~T_Icon();
-  Q_SLOT void onSearchEditTextEdit(const QString &searchText);
+  Q_SLOT void onSearchEditTextEdit(QString const &searchText);
 
 private:
   QMetaEnum _metaEnum;

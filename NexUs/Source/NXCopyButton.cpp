@@ -11,10 +11,10 @@
 #include "NXTheme.h"
 #include "private/NXCopyButtonPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXCopyButton, QS_SET_CREF(QString), CopyText)
-Q_PROPERTY_CREATE_CPP(NXCopyButton, QS_SET_CREF(QString), SuccessText)
-Q_PROPERTY_CREATE_CPP(NXCopyButton, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXCopyButton, int, SuccessDuration)
+Q_PROPERTY_CREATE_CPP(NXCopyButton, QPS_SCREF_PAEMIT(QString), CopyText)
+Q_PROPERTY_CREATE_CPP(NXCopyButton, QPS_SCREF_PAEMIT(QString), SuccessText)
+Q_PROPERTY_CREATE_CPP(NXCopyButton, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXCopyButton, QPS_PAEMIT(int), SuccessDuration)
 
 NXCopyButton::NXCopyButton(QWidget *parent)
     : QPushButton(parent)
@@ -22,9 +22,9 @@ NXCopyButton::NXCopyButton(QWidget *parent)
 {
   Q_D(NXCopyButton);
   d->q_ptr             = this;
-  d->_pBorderRadius    = 3;
-  d->_pSuccessDuration = 1500;
-  d->_themeMode        = nxTheme->getThemeMode();
+  d->m_BorderRadius    = 3;
+  d->m_SuccessDuration = 1500;
+  d->m_ThemeMode        = nxTheme->getThemeMode();
   setMouseTracking(true);
   setFixedSize(30, 30);
   QFont font = this->font();
@@ -33,13 +33,13 @@ NXCopyButton::NXCopyButton(QWidget *parent)
   setObjectName("NXCopyButton");
   setStyleSheet(QStringLiteral("#NXCopyButton{background-color:transparent;}"));
 
-  d->_resetTimer = new QTimer(this);
-  d->_resetTimer->setSingleShot(true);
-  connect(d->_resetTimer, &QTimer::timeout, this, [=]() {
-    d->_isSuccess                     = false;
+  d->m_ResetTimer = new QTimer(this);
+  d->m_ResetTimer->setSingleShot(true);
+  connect(d->m_ResetTimer, &QTimer::timeout, this, [=]() {
+    d->m_IsSuccess                     = false;
     QPropertyAnimation *fadeAnimation = new QPropertyAnimation(this, "");
-    connect(fadeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      d->_iconOpacity = value.toReal();
+    connect(fadeAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      d->m_IconOpacity = value.toReal();
       update();
     });
     fadeAnimation->setStartValue(0.0);
@@ -50,21 +50,21 @@ NXCopyButton::NXCopyButton(QWidget *parent)
   });
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
-NXCopyButton::NXCopyButton(const QString &text, QWidget *parent)
+NXCopyButton::NXCopyButton(QString const &text, QWidget *parent)
     : NXCopyButton(parent)
 {
-  d_ptr->_pCopyText = text;
+  d_ptr->m_CopyText = text;
 }
 
 NXCopyButton::~NXCopyButton()
 {
 }
 
-void NXCopyButton::setText(const QString &text)
+void NXCopyButton::setText(QString const &text)
 {
   QPushButton::setText(text);
   if (text.isEmpty()) {
@@ -74,10 +74,10 @@ void NXCopyButton::setText(const QString &text)
     QFont iconFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(17);
     QFontMetrics iconFm(iconFont);
-    int iconWidth = iconFm.horizontalAdvance(QChar((unsigned short) d->_normalIcon));
+    int iconWidth = iconFm.horizontalAdvance(QChar((unsigned short) d->m_NormalIcon));
     QFontMetrics textFm(font());
-    int textWidth = qMax(textFm.horizontalAdvance(text), textFm.horizontalAdvance(d->_pSuccessText));
-    int padding   = 2 * d->_shadowBorderWidth + 6 + 16;
+    int textWidth = qMax(textFm.horizontalAdvance(text), textFm.horizontalAdvance(d->m_SuccessText));
+    int padding   = 2 * d->m_ShadowBorderWidth + 6 + 16;
     setFixedSize(iconWidth + textWidth + padding, 38);
   }
 }
@@ -85,36 +85,36 @@ void NXCopyButton::setText(const QString &text)
 void NXCopyButton::setNXIcon(NXIconType::IconName icon)
 {
   Q_D(NXCopyButton);
-  d->_normalIcon = icon;
+  d->m_NormalIcon = icon;
   update();
 }
 
 void NXCopyButton::setSuccessIcon(NXIconType::IconName icon)
 {
   Q_D(NXCopyButton);
-  d->_successIcon = icon;
+  d->m_SuccessIcon = icon;
   update();
 }
 
 void NXCopyButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXCopyButton);
-  d->_isPressed = true;
+  d->m_IsPressed = true;
   QPushButton::mousePressEvent(event);
 }
 
 void NXCopyButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXCopyButton);
-  d->_isPressed = false;
-  if (rect().contains(event->pos()) && !d->_isSuccess) {
-    QApplication::clipboard()->setText(d->_pCopyText);
-    d->_isSuccess = true;
-    d->_resetTimer->start(d->_pSuccessDuration);
+  d->m_IsPressed = false;
+  if (rect().contains(event->pos()) && !d->m_IsSuccess) {
+    QApplication::clipboard()->setText(d->m_CopyText);
+    d->m_IsSuccess = true;
+    d->m_ResetTimer->start(d->m_SuccessDuration);
 
     QPropertyAnimation *fadeAnimation = new QPropertyAnimation(this, "");
-    connect(fadeAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      d->_iconOpacity = value.toReal();
+    connect(fadeAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      d->m_IconOpacity = value.toReal();
       update();
     });
     fadeAnimation->setStartValue(0.0);
@@ -123,7 +123,7 @@ void NXCopyButton::mouseReleaseEvent(QMouseEvent *event)
     fadeAnimation->setEasingCurve(QEasingCurve::InOutSine);
     fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-    Q_EMIT copyCompleted(d->_pCopyText);
+    Q_EMIT copyCompleted(d->m_CopyText);
   }
   QPushButton::mouseReleaseEvent(event);
 }
@@ -134,16 +134,16 @@ void NXCopyButton::paintEvent(QPaintEvent *event)
   Q_D(NXCopyButton);
   QPainter painter(this);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
 
   painter.save();
-  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
+  QRect foregroundRect(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, width() - 2 * d->m_ShadowBorderWidth, height() - 2 * d->m_ShadowBorderWidth);
 
-  if (d->_themeMode == NXThemeType::Light) {
+  if (d->m_ThemeMode == NXThemeType::Light) {
     painter.setPen(NXThemeColor(NXThemeType::Light, BasicBorder));
-    if (d->_isSuccess) {
-      painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
-    } else if (d->_isPressed) {
+    if (d->m_IsSuccess) {
+      painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBase));
+    } else if (d->m_IsPressed) {
       painter.setBrush(NXThemeColor(NXThemeType::Light, BasicPress));
     } else if (underMouse()) {
       painter.setBrush(NXThemeColor(NXThemeType::Light, BasicHover));
@@ -152,9 +152,9 @@ void NXCopyButton::paintEvent(QPaintEvent *event)
     }
   } else {
     painter.setPen(Qt::NoPen);
-    if (d->_isSuccess) {
-      painter.setBrush(NXThemeColor(d->_themeMode, BasicBase));
-    } else if (d->_isPressed) {
+    if (d->m_IsSuccess) {
+      painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBase));
+    } else if (d->m_IsPressed) {
       painter.setBrush(NXThemeColor(NXThemeType::Dark, BasicPress));
     } else if (underMouse()) {
       painter.setBrush(NXThemeColor(NXThemeType::Dark, BasicHover));
@@ -162,24 +162,24 @@ void NXCopyButton::paintEvent(QPaintEvent *event)
       painter.setBrush(NXThemeColor(NXThemeType::Dark, BasicBase));
     }
   }
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
 
-  if (!d->_isPressed) {
-    painter.setPen(NXThemeColor(d->_themeMode, BasicBaseLine));
-    painter.drawLine(foregroundRect.x() + d->_pBorderRadius, height() - d->_shadowBorderWidth, foregroundRect.width(), height() - d->_shadowBorderWidth);
+  if (!d->m_IsPressed) {
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBaseLine));
+    painter.drawLine(foregroundRect.x() + d->m_BorderRadius, height() - d->m_ShadowBorderWidth, foregroundRect.width(), height() - d->m_ShadowBorderWidth);
   }
 
-  NXIconType::IconName currentIcon = d->_isSuccess ? d->_successIcon : d->_normalIcon;
-  QColor iconColor                 = d->_isSuccess ? NXThemeColor(d->_themeMode, PrimaryNormal)
-                                                   : (d->_themeMode == NXThemeType::Light ? NXThemeColor(NXThemeType::Light, BasicText)
+  NXIconType::IconName currentIcon = d->m_IsSuccess ? d->m_SuccessIcon : d->m_NormalIcon;
+  QColor iconColor                 = d->m_IsSuccess ? NXThemeColor(d->m_ThemeMode, PrimaryNormal)
+                                                   : (d->m_ThemeMode == NXThemeType::Light ? NXThemeColor(NXThemeType::Light, BasicText)
                                                                                           : NXThemeColor(NXThemeType::Dark, BasicText));
-  iconColor.setAlphaF(d->_iconOpacity);
+  iconColor.setAlphaF(d->m_IconOpacity);
   painter.setPen(iconColor);
 
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   iconFont.setPixelSize(17);
 
-  QString btnText = d->_isSuccess ? d->_pSuccessText : text();
+  QString btnText = d->m_IsSuccess ? d->m_SuccessText : text();
   if (btnText.isEmpty()) {
     painter.setFont(iconFont);
     painter.drawText(foregroundRect, Qt::AlignCenter, QChar((unsigned short) currentIcon));
@@ -188,11 +188,11 @@ void NXCopyButton::paintEvent(QPaintEvent *event)
     int iconWidth = iconFm.horizontalAdvance(QChar((unsigned short) currentIcon));
 
     QFont textFont   = this->font();
-    QColor textColor = d->_isSuccess
-                         ? NXThemeColor(d->_themeMode, PrimaryNormal)
-                         : (d->_themeMode == NXThemeType::Light ? NXThemeColor(NXThemeType::Light, BasicText)
+    QColor textColor = d->m_IsSuccess
+                         ? NXThemeColor(d->m_ThemeMode, PrimaryNormal)
+                         : (d->m_ThemeMode == NXThemeType::Light ? NXThemeColor(NXThemeType::Light, BasicText)
                                                                 : NXThemeColor(NXThemeType::Dark, BasicText));
-    textColor.setAlphaF(d->_iconOpacity);
+    textColor.setAlphaF(d->m_IconOpacity);
     QFontMetrics textFm(textFont);
     int textWidth = textFm.horizontalAdvance(btnText);
 

@@ -7,15 +7,15 @@
 
 #include "NXTheme.h"
 #include "private/NXCountdownPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXCountdown, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXCountdown, int, DigitWidth)
-Q_PROPERTY_CREATE_CPP(NXCountdown, int, DigitHeight)
-Q_PROPERTY_CREATE_CPP(NXCountdown, int, DigitSpacing)
-Q_PROPERTY_CREATE_CPP(NXCountdown, int, FontPixelSize)
-Q_PROPERTY_CREATE_CPP(NXCountdown, bool, IsShowDays)
-Q_PROPERTY_CREATE_CPP(NXCountdown, bool, IsShowHours)
-Q_PROPERTY_CREATE_CPP(NXCountdown, bool, IsShowMinutes)
-Q_PROPERTY_CREATE_CPP(NXCountdown, bool, IsShowSeconds)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(int), DigitWidth)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(int), DigitHeight)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(int), DigitSpacing)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(int), FontPixelSize)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(bool), IsShowDays)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(bool), IsShowHours)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(bool), IsShowMinutes)
+Q_PROPERTY_CREATE_CPP(NXCountdown, QPS_PAEMIT(bool), IsShowSeconds)
 
 NXCountdown::NXCountdown(QWidget *parent)
     : QWidget(parent)
@@ -23,34 +23,34 @@ NXCountdown::NXCountdown(QWidget *parent)
 {
   Q_D(NXCountdown);
   d->q_ptr           = this;
-  d->_pBorderRadius  = 6;
-  d->_pIsShowDays    = true;
-  d->_pIsShowHours   = true;
-  d->_pIsShowMinutes = true;
-  d->_pIsShowSeconds = true;
-  d->_pDigitWidth    = 44;
-  d->_pDigitHeight   = 56;
-  d->_pDigitSpacing  = 6;
-  d->_pFontPixelSize = 24;
-  d->_pFlipAngle     = 0;
-  d->_themeMode      = nxTheme->getThemeMode();
+  d->m_BorderRadius  = 6;
+  d->m_IsShowDays    = true;
+  d->m_IsShowHours   = true;
+  d->m_IsShowMinutes = true;
+  d->m_IsShowSeconds = true;
+  d->m_DigitWidth    = 44;
+  d->m_DigitHeight   = 56;
+  d->m_DigitSpacing  = 6;
+  d->m_FontPixelSize = 24;
+  d->m_FlipAngle     = 0;
+  d->m_ThemeMode      = nxTheme->getThemeMode();
 
-  d->_timer = new QTimer(this);
-  d->_timer->setInterval(1000);
-  connect(d->_timer, &QTimer::timeout, d, &NXCountdownPrivate::onTimerTick);
+  d->m_Timer = new QTimer(this);
+  d->m_Timer->setInterval(1000);
+  connect(d->m_Timer, &QTimer::timeout, d, &NXCountdownPrivate::onTimerTick);
 
   _updateSize();
 
-  connect(this, &NXCountdown::pIsShowDaysChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pIsShowHoursChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pIsShowMinutesChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pIsShowSecondsChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pDigitWidthChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pDigitHeightChanged, this, &NXCountdown::_updateSize);
-  connect(this, &NXCountdown::pDigitSpacingChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalIsShowDaysChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalIsShowHoursChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalIsShowMinutesChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalIsShowSecondsChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalDigitWidthChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalDigitHeightChanged, this, &NXCountdown::_updateSize);
+  connect(this, &NXCountdown::signalDigitSpacingChanged, this, &NXCountdown::_updateSize);
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 }
@@ -59,81 +59,81 @@ NXCountdown::~NXCountdown()
 {
 }
 
-void NXCountdown::setTargetDateTime(const QDateTime &dateTime)
+void NXCountdown::setTargetDateTime(QDateTime const &dateTime)
 {
   Q_D(NXCountdown);
-  d->_targetDateTime   = dateTime;
-  d->_useTargetMode    = true;
+  d->m_TargetDateTime   = dateTime;
+  d->m_UseTargetMode    = true;
   qint64 secs          = QDateTime::currentDateTime().secsTo(dateTime);
-  d->_remainingSeconds = qMax(static_cast<qint64>(0), secs);
+  d->m_RemainingSeconds = qMax(static_cast<qint64>(0), secs);
   update();
 }
 
 QDateTime NXCountdown::getTargetDateTime() const
 {
-  return d_ptr->_targetDateTime;
+  return d_ptr->m_TargetDateTime;
 }
 
 void NXCountdown::setRemainingSeconds(qint64 seconds)
 {
   Q_D(NXCountdown);
-  d->_remainingSeconds = qMax(static_cast<qint64>(0), seconds);
-  d->_useTargetMode    = false;
+  d->m_RemainingSeconds = qMax(static_cast<qint64>(0), seconds);
+  d->m_UseTargetMode    = false;
   update();
 }
 
 qint64 NXCountdown::getRemainingSeconds() const
 {
-  return d_ptr->_remainingSeconds;
+  return d_ptr->m_RemainingSeconds;
 }
 
 void NXCountdown::start()
 {
   Q_D(NXCountdown);
-  if (d->_isRunning) {
+  if (d->m_IsRunning) {
     return;
   }
-  d->_isRunning = true;
-  if (d->_useTargetMode) {
-    qint64 secs          = QDateTime::currentDateTime().secsTo(d->_targetDateTime);
-    d->_remainingSeconds = qMax(static_cast<qint64>(0), secs);
+  d->m_IsRunning = true;
+  if (d->m_UseTargetMode) {
+    qint64 secs          = QDateTime::currentDateTime().secsTo(d->m_TargetDateTime);
+    d->m_RemainingSeconds = qMax(static_cast<qint64>(0), secs);
   }
-  d->_prevSeconds = -1;
-  d->_prevMinutes = -1;
-  d->_prevHours   = -1;
-  d->_prevDays    = -1;
-  d->_timer->start();
+  d->m_PrevSeconds = -1;
+  d->m_PrevMinutes = -1;
+  d->m_PrevHours   = -1;
+  d->m_PrevDays    = -1;
+  d->m_Timer->start();
   update();
 }
 
 void NXCountdown::pause()
 {
   Q_D(NXCountdown);
-  d->_isRunning = false;
-  d->_timer->stop();
+  d->m_IsRunning = false;
+  d->m_Timer->stop();
 }
 
 void NXCountdown::resume()
 {
   Q_D(NXCountdown);
-  if (!d->_isRunning) {
-    d->_isRunning = true;
-    d->_timer->start();
+  if (!d->m_IsRunning) {
+    d->m_IsRunning = true;
+    d->m_Timer->start();
   }
 }
 
 void NXCountdown::stop()
 {
   Q_D(NXCountdown);
-  d->_isRunning = false;
-  d->_timer->stop();
-  d->_remainingSeconds = 0;
+  d->m_IsRunning = false;
+  d->m_Timer->stop();
+  d->m_RemainingSeconds = 0;
   update();
 }
 
 bool NXCountdown::isRunning() const
 {
-  return d_ptr->_isRunning;
+  return d_ptr->m_IsRunning;
 }
 
 void NXCountdown::paintEvent(QPaintEvent *event)
@@ -142,29 +142,29 @@ void NXCountdown::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-  qint64 total = d->_remainingSeconds;
+  qint64 total = d->m_RemainingSeconds;
   int days     = static_cast<int>(total / 86400);
   int hours    = static_cast<int>((total % 86400) / 3600);
   int minutes  = static_cast<int>((total % 3600) / 60);
   int seconds  = static_cast<int>(total % 60);
 
   QFont digitFont = font();
-  digitFont.setPixelSize(d->_pFontPixelSize);
+  digitFont.setPixelSize(d->m_FontPixelSize);
   digitFont.setBold(true);
 
   QFont separatorFont = font();
-  separatorFont.setPixelSize(d->_pFontPixelSize);
+  separatorFont.setPixelSize(d->m_FontPixelSize);
   separatorFont.setBold(true);
 
-  QColor bgColor        = NXThemeColor(d->_themeMode, BasicBaseDeep);
-  QColor textColor      = NXThemeColor(d->_themeMode, BasicText);
-  QColor separatorColor = NXThemeColor(d->_themeMode, BasicTextNoFocus);
-  QColor lineColor      = NXThemeColor(d->_themeMode, BasicBorder);
+  QColor bgColor        = NXThemeColor(d->m_ThemeMode, BasicBaseDeep);
+  QColor textColor      = NXThemeColor(d->m_ThemeMode, BasicText);
+  QColor separatorColor = NXThemeColor(d->m_ThemeMode, BasicTextNoFocus);
+  QColor lineColor      = NXThemeColor(d->m_ThemeMode, BasicBorder);
 
-  int dw      = d->_pDigitWidth;
-  int dh      = d->_pDigitHeight;
-  int spacing = d->_pDigitSpacing;
-  int br      = d->_pBorderRadius;
+  int dw      = d->m_DigitWidth;
+  int dh      = d->m_DigitHeight;
+  int spacing = d->m_DigitSpacing;
+  int br      = d->m_BorderRadius;
 
   auto drawDigitPair = [&](int x, int value) {
     QString text = QString(QStringLiteral("%1")).arg(value, 2, 10, QChar('0'));
@@ -218,14 +218,14 @@ void NXCountdown::paintEvent(QPaintEvent *event)
   };
 
   QList<Section> sections;
-  sections.append({ days, d->_pIsShowDays });
-  sections.append({ hours, d->_pIsShowHours });
-  sections.append({ minutes, d->_pIsShowMinutes });
-  sections.append({ seconds, d->_pIsShowSeconds });
+  sections.append({ days, d->m_IsShowDays });
+  sections.append({ hours, d->m_IsShowHours });
+  sections.append({ minutes, d->m_IsShowMinutes });
+  sections.append({ seconds, d->m_IsShowSeconds });
 
   int xPos   = 0;
   bool first = true;
-  for (const auto &sec : sections) {
+  for (auto const &sec : sections) {
     if (!sec.show)
       continue;
     if (!first) {
@@ -241,20 +241,20 @@ void NXCountdown::paintEvent(QPaintEvent *event)
 void NXCountdown::_updateSize()
 {
   Q_D(NXCountdown);
-  int dw           = d->_pDigitWidth;
-  int dh           = d->_pDigitHeight;
+  int dw           = d->m_DigitWidth;
+  int dh           = d->m_DigitHeight;
   int sepW         = 20;
   int sectionCount = 0;
-  if (d->_pIsShowDays) {
+  if (d->m_IsShowDays) {
     sectionCount++;
   }
-  if (d->_pIsShowHours) {
+  if (d->m_IsShowHours) {
     sectionCount++;
   }
-  if (d->_pIsShowMinutes) {
+  if (d->m_IsShowMinutes) {
     sectionCount++;
   }
-  if (d->_pIsShowSeconds) {
+  if (d->m_IsShowSeconds) {
     sectionCount++;
   }
   int totalWidth = sectionCount * dw + qMax(0, sectionCount - 1) * sepW;

@@ -35,7 +35,7 @@ public:
   void unRegisterEvent(NXEvent *event);
 
 private:
-  QMap<QString, QList<NXEvent *>> _eventMap;
+  QMap<QString, QList<NXEvent *>> m_EventMap;
 };
 
 #endif // NXEVENTBUSPRIVATE_H

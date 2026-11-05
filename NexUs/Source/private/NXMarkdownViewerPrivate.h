@@ -20,8 +20,8 @@ public:
   ~NXMarkdownViewerPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QTextBrowser *_textBrowser { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QTextBrowser *m_TextBrowser { nullptr };
   void _applyThemeStyle();
 };
 

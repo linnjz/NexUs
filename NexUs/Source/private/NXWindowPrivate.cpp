@@ -25,66 +25,66 @@ NXWindowPrivate::~NXWindowPrivate()
 
 void NXWindowPrivate::onNavigationButtonClicked()
 {
-  if (_isNavigationBarFloat) {
+  if (m_IsNavigationBarFloat) {
     return;
   }
-  auto currentDisplayMode = _navigationBar->getDisplayMode();
+  auto currentDisplayMode = m_NavigationBar->getDisplayMode();
   if (currentDisplayMode == NXNavigationType::Minimal) {
-    _isNavigationDisplayModeChanged = false;
+    m_IsNavigationDisplayModeChanged = false;
     _resetWindowLayout(true);
-    _navigationBar->setIsTransparent(false);
-    _navigationBar->setDisplayMode(NXNavigationType::Maximal, false);
-    _navigationBar->move(-_navigationBar->width(), _navigationBar->pos().y());
-    _navigationBar->resize(_navigationBar->width(), _navigationCenterStackedWidget->height() + 1);
-    QPropertyAnimation *navigationMoveAnimation = new QPropertyAnimation(_navigationBar, "pos");
+    m_NavigationBar->setIsTransparent(false);
+    m_NavigationBar->setDisplayMode(NXNavigationType::Maximal, false);
+    m_NavigationBar->move(-m_NavigationBar->width(), m_NavigationBar->pos().y());
+    m_NavigationBar->resize(m_NavigationBar->width(), m_NavigationCenterStackedWidget->height() + 1);
+    QPropertyAnimation *navigationMoveAnimation = new QPropertyAnimation(m_NavigationBar, "pos");
     connect(navigationMoveAnimation, &QPropertyAnimation::finished, this, [=]() {
-      _isNavigationBarExpanded = true;
+      m_IsNavigationBarExpanded = true;
     });
     navigationMoveAnimation->setEasingCurve(QEasingCurve::OutCubic);
     navigationMoveAnimation->setDuration(225);
-    navigationMoveAnimation->setStartValue(_navigationBar->pos());
+    navigationMoveAnimation->setStartValue(m_NavigationBar->pos());
     navigationMoveAnimation->setEndValue(QPoint(0, 0));
     navigationMoveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-    _isNavigationBarFloat = true;
+    m_IsNavigationBarFloat = true;
   } else {
     if (currentDisplayMode == NXNavigationType::Compact) {
-      _navigationBar->setDisplayMode(NXNavigationType::Maximal);
+      m_NavigationBar->setDisplayMode(NXNavigationType::Maximal);
     } else {
-      _navigationBar->setDisplayMode(NXNavigationType::Compact);
+      m_NavigationBar->setDisplayMode(NXNavigationType::Compact);
     }
   }
 }
 
-void NXWindowPrivate::onWMWindowClickedEvent(const QVariantMap &data)
+void NXWindowPrivate::onWMWindowClickedEvent(QVariantMap const &data)
 {
   NXAppBarType::WMMouseActionType actionType =
       data.value(QStringLiteral("WMClickType")).value<NXAppBarType::WMMouseActionType>();
   if (actionType == NXAppBarType::WMLBUTTONDBLCLK || actionType == NXAppBarType::WMLBUTTONUP) {
-    if (NXApplication::containsCursorToItem(_navigationBar)) {
+    if (NXApplication::containsCursorToItem(m_NavigationBar)) {
       return;
     }
-    if (_isNavigationBarExpanded) {
-      QPropertyAnimation *navigationMoveAnimation = new QPropertyAnimation(_navigationBar, "pos");
+    if (m_IsNavigationBarExpanded) {
+      QPropertyAnimation *navigationMoveAnimation = new QPropertyAnimation(m_NavigationBar, "pos");
       connect(navigationMoveAnimation, &QPropertyAnimation::valueChanged, this, [=]() {
-        if (_isNavigationDisplayModeChanged) {
-          _isNavigationBarFloat = false;
+        if (m_IsNavigationDisplayModeChanged) {
+          m_IsNavigationBarFloat = false;
           _resetWindowLayout(false);
           navigationMoveAnimation->deleteLater();
         }
       });
       connect(navigationMoveAnimation, &QPropertyAnimation::finished, this, [=]() {
-        if (!_isNavigationDisplayModeChanged) {
-          _navigationBar->setDisplayMode(NXNavigationType::Minimal, false);
+        if (!m_IsNavigationDisplayModeChanged) {
+          m_NavigationBar->setDisplayMode(NXNavigationType::Minimal, false);
           _resetWindowLayout(false);
         }
-        _isNavigationBarFloat = false;
+        m_IsNavigationBarFloat = false;
       });
       navigationMoveAnimation->setEasingCurve(QEasingCurve::OutCubic);
       navigationMoveAnimation->setDuration(225);
-      navigationMoveAnimation->setStartValue(_navigationBar->pos());
-      navigationMoveAnimation->setEndValue(QPoint(-_navigationBar->width(), 0));
+      navigationMoveAnimation->setStartValue(m_NavigationBar->pos());
+      navigationMoveAnimation->setEndValue(QPoint(-m_NavigationBar->width(), 0));
       navigationMoveAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-      _isNavigationBarExpanded = false;
+      m_IsNavigationBarExpanded = false;
     }
   }
 }
@@ -96,7 +96,7 @@ void NXWindowPrivate::onThemeReadyChange()
   switch (nxApp->getWindowDisplayMode()) {
   case NXApplicationType::Normal :
   case NXApplicationType::NXMica : {
-    if (_pThemeChangeTime <= 0 || _pThemeChangeTime > 3000) {
+    if (m_ThemeChangeTime <= 0 || m_ThemeChangeTime > 3000) {
       if (nxTheme->getThemeMode() == NXThemeType::Light) {
         nxTheme->setThemeMode(NXThemeType::Dark);
       } else {
@@ -104,32 +104,32 @@ void NXWindowPrivate::onThemeReadyChange()
       }
       break;
     }
-    _appBar->setIsOnlyAllowMinAndClose(true);
-    if (!_animationWidget) {
+    m_AppBar->setIsOnlyAllowMinAndClose(true);
+    if (!m_AnimationWidget) {
       QPoint centerPos = q->mapFromGlobal(QCursor::pos());
-      _animationWidget = new NXThemeAnimationWidget(q);
-      connect(_animationWidget, &NXThemeAnimationWidget::animationFinished, this, [=]() {
-        _appBar->setIsOnlyAllowMinAndClose(false);
-        _animationWidget = nullptr;
+      m_AnimationWidget = new NXThemeAnimationWidget(q);
+      connect(m_AnimationWidget, &NXThemeAnimationWidget::animationFinished, this, [=]() {
+        m_AppBar->setIsOnlyAllowMinAndClose(false);
+        m_AnimationWidget = nullptr;
       });
-      _animationWidget->move(0, 0);
-      _animationWidget->setOldWindowBackground(q->grab(q->rect()).toImage());
+      m_AnimationWidget->move(0, 0);
+      m_AnimationWidget->setOldWindowBackground(q->grab(q->rect()).toImage());
       if (nxTheme->getThemeMode() == NXThemeType::Light) {
         nxTheme->setThemeMode(NXThemeType::Dark);
       } else {
         nxTheme->setThemeMode(NXThemeType::Light);
       }
 
-      _animationWidget->setCenter(centerPos);
+      m_AnimationWidget->setCenter(centerPos);
       qreal topLeftDis     = _distance(centerPos, QPoint(0, 0));
       qreal topRightDis    = _distance(centerPos, QPoint(q->width(), 0));
       qreal bottomLeftDis  = _distance(centerPos, QPoint(0, q->height()));
       qreal bottomRightDis = _distance(centerPos, QPoint(q->width(), q->height()));
       QList<qreal> disList { topLeftDis, topRightDis, bottomLeftDis, bottomRightDis };
       std::sort(disList.begin(), disList.end());
-      _animationWidget->setEndRadius(disList[3]);
-      _animationWidget->resize(q->width(), q->height());
-      _animationWidget->startAnimation(_pThemeChangeTime);
+      m_AnimationWidget->setEndRadius(disList[3]);
+      m_AnimationWidget->resize(q->width(), q->height());
+      m_AnimationWidget->startAnimation(m_ThemeChangeTime);
     }
     break;
   }
@@ -147,13 +147,13 @@ void NXWindowPrivate::onThemeReadyChange()
 void NXWindowPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXWindow);
-  _themeMode = themeMode;
-  if (_pWindowPaintMode == NXWindowType::PaintMode::Movie) {
-    if (_windowPaintMovie->state() == QMovie::Running) {
-      _windowPaintMovie->stop();
+  m_ThemeMode = themeMode;
+  if (m_WindowPaintMode == NXWindowType::PaintMode::Movie) {
+    if (m_WindowPaintMovie->state() == QMovie::Running) {
+      m_WindowPaintMovie->stop();
     }
-    _windowPaintMovie->setFileName(_themeMode == NXThemeType::Light ? _lightWindowMoviePath : _darkWindowMoviePath);
-    _windowPaintMovie->start();
+    m_WindowPaintMovie->setFileName(m_ThemeMode == NXThemeType::Light ? m_LightWindowMoviePath : m_DarkWindowMoviePath);
+    m_WindowPaintMovie->start();
   }
   q->update();
 }
@@ -161,57 +161,57 @@ void NXWindowPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 void NXWindowPrivate::onWindowDisplayModeChanged()
 {
   Q_Q(NXWindow);
-  _windowDisplayMode = nxApp->getWindowDisplayMode();
-  if (_windowPaintMovie->state() == QMovie::Running) {
-    _windowPaintMovie->stop();
+  m_WindowDisplayMode = nxApp->getWindowDisplayMode();
+  if (m_WindowPaintMovie->state() == QMovie::Running) {
+    m_WindowPaintMovie->stop();
   }
-  if (_windowDisplayMode == NXApplicationType::WindowDisplayMode::Normal && _pWindowPaintMode == NXWindowType::Movie) {
-    _windowPaintMovie->setFileName(_themeMode == NXThemeType::Light ? _lightWindowMoviePath : _darkWindowMoviePath);
-    _windowPaintMovie->start();
+  if (m_WindowDisplayMode == NXApplicationType::WindowDisplayMode::Normal && m_WindowPaintMode == NXWindowType::Movie) {
+    m_WindowPaintMovie->setFileName(m_ThemeMode == NXThemeType::Light ? m_LightWindowMoviePath : m_DarkWindowMoviePath);
+    m_WindowPaintMovie->start();
   }
   q->update();
 }
 
-void NXWindowPrivate::onNavigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, bool isRouteBack)
+void NXWindowPrivate::onNavigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, bool isRouteBack)
 {
   Q_Q(NXWindow);
 
-  if (QWidget *page = _routeMap.value(nodeKey)) {
-    int nodeIndex = _navigationCenterStackedWidget->getContainerStackedWidget()->indexOf(page);
-    if (_navigationTargetIndex == nodeIndex ||
-        _navigationCenterStackedWidget->getContainerStackedWidget()->count() <= nodeIndex) {
+  if (QWidget *page = m_RouteMap.value(nodeKey)) {
+    int nodeIndex = m_NavigationCenterStackedWidget->getContainerStackedWidget()->indexOf(page);
+    if (m_NavigationTargetIndex == nodeIndex ||
+        m_NavigationCenterStackedWidget->getContainerStackedWidget()->count() <= nodeIndex) {
       return;
     }
-    _navigationTargetIndex = nodeIndex;
-    _navigationCenterStackedWidget->doWindowStackSwitch(_pStackSwitchMode, nodeIndex, isRouteBack);
+    m_NavigationTargetIndex = nodeIndex;
+    m_NavigationCenterStackedWidget->doWindowStackSwitch(m_StackSwitchMode, nodeIndex, isRouteBack);
   }
   Q_EMIT q->navigationNodeClicked(nodeType, nodeKey);
 }
 
-void NXWindowPrivate::onNavigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, QWidget *page)
+void NXWindowPrivate::onNavigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, QWidget *page)
 {
   if (nodeType == NXNavigationType::CategoryNode) {
     return;
   }
-  _routeMap.insert(nodeKey, page);
+  m_RouteMap.insert(nodeKey, page);
   if (page) {
-    _navigationCenterStackedWidget->getContainerStackedWidget()->addWidget(page);
+    m_NavigationCenterStackedWidget->getContainerStackedWidget()->addWidget(page);
   }
 }
 
-void NXWindowPrivate::onNavigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey)
+void NXWindowPrivate::onNavigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey)
 {
   Q_Q(NXWindow);
-  auto it = _routeMap.find(nodeKey);
-  if (it == _routeMap.end()) {
+  auto it = m_RouteMap.find(nodeKey);
+  if (it == m_RouteMap.end()) {
     return;
   }
   QWidget *page = it.value();
-  _routeMap.remove(nodeKey);
-  _pageMetaMap.remove(nodeKey);
-  _navigationCenterStackedWidget->getContainerStackedWidget()->removeWidget(page);
+  m_RouteMap.remove(nodeKey);
+  m_PageMetaMap.remove(nodeKey);
+  m_NavigationCenterStackedWidget->getContainerStackedWidget()->removeWidget(page);
   page->deleteLater();
-  QWidget *currentWidget = _navigationCenterStackedWidget->getContainerStackedWidget()->currentWidget();
+  QWidget *currentWidget = m_NavigationCenterStackedWidget->getContainerStackedWidget()->currentWidget();
   if (currentWidget) {
     q->navigation(currentWidget->property("NXPageKey").toString());
   }
@@ -222,37 +222,37 @@ void NXWindowPrivate::onNavigationRouterStateChanged(NXNavigationRouterType::Rou
 {
   switch (routeMode) {
   case NXNavigationRouterType::BackValid : {
-    _appBar->setRouteBackButtonEnable(true);
+    m_AppBar->setRouteBackButtonEnable(true);
     break;
   }
   case NXNavigationRouterType::BackInvalid : {
-    _appBar->setRouteBackButtonEnable(false);
+    m_AppBar->setRouteBackButtonEnable(false);
     break;
   }
   case NXNavigationRouterType::ForwardValid : {
-    _appBar->setRouteForwardButtonEnable(true);
+    m_AppBar->setRouteForwardButtonEnable(true);
     break;
   }
   case NXNavigationRouterType::ForwardInvalid : {
-    _appBar->setRouteForwardButtonEnable(false);
+    m_AppBar->setRouteForwardButtonEnable(false);
     break;
   }
   }
 }
 
-void NXWindowPrivate::onNavigationRoute(const QVariantMap &routeData)
+void NXWindowPrivate::onNavigationRoute(QVariantMap const &routeData)
 {
   Q_Q(NXWindow);
   int routeIndex           = -1;
-  _centralStackTargetIndex = routeIndex;
+  m_CentralStackTargetIndex = routeIndex;
   bool isRouteBack         = routeData.value(QStringLiteral("NXRouteBackMode")).toBool();
   if (isRouteBack) {
     routeIndex = routeData.value(QStringLiteral("NXBackCentralStackIndex")).toUInt();
   } else {
     routeIndex = routeData.value(QStringLiteral("NXForwardCentralStackIndex")).toUInt();
   }
-  if (routeIndex != _centerStackedWidget->getContainerStackedWidget()->currentIndex()) {
-    _centerStackedWidget->doWindowStackSwitch(_pStackSwitchMode, routeIndex, isRouteBack);
+  if (routeIndex != m_CenterStackedWidget->getContainerStackedWidget()->currentIndex()) {
+    m_CenterStackedWidget->doWindowStackSwitch(m_StackSwitchMode, routeIndex, isRouteBack);
   }
 }
 
@@ -264,15 +264,15 @@ qreal NXWindowPrivate::_distance(QPoint point1, QPoint point2)
 void NXWindowPrivate::_resetWindowLayout(bool isAnimation)
 {
   if (isAnimation) {
-    while (_centerLayout->count() > 0) {
-      _centerLayout->takeAt(0);
+    while (m_CenterLayout->count() > 0) {
+      m_CenterLayout->takeAt(0);
     }
   } else {
-    if (_centerLayout->count() == 0) {
-      _navigationBar->setIsTransparent(true);
-      _navigationBar->setDisplayMode(NXNavigationType::Minimal, false);
-      _centerLayout->addWidget(_navigationBar);
-      _centerLayout->addWidget(_navigationCenterStackedWidget);
+    if (m_CenterLayout->count() == 0) {
+      m_NavigationBar->setIsTransparent(true);
+      m_NavigationBar->setDisplayMode(NXNavigationType::Minimal, false);
+      m_CenterLayout->addWidget(m_NavigationBar);
+      m_CenterLayout->addWidget(m_NavigationCenterStackedWidget);
     }
   }
 }
@@ -280,28 +280,28 @@ void NXWindowPrivate::_resetWindowLayout(bool isAnimation)
 void NXWindowPrivate::_doNavigationDisplayModeChange()
 {
   Q_Q(NXWindow);
-  if (!_isNavigationEnable || !_isInitFinished) {
+  if (!m_IsNavigationEnable || !m_IsInitFinished) {
     return;
   }
-  if (_pNavigationBarDisplayMode == NXNavigationType::Minimal) {
+  if (m_NavigationBarDisplayMode == NXNavigationType::Minimal) {
     _resetWindowLayout(false);
   }
-  if (_pNavigationBarDisplayMode == NXNavigationType::Auto) {
-    _isNavigationDisplayModeChanged = true;
-    _isNavigationBarFloat           = false;
+  if (m_NavigationBarDisplayMode == NXNavigationType::Auto) {
+    m_IsNavigationDisplayModeChanged = true;
+    m_IsNavigationBarFloat           = false;
     _resetWindowLayout(false);
     int width = q->centralWidget()->width();
-    if (width >= 850 && _currentNavigationBarDisplayMode != NXNavigationType::Maximal) {
-      _navigationBar->setDisplayMode(NXNavigationType::Maximal);
-      _currentNavigationBarDisplayMode = NXNavigationType::Maximal;
-    } else if (width >= 550 && width < 850 && _currentNavigationBarDisplayMode != NXNavigationType::Compact) {
-      _navigationBar->setDisplayMode(NXNavigationType::Compact);
-      _currentNavigationBarDisplayMode = NXNavigationType::Compact;
-    } else if (width < 550 && _currentNavigationBarDisplayMode != NXNavigationType::Minimal) {
-      _navigationBar->setDisplayMode(NXNavigationType::Minimal);
-      _currentNavigationBarDisplayMode = NXNavigationType::Minimal;
-      _appBar->setWindowButtonFlag(NXAppBarType::NavigationButtonHint);
+    if (width >= 850 && m_CurrentNavigationBarDisplayMode != NXNavigationType::Maximal) {
+      m_NavigationBar->setDisplayMode(NXNavigationType::Maximal);
+      m_CurrentNavigationBarDisplayMode = NXNavigationType::Maximal;
+    } else if (width >= 550 && width < 850 && m_CurrentNavigationBarDisplayMode != NXNavigationType::Compact) {
+      m_NavigationBar->setDisplayMode(NXNavigationType::Compact);
+      m_CurrentNavigationBarDisplayMode = NXNavigationType::Compact;
+    } else if (width < 550 && m_CurrentNavigationBarDisplayMode != NXNavigationType::Minimal) {
+      m_NavigationBar->setDisplayMode(NXNavigationType::Minimal);
+      m_CurrentNavigationBarDisplayMode = NXNavigationType::Minimal;
+      m_AppBar->setWindowButtonFlag(NXAppBarType::NavigationButtonHint);
     }
-    _isNavigationBarExpanded = false;
+    m_IsNavigationBarExpanded = false;
   }
 }

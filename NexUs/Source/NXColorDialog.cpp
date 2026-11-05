@@ -20,7 +20,7 @@
 #include "NXTheme.h"
 #include "NXToolButton.h"
 #include "private/NXColorDialogPrivate.h"
-Q_TAKEOVER_NATIVEEVENT_CPP(NXColorDialog, d_func()->_appBar);
+Q_TAKEOVER_NATIVEEVENT_CPP(NXColorDialog, d_func()->m_AppBar);
 
 NXColorDialog::NXColorDialog(QWidget *parent)
     : QDialog { parent }
@@ -33,13 +33,13 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   setWindowTitle(QStringLiteral("NXColorDialog"));
   setWindowModality(Qt::ApplicationModal);
 
-  d->_pColorSchemeType = NXColorSchemeType::Argb;
+  d->m_ColorSchemeType = NXColorSchemeType::Argb;
   // 自定义AppBar
-  d->_appBar = new NXAppBar(this);
-  d->_appBar->setAppBarHeight(30);
-  d->_appBar->setIsFixedSize(true);
-  d->_appBar->setIsStayTop(true);
-  d->_appBar->setWindowButtonFlags(NXAppBarType::CloseButtonHint);
+  d->m_AppBar = new NXAppBar(this);
+  d->m_AppBar->setAppBarHeight(30);
+  d->m_AppBar->setIsFixedSize(true);
+  d->m_AppBar->setIsStayTop(true);
+  d->m_AppBar->setWindowButtonFlags(NXAppBarType::CloseButtonHint);
 
   // 颜色选择器
   NXText *colorPickerText = new NXText(QStringLiteral("编辑颜色"), this);
@@ -49,140 +49,140 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   colorPickerTextLayout->addSpacing(3);
   colorPickerTextLayout->addWidget(colorPickerText);
 
-  d->_colorPicker = new NXColorPicker(this);
-  connect(d->_colorPicker, &NXColorPicker::selectedColorChanged, d, &NXColorDialogPrivate::onColorPickerColorChanged);
+  d->m_ColorPicker = new NXColorPicker(this);
+  connect(d->m_ColorPicker, &NXColorPicker::selectedColorChanged, d, &NXColorDialogPrivate::onColorPickerColorChanged);
 
   QVBoxLayout *colorPickerLayout = new QVBoxLayout();
   colorPickerLayout->setContentsMargins(0, 0, 0, 0);
-  colorPickerLayout->addWidget(d->_colorPicker);
+  colorPickerLayout->addWidget(d->m_ColorPicker);
   colorPickerLayout->addStretch();
 
   // 颜色预览
-  d->_colorPreview                = new NXColorPreview(this);
+  d->m_ColorPreview                = new NXColorPreview(this);
   QVBoxLayout *colorPreviewLayout = new QVBoxLayout();
   colorPreviewLayout->setContentsMargins(0, 0, 0, 0);
-  colorPreviewLayout->addWidget(d->_colorPreview);
+  colorPreviewLayout->addWidget(d->m_ColorPreview);
   colorPreviewLayout->addStretch();
 
   // 颜色value控制
-  d->_colorValueSlider = new QSlider(this);
-  d->_colorValueSlider->setFixedHeight(257);
-  d->_colorValueSlider->setOrientation(Qt::Vertical);
-  d->_colorValueSlider->setRange(0, 255);
-  d->_colorValueSlider->setValue(255);
-  d->_colorValueSliderStyle = new NXColorValueSliderStyle();
-  d->_colorValueSlider->setStyle(d->_colorValueSliderStyle);
-  connect(d->_colorValueSlider, &QSlider::valueChanged, d, &NXColorDialogPrivate::onColorValueSliderChanged);
+  d->m_ColorValueSlider = new QSlider(this);
+  d->m_ColorValueSlider->setFixedHeight(257);
+  d->m_ColorValueSlider->setOrientation(Qt::Vertical);
+  d->m_ColorValueSlider->setRange(0, 255);
+  d->m_ColorValueSlider->setValue(255);
+  d->m_ColorValueSliderStyle = new NXColorValueSliderStyle();
+  d->m_ColorValueSlider->setStyle(d->m_ColorValueSliderStyle);
+  connect(d->m_ColorValueSlider, &QSlider::valueChanged, d, &NXColorDialogPrivate::onColorValueSliderChanged);
   QVBoxLayout *colorValueSliderLayout = new QVBoxLayout();
   colorValueSliderLayout->setContentsMargins(0, 0, 0, 0);
-  colorValueSliderLayout->addWidget(d->_colorValueSlider);
+  colorValueSliderLayout->addWidget(d->m_ColorValueSlider);
   colorValueSliderLayout->addStretch();
 
-  d->_transparencyValueSlider = new QSlider(this);
-  d->_transparencyValueSlider->setFixedHeight(257);
-  d->_transparencyValueSlider->setOrientation(Qt::Vertical);
-  d->_transparencyValueSlider->setRange(0, 255);
-  d->_transparencyValueSlider->setValue(255);
-  d->_transparencyValueSliderStyle = new NXColorValueSliderStyle(style());
-  d->_transparencyValueSliderStyle->setIsUseAlpha(true);
-  d->_transparencyValueSlider->setStyle(d->_transparencyValueSliderStyle);
-  connect(d->_transparencyValueSlider, &QSlider::valueChanged, d, &NXColorDialogPrivate::onTransparencyValueSliderChanged);
+  d->m_TransparencyValueSlider = new QSlider(this);
+  d->m_TransparencyValueSlider->setFixedHeight(257);
+  d->m_TransparencyValueSlider->setOrientation(Qt::Vertical);
+  d->m_TransparencyValueSlider->setRange(0, 255);
+  d->m_TransparencyValueSlider->setValue(255);
+  d->m_TransparencyValueSliderStyle = new NXColorValueSliderStyle(style());
+  d->m_TransparencyValueSliderStyle->setIsUseAlpha(true);
+  d->m_TransparencyValueSlider->setStyle(d->m_TransparencyValueSliderStyle);
+  connect(d->m_TransparencyValueSlider, &QSlider::valueChanged, d, &NXColorDialogPrivate::onTransparencyValueSliderChanged);
   QVBoxLayout *transparencyValueSliderLayout = new QVBoxLayout();
   transparencyValueSliderLayout->setContentsMargins(0, 0, 0, 0);
-  transparencyValueSliderLayout->addWidget(d->_transparencyValueSlider);
+  transparencyValueSliderLayout->addWidget(d->m_TransparencyValueSlider);
   transparencyValueSliderLayout->addStretch();
 
   // 颜色控制器
-  d->_htmlEdit = new NXLineEdit(this);
-  d->_htmlEdit->setText(QStringLiteral("#FFFFFFFF"));
+  d->m_HtmlEdit = new NXLineEdit(this);
+  d->m_HtmlEdit->setText(QStringLiteral("#FFFFFFFF"));
   NXIntValidator *htmlValidator = new NXIntValidator(0x00'00'00'00, 0xFF'FF'FF'FF, this);
   htmlValidator->setIsHexMode(true);
-  d->_htmlEdit->setValidator(htmlValidator);
-  d->_htmlEdit->setFixedSize(120, 33);
-  connect(d->_htmlEdit, &NXLineEdit::focusOut, d, &NXColorDialogPrivate::onHtmlEditFocusOut);
-  connect(d->_htmlEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onHtmlEditChanged);
+  d->m_HtmlEdit->setValidator(htmlValidator);
+  d->m_HtmlEdit->setFixedSize(120, 33);
+  connect(d->m_HtmlEdit, &NXLineEdit::focusOut, d, &NXColorDialogPrivate::onHtmlEditFocusOut);
+  connect(d->m_HtmlEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onHtmlEditChanged);
 
   // 数值预览
   QHBoxLayout *htmlEditLayout = new QHBoxLayout();
   htmlEditLayout->setContentsMargins(0, 0, 0, 0);
   htmlEditLayout->addSpacing(6);
-  htmlEditLayout->addWidget(d->_htmlEdit);
+  htmlEditLayout->addWidget(d->m_HtmlEdit);
   htmlEditLayout->addStretch();
-  d->_modeComboBox = new NXComboBox(this);
-  d->_modeComboBox->setFixedSize(120, 33);
-  d->_modeComboBox->addItem(QStringLiteral("ARGB"));
-  d->_modeComboBox->addItem(QStringLiteral("AHSV"));
-  d->_modeComboBox->setCurrentIndex(0);
-  connect(d->_modeComboBox, QOverload<int>::of(&NXComboBox::currentIndexChanged), d, &NXColorDialogPrivate::onColorModeChanged);
-  connect(this, &NXColorDialog::pColorSchemeTypeChanged, d->_modeComboBox, [d]() {
-    d->_modeComboBox->setItemText(0, QStringLiteral("RGBA"));
-    d->_modeComboBox->setItemText(1, QStringLiteral("HSVA"));
+  d->m_ModeComboBox = new NXComboBox(this);
+  d->m_ModeComboBox->setFixedSize(120, 33);
+  d->m_ModeComboBox->addItem(QStringLiteral("ARGB"));
+  d->m_ModeComboBox->addItem(QStringLiteral("AHSV"));
+  d->m_ModeComboBox->setCurrentIndex(0);
+  connect(d->m_ModeComboBox, QOverload<int>::of(&NXComboBox::currentIndexChanged), d, &NXColorDialogPrivate::onColorModeChanged);
+  connect(this, &NXColorDialog::signalColorSchemeTypeChanged, d->m_ModeComboBox, [d]() {
+    d->m_ModeComboBox->setItemText(0, QStringLiteral("RGBA"));
+    d->m_ModeComboBox->setItemText(1, QStringLiteral("HSVA"));
   });
   QHBoxLayout *modeLayout = new QHBoxLayout();
   modeLayout->setContentsMargins(0, 0, 0, 0);
   modeLayout->addSpacing(6);
-  modeLayout->addWidget(d->_modeComboBox);
+  modeLayout->addWidget(d->m_ModeComboBox);
   modeLayout->addStretch();
 
   // R或H
-  d->_firstEdit = new NXLineEdit(this);
-  d->_firstEdit->setText(QStringLiteral("0"));
-  d->_firstEdit->setFixedSize(120, 33);
-  d->_firstEdit->setValidator(new NXIntValidator(0, 255, this));
-  d->_firstText = new NXText(QStringLiteral("红色"), this);
-  d->_firstText->setTextPixelSize(13);
-  connect(d->_firstEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
+  d->m_FirstEdit = new NXLineEdit(this);
+  d->m_FirstEdit->setText(QStringLiteral("0"));
+  d->m_FirstEdit->setFixedSize(120, 33);
+  d->m_FirstEdit->setValidator(new NXIntValidator(0, 255, this));
+  d->m_FirstText = new NXText(QStringLiteral("红色"), this);
+  d->m_FirstText->setTextPixelSize(13);
+  connect(d->m_FirstEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
 
   QHBoxLayout *firstEditLayout = new QHBoxLayout();
   firstEditLayout->setContentsMargins(0, 0, 0, 0);
   firstEditLayout->addSpacing(6);
-  firstEditLayout->addWidget(d->_firstEdit);
-  firstEditLayout->addWidget(d->_firstText);
+  firstEditLayout->addWidget(d->m_FirstEdit);
+  firstEditLayout->addWidget(d->m_FirstText);
   firstEditLayout->addStretch();
 
   // G或S
-  d->_secondEdit = new NXLineEdit(this);
-  d->_secondEdit->setText(QStringLiteral("0"));
-  d->_secondEdit->setFixedSize(120, 33);
-  d->_secondEdit->setValidator(new NXIntValidator(0, 255, this));
-  d->_secondText = new NXText(QStringLiteral("绿色"), this);
-  d->_secondText->setTextPixelSize(13);
-  connect(d->_secondEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
+  d->m_SecondEdit = new NXLineEdit(this);
+  d->m_SecondEdit->setText(QStringLiteral("0"));
+  d->m_SecondEdit->setFixedSize(120, 33);
+  d->m_SecondEdit->setValidator(new NXIntValidator(0, 255, this));
+  d->m_SecondText = new NXText(QStringLiteral("绿色"), this);
+  d->m_SecondText->setTextPixelSize(13);
+  connect(d->m_SecondEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
   QHBoxLayout *secondEditLayout = new QHBoxLayout();
   secondEditLayout->setContentsMargins(0, 0, 0, 0);
   secondEditLayout->addSpacing(6);
-  secondEditLayout->addWidget(d->_secondEdit);
-  secondEditLayout->addWidget(d->_secondText);
+  secondEditLayout->addWidget(d->m_SecondEdit);
+  secondEditLayout->addWidget(d->m_SecondText);
   secondEditLayout->addStretch();
 
   // B或V
-  d->_thridEdit = new NXLineEdit(this);
-  d->_thridEdit->setText(QStringLiteral("0"));
-  d->_thridEdit->setFixedSize(120, 33);
-  d->_thridEdit->setValidator(new NXIntValidator(0, 255, this));
-  d->_thridText = new NXText(QStringLiteral("蓝色"), this);
-  d->_thridText->setTextPixelSize(13);
-  connect(d->_thridEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
+  d->m_ThridEdit = new NXLineEdit(this);
+  d->m_ThridEdit->setText(QStringLiteral("0"));
+  d->m_ThridEdit->setFixedSize(120, 33);
+  d->m_ThridEdit->setValidator(new NXIntValidator(0, 255, this));
+  d->m_ThridText = new NXText(QStringLiteral("蓝色"), this);
+  d->m_ThridText->setTextPixelSize(13);
+  connect(d->m_ThridEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
   QHBoxLayout *thridEditLayout = new QHBoxLayout();
   thridEditLayout->setContentsMargins(0, 0, 0, 0);
   thridEditLayout->addSpacing(6);
-  thridEditLayout->addWidget(d->_thridEdit);
-  thridEditLayout->addWidget(d->_thridText);
+  thridEditLayout->addWidget(d->m_ThridEdit);
+  thridEditLayout->addWidget(d->m_ThridText);
   thridEditLayout->addStretch();
 
   // Alpha
-  d->_fourthEdit = new NXLineEdit(this);
-  d->_fourthEdit->setText(QStringLiteral("0"));
-  d->_fourthEdit->setFixedSize(120, 33);
-  d->_fourthEdit->setValidator(new NXIntValidator(0, 255, this));
-  d->_fourthText = new NXText(QStringLiteral("透明度"), this);
-  d->_fourthText->setTextPixelSize(13);
-  connect(d->_fourthEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
+  d->m_FourthEdit = new NXLineEdit(this);
+  d->m_FourthEdit->setText(QStringLiteral("0"));
+  d->m_FourthEdit->setFixedSize(120, 33);
+  d->m_FourthEdit->setValidator(new NXIntValidator(0, 255, this));
+  d->m_FourthText = new NXText(QStringLiteral("透明度"), this);
+  d->m_FourthText->setTextPixelSize(13);
+  connect(d->m_FourthEdit, &NXLineEdit::textEdited, d, &NXColorDialogPrivate::onColorEditChanged);
   QHBoxLayout *fourthEditLayout = new QHBoxLayout();
   fourthEditLayout->setContentsMargins(0, 0, 0, 0);
   fourthEditLayout->addSpacing(6);
-  fourthEditLayout->addWidget(d->_fourthEdit);
-  fourthEditLayout->addWidget(d->_fourthText);
+  fourthEditLayout->addWidget(d->m_FourthEdit);
+  fourthEditLayout->addWidget(d->m_FourthText);
   fourthEditLayout->addStretch();
 
   QVBoxLayout *paramControlLayout = new QVBoxLayout();
@@ -211,18 +211,18 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   colorControlLayout->addStretch();
 
   // 基本颜色
-  d->_basicColorView = new NXBaseListView(this);
-  d->_basicColorView->setFixedSize(380, 170);
-  d->_basicColorView->setSelectionMode(QListView::NoSelection);
-  d->_basicColorView->setFlow(QListView::LeftToRight);
-  d->_basicColorView->setViewMode(QListView::IconMode);
-  d->_basicColorView->setResizeMode(QListView::Adjust);
-  d->_basicColorModel = new NXColorDisplayModel(this);
-  d->_basicColorView->setModel(d->_basicColorModel);
-  d->_basicColorDelegate = new NXColorDisplayDelegate(this);
-  d->_basicColorView->setItemDelegate(d->_basicColorDelegate);
+  d->m_BasicColorView = new NXBaseListView(this);
+  d->m_BasicColorView->setFixedSize(380, 170);
+  d->m_BasicColorView->setSelectionMode(QListView::NoSelection);
+  d->m_BasicColorView->setFlow(QListView::LeftToRight);
+  d->m_BasicColorView->setViewMode(QListView::IconMode);
+  d->m_BasicColorView->setResizeMode(QListView::Adjust);
+  d->m_BasicColorModel = new NXColorDisplayModel(this);
+  d->m_BasicColorView->setModel(d->m_BasicColorModel);
+  d->m_BasicColorDelegate = new NXColorDisplayDelegate(this);
+  d->m_BasicColorView->setItemDelegate(d->m_BasicColorDelegate);
   d->_initBasicColor();
-  connect(d->_basicColorView, &NXBaseListView::clicked, d, &NXColorDialogPrivate::onBasicColorViewClicked);
+  connect(d->m_BasicColorView, &NXBaseListView::clicked, d, &NXColorDialogPrivate::onBasicColorViewClicked);
 
   NXText *basicColorViewText = new NXText(QStringLiteral("基本颜色"), this);
   basicColorViewText->setTextPixelSize(14);
@@ -230,33 +230,33 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   basicColorLayout->setContentsMargins(3, 0, 0, 0);
   basicColorLayout->addWidget(basicColorViewText);
   basicColorLayout->addSpacing(15);
-  basicColorLayout->addWidget(d->_basicColorView);
+  basicColorLayout->addWidget(d->m_BasicColorView);
   basicColorLayout->addStretch();
 
   // 自定义颜色
-  d->_customColorView = new NXBaseListView(this);
-  d->_customColorView->setFixedSize(200, 170);
-  d->_customColorView->setSelectionMode(QListView::SingleSelection);
-  d->_customColorView->setFlow(QListView::LeftToRight);
-  d->_customColorView->setViewMode(QListView::IconMode);
-  d->_customColorView->setResizeMode(QListView::Adjust);
-  d->_customColorModel = new NXColorDisplayModel(this);
-  d->_customColorView->setModel(d->_customColorModel);
-  d->_customColorDelegate = new NXColorDisplayDelegate(this);
-  d->_customColorView->setItemDelegate(d->_customColorDelegate);
+  d->m_CustomColorView = new NXBaseListView(this);
+  d->m_CustomColorView->setFixedSize(200, 170);
+  d->m_CustomColorView->setSelectionMode(QListView::SingleSelection);
+  d->m_CustomColorView->setFlow(QListView::LeftToRight);
+  d->m_CustomColorView->setViewMode(QListView::IconMode);
+  d->m_CustomColorView->setResizeMode(QListView::Adjust);
+  d->m_CustomColorModel = new NXColorDisplayModel(this);
+  d->m_CustomColorView->setModel(d->m_CustomColorModel);
+  d->m_CustomColorDelegate = new NXColorDisplayDelegate(this);
+  d->m_CustomColorView->setItemDelegate(d->m_CustomColorDelegate);
   d->_initCustomColor();
-  connect(d->_customColorView, &NXBaseListView::clicked, d, &NXColorDialogPrivate::onCustomColorViewClicked);
+  connect(d->m_CustomColorView, &NXBaseListView::clicked, d, &NXColorDialogPrivate::onCustomColorViewClicked);
 
   // 增加移除按钮
-  d->_addCustomColorButton = new NXToolButton(this);
-  d->_addCustomColorButton->setIsTransparent(false);
-  d->_addCustomColorButton->setNXIcon(NXIconType::Plus);
-  connect(d->_addCustomColorButton, &NXToolButton::clicked, d, &NXColorDialogPrivate::onAddCustomColorButtonClicked);
+  d->m_AddCustomColorButton = new NXToolButton(this);
+  d->m_AddCustomColorButton->setIsTransparent(false);
+  d->m_AddCustomColorButton->setNXIcon(NXIconType::Plus);
+  connect(d->m_AddCustomColorButton, &NXToolButton::clicked, d, &NXColorDialogPrivate::onAddCustomColorButtonClicked);
 
-  d->_removeCustomColorButton = new NXToolButton(this);
-  d->_removeCustomColorButton->setIsTransparent(false);
-  d->_removeCustomColorButton->setNXIcon(NXIconType::Minus);
-  connect(d->_removeCustomColorButton, &NXToolButton::clicked, d, &NXColorDialogPrivate::onRemoveCustomColorButtonClicked);
+  d->m_RemoveCustomColorButton = new NXToolButton(this);
+  d->m_RemoveCustomColorButton->setIsTransparent(false);
+  d->m_RemoveCustomColorButton->setNXIcon(NXIconType::Minus);
+  connect(d->m_RemoveCustomColorButton, &NXToolButton::clicked, d, &NXColorDialogPrivate::onRemoveCustomColorButtonClicked);
 
   NXText *customColorViewText = new NXText(QStringLiteral("自定义颜色"), this);
   customColorViewText->setTextPixelSize(14);
@@ -264,15 +264,15 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   customButtonLayout->setContentsMargins(0, 0, 0, 0);
   customButtonLayout->addWidget(customColorViewText);
   customButtonLayout->addSpacing(35);
-  customButtonLayout->addWidget(d->_addCustomColorButton);
-  customButtonLayout->addWidget(d->_removeCustomColorButton);
+  customButtonLayout->addWidget(d->m_AddCustomColorButton);
+  customButtonLayout->addWidget(d->m_RemoveCustomColorButton);
   customButtonLayout->addStretch();
 
   QVBoxLayout *customColorLayout = new QVBoxLayout();
   customColorLayout->setContentsMargins(3, 0, 0, 0);
   customColorLayout->addLayout(customButtonLayout);
   customColorLayout->addSpacing(5);
-  customColorLayout->addWidget(d->_customColorView);
+  customColorLayout->addWidget(d->m_CustomColorView);
   customColorLayout->addStretch();
 
   QHBoxLayout *colorDisplayLayout = new QHBoxLayout();
@@ -282,29 +282,29 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   colorDisplayLayout->addStretch();
 
   // 确定取消按钮
-  d->_overButton = new NXPushButton(QStringLiteral("确定"), this);
-  d->_overButton->setBorderRadius(6);
-  d->_overButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
-  d->_overButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
-  d->_overButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
-  d->_overButton->setLightTextColor(Qt::white);
-  d->_overButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
-  d->_overButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
-  d->_overButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
-  d->_overButton->setDarkTextColor(Qt::white);
-  connect(d->_overButton, &NXPushButton::clicked, this, [=]() {
-    Q_EMIT colorSelected(d->_pCurrentColor);
+  d->m_OverButton = new NXPushButton(QStringLiteral("确定"), this);
+  d->m_OverButton->setBorderRadius(6);
+  d->m_OverButton->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
+  d->m_OverButton->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
+  d->m_OverButton->setLightPressColor(NXThemeColor(NXThemeType::Light, PrimaryPress));
+  d->m_OverButton->setLightTextColor(Qt::white);
+  d->m_OverButton->setDarkDefaultColor(NXThemeColor(NXThemeType::Dark, PrimaryNormal));
+  d->m_OverButton->setDarkHoverColor(NXThemeColor(NXThemeType::Dark, PrimaryHover));
+  d->m_OverButton->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
+  d->m_OverButton->setDarkTextColor(Qt::white);
+  connect(d->m_OverButton, &NXPushButton::clicked, this, [=]() {
+    Q_EMIT colorSelected(d->m_CurrentColor);
     close();
   });
-  d->_cancelButton = new NXPushButton(QStringLiteral("取消"), this);
-  d->_cancelButton->setBorderRadius(6);
-  connect(d->_cancelButton, &NXPushButton::clicked, this, [=]() {
+  d->m_CancelButton = new NXPushButton(QStringLiteral("取消"), this);
+  d->m_CancelButton->setBorderRadius(6);
+  connect(d->m_CancelButton, &NXPushButton::clicked, this, [=]() {
     close();
   });
   QHBoxLayout *buttonLayout = new QHBoxLayout();
   buttonLayout->setContentsMargins(0, 0, 0, 0);
-  buttonLayout->addWidget(d->_overButton);
-  buttonLayout->addWidget(d->_cancelButton);
+  buttonLayout->addWidget(d->m_OverButton);
+  buttonLayout->addWidget(d->m_CancelButton);
 
   QVBoxLayout *mainLayout = new QVBoxLayout(this);
   mainLayout->setContentsMargins(20, 10, 11, 20);
@@ -316,14 +316,14 @@ NXColorDialog::NXColorDialog(QWidget *parent)
   mainLayout->addLayout(buttonLayout);
   mainLayout->addStretch();
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
   setCurrentColor(QColor(0x39, 0xC5, 0xBB));
 }
 
-NXColorDialog::NXColorDialog(const QColor &currentColor, QWidget *parent)
+NXColorDialog::NXColorDialog(QColor const &currentColor, QWidget *parent)
     : NXColorDialog { parent }
 {
   setCurrentColor(currentColor);
@@ -332,57 +332,57 @@ NXColorDialog::NXColorDialog(const QColor &currentColor, QWidget *parent)
 NXColorDialog::~NXColorDialog()
 {
   Q_D(NXColorDialog);
-  delete d->_colorValueSlider->style();
-  delete d->_transparencyValueSlider->style();
+  delete d->m_ColorValueSlider->style();
+  delete d->m_TransparencyValueSlider->style();
 }
 
-void NXColorDialog::setCurrentColor(const QColor &currentColor)
+void NXColorDialog::setCurrentColor(QColor const &currentColor)
 {
   Q_D(NXColorDialog);
-  d->_pCurrentColor = currentColor;
+  d->m_CurrentColor = currentColor;
   d->_updateHtmlEditValue();
   d->_updateEditValue();
   d->_updateColorPreview();
   d->_updateColorValueSlider();
   d->_updateTransparencyValueSlider();
-  d->_colorPicker->setSelectedColor(d->_pCurrentColor);
-  Q_EMIT pCurrentColorChanged();
+  d->m_ColorPicker->setSelectedColor(d->m_CurrentColor);
+  Q_EMIT signalCurrentColorChanged();
 }
 
-QColor NXColorDialog::getCurrentColor() const
+QColor NXColorDialog::getCurrentColor() const noexcept(std::is_nothrow_copy_constructible_v<QColor>)
 {
-  Q_D(const NXColorDialog);
-  return d->_pCurrentColor;
+  Q_CONST_D(NXColorDialog);
+  return d->m_CurrentColor;
 }
 
 void NXColorDialog::setColorSchemeType(NXColorSchemeType::ColorSchemeType schemeType)
 {
   Q_D(NXColorDialog);
-  d->_pColorSchemeType = schemeType;
-  Q_EMIT pColorSchemeTypeChanged();
+  d->m_ColorSchemeType = schemeType;
+  Q_EMIT signalColorSchemeTypeChanged();
 }
 
-NXColorSchemeType::ColorSchemeType NXColorDialog::getColorSchemeType() const
+NXColorSchemeType::ColorSchemeType NXColorDialog::getColorSchemeType() const noexcept(std::is_nothrow_copy_constructible_v<NXColorSchemeType::ColorSchemeType>)
 {
-  Q_D(const NXColorDialog);
-  return d->_pColorSchemeType;
+  Q_CONST_D(NXColorDialog);
+  return d->m_ColorSchemeType;
 }
 
 QList<QColor> NXColorDialog::getCustomColorList() const
 {
-  Q_D(const NXColorDialog);
-  return d->_customColorModel->getDisplayColorList();
+  Q_CONST_D(NXColorDialog);
+  return d->m_CustomColorModel->getDisplayColorList();
 }
 
 QColor NXColorDialog::getCustomColor(int index) const
 {
-  Q_D(const NXColorDialog);
-  return d->_customColorModel->getDisplayColor(index);
+  Q_CONST_D(NXColorDialog);
+  return d->m_CustomColorModel->getDisplayColor(index);
 }
 
 QString NXColorDialog::getCurrent4ChannelColor() const
 {
-  Q_D(const NXColorDialog);
+  Q_CONST_D(NXColorDialog);
   return d->_getHex4ChannelValue();
 }
 
@@ -394,11 +394,11 @@ void NXColorDialog::paintEvent(QPaintEvent *event)
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
   // 背景绘制
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogBase));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogBase));
   painter.drawRect(rect());
 
   // 按钮背景绘制
-  painter.setBrush(NXThemeColor(d->_themeMode, DialogLayoutArea));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, DialogLayoutArea));
   painter.drawRect(QRect(0, height() - 78, width(), 78));
   painter.restore();
   QDialog::paintEvent(event);

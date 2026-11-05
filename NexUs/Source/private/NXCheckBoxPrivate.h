@@ -17,8 +17,8 @@ public:
   ~NXCheckBoxPrivate();
 
 private:
-  NXTextType::TextStyle _textStyle { NXTextType::NoStyle };
-  NXCheckBoxStyle *_checkBoxStyle { nullptr };
+  NXTextType::TextStyle m_TextStyle { NXTextType::NoStyle };
+  NXCheckBoxStyle *m_CheckBoxStyle { nullptr };
 };
 
 #endif // NXCHECKBOXPRIVATE_H

@@ -8,10 +8,10 @@
 
 NXAutoCompleteDelegate::NXAutoCompleteDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -19,17 +19,17 @@ NXAutoCompleteDelegate::~NXAutoCompleteDelegate()
 {
 }
 
-void NXAutoCompleteDelegate::setHighlightText(const QString &text)
+void NXAutoCompleteDelegate::setHighlightText(QString const &text)
 {
-  _highlightText = text;
+  m_HighlightText = text;
 }
 
 void NXAutoCompleteDelegate::setMatchMode(NXAutoComplete::MatchMode mode)
 {
-  _matchMode = mode;
+  m_MatchMode = mode;
 }
 
-void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void NXAutoCompleteDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
@@ -40,7 +40,7 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
   if (option.state & QStyle::State_MouseOver) {
     QPainterPath hoverPath;
     hoverPath.addRoundedRect(itemRect, 4, 4);
-    painter->fillPath(hoverPath, NXThemeColor(_themeMode, BasicHover));
+    painter->fillPath(hoverPath, NXThemeColor(m_ThemeMode, BasicHover));
   }
 
   QString displayText = index.data(Qt::DisplayRole).toString();
@@ -50,24 +50,24 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 
   QRectF textRect = itemRect.adjusted(10, 0, -4, 0);
 
-  if (!_highlightText.isEmpty()) {
+  if (!m_HighlightText.isEmpty()) {
     QFontMetrics fm(textFont);
     QFont boldFont = textFont;
     boldFont.setBold(true);
     QFontMetrics boldFm(boldFont);
 
-    int searchLen = _highlightText.length();
+    int searchLen = m_HighlightText.length();
     QVector<QPair<int, int>> matches;
-    if (_matchMode == NXAutoComplete::StartsWith) {
-      if (displayText.startsWith(_highlightText, Qt::CaseInsensitive)) {
+    if (m_MatchMode == NXAutoComplete::StartsWith) {
+      if (displayText.startsWith(m_HighlightText, Qt::CaseInsensitive)) {
         matches.append({ 0, searchLen });
       }
-    } else if (_matchMode == NXAutoComplete::EndsWith) {
-      if (displayText.endsWith(_highlightText, Qt::CaseInsensitive)) {
+    } else if (m_MatchMode == NXAutoComplete::EndsWith) {
+      if (displayText.endsWith(m_HighlightText, Qt::CaseInsensitive)) {
         matches.append({ displayText.length() - searchLen, searchLen });
       }
-    } else if (_matchMode == NXAutoComplete::RegExp) {
-      QRegularExpression re(_highlightText, QRegularExpression::CaseInsensitiveOption);
+    } else if (m_MatchMode == NXAutoComplete::RegExp) {
+      QRegularExpression re(m_HighlightText, QRegularExpression::CaseInsensitiveOption);
       if (re.isValid()) {
         QRegularExpressionMatchIterator it = re.globalMatch(displayText);
         while (it.hasNext()) {
@@ -80,7 +80,7 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     } else {
       int searchFrom = 0;
       while (searchFrom < displayText.length()) {
-        int idx = displayText.indexOf(_highlightText, searchFrom, Qt::CaseInsensitive);
+        int idx = displayText.indexOf(m_HighlightText, searchFrom, Qt::CaseInsensitive);
         if (idx < 0) {
           break;
         }
@@ -94,17 +94,17 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
       qreal y = textRect.center().y() + fm.ascent() / 2.0 - 1;
       int pos = 0;
 
-      for (const auto &m : matches) {
+      for (auto const &m : matches) {
         if (m.first > pos) {
           QString segment = displayText.mid(pos, m.first - pos);
           painter->setFont(textFont);
-          painter->setPen(NXThemeColor(_themeMode, BasicText));
+          painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
           painter->drawText(QPointF(x, y), segment);
           x += fm.horizontalAdvance(segment);
         }
         QString matchStr = displayText.mid(m.first, m.second);
         painter->setFont(boldFont);
-        painter->setPen(NXThemeColor(_themeMode, PrimaryNormal));
+        painter->setPen(NXThemeColor(m_ThemeMode, PrimaryNormal));
         painter->drawText(QPointF(x, y), matchStr);
         x += boldFm.horizontalAdvance(matchStr);
         pos = m.first + m.second;
@@ -112,7 +112,7 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
       if (pos < displayText.length()) {
         QString tail = displayText.mid(pos);
         painter->setFont(textFont);
-        painter->setPen(NXThemeColor(_themeMode, BasicText));
+        painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
         painter->drawText(QPointF(x, y), tail);
       }
 
@@ -121,13 +121,13 @@ void NXAutoCompleteDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     }
   }
 
-  painter->setPen(NXThemeColor(_themeMode, BasicText));
+  painter->setPen(NXThemeColor(m_ThemeMode, BasicText));
   painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, displayText);
 
   painter->restore();
 }
 
-QSize NXAutoCompleteDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize NXAutoCompleteDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   Q_UNUSED(option)
   Q_UNUSED(index)

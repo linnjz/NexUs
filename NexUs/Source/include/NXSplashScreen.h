@@ -21,13 +21,13 @@ class NX_EXPORT NXSplashScreen : public QWidget
 
 public:
   explicit NXSplashScreen(QWidget *parent = nullptr);
-  explicit NXSplashScreen(const QPixmap &logo, QWidget *parent = nullptr);
+  explicit NXSplashScreen(QPixmap const &logo, QWidget *parent = nullptr);
   ~NXSplashScreen();
 
-  void setLogo(const QPixmap &logo);
-  void setTitle(const QString &title);
-  void setSubTitle(const QString &subTitle);
-  void setStatusText(const QString &text);
+  void setLogo(QPixmap const &logo);
+  void setTitle(QString const &title);
+  void setSubTitle(QString const &subTitle);
+  void setStatusText(QString const &text);
 
   void show();
   void close();

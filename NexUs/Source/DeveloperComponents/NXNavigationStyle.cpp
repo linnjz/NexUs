@@ -14,59 +14,59 @@
 
 NXNavigationStyle::NXNavigationStyle(QStyle *style)
 {
-  _pOpacity              = 1;
-  _pItemHeight           = 38;
-  _pLastSelectMarkTop    = 10.5;
-  _pLastSelectMarkBottom = 10.5;
-  _pSelectMarkTop        = 10.5;
-  _pSelectMarkBottom     = 10.5;
+  m_Opacity              = 1;
+  m_ItemHeight           = 38;
+  m_LastSelectMarkTop    = 10.5;
+  m_LastSelectMarkBottom = 10.5;
+  m_SelectMarkTop        = 10.5;
+  m_SelectMarkBottom     = 10.5;
 
   // Mark向上
-  _lastSelectMarkTopAnimation = new QPropertyAnimation(this, "pLastSelectMarkTop");
-  connect(_lastSelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _pNavigationView->viewport()->update();
+  m_LastSelectMarkTopAnimation = new QPropertyAnimation(this, "LastSelectMarkTop");
+  connect(m_LastSelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_NavigationView->viewport()->update();
   });
-  _lastSelectMarkTopAnimation->setDuration(300);
-  _lastSelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  m_LastSelectMarkTopAnimation->setDuration(300);
+  m_LastSelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
 
-  _selectMarkBottomAnimation = new QPropertyAnimation(this, "pSelectMarkBottom");
-  connect(_selectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _pNavigationView->viewport()->update();
+  m_SelectMarkBottomAnimation = new QPropertyAnimation(this, "SelectMarkBottom");
+  connect(m_SelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_NavigationView->viewport()->update();
   });
-  _selectMarkBottomAnimation->setDuration(300);
-  _selectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(_lastSelectMarkTopAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _isSelectMarkDisplay = true;
-    _lastSelectedNode    = nullptr;
-    _selectMarkBottomAnimation->setStartValue(0);
-    _selectMarkBottomAnimation->setEndValue(10.5);
-    _selectMarkBottomAnimation->start();
+  m_SelectMarkBottomAnimation->setDuration(300);
+  m_SelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  connect(m_LastSelectMarkTopAnimation, &QPropertyAnimation::finished, this, [=]() {
+    m_IsSelectMarkDisplay = true;
+    m_LastSelectedNode    = nullptr;
+    m_SelectMarkBottomAnimation->setStartValue(0);
+    m_SelectMarkBottomAnimation->setEndValue(10.5);
+    m_SelectMarkBottomAnimation->start();
   });
 
   // Mark向下
-  _lastSelectMarkBottomAnimation = new QPropertyAnimation(this, "pLastSelectMarkBottom");
-  connect(_lastSelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _pNavigationView->viewport()->update();
+  m_LastSelectMarkBottomAnimation = new QPropertyAnimation(this, "LastSelectMarkBottom");
+  connect(m_LastSelectMarkBottomAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_NavigationView->viewport()->update();
   });
-  _lastSelectMarkBottomAnimation->setDuration(300);
-  _lastSelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  m_LastSelectMarkBottomAnimation->setDuration(300);
+  m_LastSelectMarkBottomAnimation->setEasingCurve(QEasingCurve::InOutSine);
 
-  _selectMarkTopAnimation = new QPropertyAnimation(this, "pSelectMarkTop");
-  connect(_selectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-    _pNavigationView->viewport()->update();
+  m_SelectMarkTopAnimation = new QPropertyAnimation(this, "SelectMarkTop");
+  connect(m_SelectMarkTopAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_NavigationView->viewport()->update();
   });
-  _selectMarkTopAnimation->setDuration(300);
-  _selectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
-  connect(_lastSelectMarkBottomAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _isSelectMarkDisplay = true;
-    _lastSelectedNode    = nullptr;
-    _selectMarkTopAnimation->setStartValue(0.0);
-    _selectMarkTopAnimation->setEndValue(10.5);
-    _selectMarkTopAnimation->start();
+  m_SelectMarkTopAnimation->setDuration(300);
+  m_SelectMarkTopAnimation->setEasingCurve(QEasingCurve::InOutSine);
+  connect(m_LastSelectMarkBottomAnimation, &QPropertyAnimation::finished, this, [=]() {
+    m_IsSelectMarkDisplay = true;
+    m_LastSelectedNode    = nullptr;
+    m_SelectMarkTopAnimation->setStartValue(0.0);
+    m_SelectMarkTopAnimation->setEndValue(10.5);
+    m_SelectMarkTopAnimation->start();
   });
-  _themeMode = nxTheme->getThemeMode();
+  m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -74,20 +74,20 @@ NXNavigationStyle::~NXNavigationStyle()
 {
 }
 
-void NXNavigationStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXNavigationStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::PE_PanelItemViewItem : {
     // Item背景
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+    if (QStyleOptionViewItem const *vopt = qstyleoption_cast<QStyleOptionViewItem const *>(option)) {
       QModelIndex index      = vopt->index;
       NXNavigationNode *node = static_cast<NXNavigationNode *>(index.internalPointer());
       if (node->getIsCategoryNode()) {
         return;
       }
       painter->save();
-      if (this->_opacityAnimationTargetNode && node->getParentNode() == this->_opacityAnimationTargetNode) {
-        painter->setOpacity(_pOpacity);
+      if (this->m_OpacityAnimationTargetNode && node->getParentNode() == this->m_OpacityAnimationTargetNode) {
+        painter->setOpacity(m_Opacity);
       }
       painter->setRenderHint(QPainter::Antialiasing);
       QRect itemRect = vopt->rect;
@@ -96,26 +96,26 @@ void NXNavigationStyle::drawPrimitive(PrimitiveElement element, const QStyleOpti
       QPainterPath path;
       path.addRoundedRect(itemRect, 5, 5);
       if (vopt->state & QStyle::State_Selected) {
-        if (index == _pPressIndex) {
+        if (index == m_PressIndex) {
           // 选中时点击
-          painter->fillPath(path, NXThemeColor(_themeMode, BasicHoverAlpha));
+          painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicHoverAlpha));
         } else {
           if (vopt->state & QStyle::State_MouseOver) {
             // 选中时覆盖
-            painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedHoverAlpha));
+            painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedHoverAlpha));
           } else {
             // 选中
-            painter->fillPath(path, NXThemeColor(_themeMode, BasicSelectedAlpha));
+            painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicSelectedAlpha));
           }
         }
       } else {
-        if (index == _pPressIndex) {
+        if (index == m_PressIndex) {
           // 点击时颜色
-          painter->fillPath(path, NXThemeColor(_themeMode, BasicPressAlpha));
+          painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicPressAlpha));
         } else {
           if (vopt->state & QStyle::State_MouseOver) {
             // 覆盖时颜色
-            painter->fillPath(path, NXThemeColor(_themeMode, BasicHoverAlpha));
+            painter->fillPath(path, NXThemeColor(m_ThemeMode, BasicHoverAlpha));
           }
         }
       }
@@ -134,7 +134,7 @@ void NXNavigationStyle::drawPrimitive(PrimitiveElement element, const QStyleOpti
 
     //QRect itemRect = option->rect;
     //QPen pen;
-    //pen.setColor(NXThemeColor(_themeMode, PrimaryNormal));
+    //pen.setColor(NXThemeColor(m_ThemeMode, PrimaryNormal));
     //pen.setWidth(2);
     //painter->setPen(pen);
     //painter->setRenderHint(QPainter::Antialiasing);
@@ -158,7 +158,7 @@ void NXNavigationStyle::drawPrimitive(PrimitiveElement element, const QStyleOpti
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXNavigationStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   int fontPixelSize = nxApp->getFontPixelSize();
   switch (element) {
@@ -167,7 +167,7 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
     return;
   }
   case QStyle::CE_ItemViewItem : {
-    if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+    if (QStyleOptionViewItem const *vopt = qstyleoption_cast<QStyleOptionViewItem const *>(option)) {
       // 背景绘制
       this->drawPrimitive(QStyle::PE_PanelItemViewItem, option, painter, widget);
 
@@ -179,30 +179,30 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
       NXNavigationModel *model =
           dynamic_cast<NXNavigationModel *>(const_cast<QAbstractItemModel *>(vopt->index.model()));
 
-      if (this->_opacityAnimationTargetNode && node->getParentNode() == this->_opacityAnimationTargetNode) {
-        painter->setOpacity(_pOpacity);
+      if (this->m_OpacityAnimationTargetNode && node->getParentNode() == this->m_OpacityAnimationTargetNode) {
+        painter->setOpacity(m_Opacity);
       }
 
       // 选中特效
-      if (_isSelectMarkDisplay && (node == model->getSelectedNode() || node == model->getSelectedExpandedNode())) {
+      if (m_IsSelectMarkDisplay && (node == model->getSelectedNode() || node == model->getSelectedExpandedNode())) {
         painter->setPen(Qt::NoPen);
-        painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + _pSelectMarkTop, 3, itemRect.height() - _pSelectMarkTop - _pSelectMarkBottom), 1.5, 1.5);
+        painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + m_SelectMarkTop, 3, itemRect.height() - m_SelectMarkTop - m_SelectMarkBottom), 1.5, 1.5);
       }
-      if (node == _lastSelectedNode) {
+      if (node == m_LastSelectedNode) {
         painter->setPen(Qt::NoPen);
-        painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + _pLastSelectMarkTop, 3, itemRect.height() - _pLastSelectMarkTop - _pLastSelectMarkBottom), 1.5, 1.5);
+        painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+        painter->drawRoundedRect(QRectF(itemRect.x() + 3, itemRect.y() + m_LastSelectMarkTop, 3, itemRect.height() - m_LastSelectMarkTop - m_LastSelectMarkBottom), 1.5, 1.5);
       }
 
       // 图标绘制
-      painter->setPen(vopt->index == _pPressIndex ? NXThemeColor(_themeMode, BasicTextPress) : NXThemeColor(_themeMode, BasicText));
+      painter->setPen(vopt->index == m_PressIndex ? NXThemeColor(m_ThemeMode, BasicTextPress) : NXThemeColor(m_ThemeMode, BasicText));
       if (node->getAwesome() != NXIconType::None) {
         painter->save();
         QFont iconFont = QFont(QStringLiteral("NXAwesome"));
         iconFont.setPixelSize(fontPixelSize + 4);
         painter->setFont(iconFont);
-        painter->drawText(QRect(itemRect.x(), itemRect.y(), _iconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar((unsigned short) node->getAwesome()));
+        painter->drawText(QRect(itemRect.x(), itemRect.y(), m_IconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar((unsigned short) node->getAwesome()));
         painter->restore();
       }
 
@@ -212,33 +212,33 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
         QFont categoryFont = painter->font();
         categoryFont.setBold(true);
         painter->setFont(categoryFont);
-        painter->setPen(NXThemeColor(_themeMode, BasicTextCategory));
+        painter->setPen(NXThemeColor(m_ThemeMode, BasicTextCategory));
       } else {
-        painter->setPen((vopt->index == _pPressIndex) ? NXThemeColor(_themeMode, BasicTextPress) : NXThemeColor(_themeMode, BasicText));
+        painter->setPen((vopt->index == m_PressIndex) ? NXThemeColor(m_ThemeMode, BasicTextPress) : NXThemeColor(m_ThemeMode, BasicText));
       }
       QRect textRect;
       if (node->getAwesome() != NXIconType::None) {
         textRect =
-            QRect(itemRect.x() + _iconAreaWidth, itemRect.y(), itemRect.width() - _textRightSpacing - _indicatorIconAreaWidth - _iconAreaWidth, itemRect.height());
+            QRect(itemRect.x() + m_IconAreaWidth, itemRect.y(), itemRect.width() - m_TextRightSpacing - m_IndicatorIconAreaWidth - m_IconAreaWidth, itemRect.height());
       } else {
         textRect =
-            QRect(itemRect.x() + _leftPadding, itemRect.y(), itemRect.width() - _textRightSpacing - _indicatorIconAreaWidth - _leftPadding, itemRect.height());
+            QRect(itemRect.x() + m_LeftPadding, itemRect.y(), itemRect.width() - m_TextRightSpacing - m_IndicatorIconAreaWidth - m_LeftPadding, itemRect.height());
       }
       QString text = painter->fontMetrics().elidedText(node->getNodeTitle(), Qt::ElideRight, textRect.width());
       painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, text);
 
-      if (viewWidth > _pNavigationView->getNavigationBarPrivate()->_pNavigationBarWidth - _indicatorIconAreaWidth) {
+      if (viewWidth > m_NavigationView->getNavigationBarPrivate()->m_NavigationBarWidth - m_IndicatorIconAreaWidth) {
         // 展开图标 KeyPoints
         if (node->getIsExpanderNode()) {
           if (node->getIsHasChild()) {
-            QRectF expandIconRect(itemRect.right() - _indicatorIconAreaWidth, itemRect.y(), 17, itemRect.height());
+            QRectF expandIconRect(itemRect.right() - m_IndicatorIconAreaWidth, itemRect.y(), 17, itemRect.height());
             painter->save();
             QFont iconFont = QFont(QStringLiteral("NXAwesome"));
             iconFont.setPixelSize(fontPixelSize + 4);
             painter->setFont(iconFont);
             painter->translate(expandIconRect.x() + (qreal) expandIconRect.width() / 2, expandIconRect.y() + (qreal) expandIconRect.height() / 2);
-            if (node == _expandAnimationTargetNode) {
-              painter->rotate(_pRotate);
+            if (node == m_ExpandAnimationTargetNode) {
+              painter->rotate(m_Rotate);
             } else {
               if (node->getIsExpanded()) {
                 //展开
@@ -255,7 +255,7 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
           if (node->getIsChildHasKeyPoints()) {
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+            painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
             painter->drawEllipse(QPoint(itemRect.right() - 17, itemRect.y() + 12), 3, 3);
             painter->restore();
           }
@@ -265,10 +265,10 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
             // KeyPoints
             painter->save();
             painter->setPen(Qt::NoPen);
-            painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+            painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
             int keyPointRadius = 8;
             painter->drawEllipse(QPoint(itemRect.right() - 26, itemRect.y() + itemRect.height() / 2), keyPointRadius, keyPointRadius);
-            painter->setPen(QPen(NXThemeColor(_themeMode, BasicTextInvert), 2));
+            painter->setPen(QPen(NXThemeColor(m_ThemeMode, BasicTextInvert), 2));
             QFont font = painter->font();
             font.setBold(true);
             if (keyPoints > 99) {
@@ -297,12 +297,12 @@ void NXNavigationStyle::drawControl(ControlElement element, const QStyleOption *
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-QSize NXNavigationStyle::sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
+QSize NXNavigationStyle::sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const
 {
   switch (type) {
   case QStyle::CT_ItemViewItem : {
     QSize itemSize = QProxyStyle::sizeFromContents(type, option, size, widget);
-    itemSize.setHeight(_pItemHeight);
+    itemSize.setHeight(m_ItemHeight);
     return itemSize;
   }
   default : {
@@ -312,18 +312,18 @@ QSize NXNavigationStyle::sizeFromContents(ContentsType type, const QStyleOption 
   return QProxyStyle::sizeFromContents(type, option, size, widget);
 }
 
-void NXNavigationStyle::navigationNodeStateChange(const QVariantMap &data)
+void NXNavigationStyle::navigationNodeStateChange(QVariantMap const &data)
 {
   if (data.contains(QStringLiteral("Expand"))) {
-    NXNavigationNode *lastExpandNode         = _expandAnimationTargetNode;
-    _opacityAnimationTargetNode              = data.value(QStringLiteral("Expand")).value<NXNavigationNode *>();
-    _expandAnimationTargetNode               = _opacityAnimationTargetNode;
-    QPropertyAnimation *nodeOpacityAnimation = new QPropertyAnimation(this, "pOpacity");
+    NXNavigationNode *lastExpandNode         = m_ExpandAnimationTargetNode;
+    m_OpacityAnimationTargetNode              = data.value(QStringLiteral("Expand")).value<NXNavigationNode *>();
+    m_ExpandAnimationTargetNode               = m_OpacityAnimationTargetNode;
+    QPropertyAnimation *nodeOpacityAnimation = new QPropertyAnimation(this, "Opacity");
     connect(nodeOpacityAnimation, &QPropertyAnimation::finished, this, [=]() {
-      _opacityAnimationTargetNode = nullptr;
+      m_OpacityAnimationTargetNode = nullptr;
     });
-    connect(nodeOpacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      _pNavigationView->viewport()->update();
+    connect(nodeOpacityAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      m_NavigationView->viewport()->update();
     });
     nodeOpacityAnimation->setDuration(480);
     nodeOpacityAnimation->setEasingCurve(QEasingCurve::InOutSine);
@@ -332,67 +332,67 @@ void NXNavigationStyle::navigationNodeStateChange(const QVariantMap &data)
     nodeOpacityAnimation->setEndValue(1);
     nodeOpacityAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 
-    QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "pRotate");
+    QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "Rotate");
     connect(rotateAnimation, &QPropertyAnimation::finished, this, [=]() {
-      _expandAnimationTargetNode = nullptr;
+      m_ExpandAnimationTargetNode = nullptr;
     });
-    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      _pNavigationView->viewport()->update();
+    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      m_NavigationView->viewport()->update();
     });
     rotateAnimation->setDuration(300);
     rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    if (lastExpandNode == _expandAnimationTargetNode) {
-      rotateAnimation->setStartValue(_pRotate);
+    if (lastExpandNode == m_ExpandAnimationTargetNode) {
+      rotateAnimation->setStartValue(m_Rotate);
     } else {
       rotateAnimation->setStartValue(0);
     }
     rotateAnimation->setEndValue(-180);
     rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   } else if (data.contains(QStringLiteral("Collapse"))) {
-    NXNavigationNode *lastExpandNode = _expandAnimationTargetNode;
-    _opacityAnimationTargetNode      = data.value(QStringLiteral("Collapse")).value<NXNavigationNode *>();
-    _expandAnimationTargetNode       = _opacityAnimationTargetNode;
-    _pOpacity                        = 0;
+    NXNavigationNode *lastExpandNode = m_ExpandAnimationTargetNode;
+    m_OpacityAnimationTargetNode      = data.value(QStringLiteral("Collapse")).value<NXNavigationNode *>();
+    m_ExpandAnimationTargetNode       = m_OpacityAnimationTargetNode;
+    m_Opacity                        = 0;
 
-    QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "pRotate");
+    QPropertyAnimation *rotateAnimation = new QPropertyAnimation(this, "Rotate");
     connect(rotateAnimation, &QPropertyAnimation::finished, this, [=]() {
-      _pOpacity                  = 1;
-      _expandAnimationTargetNode = nullptr;
+      m_Opacity                  = 1;
+      m_ExpandAnimationTargetNode = nullptr;
     });
-    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
-      _pNavigationView->viewport()->update();
+    connect(rotateAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
+      m_NavigationView->viewport()->update();
     });
     rotateAnimation->setDuration(300);
     rotateAnimation->setEasingCurve(QEasingCurve::InOutSine);
-    if (lastExpandNode == _expandAnimationTargetNode) {
-      rotateAnimation->setStartValue(_pRotate);
+    if (lastExpandNode == m_ExpandAnimationTargetNode) {
+      rotateAnimation->setStartValue(m_Rotate);
     } else {
       rotateAnimation->setStartValue(-180);
     }
     rotateAnimation->setEndValue(0);
     rotateAnimation->start(QAbstractAnimation::DeleteWhenStopped);
   } else if (data.contains(QStringLiteral("SelectMarkChanged"))) {
-    _lastSelectedNode              = data.value(QStringLiteral("LastSelectedNode")).value<NXNavigationNode *>();
+    m_LastSelectedNode              = data.value(QStringLiteral("LastSelectedNode")).value<NXNavigationNode *>();
     NXNavigationNode *selectedNode = data.value(QStringLiteral("SelectedNode")).value<NXNavigationNode *>();
-    bool direction                 = _compareItemY(selectedNode, _lastSelectedNode);
-    _pLastSelectMarkTop            = 10.5;
-    _pLastSelectMarkBottom         = 10.5;
-    _pSelectMarkTop                = 10.5;
-    _pSelectMarkBottom             = 10.5;
+    bool direction                 = _compareItemY(selectedNode, m_LastSelectedNode);
+    m_LastSelectMarkTop            = 10.5;
+    m_LastSelectMarkBottom         = 10.5;
+    m_SelectMarkTop                = 10.5;
+    m_SelectMarkBottom             = 10.5;
     if (direction) {
-      _lastSelectMarkTopAnimation->setStartValue(10.5);
-      _lastSelectMarkTopAnimation->setEndValue(0.0);
-      _lastSelectMarkTopAnimation->start();
-      _lastSelectMarkBottomAnimation->stop();
-      _selectMarkTopAnimation->stop();
-      _isSelectMarkDisplay = false;
+      m_LastSelectMarkTopAnimation->setStartValue(10.5);
+      m_LastSelectMarkTopAnimation->setEndValue(0.0);
+      m_LastSelectMarkTopAnimation->start();
+      m_LastSelectMarkBottomAnimation->stop();
+      m_SelectMarkTopAnimation->stop();
+      m_IsSelectMarkDisplay = false;
     } else {
-      _lastSelectMarkBottomAnimation->setStartValue(10.5);
-      _lastSelectMarkBottomAnimation->setEndValue(0.0);
-      _lastSelectMarkBottomAnimation->start();
-      _lastSelectMarkTopAnimation->stop();
-      _selectMarkBottomAnimation->stop();
-      _isSelectMarkDisplay = false;
+      m_LastSelectMarkBottomAnimation->setStartValue(10.5);
+      m_LastSelectMarkBottomAnimation->setEndValue(0.0);
+      m_LastSelectMarkBottomAnimation->start();
+      m_LastSelectMarkTopAnimation->stop();
+      m_SelectMarkBottomAnimation->stop();
+      m_IsSelectMarkDisplay = false;
     }
   }
 }

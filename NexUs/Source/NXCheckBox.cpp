@@ -15,14 +15,14 @@ NXCheckBox::NXCheckBox(QWidget *parent)
   setAttribute(Qt::WA_Hover);
 #endif
   setObjectName("NXCheckBox");
-  d->_checkBoxStyle = new NXCheckBoxStyle(style());
-  setStyle(d->_checkBoxStyle);
+  d->m_CheckBoxStyle = new NXCheckBoxStyle(style());
+  setStyle(d->m_CheckBoxStyle);
   QFont font = this->font();
   font.setPixelSize(nxApp->getFontPixelSize());
   setFont(font);
 }
 
-NXCheckBox::NXCheckBox(const QString &text, QWidget *parent)
+NXCheckBox::NXCheckBox(QString const &text, QWidget *parent)
     : NXCheckBox(parent)
 {
   setText(text);
@@ -40,7 +40,7 @@ void NXCheckBox::setTextPixelSize(int size)
   setFont(font);
 }
 
-int NXCheckBox::getTextPixelSize() const
+int NXCheckBox::getTextPixelSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
   return this->font().pixelSize();
 }
@@ -52,7 +52,7 @@ void NXCheckBox::setTextPointSize(int size)
   setFont(font);
 }
 
-int NXCheckBox::getTextPointSize() const
+int NXCheckBox::getTextPointSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
   return this->font().pointSize();
 }
@@ -61,7 +61,7 @@ void NXCheckBox::setTextStyle(NXTextType::TextStyle textStyle)
 {
   Q_D(NXCheckBox);
   QFont textFont = font();
-  d->_textStyle  = textStyle;
+  d->m_TextStyle  = textStyle;
   switch (textStyle) {
   case NXTextType::NoStyle : {
     break;
@@ -106,32 +106,32 @@ void NXCheckBox::setTextStyle(NXTextType::TextStyle textStyle)
   setFont(textFont);
 }
 
-NXTextType::TextStyle NXCheckBox::getTextStyle() const
+NXTextType::TextStyle NXCheckBox::getTextStyle() const noexcept(std::is_nothrow_copy_constructible_v<NXTextType::TextStyle>)
 {
-  Q_D(const NXCheckBox);
-  return d->_textStyle;
+  Q_CONST_D(NXCheckBox);
+  return d->m_TextStyle;
 }
 
 void NXCheckBox::setBorderRadius(int borderRadius)
 {
-  Q_D(const NXCheckBox);
-  d->_checkBoxStyle->setBorderRadius(borderRadius);
+  Q_CONST_D(NXCheckBox);
+  d->m_CheckBoxStyle->setBorderRadius(borderRadius);
 }
 
-int NXCheckBox::getBorderRadius() const
+int NXCheckBox::getBorderRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXCheckBox);
-  return d->_checkBoxStyle->getBorderRadius();
+  Q_CONST_D(NXCheckBox);
+  return d->m_CheckBoxStyle->getBorderRadius();
 }
 
 void NXCheckBox::setCheckIndicatorWidth(int indicatorWidth)
 {
-  Q_D(const NXCheckBox);
-  d->_checkBoxStyle->setCheckIndicatorWidth(indicatorWidth);
+  Q_CONST_D(NXCheckBox);
+  d->m_CheckBoxStyle->setCheckIndicatorWidth(indicatorWidth);
 }
 
-int NXCheckBox::getCheckIndicatorWidth() const
+int NXCheckBox::getCheckIndicatorWidth() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXCheckBox);
-  return d->_checkBoxStyle->getCheckIndicatorWidth();
+  Q_CONST_D(NXCheckBox);
+  return d->m_CheckBoxStyle->getCheckIndicatorWidth();
 }

@@ -9,8 +9,8 @@ class NX_EXPORT NXShadowGraphicsEffect : public QGraphicsEffect
 {
   Q_OBJECT
   Q_Q_CREATE(NXShadowGraphicsEffect)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), LightColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), DarkColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), LightColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), DarkColor)
   Q_PROPERTY_CREATE_H(QPointF, LightOffset)
   Q_PROPERTY_CREATE_H(QPointF, DarkOffset)
   Q_PROPERTY_CREATE_H(qreal, Blur)
@@ -23,7 +23,7 @@ public:
   ~NXShadowGraphicsEffect();
 
 protected:
-  QRectF boundingRectFor(const QRectF &rect) const override;
+  QRectF boundingRectFor(QRectF const &rect) const override;
   void draw(QPainter *painter) override;
 };
 

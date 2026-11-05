@@ -13,13 +13,13 @@
 namespace
 {
 Q_ALWAYS_INLINE bool
-isValidStackIndex(const QList<NXLazyStackedLayoutPrivate::StackItemTag> &itemList, int index)
+isValidStackIndex(QList<NXLazyStackedLayoutPrivate::StackItemTag> const &itemList, int index)
 {
   return index >= 0 && index < itemList.size();
 }
 
 Q_ALWAYS_INLINE QWidget *
-peekWidget(const NXLazyStackedLayoutPrivate::StackItemTag &itemTag)
+peekWidget(NXLazyStackedLayoutPrivate::StackItemTag const &itemTag)
 {
   return itemTag.Item ? itemTag.Item->widget() : nullptr;
 }
@@ -50,7 +50,7 @@ NXLazyStackedLayout::NXLazyStackedLayout(QWidget *parent)
 NXLazyStackedLayout::~NXLazyStackedLayout()
 {
   Q_D(NXLazyStackedLayout);
-  for (const auto &itemTag : d->_itemList) {
+  for (auto const &itemTag : d->m_ItemList) {
     delete itemTag.Item;
   }
 }
@@ -58,7 +58,7 @@ NXLazyStackedLayout::~NXLazyStackedLayout()
 int NXLazyStackedLayout::addWidget(QWidget *widget)
 {
   Q_D(NXLazyStackedLayout);
-  return insertWidget(d->_itemList.size(), widget);
+  return insertWidget(d->m_ItemList.size(), widget);
 }
 
 int NXLazyStackedLayout::insertWidget(int index, QWidget *widget)
@@ -71,17 +71,17 @@ int NXLazyStackedLayout::insertWidget(int index, QWidget *widget)
   Q_D(NXLazyStackedLayout);
   addChildWidget(widget);
 
-  index = normalizeInsertIndex(index, d->_itemList.size());
-  d->_itemList.insert(index, { new QWidgetItem(widget), {} });
+  index = normalizeInsertIndex(index, d->m_ItemList.size());
+  d->m_ItemList.insert(index, { new QWidgetItem(widget), {} });
 
   invalidate();
-  if (d->_currentIndex < 0) {
+  if (d->m_CurrentIndex < 0) {
     setCurrentIndex(index);
   } else {
-    if (index <= d->_currentIndex) {
-      ++d->_currentIndex;
+    if (index <= d->m_CurrentIndex) {
+      ++d->m_CurrentIndex;
     }
-    if (d->_stackingMode == StackOne) {
+    if (d->m_StackingMode == StackOne) {
       widget->hide();
     }
     widget->lower();
@@ -92,7 +92,7 @@ int NXLazyStackedLayout::insertWidget(int index, QWidget *widget)
 int NXLazyStackedLayout::addLazyWidget(std::function<QWidget *()> &&lazyFactory)
 {
   Q_D(NXLazyStackedLayout);
-  return insertLazyWidget(d->_itemList.size(), std::move(lazyFactory));
+  return insertLazyWidget(d->m_ItemList.size(), std::move(lazyFactory));
 }
 
 int NXLazyStackedLayout::insertLazyWidget(int index, std::function<QWidget *()> &&lazyFactory)
@@ -103,26 +103,26 @@ int NXLazyStackedLayout::insertLazyWidget(int index, std::function<QWidget *()> 
   }
 
   Q_D(NXLazyStackedLayout);
-  index = normalizeInsertIndex(index, d->_itemList.size());
-  d->_itemList.insert(index, { nullptr, std::move(lazyFactory) });
+  index = normalizeInsertIndex(index, d->m_ItemList.size());
+  d->m_ItemList.insert(index, { nullptr, std::move(lazyFactory) });
   invalidate();
 
-  if (d->_currentIndex < 0) {
-    d->_currentIndex = index;
-  } else if (index <= d->_currentIndex) {
-    ++d->_currentIndex;
+  if (d->m_CurrentIndex < 0) {
+    d->m_CurrentIndex = index;
+  } else if (index <= d->m_CurrentIndex) {
+    ++d->m_CurrentIndex;
   }
   return index;
 }
 
-QWidget * NXLazyStackedLayout::ensureWidget(int index)
+QWidget *NXLazyStackedLayout::ensureWidget(int index)
 {
   Q_D(NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, index)) {
+  if (!isValidStackIndex(d->m_ItemList, index)) {
     return nullptr;
   }
 
-  auto &itemTag = d->_itemList[index];
+  auto &itemTag = d->m_ItemList[index];
   if (QWidget *widget = peekWidget(itemTag)) {
     return widget;
   }
@@ -147,8 +147,8 @@ QWidget * NXLazyStackedLayout::ensureWidget(int index)
     widget->setGeometry(geometry());
   }
 
-  if (d->_stackingMode == StackOne) {
-    if (index != d->_currentIndex) {
+  if (d->m_StackingMode == StackOne) {
+    if (index != d->m_CurrentIndex) {
       widget->hide();
       widget->lower();
     } else {
@@ -157,7 +157,7 @@ QWidget * NXLazyStackedLayout::ensureWidget(int index)
     }
   } else {
     widget->show();
-    if (index == d->_currentIndex) {
+    if (index == d->m_CurrentIndex) {
       widget->raise();
     } else {
       widget->lower();
@@ -171,48 +171,48 @@ QWidget * NXLazyStackedLayout::ensureWidget(int index)
 
 bool NXLazyStackedLayout::isWidgetCreated(int index) const
 {
-  Q_D(const NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, index)) {
+  Q_CONST_D(NXLazyStackedLayout);
+  if (!isValidStackIndex(d->m_ItemList, index)) {
     return false;
   }
-  return peekWidget(d->_itemList.at(index));
+  return peekWidget(d->m_ItemList.at(index));
 }
 
-QWidget * NXLazyStackedLayout::currentWidget() const
+QWidget *NXLazyStackedLayout::currentWidget() const
 {
-  Q_D(const NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, d->_currentIndex)) {
+  Q_CONST_D(NXLazyStackedLayout);
+  if (!isValidStackIndex(d->m_ItemList, d->m_CurrentIndex)) {
     return nullptr;
   }
-  return const_cast<NXLazyStackedLayout *>(this)->ensureWidget(d->_currentIndex);
+  return const_cast<NXLazyStackedLayout *>(this)->ensureWidget(d->m_CurrentIndex);
 }
 
 int NXLazyStackedLayout::currentIndex() const
 {
-  Q_D(const NXLazyStackedLayout);
-  return d->_currentIndex;
+  Q_CONST_D(NXLazyStackedLayout);
+  return d->m_CurrentIndex;
 }
 
-QWidget * NXLazyStackedLayout::widget(int index) const
+QWidget *NXLazyStackedLayout::widget(int index) const
 {
   return const_cast<NXLazyStackedLayout *>(this)->ensureWidget(index);
 }
 
 int NXLazyStackedLayout::count() const
 {
-  Q_D(const NXLazyStackedLayout);
-  return d->_itemList.size();
+  Q_CONST_D(NXLazyStackedLayout);
+  return d->m_ItemList.size();
 }
 
-int NXLazyStackedLayout::indexOf(const QWidget *widget) const
+int NXLazyStackedLayout::indexOf(QWidget const *widget) const
 {
-  Q_D(const NXLazyStackedLayout);
+  Q_CONST_D(NXLazyStackedLayout);
   if (!widget) {
     return -1;
   }
 
-  for (int i = 0; i < d->_itemList.size(); ++i) {
-    if (peekWidget(d->_itemList.at(i)) == widget) {
+  for (int i = 0; i < d->m_ItemList.size(); ++i) {
+    if (peekWidget(d->m_ItemList.at(i)) == widget) {
       return i;
     }
   }
@@ -221,30 +221,30 @@ int NXLazyStackedLayout::indexOf(const QWidget *widget) const
 
 NXLazyStackedLayout::StackingMode NXLazyStackedLayout::stackingMode() const
 {
-  return d_ptr->_stackingMode;
+  return d_ptr->m_StackingMode;
 }
 
 void NXLazyStackedLayout::setStackingMode(StackingMode stackingMode)
 {
   Q_D(NXLazyStackedLayout);
-  if (d->_stackingMode == stackingMode) {
+  if (d->m_StackingMode == stackingMode) {
     return;
   }
-  d->_stackingMode = stackingMode;
+  d->m_StackingMode = stackingMode;
 
-  if (d->_itemList.isEmpty()) {
+  if (d->m_ItemList.isEmpty()) {
     return;
   }
 
-  switch (d->_stackingMode) {
+  switch (d->m_StackingMode) {
   case StackOne : {
-    for (int i = 0; i < d->_itemList.size(); ++i) {
-      if (QWidget *widget = peekWidget(d->_itemList.at(i))) {
-        widget->setVisible(i == d->_currentIndex);
+    for (int i = 0; i < d->m_ItemList.size(); ++i) {
+      if (QWidget *widget = peekWidget(d->m_ItemList.at(i))) {
+        widget->setVisible(i == d->m_CurrentIndex);
       }
     }
-    if (isValidStackIndex(d->_itemList, d->_currentIndex)) {
-      if (QWidget *widget = ensureWidget(d->_currentIndex)) {
+    if (isValidStackIndex(d->m_ItemList, d->m_CurrentIndex)) {
+      if (QWidget *widget = ensureWidget(d->m_CurrentIndex)) {
         widget->show();
         widget->raise();
       }
@@ -256,13 +256,13 @@ void NXLazyStackedLayout::setStackingMode(StackingMode stackingMode)
     if (QWidget *widget = currentWidget()) {
       stackedGeometry = widget->geometry();
     }
-    for (int i = 0; i < d->_itemList.size(); ++i) {
+    for (int i = 0; i < d->m_ItemList.size(); ++i) {
       if (QWidget *widget = ensureWidget(i)) {
         if (!stackedGeometry.isNull()) {
           widget->setGeometry(stackedGeometry);
         }
         widget->setVisible(true);
-        if (i == d->_currentIndex) {
+        if (i == d->m_CurrentIndex) {
           widget->raise();
         } else {
           widget->lower();
@@ -286,9 +286,9 @@ void NXLazyStackedLayout::addItem(QLayoutItem *item)
 
 QSize NXLazyStackedLayout::sizeHint() const
 {
-  Q_D(const NXLazyStackedLayout);
+  Q_CONST_D(NXLazyStackedLayout);
   QSize size(0, 0);
-  for (const auto &itemTag : d->_itemList) {
+  for (auto const &itemTag : d->m_ItemList) {
     if (QWidget *widget = peekWidget(itemTag)) {
       QSize widgetSize = widget->sizeHint();
       if (widget->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored) {
@@ -305,9 +305,9 @@ QSize NXLazyStackedLayout::sizeHint() const
 
 QSize NXLazyStackedLayout::minimumSize() const
 {
-  Q_D(const NXLazyStackedLayout);
+  Q_CONST_D(NXLazyStackedLayout);
   QSize size(0, 0);
-  for (const auto &itemTag : d->_itemList) {
+  for (auto const &itemTag : d->m_ItemList) {
     if (QWidget *widget = peekWidget(itemTag)) {
       size = size.expandedTo(widget->minimumSizeHint());
     }
@@ -315,34 +315,34 @@ QSize NXLazyStackedLayout::minimumSize() const
   return size;
 }
 
-QLayoutItem * NXLazyStackedLayout::itemAt(int index) const
+QLayoutItem *NXLazyStackedLayout::itemAt(int index) const
 {
-  Q_D(const NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, index)) {
+  Q_CONST_D(NXLazyStackedLayout);
+  if (!isValidStackIndex(d->m_ItemList, index)) {
     return nullptr;
   }
-  return d->_itemList.at(index).Item;
+  return d->m_ItemList.at(index).Item;
 }
 
-QLayoutItem * NXLazyStackedLayout::takeAt(int index)
+QLayoutItem *NXLazyStackedLayout::takeAt(int index)
 {
   Q_D(NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, index)) {
+  if (!isValidStackIndex(d->m_ItemList, index)) {
     return nullptr;
   }
 
-  NXLazyStackedLayoutPrivate::StackItemTag itemTag = d->_itemList.takeAt(index);
+  NXLazyStackedLayoutPrivate::StackItemTag itemTag = d->m_ItemList.takeAt(index);
   QLayoutItem *item                                = itemTag.Item;
-  if (index == d->_currentIndex) {
-    d->_currentIndex = -1;
-    if (!d->_itemList.isEmpty()) {
-      const int newIndex = (index == d->_itemList.size()) ? index - 1 : index;
+  if (index == d->m_CurrentIndex) {
+    d->m_CurrentIndex = -1;
+    if (!d->m_ItemList.isEmpty()) {
+      int const newIndex = (index == d->m_ItemList.size()) ? index - 1 : index;
       setCurrentIndex(newIndex);
     } else {
       Q_EMIT currentChanged(-1);
     }
-  } else if (index < d->_currentIndex) {
-    --d->_currentIndex;
+  } else if (index < d->m_CurrentIndex) {
+    --d->m_CurrentIndex;
   }
 
   Q_EMIT widgetRemoved(index);
@@ -352,21 +352,21 @@ QLayoutItem * NXLazyStackedLayout::takeAt(int index)
   return item;
 }
 
-void NXLazyStackedLayout::setGeometry(const QRect &rect)
+void NXLazyStackedLayout::setGeometry(QRect const &rect)
 {
   Q_D(NXLazyStackedLayout);
   QLayout::setGeometry(rect);
-  switch (d->_stackingMode) {
+  switch (d->m_StackingMode) {
   case StackOne : {
-    if (isValidStackIndex(d->_itemList, d->_currentIndex)) {
-      if (QWidget *widget = ensureWidget(d->_currentIndex)) {
+    if (isValidStackIndex(d->m_ItemList, d->m_CurrentIndex)) {
+      if (QWidget *widget = ensureWidget(d->m_CurrentIndex)) {
         widget->setGeometry(rect);
       }
     }
     break;
   }
   case StackAll : {
-    for (int i = 0; i < d->_itemList.size(); ++i) {
+    for (int i = 0; i < d->m_ItemList.size(); ++i) {
       if (QWidget *widget = ensureWidget(i)) {
         widget->setGeometry(rect);
       }
@@ -378,7 +378,7 @@ void NXLazyStackedLayout::setGeometry(const QRect &rect)
 
 bool NXLazyStackedLayout::hasHeightForWidth() const
 {
-  const int itemCount = count();
+  int const itemCount = count();
   for (int i = 0; i < itemCount; ++i) {
     if (QLayoutItem *item = itemAt(i)) {
       if (item->hasHeightForWidth()) {
@@ -391,7 +391,7 @@ bool NXLazyStackedLayout::hasHeightForWidth() const
 
 int NXLazyStackedLayout::heightForWidth(int width) const
 {
-  const int itemCount = count();
+  int const itemCount = count();
   int hfw             = 0;
   for (int i = 0; i < itemCount; ++i) {
     if (QLayoutItem *item = itemAt(i)) {
@@ -407,13 +407,13 @@ int NXLazyStackedLayout::heightForWidth(int width) const
 void NXLazyStackedLayout::setCurrentIndex(int index)
 {
   Q_D(NXLazyStackedLayout);
-  if (!isValidStackIndex(d->_itemList, index)) {
+  if (!isValidStackIndex(d->m_ItemList, index)) {
     return;
   }
 
   QWidget *prev = nullptr;
-  if (isValidStackIndex(d->_itemList, d->_currentIndex)) {
-    prev = peekWidget(d->_itemList.at(d->_currentIndex));
+  if (isValidStackIndex(d->m_ItemList, d->m_CurrentIndex)) {
+    prev = peekWidget(d->m_ItemList.at(d->m_CurrentIndex));
   }
 
   bool reenableUpdates = false;
@@ -432,17 +432,17 @@ void NXLazyStackedLayout::setCurrentIndex(int index)
   }
 
   QPointer<QWidget> focusWidget = parent ? parent->window()->focusWidget() : nullptr;
-  const bool focusWasOnOldPage  = focusWidget && prev && prev->isAncestorOf(focusWidget);
+  bool const focusWasOnOldPage  = focusWidget && prev && prev->isAncestorOf(focusWidget);
 
-  const int previousIndex = d->_currentIndex;
+  int const previousIndex = d->m_CurrentIndex;
   if (prev && prev != next) {
     prev->clearFocus();
-    if (d->_stackingMode == StackOne) {
+    if (d->m_StackingMode == StackOne) {
       prev->hide();
     }
   }
 
-  d->_currentIndex = index;
+  d->m_CurrentIndex = index;
   next->setGeometry(geometry());
   next->show();
   next->raise();
@@ -452,7 +452,7 @@ void NXLazyStackedLayout::setCurrentIndex(int index)
       nextFocusWidget->setFocus();
     } else if (QWidget *it = focusWidget) {
       while ((it = it->nextInFocusChain()) != focusWidget) {
-        const bool canTabFocus = (it->focusPolicy() & Qt::TabFocus) == Qt::TabFocus;
+        bool const canTabFocus = (it->focusPolicy() & Qt::TabFocus) == Qt::TabFocus;
         if (canTabFocus && !it->focusProxy() && it->isVisibleTo(next) && it->isEnabled() && next->isAncestorOf(it)) {
           it->setFocus();
           break;
@@ -475,7 +475,7 @@ void NXLazyStackedLayout::setCurrentIndex(int index)
 
 void NXLazyStackedLayout::setCurrentWidget(QWidget *widget)
 {
-  const int index = indexOf(widget);
+  int const index = indexOf(widget);
   if (index < 0) {
     qWarning("NXLazyStackedLayout::setCurrentWidget: Widget is not contained in stack.");
     return;

@@ -22,10 +22,10 @@ public:
   ~NXDropDownButtonPrivate();
 
 private:
-  bool _isHover { false };
-  bool _isPressed { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXMenu *_menu { nullptr };
+  bool m_IsHover { false };
+  bool m_IsPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXMenu *m_Menu { nullptr };
 };
 
 #endif // NXDROPDOWNBUTTONPRIVATE_H

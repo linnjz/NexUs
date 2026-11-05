@@ -1,4 +1,4 @@
-#include "NXColorDisplayModel.h"
+﻿#include "NXColorDisplayModel.h"
 
 NXColorDisplayModel::NXColorDisplayModel(QObject *parent)
     : QAbstractListModel { parent }
@@ -9,62 +9,62 @@ NXColorDisplayModel::~NXColorDisplayModel()
 {
 }
 
-void NXColorDisplayModel::appendDisplayColor(const QList<QColor> &colorList)
+void NXColorDisplayModel::appendDisplayColor(QList<QColor> const &colorList)
 {
   beginResetModel();
-  _displayColorList.append(colorList);
+  m_DisplayColorList.append(colorList);
   endResetModel();
 }
 
-void NXColorDisplayModel::appendDisplayColor(const QColor &color)
+void NXColorDisplayModel::appendDisplayColor(QColor const &color)
 {
   beginResetModel();
-  _displayColorList.append(color);
+  m_DisplayColorList.append(color);
   endResetModel();
 }
 
 void NXColorDisplayModel::removeDisplayColor(int index)
 {
-  if (index < 0 || index >= _displayColorList.count()) {
+  if (index < 0 || index >= m_DisplayColorList.count()) {
     return;
   }
   beginResetModel();
-  _displayColorList.removeAt(index);
+  m_DisplayColorList.removeAt(index);
   endResetModel();
 }
 
-void NXColorDisplayModel::replaceDisplayColor(const QColor &color, int index)
+void NXColorDisplayModel::replaceDisplayColor(QColor const &color, int index)
 {
-  if (index < 0 || index >= _displayColorList.count()) {
+  if (index < 0 || index >= m_DisplayColorList.count()) {
     return;
   }
   beginResetModel();
-  _displayColorList[index] = color;
+  m_DisplayColorList[index] = color;
   endResetModel();
 }
 
 QList<QColor> NXColorDisplayModel::getDisplayColorList() const
 {
-  return _displayColorList;
+  return m_DisplayColorList;
 }
 
 QColor NXColorDisplayModel::getDisplayColor(int index) const
 {
-  if (index < 0 || index >= _displayColorList.count()) {
+  if (index < 0 || index >= m_DisplayColorList.count()) {
     return QColor();
   }
-  return _displayColorList[index];
+  return m_DisplayColorList[index];
 }
 
-int NXColorDisplayModel::rowCount(const QModelIndex &parent) const
+int NXColorDisplayModel::rowCount(QModelIndex const &parent) const
 {
-  return _displayColorList.count();
+  return m_DisplayColorList.count();
 }
 
-QVariant NXColorDisplayModel::data(const QModelIndex &index, int role) const
+QVariant NXColorDisplayModel::data(QModelIndex const &index, int role) const
 {
   if (role == Qt::UserRole) {
-    return QVariant::fromValue(_displayColorList[index.row()]);
+    return QVariant::fromValue(m_DisplayColorList[index.row()]);
   }
   return QVariant();
 }

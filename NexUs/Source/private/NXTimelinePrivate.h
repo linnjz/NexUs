@@ -16,8 +16,8 @@ public:
   ~NXTimelinePrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QList<NXTimeline::TimelineItem> _items;
+  NXThemeType::ThemeMode m_ThemeMode;
+  QList<NXTimeline::TimelineItem> m_Items;
 };
 
 #endif // NXTIMELINEPRIVATE_H

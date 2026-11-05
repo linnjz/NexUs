@@ -13,14 +13,14 @@ class NXSuggestModel : public QAbstractListModel
 public:
   explicit NXSuggestModel(QObject *parent = nullptr);
   ~NXSuggestModel();
-  int rowCount(const QModelIndex &parent) const;
-  QVariant data(const QModelIndex &index, int role) const;
-  void setSearchSuggestion(const QVector<NXSuggestion *> &suggestionVector);
+  int rowCount(QModelIndex const &parent) const;
+  QVariant data(QModelIndex const &index, int role) const;
+  void setSearchSuggestion(QVector<NXSuggestion *> const &suggestionVector);
   void clearSearchNode();
   NXSuggestion *getSearchSuggestion(int row);
 
 private:
-  QVector<NXSuggestion *> _suggestionVector; //符合搜索的节点
+  QVector<NXSuggestion *> m_SuggestionVector; //符合搜索的节点
 };
 
 #endif // NXSUGGESTMODEL_H

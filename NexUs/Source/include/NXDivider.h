@@ -1,4 +1,4 @@
-#ifndef NXDIVIDER_H
+﻿#ifndef NXDIVIDER_H
 #define NXDIVIDER_H
 
 #include <QWidget>
@@ -11,7 +11,7 @@ class NX_EXPORT NXDivider : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXDivider)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Text)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Text)
   Q_PROPERTY_CREATE_H(Qt::Orientation, Orientation)
   Q_PROPERTY_CREATE_H(int, ContentPosition)
 
@@ -25,7 +25,7 @@ public:
   Q_ENUM(ContentPositionType)
 
   explicit NXDivider(QWidget *parent = nullptr);
-  explicit NXDivider(const QString &text, QWidget *parent = nullptr);
+  explicit NXDivider(QString const &text, QWidget *parent = nullptr);
   ~NXDivider();
 
 protected:

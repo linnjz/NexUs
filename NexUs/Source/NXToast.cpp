@@ -12,27 +12,27 @@
 #include "NXTheme.h"
 #include "private/NXToastPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXToast, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXToast, int, DisplayMsec)
+Q_PROPERTY_CREATE_CPP(NXToast, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXToast, QPS_PAEMIT(int), DisplayMsec)
 
-NXToast::NXToast(ToastType type, const QString &text, int displayMsec, QWidget *parent)
+NXToast::NXToast(ToastType type, QString const &text, int displayMsec, QWidget *parent)
     : QWidget { nullptr }
     , d_ptr(new NXToastPrivate())
 {
   Q_D(NXToast);
   d->q_ptr          = this;
-  d->_pBorderRadius = 8;
-  d->_pDisplayMsec  = displayMsec;
-  d->_toastType     = type;
-  d->_text          = text;
+  d->m_BorderRadius = 8;
+  d->m_DisplayMsec  = displayMsec;
+  d->m_ToastType     = type;
+  d->m_Text          = text;
   setObjectName("NXToast");
   setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
 
@@ -44,7 +44,7 @@ NXToast::NXToast(ToastType type, const QString &text, int displayMsec, QWidget *
   int totalWidth = textWidth + 80; // icon + padding
   totalWidth     = qBound(200, totalWidth, 400);
   setFixedHeight(48);
-  setFixedWidth(totalWidth + d->_shadowBorderWidth * 2);
+  setFixedWidth(totalWidth + d->m_ShadowBorderWidth * 2);
 
   // Position: centered at top of parent window or screen
   QPoint targetPos;
@@ -102,25 +102,25 @@ NXToast::~NXToast()
 {
 }
 
-void NXToast::success(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::success(QString const &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Success, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void NXToast::info(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::info(QString const &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Info, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void NXToast::warning(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::warning(QString const &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Warning, text, displayMsec, parent);
   Q_UNUSED(toast);
 }
 
-void NXToast::error(const QString &text, int displayMsec, QWidget *parent)
+void NXToast::error(QString const &text, int displayMsec, QWidget *parent)
 {
   NXToast *toast = new NXToast(Error, text, displayMsec, parent);
   Q_UNUSED(toast);
@@ -133,32 +133,32 @@ void NXToast::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   // Shadow
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
 
   // Foreground rect
-  QRect foregroundRect(d->_shadowBorderWidth, d->_shadowBorderWidth, width() - 2 * d->_shadowBorderWidth, height() - 2 * d->_shadowBorderWidth);
+  QRect foregroundRect(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, width() - 2 * d->m_ShadowBorderWidth, height() - 2 * d->m_ShadowBorderWidth);
 
   // Background
   painter.save();
-  painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));
-  painter.setBrush(NXThemeColor(d->_themeMode, PopupBase));
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.setPen(NXThemeColor(d->m_ThemeMode, PopupBorder));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, PopupBase));
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
   painter.restore();
 
   // Left indicator bar (4px wide)
   QColor indicatorColor;
   NXIconType::IconName iconEnum;
   QColor iconColor;
-  switch (d->_toastType) {
+  switch (d->m_ToastType) {
   case Success :
     indicatorColor = QColor(0x0F, 0x7B, 0x0F);
     iconEnum       = NXIconType::Check;
     iconColor      = QColor(0x0F, 0x7B, 0x0F);
     break;
   case Info :
-    indicatorColor = NXThemeColor(d->_themeMode, PrimaryNormal);
+    indicatorColor = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
     iconEnum       = NXIconType::CircleInfo;
-    iconColor      = NXThemeColor(d->_themeMode, PrimaryNormal);
+    iconColor      = NXThemeColor(d->m_ThemeMode, PrimaryNormal);
     break;
   case Warning :
     indicatorColor = QColor(0xF7, 0x93, 0x0E);
@@ -166,9 +166,9 @@ void NXToast::paintEvent(QPaintEvent *event)
     iconColor      = QColor(0xF7, 0x93, 0x0E);
     break;
   case Error :
-    indicatorColor = NXThemeColor(d->_themeMode, StatusDanger);
+    indicatorColor = NXThemeColor(d->m_ThemeMode, StatusDanger);
     iconEnum       = NXIconType::CircleXmark;
-    iconColor      = NXThemeColor(d->_themeMode, StatusDanger);
+    iconColor      = NXThemeColor(d->m_ThemeMode, StatusDanger);
     break;
   }
 
@@ -177,7 +177,7 @@ void NXToast::paintEvent(QPaintEvent *event)
   painter.setPen(Qt::NoPen);
   painter.setBrush(indicatorColor);
   QPainterPath clipPath;
-  clipPath.addRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  clipPath.addRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
   painter.setClipPath(clipPath);
   painter.drawRect(QRect(foregroundRect.x(), foregroundRect.y(), 4, foregroundRect.height()));
   painter.restore();
@@ -194,12 +194,12 @@ void NXToast::paintEvent(QPaintEvent *event)
 
   // Draw text
   painter.save();
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
   QFont textFont = font();
   textFont.setPixelSize(14);
   painter.setFont(textFont);
   QRect textRect(foregroundRect.x() + 42, foregroundRect.y(), foregroundRect.width() - 52, foregroundRect.height());
-  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->_text);
+  painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, d->m_Text);
   painter.restore();
 }
 

@@ -1,4 +1,4 @@
-#ifndef NXFRAMEWORK_NEXUS_INCLUDE_NXROLLER_H_
+﻿#ifndef NXFRAMEWORK_NEXUS_INCLUDE_NXROLLER_H_
 #define NXFRAMEWORK_NEXUS_INCLUDE_NXROLLER_H_
 
 #include <QWidget>
@@ -11,7 +11,7 @@ class NX_EXPORT NXRoller : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXRoller)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QStringList), ItemList)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QStringList), ItemList)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, ItemHeight)
   Q_PROPERTY_CREATE_H(int, MaxVisibleItems)
@@ -23,9 +23,9 @@ public:
   explicit NXRoller(QWidget *parent = nullptr);
   ~NXRoller();
 
-  void setCurrentData(const QString &data);
+  void setCurrentData(QString const &data);
   QString getCurrentData() const;
-  Q_SIGNAL void currentDataChanged(const QString &data);
+  Q_SIGNAL void currentDataChanged(QString const &data);
 
 protected:
   void wheelEvent(QWheelEvent *event) override;

@@ -11,14 +11,14 @@ class NX_EXPORT NXPushButton : public QPushButton
 {
   Q_OBJECT
   Q_Q_CREATE(NXPushButton)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), LightDefaultColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), DarkDefaultColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), LightHoverColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), DarkHoverColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), LightPressColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), DarkPressColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), LightTextColor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QColor), DarkTextColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), LightDefaultColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), DarkDefaultColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), LightHoverColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), DarkHoverColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), LightPressColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), DarkPressColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), LightTextColor)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QColor), DarkTextColor)
   Q_PROPERTY_CREATE_H(NXTextType::TextStyle, TextStyle)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, TextPixelSize)
@@ -27,7 +27,7 @@ class NX_EXPORT NXPushButton : public QPushButton
 
 public:
   explicit NXPushButton(QWidget *parent = nullptr);
-  explicit NXPushButton(const QString &text, QWidget *parent = nullptr);
+  explicit NXPushButton(QString const &text, QWidget *parent = nullptr);
   ~NXPushButton();
 
   void setNXIcon(NXIconType::IconName icon);

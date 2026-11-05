@@ -26,12 +26,12 @@ protected:
 
 private:
   friend class NXDockWidgetPrivate;
-  NXThemeType::ThemeMode _themeMode;
-  NXDockWidget *_dockWidget { nullptr };
-  QLabel *_iconLabel { nullptr };
-  NXText *_titleLabel { nullptr };
-  NXIconButton *_floatButton { nullptr };
-  NXIconButton *_closeButton { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXDockWidget *m_DockWidget { nullptr };
+  QLabel *m_IconLabel { nullptr };
+  NXText *m_TitleLabel { nullptr };
+  NXIconButton *m_FloatButton { nullptr };
+  NXIconButton *m_CloseButton { nullptr };
   void _setVisibleFromFeatures(QDockWidget::DockWidgetFeatures features);
 };
 

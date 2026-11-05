@@ -17,15 +17,15 @@ NXFlowLayoutPrivate::~NXFlowLayoutPrivate()
 
 int NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
 {
-  Q_Q(const NXFlowLayout);
+  Q_Q(NXFlowLayout const);
   int left, top, right, bottom;
   q->getContentsMargins(&left, &top, &right, &bottom);
   QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
   int x               = effectiveRect.x();
   int y               = effectiveRect.y();
   int lineHeight      = 0;
-  for (QLayoutItem *item : _itemList) {
-    const QWidget *wid = item->widget();
+  for (QLayoutItem *item : m_ItemList) {
+    QWidget const *wid = item->widget();
     int spaceX         = q->horizontalSpacing();
     if (spaceX == -1) {
       spaceX = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
@@ -42,16 +42,16 @@ int NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
       nextX      = x + item->sizeHint().width() + spaceX;
       lineHeight = 0;
     }
-    if (!_lastGeometryMap.contains(item)) {
-      _lastGeometryMap.insert(item, QPoint(x, y));
+    if (!m_LastGeometryMap.contains(item)) {
+      m_LastGeometryMap.insert(item, QPoint(x, y));
     }
     if (!testOnly) {
       if ((item->geometry().x() == 0 && item->geometry().y() == 0)) {
         item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
       } else if (item->geometry().x() != x || item->geometry().y() != y) {
-        if (_isAnimation) {
+        if (m_IsAnimation) {
           // 阻止多重动画
-          if (_lastGeometryMap[item] == QPoint(x, y)) {
+          if (m_LastGeometryMap[item] == QPoint(x, y)) {
             x          = nextX;
             lineHeight = qMax(lineHeight, item->sizeHint().height());
             continue;
@@ -62,7 +62,7 @@ int NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
           geometryAnimation->setDuration(400);
           geometryAnimation->setEasingCurve(QEasingCurve::OutCubic);
           geometryAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-          _lastGeometryMap[item] = QPoint(x, y);
+          m_LastGeometryMap[item] = QPoint(x, y);
         } else {
           item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
         }
@@ -76,7 +76,7 @@ int NXFlowLayoutPrivate::_doLayout(QRect rect, bool testOnly) const
 
 int NXFlowLayoutPrivate::_smartSpacing(QStyle::PixelMetric pm) const
 {
-  Q_Q(const NXFlowLayout);
+  Q_Q(NXFlowLayout const);
   QObject *parent = q->parent();
   if (!parent) {
     return -1;

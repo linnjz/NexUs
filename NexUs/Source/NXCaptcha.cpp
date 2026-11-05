@@ -10,54 +10,54 @@
 #include "NXTheme.h"
 #include "private/NXCaptchaPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXCaptcha, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXCaptcha, int, BoxSpacing)
+Q_PROPERTY_CREATE_CPP(NXCaptcha, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXCaptcha, QPS_PAEMIT(int), BoxSpacing)
 
 void NXCaptcha::setCodeLength(int CodeLength)
 {
   Q_D(NXCaptcha);
-  if (d->_pCodeLength == CodeLength) {
+  if (d->m_CodeLength == CodeLength) {
     return;
   }
-  d->_pCodeLength = CodeLength;
+  d->m_CodeLength = CodeLength;
   d->_buildBoxes();
-  Q_EMIT pCodeLengthChanged();
+  Q_EMIT signalCodeLengthChanged();
 }
 
-int NXCaptcha::getCodeLength() const
+int NXCaptcha::getCodeLength() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  return d_ptr->_pCodeLength;
+  return d_ptr->m_CodeLength;
 }
 
 void NXCaptcha::setBoxSize(int BoxSize)
 {
   Q_D(NXCaptcha);
-  if (d->_pBoxSize == BoxSize) {
+  if (d->m_BoxSize == BoxSize) {
     return;
   }
-  d->_pBoxSize = BoxSize;
-  for (QLineEdit *box : d->_boxes) {
-    box->setFixedSize(d->_pBoxSize, d->_pBoxSize);
+  d->m_BoxSize = BoxSize;
+  for (QLineEdit *box : d->m_Boxes) {
+    box->setFixedSize(d->m_BoxSize, d->m_BoxSize);
   }
-  setFixedHeight(d->_pBoxSize + 8);
-  Q_EMIT pBoxSizeChanged();
+  setFixedHeight(d->m_BoxSize + 8);
+  Q_EMIT signalBoxSizeChanged();
 }
 
-int NXCaptcha::getBoxSize() const
+int NXCaptcha::getBoxSize() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  return d_ptr->_pBoxSize;
+  return d_ptr->m_BoxSize;
 }
 
 void NXCaptcha::setInputMode(InputMode mode)
 {
   Q_D(NXCaptcha);
-  d->_inputMode = static_cast<int>(mode);
+  d->m_InputMode = static_cast<int>(mode);
   d->_updateValidators();
 }
 
 NXCaptcha::InputMode NXCaptcha::getInputMode() const
 {
-  return static_cast<InputMode>(d_ptr->_inputMode);
+  return static_cast<InputMode>(d_ptr->m_InputMode);
 }
 
 NXCaptcha::NXCaptcha(QWidget *parent)
@@ -66,19 +66,19 @@ NXCaptcha::NXCaptcha(QWidget *parent)
 {
   Q_D(NXCaptcha);
   d->q_ptr          = this;
-  d->_pCodeLength   = 6;
-  d->_pBorderRadius = 6;
-  d->_pBoxSize      = 42;
-  d->_pBoxSpacing   = 8;
-  d->_inputMode     = AlphaNumeric;
+  d->m_CodeLength   = 6;
+  d->m_BorderRadius = 6;
+  d->m_BoxSize      = 42;
+  d->m_BoxSpacing   = 8;
+  d->m_InputMode     = AlphaNumeric;
   setObjectName("NXCaptcha");
-  setFixedHeight(d->_pBoxSize + 8);
+  setFixedHeight(d->m_BoxSize + 8);
 
-  d->_boxLayout = new QHBoxLayout(this);
-  d->_boxLayout->setContentsMargins(0, 0, 0, 0);
-  d->_boxLayout->setSpacing(d->_pBoxSpacing);
+  d->m_BoxLayout = new QHBoxLayout(this);
+  d->m_BoxLayout->setContentsMargins(0, 0, 0, 0);
+  d->m_BoxLayout->setSpacing(d->m_BoxSpacing);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   d->_buildBoxes();
   connect(nxTheme, &NXTheme::themeModeChanged, d, &NXCaptchaPrivate::onThemeChanged);
 }
@@ -89,9 +89,9 @@ NXCaptcha::~NXCaptcha()
 
 QString NXCaptcha::getCode() const
 {
-  Q_D(const NXCaptcha);
+  Q_CONST_D(NXCaptcha);
   QString code;
-  for (QLineEdit *box : d->_boxes) {
+  for (QLineEdit *box : d->m_Boxes) {
     code += box->text();
   }
   return code;
@@ -100,14 +100,14 @@ QString NXCaptcha::getCode() const
 void NXCaptcha::clear()
 {
   Q_D(NXCaptcha);
-  for (QLineEdit *box : d->_boxes) {
+  for (QLineEdit *box : d->m_Boxes) {
     box->blockSignals(true);
     box->clear();
     box->blockSignals(false);
   }
   d->_applyThemeStyle();
-  if (!d->_boxes.isEmpty()) {
-    d->_boxes.first()->setFocus();
+  if (!d->m_Boxes.isEmpty()) {
+    d->m_Boxes.first()->setFocus();
   }
   Q_EMIT codeChanged(QString());
 }
@@ -119,7 +119,7 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
   if (!box) {
     return QWidget::eventFilter(watched, event);
   }
-  int index = d->_boxes.indexOf(box);
+  int index = d->m_Boxes.indexOf(box);
   if (index < 0) {
     return QWidget::eventFilter(watched, event);
   }
@@ -137,23 +137,23 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
 
     if (keyEvent->matches(QKeySequence::Paste)) {
       QString clipText = QApplication::clipboard()->text().trimmed().toUpper();
-      if (d->_inputMode == NXCaptcha::DigitOnly) {
+      if (d->m_InputMode == NXCaptcha::DigitOnly) {
         clipText.remove(QRegularExpression(QStringLiteral("[^0-9]")));
       } else {
         clipText.remove(QRegularExpression(QStringLiteral("[^A-Z0-9]")));
       }
       if (!clipText.isEmpty()) {
-        for (int i = 0; i < clipText.length() && (index + i) < d->_boxes.count(); ++i) {
-          d->_boxes[index + i]->blockSignals(true);
-          d->_boxes[index + i]->setText(clipText.mid(i, 1));
-          d->_boxes[index + i]->blockSignals(false);
+        for (int i = 0; i < clipText.length() && (index + i) < d->m_Boxes.count(); ++i) {
+          d->m_Boxes[index + i]->blockSignals(true);
+          d->m_Boxes[index + i]->setText(clipText.mid(i, 1));
+          d->m_Boxes[index + i]->blockSignals(false);
         }
         d->_applyThemeStyle();
-        int nextIndex = qMin(index + clipText.length(), d->_boxes.count() - 1);
-        d->_boxes[nextIndex]->setFocus();
+        int nextIndex = qMin(index + clipText.length(), d->m_Boxes.count() - 1);
+        d->m_Boxes[nextIndex]->setFocus();
         QString code = getCode();
         Q_EMIT codeChanged(code);
-        if (code.length() == d->_pCodeLength) {
+        if (code.length() == d->m_CodeLength) {
           Q_EMIT codeCompleted(code);
         }
       }
@@ -162,13 +162,13 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
 
     if (keyEvent->key() == Qt::Key_Left) {
       if (index > 0) {
-        d->_boxes[index - 1]->setFocus();
+        d->m_Boxes[index - 1]->setFocus();
       }
       return true;
     }
     if (keyEvent->key() == Qt::Key_Right) {
-      if (index < d->_boxes.count() - 1) {
-        d->_boxes[index + 1]->setFocus();
+      if (index < d->m_Boxes.count() - 1) {
+        d->m_Boxes[index + 1]->setFocus();
       }
       return true;
     }
@@ -176,8 +176,8 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
     if (keyEvent->key() == Qt::Key_Backspace) {
       if (box->text().isEmpty()) {
         if (index > 0) {
-          d->_boxes[index - 1]->clear();
-          d->_boxes[index - 1]->setFocus();
+          d->m_Boxes[index - 1]->clear();
+          d->m_Boxes[index - 1]->setFocus();
           d->_applyThemeStyle();
           Q_EMIT codeChanged(getCode());
         }
@@ -193,7 +193,7 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
     if (!text.isEmpty()) {
       QChar ch   = text.at(0);
       bool valid = false;
-      if (d->_inputMode == NXCaptcha::DigitOnly) {
+      if (d->m_InputMode == NXCaptcha::DigitOnly) {
         valid = ch.isDigit();
       } else {
         valid = ch.isLetterOrNumber();
@@ -206,12 +206,12 @@ bool NXCaptcha::eventFilter(QObject *watched, QEvent *event)
       box->setText(text);
       box->blockSignals(false);
       d->_applyThemeStyle();
-      if (index < d->_boxes.count() - 1) {
-        d->_boxes[index + 1]->setFocus();
+      if (index < d->m_Boxes.count() - 1) {
+        d->m_Boxes[index + 1]->setFocus();
       }
       QString code = getCode();
       Q_EMIT codeChanged(code);
-      if (code.length() == d->_pCodeLength) {
+      if (code.length() == d->m_CodeLength) {
         Q_EMIT codeCompleted(code);
       }
       return true;
@@ -231,27 +231,27 @@ NXCaptchaPrivate::~NXCaptchaPrivate()
 
 void NXCaptchaPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
-  _themeMode = themeMode;
+  m_ThemeMode = themeMode;
   _applyThemeStyle();
 }
 
 void NXCaptchaPrivate::_buildBoxes()
 {
   Q_Q(NXCaptcha);
-  for (QLineEdit *box : _boxes) {
-    _boxLayout->removeWidget(box);
+  for (QLineEdit *box : m_Boxes) {
+    m_BoxLayout->removeWidget(box);
     box->removeEventFilter(q);
     box->deleteLater();
   }
-  _boxes.clear();
+  m_Boxes.clear();
 
-  _boxLayout->setSpacing(_pBoxSpacing);
+  m_BoxLayout->setSpacing(m_BoxSpacing);
 
-  for (int i = 0; i < _pCodeLength; ++i) {
+  for (int i = 0; i < m_CodeLength; ++i) {
     QLineEdit *box = new QLineEdit(q);
     box->setMaxLength(1);
     box->setAlignment(Qt::AlignCenter);
-    box->setFixedSize(_pBoxSize, _pBoxSize);
+    box->setFixedSize(m_BoxSize, m_BoxSize);
     box->setFocusPolicy(Qt::StrongFocus);
     box->setContextMenuPolicy(Qt::NoContextMenu);
     QFont font = box->font();
@@ -259,31 +259,31 @@ void NXCaptchaPrivate::_buildBoxes()
     font.setBold(true);
     box->setFont(font);
     box->installEventFilter(q);
-    _boxLayout->addWidget(box);
-    _boxes.append(box);
+    m_BoxLayout->addWidget(box);
+    m_Boxes.append(box);
   }
 
   _applyThemeStyle();
 
-  if (!_boxes.isEmpty()) {
-    _boxes.first()->setFocus();
+  if (!m_Boxes.isEmpty()) {
+    m_Boxes.first()->setFocus();
   }
 }
 
 void NXCaptchaPrivate::_updateValidators()
 {
   Q_Q(NXCaptcha);
-  QString pattern                        = (_inputMode == NXCaptcha::DigitOnly) ? QStringLiteral("[0-9]") : QStringLiteral("[A-Za-z0-9]");
+  QString pattern                        = (m_InputMode == NXCaptcha::DigitOnly) ? QStringLiteral("[0-9]") : QStringLiteral("[A-Za-z0-9]");
   QRegularExpressionValidator *validator = new QRegularExpressionValidator(QRegularExpression(pattern), q);
-  for (QLineEdit *box : _boxes) {
+  for (QLineEdit *box : m_Boxes) {
     box->setValidator(validator);
   }
 }
 
 void NXCaptchaPrivate::_applyThemeStyle()
 {
-  for (int i = 0; i < _boxes.count(); ++i) {
-    QLineEdit *box = _boxes[i];
+  for (int i = 0; i < m_Boxes.count(); ++i) {
+    QLineEdit *box = m_Boxes[i];
     bool focused   = box->hasFocus();
     _applyBoxStyle(box, focused);
   }
@@ -291,20 +291,20 @@ void NXCaptchaPrivate::_applyThemeStyle()
 
 void NXCaptchaPrivate::_applyBoxStyle(QLineEdit *box, bool focused)
 {
-  QColor bgColor   = NXThemeColor(_themeMode, BasicBase);
-  QColor textColor = NXThemeColor(_themeMode, BasicText);
+  QColor bgColor   = NXThemeColor(m_ThemeMode, BasicBase);
+  QColor textColor = NXThemeColor(m_ThemeMode, BasicText);
   QColor borderColor;
   if (focused || !box->text().isEmpty()) {
-    borderColor = NXThemeColor(_themeMode, PrimaryNormal);
+    borderColor = NXThemeColor(m_ThemeMode, PrimaryNormal);
   } else {
-    borderColor = NXThemeColor(_themeMode, BasicBorder);
+    borderColor = NXThemeColor(m_ThemeMode, BasicBorder);
   }
   box->setStyleSheet(QString(QStringLiteral("QLineEdit { background: %1; border: 1px solid %2; border-radius: %3px; "
                                             "font-size: 20px; font-weight: bold; color: %4; }"
                                             "QLineEdit:focus { border: 2px solid %5; }"))
                          .arg(bgColor.name(QColor::HexArgb))
                          .arg(borderColor.name(QColor::HexArgb))
-                         .arg(_pBorderRadius)
+                         .arg(m_BorderRadius)
                          .arg(textColor.name(QColor::HexArgb))
-                         .arg(NXThemeColor(_themeMode, PrimaryNormal).name(QColor::HexArgb)));
+                         .arg(NXThemeColor(m_ThemeMode, PrimaryNormal).name(QColor::HexArgb)));
 }

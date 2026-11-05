@@ -9,10 +9,10 @@
 #include "NXTheme.h"
 
 NXGroupBoxStyle::NXGroupBoxStyle(QStyle *style)
+    : m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -20,15 +20,15 @@ NXGroupBoxStyle::~NXGroupBoxStyle()
 {
 }
 
-void NXGroupBoxStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+void NXGroupBoxStyle::drawComplexControl(ComplexControl control, QStyleOptionComplex const *option, QPainter *painter, QWidget const *widget) const
 {
   if (control == CC_GroupBox) {
-    if (const QStyleOptionGroupBox *groupBox = qstyleoption_cast<const QStyleOptionGroupBox *>(option)) {
+    if (QStyleOptionGroupBox const *groupBox = qstyleoption_cast<QStyleOptionGroupBox const *>(option)) {
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
       int borderRadius = 6;
-      if (const NXGroupBox *groupBox = qobject_cast<const NXGroupBox *>(widget)) {
+      if (NXGroupBox const *groupBox = qobject_cast<NXGroupBox const *>(widget)) {
         borderRadius = groupBox->getBorderRadius();
       }
 
@@ -43,7 +43,7 @@ void NXGroupBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
 
         QPainterPath framePath;
         framePath.addRoundedRect(drawRect, borderRadius, borderRadius);
-        painter->setPen(QPen(NXThemeColor(_themeMode, BasicBorder), 1.5));
+        painter->setPen(QPen(NXThemeColor(m_ThemeMode, BasicBorder), 1.5));
         painter->setBrush(Qt::NoBrush);
         painter->drawPath(framePath);
       }
@@ -58,11 +58,11 @@ void NXGroupBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
         int textRight = textRect.center().x() + textWidth / 2;
 
         QRect titleBgRect(textLeft - 4, borderTop - 2, textWidth + 8, 2);
-        //painter->fillRect(titleBgRect, NXThemeColor(_themeMode, WindowBase));
+        //painter->fillRect(titleBgRect, NXThemeColor(m_ThemeMode, WindowBase));
 
-        QColor textColor = NXThemeColor(_themeMode, BasicText);
+        QColor textColor = NXThemeColor(m_ThemeMode, BasicText);
         if (option->state & State_HasFocus) {
-          textColor = NXThemeColor(_themeMode, PrimaryNormal);
+          textColor = NXThemeColor(m_ThemeMode, PrimaryNormal);
         }
         painter->setPen(textColor);
         painter->setBrush(Qt::NoBrush);
@@ -83,7 +83,7 @@ void NXGroupBoxStyle::drawComplexControl(ComplexControl control, const QStyleOpt
   QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-void NXGroupBoxStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXGroupBoxStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case PE_FrameGroupBox : {
@@ -95,7 +95,7 @@ void NXGroupBoxStyle::drawPrimitive(PrimitiveElement element, const QStyleOption
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-int NXGroupBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXGroupBoxStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   return QProxyStyle::pixelMetric(metric, option, widget);
 }

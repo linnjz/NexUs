@@ -7,40 +7,40 @@
 #include "NXTheme.h"
 
 NXColorValueSliderStyle::NXColorValueSliderStyle(QStyle *style)
-    : _pIsUseAlpha(false)
+    : m_IsUseAlpha(false)
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_BaseGradient { new QLinearGradient(0, 0, 100, 100) }
 {
-  _baseGradient = new QLinearGradient(0, 0, 100, 100);
   setProperty("circleRadius", 0.01);
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
 NXColorValueSliderStyle::~NXColorValueSliderStyle()
 {
-  delete _baseGradient;
+  delete m_BaseGradient;
 }
 
-void NXColorValueSliderStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+void NXColorValueSliderStyle::drawComplexControl(ComplexControl control, QStyleOptionComplex const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (control) {
   case QStyle::CC_Slider : {
-    const QStyleOptionSlider *sopt = qstyleoption_cast<const QStyleOptionSlider *>(option);
+    QStyleOptionSlider const *sopt = qstyleoption_cast<QStyleOptionSlider const *>(option);
     if (!sopt) {
       break;
     }
-    _baseGradient->setFinalStop(widget->rect().bottomRight());
-    QColor highValueColor = _pBaseColor.toHsv();
-    highValueColor.setHsv(highValueColor.hue(), highValueColor.saturation(), _pIsUseAlpha ? highValueColor.value() : 255);
-    QColor lowValueColor = _pBaseColor.toHsv();
-    if (_pIsUseAlpha) {
+    m_BaseGradient->setFinalStop(widget->rect().bottomRight());
+    QColor highValueColor = m_BaseColor.toHsv();
+    highValueColor.setHsv(highValueColor.hue(), highValueColor.saturation(), m_IsUseAlpha ? highValueColor.value() : 255);
+    QColor lowValueColor = m_BaseColor.toHsv();
+    if (m_IsUseAlpha) {
       lowValueColor.setHsv(lowValueColor.hue(), lowValueColor.saturation(), lowValueColor.value(), 0);
     } else {
       lowValueColor.setHsv(lowValueColor.hue(), lowValueColor.saturation(), 0);
     }
-    _baseGradient->setColorAt(0, highValueColor);
-    _baseGradient->setColorAt(1, lowValueColor);
+    m_BaseGradient->setColorAt(0, highValueColor);
+    m_BaseGradient->setColorAt(1, lowValueColor);
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     QRectF sliderRect = sopt->rect;
@@ -49,53 +49,53 @@ void NXColorValueSliderStyle::drawComplexControl(ComplexControl control, const Q
     sliderHandleRect.adjust(1, 1, -1, -1);
     // 滑槽
     painter->setPen(Qt::NoPen);
-    painter->setBrush(*_baseGradient);
+    painter->setBrush(*m_BaseGradient);
     // 渐变背景
     painter->drawRoundedRect(QRectF(sliderRect.x(), sliderRect.y() + sliderRect.width() / 8, sliderRect.width(), sliderRect.height() - sliderRect.width() / 4), sliderRect.width() / 2, sliderRect.width() / 2);
 
     // 滑块
     // 外圆形
-    painter->setPen(NXThemeColor(_themeMode, BasicBorder));
-    painter->setBrush(NXThemeColor(_themeMode, BasicBase));
+    painter->setPen(NXThemeColor(m_ThemeMode, BasicBorder));
+    painter->setBrush(NXThemeColor(m_ThemeMode, BasicBase));
     painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), sliderHandleRect.width() / 2, sliderHandleRect.width() / 2);
     // 内圆形
     painter->setPen(Qt::NoPen);
-    painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
-    if (_lastState == 0) {
-      _lastState = sopt->state;
+    painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
+    if (m_LastState == 0) {
+      m_LastState = sopt->state;
     }
-    if (_circleRadius == 0) {
-      _circleRadius = sliderHandleRect.width() / 3.8;
+    if (m_CircleRadius == 0) {
+      m_CircleRadius = sliderHandleRect.width() / 3.8;
     }
     if (sopt->activeSubControls == SC_SliderHandle) {
       if (sopt->state & QStyle::State_Sunken) {
         if (sopt->state & QStyle::State_MouseOver) {
-          if (!_lastState.testFlag(QStyle::State_Sunken)) {
+          if (!m_LastState.testFlag(QStyle::State_Sunken)) {
             _startRadiusAnimation(sliderHandleRect.width() / 2.8, sliderHandleRect.width() / 4.5, const_cast<QWidget *>(widget));
-            _lastState = sopt->state;
+            m_LastState = sopt->state;
           }
-          painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), _circleRadius, _circleRadius);
+          painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), m_CircleRadius, m_CircleRadius);
         }
       } else {
         if (sopt->state & QStyle::State_MouseOver) {
-          if (!_lastState.testFlag(QStyle::State_MouseOver)) {
-            _startRadiusAnimation(_circleRadius, sliderHandleRect.width() / 2.8, const_cast<QWidget *>(widget));
-            _lastState = sopt->state;
+          if (!m_LastState.testFlag(QStyle::State_MouseOver)) {
+            _startRadiusAnimation(m_CircleRadius, sliderHandleRect.width() / 2.8, const_cast<QWidget *>(widget));
+            m_LastState = sopt->state;
           }
-          if (_lastState.testFlag(QStyle::State_Sunken)) {
-            _startRadiusAnimation(_circleRadius, sliderHandleRect.width() / 2.8, const_cast<QWidget *>(widget));
-            _lastState = sopt->state;
+          if (m_LastState.testFlag(QStyle::State_Sunken)) {
+            _startRadiusAnimation(m_CircleRadius, sliderHandleRect.width() / 2.8, const_cast<QWidget *>(widget));
+            m_LastState = sopt->state;
           }
-          painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), _circleRadius, _circleRadius);
+          painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), m_CircleRadius, m_CircleRadius);
         }
       }
     } else {
-      if (_lastState.testFlag(QStyle::State_MouseOver) || _lastState.testFlag(QStyle::State_Sunken)) {
-        _startRadiusAnimation(_circleRadius, sliderHandleRect.width() / 3.8, const_cast<QWidget *>(widget));
-        _lastState &= ~QStyle::State_MouseOver;
-        _lastState &= ~QStyle::State_Sunken;
+      if (m_LastState.testFlag(QStyle::State_MouseOver) || m_LastState.testFlag(QStyle::State_Sunken)) {
+        _startRadiusAnimation(m_CircleRadius, sliderHandleRect.width() / 3.8, const_cast<QWidget *>(widget));
+        m_LastState &= ~QStyle::State_MouseOver;
+        m_LastState &= ~QStyle::State_Sunken;
       }
-      painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), _circleRadius, _circleRadius);
+      painter->drawEllipse(QPointF(sliderHandleRect.center().x() + 1, sliderHandleRect.center().y() + 1), m_CircleRadius, m_CircleRadius);
     }
     painter->restore();
     return;
@@ -107,7 +107,7 @@ void NXColorValueSliderStyle::drawComplexControl(ComplexControl control, const Q
   QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-int NXColorValueSliderStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXColorValueSliderStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   switch (metric) {
   case QStyle::PM_SliderLength : {
@@ -123,7 +123,7 @@ int NXColorValueSliderStyle::pixelMetric(PixelMetric metric, const QStyleOption 
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-int NXColorValueSliderStyle::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *widget, QStyleHintReturn *returnData) const
+int NXColorValueSliderStyle::styleHint(StyleHint hint, QStyleOption const *option, QWidget const *widget, QStyleHintReturn *returnData) const
 {
   if (hint == QStyle::SH_Slider_AbsoluteSetButtons) {
     return Qt::LeftButton;
@@ -135,8 +135,8 @@ void NXColorValueSliderStyle::_startRadiusAnimation(qreal startRadius, qreal end
 {
   NXColorValueSliderStyle *style            = const_cast<NXColorValueSliderStyle *>(this);
   QPropertyAnimation *circleRadiusAnimation = new QPropertyAnimation(style, "circleRadius");
-  connect(circleRadiusAnimation, &QPropertyAnimation::valueChanged, style, [=](const QVariant &value) {
-    this->_circleRadius = value.toReal();
+  connect(circleRadiusAnimation, &QPropertyAnimation::valueChanged, style, [=](QVariant const &value) {
+    this->m_CircleRadius = value.toReal();
     widget->update();
   });
   circleRadiusAnimation->setEasingCurve(QEasingCurve::InOutSine);

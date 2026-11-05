@@ -8,7 +8,7 @@
 class NXMaskWidget : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(int, MaskAlpha)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), MaskAlpha)
 
 public:
   explicit NXMaskWidget(QWidget *parent = nullptr);

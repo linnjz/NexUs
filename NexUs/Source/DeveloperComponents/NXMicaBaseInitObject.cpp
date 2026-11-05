@@ -7,15 +7,15 @@
 
 NXMicaBaseInitObject::NXMicaBaseInitObject(NXApplicationPrivate *appPrivate, QObject *parent)
     : QObject { parent }
+    , m_AppPrivate { appPrivate }
 {
-  _appPrivate = appPrivate;
 }
 
 NXMicaBaseInitObject::~NXMicaBaseInitObject()
 {
 }
 
-void NXMicaBaseInitObject::onInitMicaBase(const QImage &img)
+void NXMicaBaseInitObject::onInitMicaBase(QImage const &img)
 {
   // QColorDialog
   // 统一处理为1920*1080以节省空间
@@ -56,9 +56,9 @@ void NXMicaBaseInitObject::onInitMicaBase(const QImage &img)
       darkImage.setPixel(x, y, qRgb(darkColor.red(), darkColor.green(), darkColor.blue()));
     }
   }
-  _appPrivate->_lightBaseImage = std::move(lightImage);
-  _appPrivate->_darkBaseImage  = std::move(darkImage);
-  // _appPrivate->_lightBaseImage.save("light.png", "PNG");
-  // _appPrivate->_darkBaseImage.save("dark.png", "PNG");
+  m_AppPrivate->m_LightBaseImage = std::move(lightImage);
+  m_AppPrivate->m_DarkBaseImage  = std::move(darkImage);
+  // m_AppPrivate->m_LightBaseImage.save("light.png", "PNG");
+  // m_AppPrivate->m_DarkBaseImage.save("dark.png", "PNG");
   Q_EMIT initFinished();
 }

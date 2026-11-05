@@ -9,7 +9,7 @@
 class NXDrawerHeader : public QWidget
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(qreal, ExpandIconRotate)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), ExpandIconRotate)
   Q_PRIVATE_CREATE(int, BorderRadius)
   Q_PRIVATE_CREATE(bool, IsExpand)
 
@@ -29,10 +29,10 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  bool _isPressed { false };
-  NXThemeType::ThemeMode _themeMode;
-  QWidget *_headerWidget { nullptr };
-  QVBoxLayout *_mainLayout { nullptr };
+  bool m_IsPressed { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QWidget *m_HeaderWidget { nullptr };
+  QVBoxLayout *m_MainLayout { nullptr };
 };
 
 #endif //NXFRAMEWORK_NEXUS_DEVELOPERCOMPONENTS_NXDRAWERHEADER_H_

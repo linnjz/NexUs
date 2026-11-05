@@ -14,7 +14,7 @@ class NX_EXPORT NXGroupBox : public QGroupBox
 
 public:
   explicit NXGroupBox(QWidget *parent = nullptr);
-  explicit NXGroupBox(const QString &title, QWidget *parent = nullptr);
+  explicit NXGroupBox(QString const &title, QWidget *parent = nullptr);
   ~NXGroupBox();
 
 protected:

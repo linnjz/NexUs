@@ -13,11 +13,11 @@
 #include "NXText.h"
 #include "NXTheme.h"
 #include "private/NXTransferPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXTransfer, QS_SET_CREF(QString), SourceTitle)
-Q_PROPERTY_CREATE_CPP(NXTransfer, QS_SET_CREF(QString), TargetTitle)
-Q_PROPERTY_CREATE_CPP(NXTransfer, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXTransfer, int, ItemHeight)
-Q_PROPERTY_CREATE_CPP(NXTransfer, bool, IsSearchVisible)
+Q_PROPERTY_CREATE_CPP(NXTransfer, QPS_SCREF_PAEMIT(QString), SourceTitle)
+Q_PROPERTY_CREATE_CPP(NXTransfer, QPS_SCREF_PAEMIT(QString), TargetTitle)
+Q_PROPERTY_CREATE_CPP(NXTransfer, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXTransfer, QPS_PAEMIT(int), ItemHeight)
+Q_PROPERTY_CREATE_CPP(NXTransfer, QPS_PAEMIT(bool), IsSearchVisible)
 
 NXTransfer::NXTransfer(QWidget *parent)
     : QWidget(parent)
@@ -25,12 +25,12 @@ NXTransfer::NXTransfer(QWidget *parent)
 {
   Q_D(NXTransfer);
   d->q_ptr             = this;
-  d->_pBorderRadius    = 6;
-  d->_pItemHeight      = 35;
-  d->_pSourceTitle     = QStringLiteral("源列表");
-  d->_pTargetTitle     = QStringLiteral("目标列表");
-  d->_pIsSearchVisible = true;
-  d->_themeMode        = nxTheme->getThemeMode();
+  d->m_BorderRadius    = 6;
+  d->m_ItemHeight      = 35;
+  d->m_SourceTitle     = QStringLiteral("源列表");
+  d->m_TargetTitle     = QStringLiteral("目标列表");
+  d->m_IsSearchVisible = true;
+  d->m_ThemeMode        = nxTheme->getThemeMode();
 
   setMinimumSize(500, 300);
 
@@ -42,48 +42,48 @@ NXTransfer::NXTransfer(QWidget *parent)
   QHBoxLayout *sourceHeaderLayout = new QHBoxLayout();
   sourceHeaderLayout->setContentsMargins(8, 8, 8, 4);
   sourceHeaderLayout->setSpacing(2);
-  d->_sourceSelectAll = new NXCheckBox(this);
-  d->_sourceSelectAll->setFixedWidth(30);
-  d->_sourceTitleText = new NXText(d->_pSourceTitle, this);
-  d->_sourceTitleText->setTextStyle(NXTextType::BodyStrong);
-  d->_sourceCountText = new NXText(QStringLiteral("0/0"), this);
-  d->_sourceCountText->setTextStyle(NXTextType::Caption);
-  sourceHeaderLayout->addWidget(d->_sourceSelectAll, 0, Qt::AlignVCenter);
-  sourceHeaderLayout->addWidget(d->_sourceTitleText);
+  d->m_SourceSelectAll = new NXCheckBox(this);
+  d->m_SourceSelectAll->setFixedWidth(30);
+  d->m_SourceTitleText = new NXText(d->m_SourceTitle, this);
+  d->m_SourceTitleText->setTextStyle(NXTextType::BodyStrong);
+  d->m_SourceCountText = new NXText(QStringLiteral("0/0"), this);
+  d->m_SourceCountText->setTextStyle(NXTextType::Caption);
+  sourceHeaderLayout->addWidget(d->m_SourceSelectAll, 0, Qt::AlignVCenter);
+  sourceHeaderLayout->addWidget(d->m_SourceTitleText);
   sourceHeaderLayout->addStretch();
-  sourceHeaderLayout->addWidget(d->_sourceCountText);
+  sourceHeaderLayout->addWidget(d->m_SourceCountText);
   sourceLayout->addLayout(sourceHeaderLayout);
 
-  d->_sourceSearchEdit = new NXLineEdit(this);
-  d->_sourceSearchEdit->setPlaceholderText(QStringLiteral("搜索"));
-  d->_sourceSearchEdit->setFixedHeight(30);
-  d->_sourceSearchEdit->setClearButtonEnabled(true);
+  d->m_SourceSearchEdit = new NXLineEdit(this);
+  d->m_SourceSearchEdit->setPlaceholderText(QStringLiteral("搜索"));
+  d->m_SourceSearchEdit->setFixedHeight(30);
+  d->m_SourceSearchEdit->setClearButtonEnabled(true);
   QHBoxLayout *sourceSearchLayout = new QHBoxLayout();
   sourceSearchLayout->setContentsMargins(8, 0, 8, 0);
-  sourceSearchLayout->addWidget(d->_sourceSearchEdit);
+  sourceSearchLayout->addWidget(d->m_SourceSearchEdit);
   sourceLayout->addLayout(sourceSearchLayout);
 
-  d->_sourceModel    = new QStandardItemModel(this);
-  d->_sourceListView = new NXBaseListView(this);
-  d->_sourceListView->setModel(d->_sourceModel);
-  d->_sourceListView->setSelectionMode(QAbstractItemView::MultiSelection);
-  d->_sourceListView->setObjectName("NXTransferSourceView");
-  d->_sourceListView->setStyleSheet(QStringLiteral("#NXTransferSourceView{background-color:transparent;}"));
-  NXScrollBar *sourceScrollBar = new NXScrollBar(d->_sourceListView->verticalScrollBar(), d->_sourceListView);
+  d->m_SourceModel    = new QStandardItemModel(this);
+  d->m_SourceListView = new NXBaseListView(this);
+  d->m_SourceListView->setModel(d->m_SourceModel);
+  d->m_SourceListView->setSelectionMode(QAbstractItemView::MultiSelection);
+  d->m_SourceListView->setObjectName("NXTransferSourceView");
+  d->m_SourceListView->setStyleSheet(QStringLiteral("#NXTransferSourceView{background-color:transparent;}"));
+  NXScrollBar *sourceScrollBar = new NXScrollBar(d->m_SourceListView->verticalScrollBar(), d->m_SourceListView);
   sourceScrollBar->setIsAnimation(true);
-  sourceLayout->addWidget(d->_sourceListView);
+  sourceLayout->addWidget(d->m_SourceListView);
 
   QWidget *buttonPanel      = new QWidget(this);
   QVBoxLayout *buttonLayout = new QVBoxLayout(buttonPanel);
   buttonLayout->setContentsMargins(8, 0, 8, 0);
   buttonLayout->setSpacing(8);
   buttonLayout->addStretch();
-  d->_moveToTargetButton = new NXIconButton(NXIconType::AngleRight, 14, 36, 30, this);
-  d->_moveToTargetButton->setBorderRadius(4);
-  d->_moveToSourceButton = new NXIconButton(NXIconType::AngleLeft, 14, 36, 30, this);
-  d->_moveToSourceButton->setBorderRadius(4);
-  buttonLayout->addWidget(d->_moveToTargetButton);
-  buttonLayout->addWidget(d->_moveToSourceButton);
+  d->m_MoveToTargetButton = new NXIconButton(NXIconType::AngleRight, 14, 36, 30, this);
+  d->m_MoveToTargetButton->setBorderRadius(4);
+  d->m_MoveToSourceButton = new NXIconButton(NXIconType::AngleLeft, 14, 36, 30, this);
+  d->m_MoveToSourceButton->setBorderRadius(4);
+  buttonLayout->addWidget(d->m_MoveToTargetButton);
+  buttonLayout->addWidget(d->m_MoveToSourceButton);
   buttonLayout->addStretch();
 
   QWidget *targetPanel      = new QWidget(this);
@@ -94,36 +94,36 @@ NXTransfer::NXTransfer(QWidget *parent)
   QHBoxLayout *targetHeaderLayout = new QHBoxLayout();
   targetHeaderLayout->setContentsMargins(8, 8, 8, 4);
   targetHeaderLayout->setSpacing(2);
-  d->_targetSelectAll = new NXCheckBox(this);
-  d->_targetSelectAll->setFixedWidth(30);
-  d->_targetTitleText = new NXText(d->_pTargetTitle, this);
-  d->_targetTitleText->setTextStyle(NXTextType::BodyStrong);
-  d->_targetCountText = new NXText(QStringLiteral("0/0"), this);
-  d->_targetCountText->setTextStyle(NXTextType::Caption);
-  targetHeaderLayout->addWidget(d->_targetSelectAll, 0, Qt::AlignVCenter);
-  targetHeaderLayout->addWidget(d->_targetTitleText);
+  d->m_TargetSelectAll = new NXCheckBox(this);
+  d->m_TargetSelectAll->setFixedWidth(30);
+  d->m_TargetTitleText = new NXText(d->m_TargetTitle, this);
+  d->m_TargetTitleText->setTextStyle(NXTextType::BodyStrong);
+  d->m_TargetCountText = new NXText(QStringLiteral("0/0"), this);
+  d->m_TargetCountText->setTextStyle(NXTextType::Caption);
+  targetHeaderLayout->addWidget(d->m_TargetSelectAll, 0, Qt::AlignVCenter);
+  targetHeaderLayout->addWidget(d->m_TargetTitleText);
   targetHeaderLayout->addStretch();
-  targetHeaderLayout->addWidget(d->_targetCountText);
+  targetHeaderLayout->addWidget(d->m_TargetCountText);
   targetLayout->addLayout(targetHeaderLayout);
 
-  d->_targetSearchEdit = new NXLineEdit(this);
-  d->_targetSearchEdit->setPlaceholderText(QStringLiteral("搜索"));
-  d->_targetSearchEdit->setFixedHeight(30);
-  d->_targetSearchEdit->setClearButtonEnabled(true);
+  d->m_TargetSearchEdit = new NXLineEdit(this);
+  d->m_TargetSearchEdit->setPlaceholderText(QStringLiteral("搜索"));
+  d->m_TargetSearchEdit->setFixedHeight(30);
+  d->m_TargetSearchEdit->setClearButtonEnabled(true);
   QHBoxLayout *targetSearchLayout = new QHBoxLayout();
   targetSearchLayout->setContentsMargins(8, 0, 8, 0);
-  targetSearchLayout->addWidget(d->_targetSearchEdit);
+  targetSearchLayout->addWidget(d->m_TargetSearchEdit);
   targetLayout->addLayout(targetSearchLayout);
 
-  d->_targetModel    = new QStandardItemModel(this);
-  d->_targetListView = new NXBaseListView(this);
-  d->_targetListView->setModel(d->_targetModel);
-  d->_targetListView->setSelectionMode(QAbstractItemView::MultiSelection);
-  d->_targetListView->setObjectName("NXTransferTargetView");
-  d->_targetListView->setStyleSheet(QStringLiteral("#NXTransferTargetView{background-color:transparent;}"));
-  NXScrollBar *targetScrollBar = new NXScrollBar(d->_targetListView->verticalScrollBar(), d->_targetListView);
+  d->m_TargetModel    = new QStandardItemModel(this);
+  d->m_TargetListView = new NXBaseListView(this);
+  d->m_TargetListView->setModel(d->m_TargetModel);
+  d->m_TargetListView->setSelectionMode(QAbstractItemView::MultiSelection);
+  d->m_TargetListView->setObjectName("NXTransferTargetView");
+  d->m_TargetListView->setStyleSheet(QStringLiteral("#NXTransferTargetView{background-color:transparent;}"));
+  NXScrollBar *targetScrollBar = new NXScrollBar(d->m_TargetListView->verticalScrollBar(), d->m_TargetListView);
   targetScrollBar->setIsAnimation(true);
-  targetLayout->addWidget(d->_targetListView);
+  targetLayout->addWidget(d->m_TargetListView);
 
   QHBoxLayout *mainLayout = new QHBoxLayout(this);
   mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -132,21 +132,21 @@ NXTransfer::NXTransfer(QWidget *parent)
   mainLayout->addWidget(buttonPanel, 0);
   mainLayout->addWidget(targetPanel, 1);
 
-  connect(d->_moveToTargetButton, &NXIconButton::clicked, d, &NXTransferPrivate::onMoveToTarget);
-  connect(d->_moveToSourceButton, &NXIconButton::clicked, d, &NXTransferPrivate::onMoveToSource);
-  connect(d->_sourceSearchEdit, &NXLineEdit::textChanged, d, &NXTransferPrivate::onSourceSearchTextChanged);
-  connect(d->_targetSearchEdit, &NXLineEdit::textChanged, d, &NXTransferPrivate::onTargetSearchTextChanged);
-  connect(d->_sourceSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onSourceSelectAllChanged);
-  connect(d->_targetSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onTargetSelectAllChanged);
+  connect(d->m_MoveToTargetButton, &NXIconButton::clicked, d, &NXTransferPrivate::onMoveToTarget);
+  connect(d->m_MoveToSourceButton, &NXIconButton::clicked, d, &NXTransferPrivate::onMoveToSource);
+  connect(d->m_SourceSearchEdit, &NXLineEdit::textChanged, d, &NXTransferPrivate::onSourceSearchTextChanged);
+  connect(d->m_TargetSearchEdit, &NXLineEdit::textChanged, d, &NXTransferPrivate::onTargetSearchTextChanged);
+  connect(d->m_SourceSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onSourceSelectAllChanged);
+  connect(d->m_TargetSelectAll, &NXCheckBox::stateChanged, d, &NXTransferPrivate::onTargetSelectAllChanged);
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode    = themeMode;
+    d->m_ThemeMode    = themeMode;
     QColor textColor = NXThemeColor(themeMode, BasicText);
-    for (int i = 0; i < d->_sourceModel->rowCount(); ++i) {
-      d->_sourceModel->item(i)->setForeground(textColor);
+    for (int i = 0; i < d->m_SourceModel->rowCount(); ++i) {
+      d->m_SourceModel->item(i)->setForeground(textColor);
     }
-    for (int i = 0; i < d->_targetModel->rowCount(); ++i) {
-      d->_targetModel->item(i)->setForeground(textColor);
+    for (int i = 0; i < d->m_TargetModel->rowCount(); ++i) {
+      d->m_TargetModel->item(i)->setForeground(textColor);
     }
     update();
   });
@@ -156,39 +156,39 @@ NXTransfer::~NXTransfer()
 {
 }
 
-void NXTransfer::setSourceItems(const QStringList &items)
+void NXTransfer::setSourceItems(QStringList const &items)
 {
   Q_D(NXTransfer);
-  d->_sourceModel->clear();
-  QColor textColor = NXThemeColor(d->_themeMode, BasicText);
-  for (const QString &text : items) {
+  d->m_SourceModel->clear();
+  QColor textColor = NXThemeColor(d->m_ThemeMode, BasicText);
+  for (QString const &text : items) {
     QStandardItem *item = new QStandardItem(text);
     item->setForeground(textColor);
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    d->_sourceModel->appendRow(item);
+    d->m_SourceModel->appendRow(item);
   }
   d->_refreshCountText();
 }
 
-void NXTransfer::addSourceItem(const QString &text)
+void NXTransfer::addSourceItem(QString const &text)
 {
   Q_D(NXTransfer);
   QStandardItem *item = new QStandardItem(text);
-  item->setForeground(NXThemeColor(d->_themeMode, BasicText));
+  item->setForeground(NXThemeColor(d->m_ThemeMode, BasicText));
   item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-  d->_sourceModel->appendRow(item);
+  d->m_SourceModel->appendRow(item);
   d->_refreshCountText();
 }
 
-void NXTransfer::addSourceItems(const QStringList &items)
+void NXTransfer::addSourceItems(QStringList const &items)
 {
   Q_D(NXTransfer);
-  QColor textColor = NXThemeColor(d->_themeMode, BasicText);
-  for (const QString &text : items) {
+  QColor textColor = NXThemeColor(d->m_ThemeMode, BasicText);
+  for (QString const &text : items) {
     QStandardItem *item = new QStandardItem(text);
     item->setForeground(textColor);
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    d->_sourceModel->appendRow(item);
+    d->m_SourceModel->appendRow(item);
   }
   d->_refreshCountText();
 }
@@ -196,8 +196,8 @@ void NXTransfer::addSourceItems(const QStringList &items)
 QStringList NXTransfer::getSourceItems() const
 {
   QStringList items;
-  for (int i = 0; i < d_ptr->_sourceModel->rowCount(); ++i) {
-    items.append(d_ptr->_sourceModel->item(i)->text());
+  for (int i = 0; i < d_ptr->m_SourceModel->rowCount(); ++i) {
+    items.append(d_ptr->m_SourceModel->item(i)->text());
   }
   return items;
 }
@@ -205,8 +205,8 @@ QStringList NXTransfer::getSourceItems() const
 QStringList NXTransfer::getTargetItems() const
 {
   QStringList items;
-  for (int i = 0; i < d_ptr->_targetModel->rowCount(); ++i) {
-    items.append(d_ptr->_targetModel->item(i)->text());
+  for (int i = 0; i < d_ptr->m_TargetModel->rowCount(); ++i) {
+    items.append(d_ptr->m_TargetModel->item(i)->text());
   }
   return items;
 }
@@ -226,14 +226,14 @@ void NXTransfer::moveToSource()
 void NXTransfer::moveAllToTarget()
 {
   Q_D(NXTransfer);
-  d->_sourceListView->selectAll();
+  d->m_SourceListView->selectAll();
   d->onMoveToTarget();
 }
 
 void NXTransfer::moveAllToSource()
 {
   Q_D(NXTransfer);
-  d->_targetListView->selectAll();
+  d->m_TargetListView->selectAll();
   d->onMoveToSource();
 }
 
@@ -243,7 +243,7 @@ void NXTransfer::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
   painter.setBrush(Qt::NoBrush);
 
   int panelWidth   = (width() - 52) / 2;
@@ -251,12 +251,12 @@ void NXTransfer::paintEvent(QPaintEvent *event)
 
   QPainterPath sourcePath;
   QRectF sourceRect(0, 0, panelWidth, height());
-  sourcePath.addRoundedRect(sourceRect, d->_pBorderRadius, d->_pBorderRadius);
+  sourcePath.addRoundedRect(sourceRect, d->m_BorderRadius, d->m_BorderRadius);
   painter.drawPath(sourcePath);
 
   QPainterPath targetPath;
   QRectF targetRect(width() - panelWidth, 0, panelWidth, height());
-  targetPath.addRoundedRect(targetRect, d->_pBorderRadius, d->_pBorderRadius);
+  targetPath.addRoundedRect(targetRect, d->m_BorderRadius, d->m_BorderRadius);
   painter.drawPath(targetPath);
 
   painter.restore();

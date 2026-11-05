@@ -9,36 +9,36 @@ NXSuggestModel::~NXSuggestModel()
 {
 }
 
-int NXSuggestModel::rowCount(const QModelIndex &parent) const
+int NXSuggestModel::rowCount(QModelIndex const &parent) const
 {
   Q_UNUSED(parent)
-  return _suggestionVector.count();
+  return m_SuggestionVector.count();
 }
 
-QVariant NXSuggestModel::data(const QModelIndex &index, int role) const
+QVariant NXSuggestModel::data(QModelIndex const &index, int role) const
 {
   return QVariant();
 }
 
-void NXSuggestModel::setSearchSuggestion(const QVector<NXSuggestion *> &suggestionVector)
+void NXSuggestModel::setSearchSuggestion(QVector<NXSuggestion *> const &suggestionVector)
 {
   if (suggestionVector.count() == 0) {
     return;
   }
   beginResetModel();
-  _suggestionVector = suggestionVector;
+  m_SuggestionVector = suggestionVector;
   endResetModel();
 }
 
 void NXSuggestModel::clearSearchNode()
 {
-  this->_suggestionVector.clear();
+  this->m_SuggestionVector.clear();
 }
 
-NXSuggestion * NXSuggestModel::getSearchSuggestion(int row)
+NXSuggestion *NXSuggestModel::getSearchSuggestion(int row)
 {
-  if (row >= _suggestionVector.count()) {
+  if (row >= m_SuggestionVector.count()) {
     return nullptr;
   }
-  return _suggestionVector[row];
+  return m_SuggestionVector[row];
 }

@@ -30,7 +30,7 @@ QIcon NXIcon::getNXIcon(NXIconType::IconName awesome)
   return QIcon(pix);
 }
 
-QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, QColor const &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(30, 30);
@@ -63,7 +63,7 @@ QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize)
   return QIcon(pix);
 }
 
-QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, QColor const &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(pixelSize, pixelSize);
@@ -96,7 +96,7 @@ QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWi
   return QIcon(pix);
 }
 
-QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight, const QColor &iconColor)
+QIcon NXIcon::getNXIcon(NXIconType::IconName awesome, int pixelSize, int fixedWidth, int fixedHeight, QColor const &iconColor)
 {
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   QPixmap pix(fixedWidth, fixedHeight);

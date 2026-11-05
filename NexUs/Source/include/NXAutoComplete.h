@@ -29,23 +29,23 @@ public:
   explicit NXAutoComplete(QWidget *parent = nullptr);
   ~NXAutoComplete();
 
-  void setPlaceholderText(const QString &placeholderText);
+  void setPlaceholderText(QString const &placeholderText);
   QString placeholderText() const;
 
-  void setText(const QString &text);
+  void setText(QString const &text);
   QString text() const;
 
-  void setCompletions(const QStringList &completions);
+  void setCompletions(QStringList const &completions);
   QStringList completions() const;
 
   void setMatchMode(MatchMode mode);
   MatchMode matchMode() const;
 
   void setFixedHeight(int h);
-  Q_SIGNAL void textChanged(const QString &text);
-  Q_SIGNAL void textEdited(const QString &text);
-  Q_SIGNAL void completionSelected(const QString &completion);
-  Q_SIGNAL void returnPressed(const QString &text);
+  Q_SIGNAL void textChanged(QString const &text);
+  Q_SIGNAL void textEdited(QString const &text);
+  Q_SIGNAL void completionSelected(QString const &completion);
+  Q_SIGNAL void returnPressed(QString const &text);
 };
 
 #endif // NXAUTOCOMPLETE_H

@@ -1,4 +1,4 @@
-#ifndef NXPOPULARCARD_H
+﻿#ifndef NXPOPULARCARD_H
 #define NXPOPULARCARD_H
 
 #include <QPixmap>
@@ -11,13 +11,13 @@ class NX_EXPORT NXPopularCard : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXPopularCard)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QPixmap), CardPixmap)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QPixmap), CardFloatPixmap)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SubTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), InteractiveTips)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), DetailedText)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), CardButtonText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QPixmap), CardPixmap)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QPixmap), CardFloatPixmap)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SubTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), InteractiveTips)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), DetailedText)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), CardButtonText)
   Q_PROPERTY_CREATE_H(QWidget *, CardFloatArea)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
 

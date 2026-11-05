@@ -1,4 +1,4 @@
-#ifndef NXSPOTLIGHT_H
+﻿#ifndef NXSPOTLIGHT_H
 #define NXSPOTLIGHT_H
 
 #include <QWidget>
@@ -12,8 +12,8 @@ class NX_EXPORT NXSpotlight : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXSpotlight)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Title)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Content)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Title)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Content)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, Padding)
   Q_PROPERTY_CREATE_H(int, OverlayAlpha)
@@ -23,7 +23,7 @@ public:
   explicit NXSpotlight(QWidget *parent = nullptr);
   ~NXSpotlight();
 
-  void showSpotlight(QWidget *target, const QString &buttonText = QStringLiteral("知道了"));
+  void showSpotlight(QWidget *target, QString const &buttonText = QStringLiteral("知道了"));
 
   struct SpotlightStep
   {
@@ -33,7 +33,7 @@ public:
     bool isCircle { false };
   };
 
-  void setSteps(const QList<SpotlightStep> &steps);
+  void setSteps(QList<SpotlightStep> const &steps);
   void start();
   void next();
   void previous();

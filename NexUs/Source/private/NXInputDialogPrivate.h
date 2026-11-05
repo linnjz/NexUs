@@ -39,24 +39,24 @@ public:
 
 private:
   friend class NXInputDialog;
-  bool _isMultiLine { false };
-  bool _isIntMode { false };
-  bool _isDoubleMode { false };
-  NXThemeType::ThemeMode _themeMode;
-  qint64 _currentWinID { 0 };
-  NXAppBar *_appBar { nullptr };
-  NXMaskWidget *_maskWidget { nullptr };
-  NXText *_titleLabel { nullptr };
-  NXText *_subTitleLabel { nullptr };
-  NXText *_inputLabel { nullptr };
-  NXLineEdit *_lineEdit { nullptr };
-  NXSpinBox *_spinBox { nullptr };
-  NXDoubleSpinBox *_doubleSpinBox { nullptr };
-  QTextEdit *_textEdit { nullptr };
-  QVBoxLayout *_contentLayout { nullptr };
-  QWidget *_buttonWidget { nullptr };
-  NXPushButton *_okButton { nullptr };
-  NXPushButton *_cancelButton { nullptr };
+  bool m_IsMultiLine { false };
+  bool m_IsIntMode { false };
+  bool m_IsDoubleMode { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  qint64 m_CurrentWinID { 0 };
+  NXAppBar *m_AppBar { nullptr };
+  NXMaskWidget *m_MaskWidget { nullptr };
+  NXText *m_TitleLabel { nullptr };
+  NXText *m_SubTitleLabel { nullptr };
+  NXText *m_InputLabel { nullptr };
+  NXLineEdit *m_LineEdit { nullptr };
+  NXSpinBox *m_SpinBox { nullptr };
+  NXDoubleSpinBox *m_DoubleSpinBox { nullptr };
+  QTextEdit *m_TextEdit { nullptr };
+  QVBoxLayout *m_ContentLayout { nullptr };
+  QWidget *m_ButtonWidget { nullptr };
+  NXPushButton *m_OkButton { nullptr };
+  NXPushButton *m_CancelButton { nullptr };
   void _doCloseAnimation(bool isAccept);
 };
 

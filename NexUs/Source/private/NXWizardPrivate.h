@@ -17,18 +17,18 @@ class NXWizardPrivate : public QObject
   Q_PROPERTY_CREATE_D(int, CurrentStep)
 
 public:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  int _shadowBorderWidth { 0 };
+  int m_ShadowBorderWidth { 0 };
 #else
-  int _shadowBorderWidth { 10 };
+  int m_ShadowBorderWidth { 10 };
 #endif
-  QRect _cancelButtonRect;
-  QRect _prevButtonRect;
-  QRect _nextButtonRect;
-  QStringList _stepTitles;
-  QList<QWidget *> _stepPages;
-  QStackedWidget *_stackedWidget { nullptr };
+  QRect m_CancelButtonRect;
+  QRect m_PrevButtonRect;
+  QRect m_NextButtonRect;
+  QStringList m_StepTitles;
+  QList<QWidget *> m_StepPages;
+  QStackedWidget *m_StackedWidget { nullptr };
   explicit NXWizardPrivate(QObject *parent = nullptr);
   ~NXWizardPrivate();
 };

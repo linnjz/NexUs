@@ -10,21 +10,21 @@ class NXPivotStyle;
 class NXPivotView : public QListView
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), PressIndex)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), HoverIndex)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), CommittedIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), PressIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), HoverIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), CommittedIndex)
   Q_PRIVATE_CREATE(NXPivotStyle *, PivotStyle)
   Q_PRIVATE_CREATE(Qt::CursorShape, ItemCursor)
-  Q_PROPERTY_CREATE(int, IndicatorWidth)
-  Q_PROPERTY_CREATE(int, IndicatorAnimationWidth)
-  Q_PROPERTY_CREATE(int, IndicatorX)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), IndicatorWidth)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), IndicatorAnimationWidth)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), IndicatorX)
 
 public:
   explicit NXPivotView(QWidget *parent = nullptr);
   ~NXPivotView() override;
-  bool doCurrentIndexChangedAnimation(const QModelIndex &index);
-  void setPressIndexAndUpdate(const QModelIndex &index);
-  void setCommittedIndexAndUpdate(const QModelIndex &index);
+  bool doCurrentIndexChangedAnimation(QModelIndex const &index);
+  void setPressIndexAndUpdate(QModelIndex const &index);
+  void setCommittedIndexAndUpdate(QModelIndex const &index);
   void refreshHoverState();
 
 protected:
@@ -36,15 +36,15 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  bool _isAnimationFinished { true };
-  QRect _committedIndexRect {}; // 提交索引在上次动画/提交时的快照矩形，用于布局位移补偿
+  bool m_IsAnimationFinished { true };
+  QRect m_CommittedIndexRect {}; // 提交索引在上次动画/提交时的快照矩形，用于布局位移补偿
 
-  void _startIndicatorAnimation(qreal indicatorXStart, qreal indicatorXEnd, int indicatorWidthStart, int indicatorWidthEnd, const QRect &dirtyRect);
+  void _startIndicatorAnimation(qreal indicatorXStart, qreal indicatorXEnd, int indicatorWidthStart, int indicatorWidthEnd, QRect const &dirtyRect);
 
-  void _setHoverIndexInternal(const QModelIndex &index);
+  void _setHoverIndexInternal(QModelIndex const &index);
   void _updateIndicatorRegion(QRect rect);
-  void _updateIndexRect(const QModelIndex &index);
-  void _updateIndexPair(const QModelIndex &first, const QModelIndex &second);
+  void _updateIndexRect(QModelIndex const &index);
+  void _updateIndexPair(QModelIndex const &first, QModelIndex const &second);
   void _syncHoverCursor();
 };
 

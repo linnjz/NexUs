@@ -21,14 +21,14 @@ NXSpinBoxPrivate::~NXSpinBoxPrivate()
 void NXSpinBoxPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXSpinBox);
-  _themeMode = themeMode;
+  m_ThemeMode = themeMode;
   QPalette palette;
   palette.setColor(QPalette::Base, Qt::transparent);
-  palette.setColor(QPalette::Text, NXThemeColor(_themeMode, BasicText));
+  palette.setColor(QPalette::Text, NXThemeColor(m_ThemeMode, BasicText));
   q->lineEdit()->setPalette(palette);
 }
 
-NXMenu * NXSpinBoxPrivate::_createStandardContextMenu()
+NXMenu *NXSpinBoxPrivate::_createStandardContextMenu()
 {
   Q_Q(NXSpinBox);
   QLineEdit *lineEdit = q->lineEdit();

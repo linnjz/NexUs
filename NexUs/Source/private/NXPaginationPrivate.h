@@ -21,7 +21,7 @@ class NXPaginationPrivate : public QObject
   Q_PROPERTY_CREATE_D(bool, JumperVisible)
 
 public:
-  NXLineEdit *_jumperEdit { nullptr };
+  NXLineEdit *m_JumperEdit { nullptr };
   explicit NXPaginationPrivate(QObject *parent = nullptr);
   ~NXPaginationPrivate();
 
@@ -31,8 +31,8 @@ public:
 
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _hoverIndex { -1 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_HoverIndex { -1 };
 };
 
 #endif // NXPAGINATIONPRIVATE_H

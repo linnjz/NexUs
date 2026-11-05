@@ -8,13 +8,13 @@
 #include "NXMessageBar.h"
 #include "NXTheme.h"
 #include "private/NXMessageButtonPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXMessageButton, QS_SET_CREF(QString), BarTitle)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, QS_SET_CREF(QString), BarText)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, QWidget *, MessageTargetWidget)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, int, DisplayMsec)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, NXMessageBarType::MessageMode, MessageMode)
-Q_PROPERTY_CREATE_CPP(NXMessageButton, NXMessageBarType::PositionPolicy, PositionPolicy)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_SCREF_PAEMIT(QString), BarTitle)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_SCREF_PAEMIT(QString), BarText)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_PAEMIT(QWidget *), MessageTargetWidget)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_PAEMIT(int), DisplayMsec)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_PAEMIT(NXMessageBarType::MessageMode), MessageMode)
+Q_PROPERTY_CREATE_CPP(NXMessageButton, QPS_PAEMIT(NXMessageBarType::PositionPolicy), PositionPolicy)
 
 NXMessageButton::NXMessageButton(QWidget *parent)
     : QPushButton(parent)
@@ -22,7 +22,7 @@ NXMessageButton::NXMessageButton(QWidget *parent)
 {
   Q_D(NXMessageButton);
   d->q_ptr          = this;
-  d->_pBorderRadius = 3;
+  d->m_BorderRadius = 3;
   setMouseTracking(true);
   setFixedSize(80, 38);
   QFont font = this->font();
@@ -31,37 +31,37 @@ NXMessageButton::NXMessageButton(QWidget *parent)
   setText(QStringLiteral("Message"));
   setObjectName("NXMessageButton");
   setStyleSheet(QStringLiteral("#NXMessageButton{background-color:transparent;}"));
-  d->_pDisplayMsec         = 2000;
-  d->_pMessageMode         = NXMessageBarType::Success;
-  d->_pPositionPolicy      = NXMessageBarType::TopRight;
-  d->_themeMode            = nxTheme->getThemeMode();
-  d->_pMessageTargetWidget = nullptr;
+  d->m_DisplayMsec         = 2000;
+  d->m_MessageMode         = NXMessageBarType::Success;
+  d->m_PositionPolicy      = NXMessageBarType::TopRight;
+  d->m_ThemeMode            = nxTheme->getThemeMode();
+  d->m_MessageTargetWidget = nullptr;
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
   connect(this, &NXMessageButton::clicked, this, [=]() {
-    switch (d->_pMessageMode) {
+    switch (d->m_MessageMode) {
     case NXMessageBarType::Success : {
-      NXMessageBar::success(d->_pPositionPolicy, d->_pBarTitle, d->_pBarText, d->_pDisplayMsec, d->_pMessageTargetWidget);
+      NXMessageBar::success(d->m_PositionPolicy, d->m_BarTitle, d->m_BarText, d->m_DisplayMsec, d->m_MessageTargetWidget);
       break;
     }
     case NXMessageBarType::Warning : {
-      NXMessageBar::warning(d->_pPositionPolicy, d->_pBarTitle, d->_pBarText, d->_pDisplayMsec, d->_pMessageTargetWidget);
+      NXMessageBar::warning(d->m_PositionPolicy, d->m_BarTitle, d->m_BarText, d->m_DisplayMsec, d->m_MessageTargetWidget);
       break;
     }
     case NXMessageBarType::Information : {
-      NXMessageBar::information(d->_pPositionPolicy, d->_pBarTitle, d->_pBarText, d->_pDisplayMsec, d->_pMessageTargetWidget);
+      NXMessageBar::information(d->m_PositionPolicy, d->m_BarTitle, d->m_BarText, d->m_DisplayMsec, d->m_MessageTargetWidget);
       break;
     }
     case NXMessageBarType::Error : {
-      NXMessageBar::error(d->_pPositionPolicy, d->_pBarTitle, d->_pBarText, d->_pDisplayMsec, d->_pMessageTargetWidget);
+      NXMessageBar::error(d->m_PositionPolicy, d->m_BarTitle, d->m_BarText, d->m_DisplayMsec, d->m_MessageTargetWidget);
       break;
     }
     }
   });
 }
 
-NXMessageButton::NXMessageButton(const QString &text, QWidget *parent)
+NXMessageButton::NXMessageButton(QString const &text, QWidget *parent)
     : NXMessageButton(parent)
 {
   setText(text);
@@ -75,7 +75,7 @@ void NXMessageButton::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXMessageButton);
   if (event->button() == Qt::LeftButton) {
-    d->_isLeftButtonPress = true;
+    d->m_IsLeftButtonPress = true;
   }
   QPushButton::mousePressEvent(event);
 }
@@ -83,7 +83,7 @@ void NXMessageButton::mousePressEvent(QMouseEvent *event)
 void NXMessageButton::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXMessageButton);
-  d->_isLeftButtonPress = false;
+  d->m_IsLeftButtonPress = false;
   QPushButton::mouseReleaseEvent(event);
 }
 
@@ -93,17 +93,17 @@ void NXMessageButton::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing | QPainter::TextAntialiasing);
   // 高性能阴影
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
 
   // 背景绘制
   painter.save();
-  QRect foregroundRect(d->_penBorderWidth + d->_shadowBorderWidth, d->_penBorderWidth + d->_shadowBorderWidth, width() - 2 * (d->_penBorderWidth + d->_shadowBorderWidth), height() - 2 * (d->_penBorderWidth + d->_shadowBorderWidth));
-  painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), d->_penBorderWidth));
-  painter.setBrush(isEnabled() ? underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase) : NXThemeColor(d->_themeMode, BasicDisable));
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  QRect foregroundRect(d->m_PenBorderWidth + d->m_ShadowBorderWidth, d->m_PenBorderWidth + d->m_ShadowBorderWidth, width() - 2 * (d->m_PenBorderWidth + d->m_ShadowBorderWidth), height() - 2 * (d->m_PenBorderWidth + d->m_ShadowBorderWidth));
+  painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), d->m_PenBorderWidth));
+  painter.setBrush(isEnabled() ? underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase) : NXThemeColor(d->m_ThemeMode, BasicDisable));
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
 
   //文字绘制
-  painter.setPen(isEnabled() ? d->_isLeftButtonPress ? NXThemeColor(d->_themeMode, BasicTextPress) : NXThemeColor(d->_themeMode, BasicText) : NXThemeColor(d->_themeMode, BasicTextDisable));
+  painter.setPen(isEnabled() ? d->m_IsLeftButtonPress ? NXThemeColor(d->m_ThemeMode, BasicTextPress) : NXThemeColor(d->m_ThemeMode, BasicText) : NXThemeColor(d->m_ThemeMode, BasicTextDisable));
   painter.drawText(rect(), Qt::AlignCenter, text());
   painter.restore();
 }

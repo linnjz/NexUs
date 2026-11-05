@@ -25,8 +25,8 @@ public:
   void bindTabBar(NXRibbonTabBar *tabBar);
   NXRibbonTabBar *tabBar() const;
 
-  QWidget *addTab(const QString &title);
-  NXRibbonGroup *addGroup(QWidget *page, const QString &title);
+  QWidget *addTab(QString const &title);
+  NXRibbonGroup *addGroup(QWidget *page, QString const &title);
 
   int tabCount() const;
   QString tabText(int index) const;
@@ -58,7 +58,7 @@ public:
   Q_SIGNAL void pinnedChanged(bool pinned);
 
   // 框架级命令总线 action为按钮的defaultAction 纯占位按钮时为nullptr
-  Q_SIGNAL void ribbonActionTriggered(const QString &pageTitle, NXRibbonGroup *group, QAction *action);
+  Q_SIGNAL void ribbonActionTriggered(QString const &pageTitle, NXRibbonGroup *group, QAction *action);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

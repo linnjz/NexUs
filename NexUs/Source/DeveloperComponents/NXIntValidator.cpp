@@ -2,14 +2,15 @@
 
 NXIntValidator::NXIntValidator(QObject *parent)
     : QIntValidator { parent }
+    , m_IsHexMode { false }
 {
-  _pIsHexMode = false;
+  
 }
 
 NXIntValidator::NXIntValidator(int bottom, int top, QObject *parent)
     : QIntValidator { bottom, top, parent }
+    , m_IsHexMode { false }
 {
-  _pIsHexMode = false;
 }
 
 NXIntValidator::~NXIntValidator()
@@ -19,7 +20,7 @@ NXIntValidator::~NXIntValidator()
 QValidator::State NXIntValidator::validate(QString &input, int &pos) const
 {
   QString inputCopy = input;
-  if (_pIsHexMode) {
+  if (m_IsHexMode) {
     inputCopy.remove(QStringLiteral("#"));
     if (!inputCopy.isEmpty()) {
       bool isInt = false;
@@ -55,7 +56,7 @@ QValidator::State NXIntValidator::validate(QString &input, int &pos) const
 
 void NXIntValidator::fixup(QString &input) const
 {
-  if (_pIsHexMode) {
+  if (m_IsHexMode) {
     QString inputComplete = _completeInput(input, QString::number(top(), 16).length());
     input                 = QString(QStringLiteral("#")) + inputComplete;
   } else {
@@ -63,7 +64,7 @@ void NXIntValidator::fixup(QString &input) const
   }
 }
 
-QString NXIntValidator::_completeInput(const QString &input, int length) const
+QString NXIntValidator::_completeInput(QString const &input, int length) const
 {
   if (input.length() < length) {
     return QString(length - input.length(), '0') + input;

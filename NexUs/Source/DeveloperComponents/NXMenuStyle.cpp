@@ -10,12 +10,12 @@
 #include "NXTheme.h"
 
 NXMenuStyle::NXMenuStyle(QStyle *style)
+    : m_MenuItemHeight { 32 }
+    , m_BorderRadius { 6 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _pMenuItemHeight = 32;
-  _pBorderRadius   = 6;
-  _themeMode       = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -23,7 +23,7 @@ NXMenuStyle::~NXMenuStyle()
 {
 }
 
-void NXMenuStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXMenuStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::PE_PanelMenu : {
@@ -33,13 +33,13 @@ void NXMenuStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *op
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
     QRect foregroundRect = option->rect;
 #else
-    nxTheme->drawEffectShadow(painter, option->rect, _shadowBorderWidth, 6);
+    nxTheme->drawEffectShadow(painter, option->rect, m_ShadowBorderWidth, 6);
     // 背景绘制
-    QRect foregroundRect(_shadowBorderWidth, _shadowBorderWidth, option->rect.width() - 2 * _shadowBorderWidth, option->rect.height() - 2 * _shadowBorderWidth);
+    QRect foregroundRect(m_ShadowBorderWidth, m_ShadowBorderWidth, option->rect.width() - 2 * m_ShadowBorderWidth, option->rect.height() - 2 * m_ShadowBorderWidth);
 #endif
-    painter->setPen(NXThemeColor(_themeMode, PopupBorder));
-    painter->setBrush(NXThemeColor(_themeMode, PopupBase));
-    painter->drawRoundedRect(foregroundRect, _pBorderRadius, _pBorderRadius);
+    painter->setPen(NXThemeColor(m_ThemeMode, PopupBorder));
+    painter->setBrush(NXThemeColor(m_ThemeMode, PopupBase));
+    painter->drawRoundedRect(foregroundRect, m_BorderRadius, m_BorderRadius);
     painter->restore();
     return;
   }
@@ -53,18 +53,18 @@ void NXMenuStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *op
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXMenuStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::CE_MenuItem : {
     //内容绘制 区分类型
-    if (const QStyleOptionMenuItem *mopt = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+    if (QStyleOptionMenuItem const *mopt = qstyleoption_cast<QStyleOptionMenuItem const *>(option)) {
       if (mopt->menuItemType == QStyleOptionMenuItem::Separator) {
         QRect separatorRect = mopt->rect;
         painter->save();
         painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
         painter->setPen(Qt::NoPen);
-        painter->setBrush(NXThemeColor(_themeMode, BasicBaseLine));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicBaseLine));
         painter->drawRoundedRect(QRectF(separatorRect.x() + separatorRect.width() * 0.055, separatorRect.center().y(), separatorRect.width() - separatorRect.width() * 0.11, 1.5), 1, 1);
         painter->restore();
         return;
@@ -81,12 +81,12 @@ void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option
           QRect hoverRect = menuRect;
           hoverRect.adjust(0, 2, 0, -2);
           painter->setPen(Qt::NoPen);
-          painter->setBrush(NXThemeColor(_themeMode, PopupHover));
+          painter->setBrush(NXThemeColor(m_ThemeMode, PopupHover));
           painter->drawRoundedRect(hoverRect, 5, 5);
 
           // 标识
           qreal heightOffset = hoverRect.height() / 5;
-          painter->setBrush(NXThemeColor(_themeMode, PrimaryNormal));
+          painter->setBrush(NXThemeColor(m_ThemeMode, PrimaryNormal));
           painter->drawRoundedRect(
               QRectF(hoverRect.x() + 3, hoverRect.y() + heightOffset, 3, hoverRect.height() - 2 * heightOffset), 3, 3);
         }
@@ -95,18 +95,18 @@ void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option
         //check绘制
         if (mopt->menuHasCheckableItems) {
           painter->save();
-          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : _themeMode == NXThemeType::Light ? Qt::black
+          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : m_ThemeMode == NXThemeType::Light ? Qt::black
                                                                                                                      : Qt::white);
           QFont iconFont = QFont(QStringLiteral("NXAwesome"));
-          iconFont.setPixelSize(_pMenuItemHeight * 0.57);
+          iconFont.setPixelSize(m_MenuItemHeight * 0.57);
           painter->setFont(iconFont);
           painter->drawText(
-              QRectF(menuRect.x() + contentPadding, menuRect.y(), _iconWidth, menuRect.height()), Qt::AlignCenter,
+              QRectF(menuRect.x() + contentPadding, menuRect.y(), m_IconWidth, menuRect.height()), Qt::AlignCenter,
               mopt->checked ? QChar((unsigned short) NXIconType::Check) : QChar((unsigned short) NXIconType::None));
           painter->restore();
         } else {
           QString iconText;
-          const NXMenu *menu = dynamic_cast<const NXMenu *>(widget);
+          NXMenu const *menu = dynamic_cast<NXMenu const *>(widget);
           if (menu) {
             QAction *action = menu->actionAt(menuRect.center());
             if (action) {
@@ -116,21 +116,21 @@ void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option
           if (!iconText.isEmpty()) {
             painter->save();
             isHover
-                ? painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(_themeMode, PrimaryPress))
-                : painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : _themeMode == NXThemeType::Light ? Qt::black
+                ? painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(m_ThemeMode, PrimaryPress))
+                : painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : m_ThemeMode == NXThemeType::Light ? Qt::black
                                                                                                                              : Qt::white);
             QFont iconFont = QFont(QStringLiteral("NXAwesome"));
-            iconFont.setPixelSize(_pMenuItemHeight * 0.57);
+            iconFont.setPixelSize(m_MenuItemHeight * 0.57);
             painter->setFont(iconFont);
 
-            qreal ditherOffset = isHover ? _pMenuItemHeight * 0.021 : 0;
-            painter->drawText(QRectF(menuRect.x() + contentPadding + ditherOffset, menuRect.y() - ditherOffset * 1.5, _iconWidth, menuRect.height()), Qt::AlignCenter, iconText);
+            qreal ditherOffset = isHover ? m_MenuItemHeight * 0.021 : 0;
+            painter->drawText(QRectF(menuRect.x() + contentPadding + ditherOffset, menuRect.y() - ditherOffset * 1.5, m_IconWidth, menuRect.height()), Qt::AlignCenter, iconText);
             painter->restore();
           } else {
             if (!menuIcon.isNull()) {
               painter->drawPixmap(
-                  QRect(menuRect.x() + contentPadding, menuRect.center().y() - _iconWidth / 2, _iconWidth, _iconWidth),
-                  menuIcon.pixmap(_iconWidth, _iconWidth));
+                  QRect(menuRect.x() + contentPadding, menuRect.center().y() - m_IconWidth / 2, m_IconWidth, m_IconWidth),
+                  menuIcon.pixmap(m_IconWidth, m_IconWidth));
             }
           }
         }
@@ -138,19 +138,19 @@ void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option
         if (!mopt->text.isEmpty()) {
           QStringList textList = mopt->text.split(QStringLiteral("\t"));
           isHover
-              ? painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(_themeMode, PrimaryHover))
-              : painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : _themeMode == NXThemeType::Light ? Qt::black
+              ? painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(m_ThemeMode, PrimaryHover))
+              : painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : m_ThemeMode == NXThemeType::Light ? Qt::black
                                                                                                                            : Qt::white);
-          qreal ditherOffset = isHover ? _pMenuItemHeight * 0.021 : 0;
-          painter->drawText(QRectF(menuRect.x() + (_isAnyoneItemHasIcon ? contentPadding + textLeftSpacing : 0) + _iconWidth + ditherOffset, menuRect.y() - ditherOffset, menuRect.width(), menuRect.height()), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
+          qreal ditherOffset = isHover ? m_MenuItemHeight * 0.021 : 0;
+          painter->drawText(QRectF(menuRect.x() + (m_IsAnyoneItemHasIcon ? contentPadding + textLeftSpacing : 0) + m_IconWidth + ditherOffset, menuRect.y() - ditherOffset, menuRect.width(), menuRect.height()), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
           if (textList.count() > 1) {
-            painter->drawText(QRectF(menuRect.x() + contentPadding + _iconWidth + textLeftSpacing, menuRect.y(), menuRect.width() - (contentPadding * 2 + _iconWidth + textLeftSpacing), menuRect.height()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, textList[1]);
+            painter->drawText(QRectF(menuRect.x() + contentPadding + m_IconWidth + textLeftSpacing, menuRect.y(), menuRect.width() - (contentPadding * 2 + m_IconWidth + textLeftSpacing), menuRect.height()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, textList[1]);
           }
         }
         //展开图标
         if (mopt->menuItemType == QStyleOptionMenuItem::SubMenu) {
           painter->save();
-          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : _themeMode == NXThemeType::Light ? Qt::black
+          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : m_ThemeMode == NXThemeType::Light ? Qt::black
                                                                                                                      : Qt::white);
           QFont iconFont = QFont(QStringLiteral("NXAwesome"));
           iconFont.setPixelSize(nxApp->getFontPixelSize() + 5);
@@ -174,20 +174,20 @@ void NXMenuStyle::drawControl(ControlElement element, const QStyleOption *option
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-int NXMenuStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXMenuStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   switch (metric) {
   case QStyle::PM_SmallIconSize : {
     //图标宽度
-    _iconWidth = _pMenuItemHeight * 0.7;
-    return _iconWidth;
+    m_IconWidth = m_MenuItemHeight * 0.7;
+    return m_IconWidth;
   }
   case QStyle::PM_MenuPanelWidth : {
     //外围容器宽度
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
     return 0;
 #else
-    return _shadowBorderWidth * 1.5;
+    return m_ShadowBorderWidth * 1.5;
 #endif
   }
   default : {
@@ -197,28 +197,28 @@ int NXMenuStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, con
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-QSize NXMenuStyle::sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
+QSize NXMenuStyle::sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const
 {
   switch (type) {
   case QStyle::CT_MenuItem : {
-    if (const QStyleOptionMenuItem *mopt = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+    if (QStyleOptionMenuItem const *mopt = qstyleoption_cast<QStyleOptionMenuItem const *>(option)) {
       if (mopt->menuItemType == QStyleOptionMenuItem::Separator) {
         break;
       }
       QSize menuItemSize = QProxyStyle::sizeFromContents(type, option, size, widget);
-      const NXMenu *menu = dynamic_cast<const NXMenu *>(widget);
+      NXMenu const *menu = dynamic_cast<NXMenu const *>(widget);
       int extraWidth     = 0;
       if (menu->isHasIcon() || mopt->menuHasCheckableItems) {
-        _isAnyoneItemHasIcon = true;
+        m_IsAnyoneItemHasIcon = true;
         // 为图标、间距和内边距预留额外空间
-        int iconWidth       = _pMenuItemHeight * 0.7;
+        int iconWidth       = m_MenuItemHeight * 0.7;
         int textLeftSpacing = 8;
         extraWidth          = iconWidth + textLeftSpacing;
       }
       if (menu->isHasChildMenu()) {
-        return QSize(menuItemSize.width() + extraWidth + 20, _pMenuItemHeight);
+        return QSize(menuItemSize.width() + extraWidth + 20, m_MenuItemHeight);
       } else {
-        return QSize(menuItemSize.width() + extraWidth, _pMenuItemHeight);
+        return QSize(menuItemSize.width() + extraWidth, m_MenuItemHeight);
       }
     }
   }

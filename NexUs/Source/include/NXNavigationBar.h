@@ -20,53 +20,53 @@ public:
   explicit NXNavigationBar(QWidget *parent = nullptr);
   ~NXNavigationBar();
   void setUserInfoCardVisible(bool isVisible);
-  void setUserInfoCardPixmap(const QPixmap &pix);
-  void setUserInfoCardTitle(const QString &title);
-  void setUserInfoCardSubTitle(const QString &subTitle);
+  void setUserInfoCardPixmap(QPixmap const &pix);
+  void setUserInfoCardTitle(QString const &title);
+  void setUserInfoCardSubTitle(QString const &subTitle);
   void setIsNodeDragDropEnable(bool isEnable);
   void setToolTipOffset(int offsetX, int offsetY);
 
-  QString addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addExpanderNode(const QString &expanderTitle, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
+  QString addExpanderNode(QString const &expanderTitle, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addExpanderNode(QString const &expanderTitle, QString const &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
 
   NXNodeResultExpected
-  addPageNode(const QString &pageTitle, QWidget *page, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  addPageNode(QString const &pageTitle, QWidget *page, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, QString const &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, QString const &targetExpanderKey, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
 
   NXNodeResultExpected
-  addFooterNode(const QString &footerTitle, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addFooterNode(const QString &footerTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  addFooterNode(QString const &footerTitle, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addFooterNode(QString const &footerTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
 
-  QString addCategoryNode(const QString &categoryTitle);
-  NXNodeResultExpected addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey);
+  QString addCategoryNode(QString const &categoryTitle);
+  NXNodeResultExpected addCategoryNode(QString const &categoryTitle, QString const &targetExpanderKey);
 
-  bool getNodeIsExpanded(const QString &expanderKey) const;
-  void expandNode(const QString &expanderKey);
-  void collapseNode(const QString &expanderKey);
-  void removeNode(const QString &nodeKey);
+  bool getNodeIsExpanded(QString const &expanderKey) const;
+  void expandNode(QString const &expanderKey);
+  void collapseNode(QString const &expanderKey);
+  void removeNode(QString const &nodeKey);
 
-  void setNodeKeyPoints(const QString &nodeKey, int keyPoints);
-  int getNodeKeyPoints(const QString &nodeKey) const;
+  void setNodeKeyPoints(QString const &nodeKey, int keyPoints);
+  int getNodeKeyPoints(QString const &nodeKey) const;
 
-  void setNodeTitle(const QString &nodeKey, const QString &nodeTitle);
-  QString getNodeTitle(const QString &nodeKey) const;
+  void setNodeTitle(QString const &nodeKey, QString const &nodeTitle);
+  QString getNodeTitle(QString const &nodeKey) const;
 
-  void navigation(const QString &pageKey, bool isLogClicked = true, bool isRouteBack = false);
+  void navigation(QString const &pageKey, bool isLogClicked = true, bool isRouteBack = false);
   void setDisplayMode(NXNavigationType::NavigationDisplayMode displayMode, bool isAnimation = true);
   NXNavigationType::NavigationDisplayMode getDisplayMode() const;
 
-  int getPageOpenInNewWindowCount(const QString &nodeKey) const;
+  int getPageOpenInNewWindowCount(QString const &nodeKey) const;
 
   QList<NXSuggestBox::SuggestData> getSuggestDataList() const;
-  Q_SIGNAL void pageOpenInNewWindow(const QString &nodeKey);
+  Q_SIGNAL void pageOpenInNewWindow(QString const &nodeKey);
   Q_SIGNAL void userInfoCardClicked();
   Q_SIGNAL void
-  navigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, bool isRouteBack);
+  navigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, bool isRouteBack);
   Q_SIGNAL void
-  navigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey, QWidget *page);
-  Q_SIGNAL void navigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey);
+  navigationNodeAdded(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey, QWidget *page);
+  Q_SIGNAL void navigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey);
   Q_SIGNAL void displayModeChanged(NXNavigationType::NavigationDisplayMode displayMode);
 
 protected:

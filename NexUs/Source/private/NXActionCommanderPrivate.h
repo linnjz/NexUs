@@ -36,18 +36,18 @@ public:
   ~NXActionCommanderPrivate();
 
 private:
-  void _showCommandDesc(const NXActionCommand *command, bool isRedo, bool isExecute = false) const;
-  bool _executeCommand(const QString &domainName, NXActionCommand *command);
-  bool _recordCommand(const QString &domainName, NXActionCommand *command, bool isRedo);
-  void _undoCommand(const QString &domainName, bool isShowMessage);
-  void _redoCommand(const QString &domainName, bool isShowMessage);
+  void _showCommandDesc(NXActionCommand const *command, bool isRedo, bool isExecute = false) const;
+  bool _executeCommand(QString const &domainName, NXActionCommand *command);
+  bool _recordCommand(QString const &domainName, NXActionCommand *command, bool isRedo);
+  void _undoCommand(QString const &domainName, bool isShowMessage);
+  void _redoCommand(QString const &domainName, bool isShowMessage);
   void _initDomain(NXActionCommandDomainData &domainData) const;
-  bool _isCommanderValid { true }; // 是否处于可编辑模式
-  NXProgressRing *_commanderBusyRing { nullptr };
-  NXText *_commanderBusyRingValue { nullptr };
-  QWidget *_commanderDesign { nullptr };
-  NXActionCommanderView *_commanderView { nullptr };
-  QMap<QString, NXActionCommandDomainData> _commandDomainMap;
+  bool m_IsCommanderValid { true }; // 是否处于可编辑模式
+  NXProgressRing *m_CommanderBusyRing { nullptr };
+  NXText *m_CommanderBusyRingValue { nullptr };
+  QWidget *m_CommanderDesign { nullptr };
+  NXActionCommanderView *m_CommanderView { nullptr };
+  QMap<QString, NXActionCommandDomainData> m_CommandDomainMap;
 };
 
 #endif // NXACTIONCOMMANDERPRIVATE_H

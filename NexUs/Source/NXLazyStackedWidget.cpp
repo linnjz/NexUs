@@ -12,11 +12,11 @@ NXLazyStackedWidget::NXLazyStackedWidget(QWidget *parent)
 {
   Q_D(NXLazyStackedWidget);
   d->q_ptr   = this;
-  d->_layout = new NXLazyStackedLayout(this);
+  d->m_Layout = new NXLazyStackedLayout(this);
 
-  connect(d->_layout, &NXLazyStackedLayout::widgetRemoved, this, &NXLazyStackedWidget::widgetRemoved);
-  connect(d->_layout, &NXLazyStackedLayout::currentChanged, this, &NXLazyStackedWidget::currentChanged);
-  connect(d->_layout, &NXLazyStackedLayout::widgetCreated, this, &NXLazyStackedWidget::widgetCreated);
+  connect(d->m_Layout, &NXLazyStackedLayout::widgetRemoved, this, &NXLazyStackedWidget::widgetRemoved);
+  connect(d->m_Layout, &NXLazyStackedLayout::currentChanged, this, &NXLazyStackedWidget::currentChanged);
+  connect(d->m_Layout, &NXLazyStackedLayout::widgetCreated, this, &NXLazyStackedWidget::widgetCreated);
 }
 
 NXLazyStackedWidget::~NXLazyStackedWidget()
@@ -26,85 +26,85 @@ NXLazyStackedWidget::~NXLazyStackedWidget()
 int NXLazyStackedWidget::addWidget(QWidget *widget)
 {
   Q_D(NXLazyStackedWidget);
-  return d->_layout->addWidget(widget);
+  return d->m_Layout->addWidget(widget);
 }
 
 int NXLazyStackedWidget::insertWidget(int index, QWidget *widget)
 {
   Q_D(NXLazyStackedWidget);
-  return d->_layout->insertWidget(index, widget);
+  return d->m_Layout->insertWidget(index, widget);
 }
 
 void NXLazyStackedWidget::removeWidget(QWidget *widget)
 {
   Q_D(NXLazyStackedWidget);
-  d->_layout->removeWidget(widget);
+  d->m_Layout->removeWidget(widget);
 }
 
 int NXLazyStackedWidget::addLazyWidget(std::function<QWidget *()> &&lazyFactory)
 {
   Q_D(NXLazyStackedWidget);
-  return d->_layout->addLazyWidget(std::move(lazyFactory));
+  return d->m_Layout->addLazyWidget(std::move(lazyFactory));
 }
 
 int NXLazyStackedWidget::insertLazyWidget(int index, std::function<QWidget *()> &&lazyFactory)
 {
   Q_D(NXLazyStackedWidget);
-  return d->_layout->insertLazyWidget(index, std::move(lazyFactory));
+  return d->m_Layout->insertLazyWidget(index, std::move(lazyFactory));
 }
 
-QWidget * NXLazyStackedWidget::ensureWidget(int index)
+QWidget *NXLazyStackedWidget::ensureWidget(int index)
 {
   Q_D(NXLazyStackedWidget);
-  return d->_layout->ensureWidget(index);
+  return d->m_Layout->ensureWidget(index);
 }
 
 bool NXLazyStackedWidget::isWidgetCreated(int index) const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->isWidgetCreated(index);
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->isWidgetCreated(index);
 }
 
-QWidget * NXLazyStackedWidget::currentWidget() const
+QWidget *NXLazyStackedWidget::currentWidget() const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->currentWidget();
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->currentWidget();
 }
 
 int NXLazyStackedWidget::currentIndex() const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->currentIndex();
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->currentIndex();
 }
 
-int NXLazyStackedWidget::indexOf(const QWidget *widget) const
+int NXLazyStackedWidget::indexOf(QWidget const *widget) const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->indexOf(widget);
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->indexOf(widget);
 }
 
-QWidget * NXLazyStackedWidget::widget(int index) const
+QWidget *NXLazyStackedWidget::widget(int index) const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->widget(index);
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->widget(index);
 }
 
 int NXLazyStackedWidget::count() const
 {
-  Q_D(const NXLazyStackedWidget);
-  return d->_layout->count();
+  Q_CONST_D(NXLazyStackedWidget);
+  return d->m_Layout->count();
 }
 
 void NXLazyStackedWidget::setCurrentIndex(int index)
 {
   Q_D(NXLazyStackedWidget);
-  d->_layout->setCurrentIndex(index);
+  d->m_Layout->setCurrentIndex(index);
 }
 
 void NXLazyStackedWidget::setCurrentWidget(QWidget *widget)
 {
   Q_D(NXLazyStackedWidget);
-  d->_layout->setCurrentWidget(widget);
+  d->m_Layout->setCurrentWidget(widget);
 }
 
 bool NXLazyStackedWidget::event(QEvent *event)

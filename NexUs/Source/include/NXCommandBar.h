@@ -25,7 +25,7 @@ public:
   explicit NXCommandBar(QWidget *parent = nullptr);
   ~NXCommandBar();
 
-  void addItem(const CommandItem &item);
+  void addItem(CommandItem const &item);
   void addSeparator();
   void clearItems();
   Q_SIGNAL void itemClicked(int index);

@@ -12,10 +12,10 @@
 class NXSuggestion : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(QS_SET_CREF(QString), SuggestText)
-  Q_PROPERTY_CREATE(QS_SET_CREF(QString), SuggestKey)
-  Q_PROPERTY_CREATE(QS_SET_CREF(QVariantMap), SuggestData)
-  Q_PROPERTY_CREATE(NXIconType::IconName, NXIcon)
+  Q_PROPERTY_CREATE(QPS_SCREF_PAEMIT(QString), SuggestText)
+  Q_PROPERTY_CREATE(QPS_SCREF_PAEMIT(QString), SuggestKey)
+  Q_PROPERTY_CREATE(QPS_SCREF_PAEMIT(QVariantMap), SuggestData)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(NXIconType::IconName), NXIcon)
 
 public:
   explicit NXSuggestion(QObject *parent = nullptr);
@@ -42,23 +42,23 @@ public:
   explicit NXSuggestBoxPrivate(QObject *parent = nullptr);
   ~NXSuggestBoxPrivate();
   Q_SLOT void onThemeModeChanged(NXThemeType::ThemeMode themeMode);
-  Q_SLOT void onSearchEditTextEdit(const QString &searchText);
-  Q_SLOT void onSearchViewClicked(const QModelIndex &index);
+  Q_SLOT void onSearchEditTextEdit(QString const &searchText);
+  Q_SLOT void onSearchViewClicked(QModelIndex const &index);
 
 private:
-  bool _isExpandAnimationFinished { true };
-  bool _isCloseAnimationFinished { true };
-  NXThemeType::ThemeMode _themeMode;
-  QSize _lastSize;
-  QVector<NXSuggestion *> _suggestionVector;
-  QAction *_lightSearchAction { nullptr };
-  QAction *_darkSearchAction { nullptr };
-  NXSuggestBoxSearchViewContainer *_searchViewBaseWidget { nullptr };
-  NXLineEdit *_searchEdit { nullptr };
-  NXSuggestModel *_searchModel { nullptr };
-  NXBaseListView *_searchView { nullptr };
-  NXSuggestDelegate *_searchDelegate { nullptr };
-  QVBoxLayout *_shadowLayout { nullptr };
+  bool m_IsExpandAnimationFinished { true };
+  bool m_IsCloseAnimationFinished { true };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QSize m_LastSize;
+  QVector<NXSuggestion *> m_SuggestionVector;
+  QAction *m_LightSearchAction { nullptr };
+  QAction *m_DarkSearchAction { nullptr };
+  NXSuggestBoxSearchViewContainer *m_SearchViewBaseWidget { nullptr };
+  NXLineEdit *m_SearchEdit { nullptr };
+  NXSuggestModel *m_SearchModel { nullptr };
+  NXBaseListView *m_SearchView { nullptr };
+  NXSuggestDelegate *m_SearchDelegate { nullptr };
+  QVBoxLayout *m_ShadowLayout { nullptr };
   void _startSizeAnimation(QSize oldSize, QSize newSize);
   void _startExpandAnimation();
   void _startCloseAnimation();

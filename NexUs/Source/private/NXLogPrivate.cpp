@@ -1,4 +1,4 @@
-#include "NXLogPrivate.h"
+﻿#include "NXLogPrivate.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -23,7 +23,7 @@ NXLogPrivate::~NXLogPrivate()
 {
 }
 
-void NXLogPrivate::_messageLogHander(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
+void NXLogPrivate::_messageLogHander(QtMsgType type, QMessageLogContext const &ctx, QString const &msg)
 {
   QString logInfo;
   QString logTime = QDateTime::currentDateTime().toString(QStringLiteral("yyyy-MM-dd hh:mm:ss"));
@@ -81,14 +81,14 @@ void NXLogPrivate::_messageLogHander(QtMsgType type, const QMessageLogContext &c
 
 void NXLogPrivate::_clearLogFile()
 {
-  if (_pIsLogFileNameWithTime) {
+  if (m_IsLogFileNameWithTime) {
     QString logTime = QDateTime::currentDateTime().toString(QStringLiteral("yyyy-MM-dd hh-mm-ss"));
     logTime.prepend(QStringLiteral("_"));
     logTime.replace(QStringLiteral(" "), QStringLiteral("_"));
     logFileNameTime->clear();
     logFileNameTime->append(logTime);
   } else {
-    QFile file(_pLogSavePath + QStringLiteral("\\") + _pLogFileName + QStringLiteral(".txt"));
+    QFile file(m_LogSavePath + QStringLiteral("\\") + m_LogFileName + QStringLiteral(".txt"));
     if (file.exists()) {
       if (file.open(QIODevice::WriteOnly | QIODevice::Text | QFile::Truncate)) {
         file.close();

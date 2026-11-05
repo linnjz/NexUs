@@ -34,7 +34,7 @@ public:
 
   void moveToCenter();
 
-  void setCustomWidget(NXAppBarType::CustomArea customArea, QWidget *customWidget, QObject *hitTestObject = nullptr, const QString &hitTestFunctionName = QStringLiteral(""));
+  void setCustomWidget(NXAppBarType::CustomArea customArea, QWidget *customWidget, QObject *hitTestObject = nullptr, QString const &hitTestFunctionName = QStringLiteral(""));
   QWidget *getCustomWidget(NXAppBarType::CustomArea customArea) const;
 
   void setCentralCustomWidget(QWidget *customWidget);
@@ -44,43 +44,43 @@ public:
   QMenu *getCustomMenu() const;
 
   void setUserInfoCardVisible(bool isVisible);
-  void setUserInfoCardPixmap(const QPixmap &pix);
-  void setUserInfoCardTitle(const QString &title);
-  void setUserInfoCardSubTitle(const QString &subTitle);
+  void setUserInfoCardPixmap(QPixmap const &pix);
+  void setUserInfoCardTitle(QString const &title);
+  void setUserInfoCardSubTitle(QString const &subTitle);
 
-  QString addExpanderNode(const QString &expanderTitle, NXIconType::IconName awesome = NXIconType::None) const;
-  NXNodeResultExpected addExpanderNode(const QString &expanderTitle, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None) const;
-
-  NXNodeResultExpected
-  addPageNode(const QString &pageTitle, QWidget *page, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
-  NXNodeResultExpected addPageNode(const QString &pageTitle, QWidget *page, const QString &targetExpanderKey, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  QString addExpanderNode(QString const &expanderTitle, NXIconType::IconName awesome = NXIconType::None) const;
+  NXNodeResultExpected addExpanderNode(QString const &expanderTitle, QString const &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None) const;
 
   NXNodeResultExpected
-  addFooterNode(const QString &footerTitle, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None) const;
-  NXNodeResultExpected addFooterNode(const QString &footerTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  addPageNode(QString const &pageTitle, QWidget *page, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, QString const &targetExpanderKey, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+  NXNodeResultExpected addPageNode(QString const &pageTitle, QWidget *page, QString const &targetExpanderKey, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
 
-  QString addCategoryNode(const QString &categoryTitle);
-  NXNodeResultExpected addCategoryNode(const QString &categoryTitle, const QString &targetExpanderKey);
+  NXNodeResultExpected
+  addFooterNode(QString const &footerTitle, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None) const;
+  NXNodeResultExpected addFooterNode(QString const &footerTitle, QWidget *page, int keyPoints = 0, NXIconType::IconName awesome = NXIconType::None);
+
+  QString addCategoryNode(QString const &categoryTitle);
+  NXNodeResultExpected addCategoryNode(QString const &categoryTitle, QString const &targetExpanderKey);
 
   void addCentralWidget(QWidget *centralWidget);
   QWidget *getCentralWidget(int index) const;
 
-  bool getNavigationNodeIsExpanded(const QString &expanderKey) const;
-  void expandNavigationNode(const QString &expanderKey);
-  void collapseNavigationNode(const QString &expanderKey);
-  void removeNavigationNode(const QString &nodeKey) const;
-  int getPageOpenInNewWindowCount(const QString &nodeKey) const;
-  void backtrackNavigationNode(const QString &nodeKey);
+  bool getNavigationNodeIsExpanded(QString const &expanderKey) const;
+  void expandNavigationNode(QString const &expanderKey);
+  void collapseNavigationNode(QString const &expanderKey);
+  void removeNavigationNode(QString const &nodeKey) const;
+  int getPageOpenInNewWindowCount(QString const &nodeKey) const;
+  void backtrackNavigationNode(QString const &nodeKey);
 
-  void setNodeKeyPoints(const QString &nodeKey, int keyPoints);
-  int getNodeKeyPoints(const QString &nodeKey) const;
+  void setNodeKeyPoints(QString const &nodeKey, int keyPoints);
+  int getNodeKeyPoints(QString const &nodeKey) const;
 
-  void setNavigationNodeTitle(const QString &nodeKey, const QString &nodeTitle);
-  QString getNavigationNodeTitle(const QString &nodeKey) const;
+  void setNavigationNodeTitle(QString const &nodeKey, QString const &nodeTitle);
+  QString getNavigationNodeTitle(QString const &nodeKey) const;
 
-  void navigation(const QString &pageKey);
+  void navigation(QString const &pageKey);
   int getCurrentNavigationIndex() const;
   QString getCurrentNavigationPageKey() const;
 
@@ -90,25 +90,25 @@ public:
   void setWindowButtonFlags(NXAppBarType::ButtonFlags buttonFlags);
   NXAppBarType::ButtonFlags getWindowButtonFlags() const;
 
-  void setWindowMoviePath(NXThemeType::ThemeMode themeMode, const QString &moviePath);
+  void setWindowMoviePath(NXThemeType::ThemeMode themeMode, QString const &moviePath);
   QString getWindowMoviePath(NXThemeType::ThemeMode themeMode) const;
 
-  void setWindowPixmap(NXThemeType::ThemeMode themeMode, const QPixmap &pixmap);
+  void setWindowPixmap(NXThemeType::ThemeMode themeMode, QPixmap const &pixmap);
   QPixmap getWindowPixmap(NXThemeType::ThemeMode themeMode) const;
 
   void setWindowMovieRate(qreal rate);
   qreal getWindowMovieRate() const;
 
   void tabifyDockWidget(QDockWidget *targetDockWidget, QDockWidget *dockWidget);
-  void tabifyDockWidget(Qt::DockWidgetArea area, const QString &targetDockTitle, QDockWidget *dockWidget);
+  void tabifyDockWidget(Qt::DockWidgetArea area, QString const &targetDockTitle, QDockWidget *dockWidget);
   Q_SIGNAL void userInfoCardClicked();
   Q_SIGNAL void closeButtonClicked();
-  Q_SIGNAL void navigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey);
-  Q_SIGNAL void navigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, const QString &nodeKey);
+  Q_SIGNAL void navigationNodeClicked(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey);
+  Q_SIGNAL void navigationNodeRemoved(NXNavigationType::NavigationNodeType nodeType, QString const &nodeKey);
   Q_SIGNAL void customWidgetChanged();
   Q_SIGNAL void centralCustomWidgetChanged();
   Q_SIGNAL void customMenuChanged();
-  Q_SIGNAL void pageOpenInNewWindow(const QString &nodeKey);
+  Q_SIGNAL void pageOpenInNewWindow(QString const &nodeKey);
 
 protected:
   bool eventFilter(QObject *watched, QEvent *event) override;

@@ -17,9 +17,9 @@ public:
   ~NXDialogPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXApplicationType::WindowDisplayMode _windowDisplayMode;
-  NXAppBar *_appBar { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXApplicationType::WindowDisplayMode m_WindowDisplayMode;
+  NXAppBar *m_AppBar { nullptr };
 };
 
 #endif //NXFRAMEWORK_NXDIALOGPRIVATE_H

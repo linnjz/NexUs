@@ -1,4 +1,4 @@
-#ifndef NXDROPDOWNBUTTON_H
+﻿#ifndef NXDROPDOWNBUTTON_H
 #define NXDROPDOWNBUTTON_H
 
 #include <QWidget>
@@ -13,7 +13,7 @@ class NX_EXPORT NXDropDownButton : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXDropDownButton)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Text)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Text)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(NXIconType::IconName, NXIcon)
 

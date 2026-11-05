@@ -19,12 +19,12 @@ NXGraphicsLineItem::NXGraphicsLineItem(
 {
   Q_D(NXGraphicsLineItem);
   d->q_ptr           = this;
-  d->_pStartItem     = startItem;
-  d->_pEndItem       = endItem;
-  d->_pStartItemPort = startItemPort;
-  d->_pEndItemPort   = endItemPort;
-  d->_linkItemMap.insert(d->_pStartItem, d->_pStartItemPort);
-  d->_linkItemMap.insert(d->_pEndItem, d->_pEndItemPort);
+  d->m_StartItem     = startItem;
+  d->m_EndItem       = endItem;
+  d->m_StartItemPort = startItemPort;
+  d->m_EndItemPort   = endItemPort;
+  d->m_LinkItemMap.insert(d->m_StartItem, d->m_StartItemPort);
+  d->m_LinkItemMap.insert(d->m_EndItem, d->m_EndItemPort);
   setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | ItemAcceptsInputMethod);
 }
 
@@ -34,9 +34,9 @@ NXGraphicsLineItem::NXGraphicsLineItem(QPointF startPoint, QPointF endPoint, QGr
 {
   Q_D(NXGraphicsLineItem);
   d->q_ptr             = this;
-  d->_pStartPoint      = startPoint;
-  d->_pEndPoint        = endPoint;
-  d->_isCreateWithItem = false;
+  d->m_StartPoint      = startPoint;
+  d->m_EndPoint        = endPoint;
+  d->m_IsCreateWithItem = false;
   setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | ItemAcceptsInputMethod);
 }
 
@@ -46,8 +46,8 @@ NXGraphicsLineItem::~NXGraphicsLineItem()
 
 bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item) const
 {
-  Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.contains(item)) {
+  Q_CONST_D(NXGraphicsLineItem);
+  if (d->m_LinkItemMap.contains(item)) {
     return true;
   }
   return false;
@@ -55,8 +55,8 @@ bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item) const
 
 bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2) const
 {
-  Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.contains(item1) && d->_linkItemMap.contains(item2)) {
+  Q_CONST_D(NXGraphicsLineItem);
+  if (d->m_LinkItemMap.contains(item1) && d->m_LinkItemMap.contains(item2)) {
     return true;
   }
   return false;
@@ -64,14 +64,14 @@ bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *ite
 
 bool NXGraphicsLineItem::isTargetLink(NXGraphicsItem *item1, NXGraphicsItem *item2, int port1, int port2) const
 {
-  Q_D(const NXGraphicsLineItem);
-  if (d->_linkItemMap.value(item1) == port1 && d->_linkItemMap.value(item2) == port2) {
+  Q_CONST_D(NXGraphicsLineItem);
+  if (d->m_LinkItemMap.value(item1) == port1 && d->m_LinkItemMap.value(item2) == port2) {
     return true;
   }
   return false;
 }
 
-void NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void NXGraphicsLineItem::paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *widget)
 {
   Q_D(NXGraphicsLineItem);
   painter->save();
@@ -82,16 +82,16 @@ void NXGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   qreal pathYStart = 0;
   qreal pathXEnd   = 0;
   qreal pathYEnd   = 0;
-  if (d->_isCreateWithItem) {
-    pathXStart = d->_pStartItem->x();
-    pathYStart = d->_pStartItem->y();
-    pathXEnd   = d->_pEndItem->x();
-    pathYEnd   = d->_pEndItem->y();
+  if (d->m_IsCreateWithItem) {
+    pathXStart = d->m_StartItem->x();
+    pathYStart = d->m_StartItem->y();
+    pathXEnd   = d->m_EndItem->x();
+    pathYEnd   = d->m_EndItem->y();
   } else {
-    pathXStart = d->_pStartPoint.x();
-    pathYStart = d->_pStartPoint.y();
-    pathXEnd   = d->_pEndPoint.x();
-    pathYEnd   = d->_pEndPoint.y();
+    pathXStart = d->m_StartPoint.x();
+    pathYStart = d->m_StartPoint.y();
+    pathXEnd   = d->m_EndPoint.x();
+    pathYEnd   = d->m_EndPoint.y();
   }
   path.moveTo(pathXStart, pathYStart); // 设置起始点
   path.cubicTo((pathXStart + pathXEnd) / 2, pathYStart, (pathXStart + pathXEnd) / 2, pathYEnd, pathXEnd, pathYEnd);

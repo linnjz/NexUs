@@ -20,8 +20,8 @@ class NXPopularCardPrivate : public QObject
   Q_PROPERTY_CREATE_D(QString, DetailedText)
   Q_PROPERTY_CREATE_D(QString, CardButtonText)
   Q_PROPERTY_CREATE_D(QWidget *, CardFloatArea)
-  Q_PROPERTY_CREATE(qreal, HoverYOffset)
-  Q_PROPERTY_CREATE(qreal, HoverOpacity)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), HoverYOffset)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), HoverOpacity)
   Q_PROPERTY_CREATE_D(int, BorderRadius)
 
 public:
@@ -30,15 +30,15 @@ public:
 
 private:
   friend class NXPopularCardFloater;
-  bool _isFloating { false };
-  NXThemeType::ThemeMode _themeMode;
-  int _shadowBorderWidth { 6 };
-  int _textHSpacing { 20 };
-  int _textVSpacing { 5 };
-  QRect _buttonTargetRect;
-  QRectF _interactiveTipsBaseRect;
-  QTimer *_floatTimer { nullptr };
-  NXPopularCardFloater *_floater { nullptr };
+  bool m_IsFloating { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_ShadowBorderWidth { 6 };
+  int m_TextHSpacing { 20 };
+  int m_TextVSpacing { 5 };
+  QRect m_ButtonTargetRect;
+  QRectF m_InteractiveTipsBaseRect;
+  QTimer *m_FloatTimer { nullptr };
+  NXPopularCardFloater *m_Floater { nullptr };
 
   void _showFloater();
 };

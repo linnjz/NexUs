@@ -8,7 +8,7 @@
 class NXColorPreview : public QWidget
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QColor), BaseColor)
+  Q_PRIVATE_CREATE(QPS_SCREF(QColor), BaseColor)
   Q_PRIVATE_CREATE(NXThemeType::ThemeMode, ThemeMode)
 
 public:

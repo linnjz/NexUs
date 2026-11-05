@@ -12,14 +12,14 @@
 #include "NXTheme.h"
 #include "private/NXUploadAreaPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXUploadArea, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, QS_SET_CREF(QString), SubTitle)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, QS_SET_CREF(QString), DialogTitle)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, QS_SET_CREF(QStringList), AcceptedSuffixes)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, qint64, MaxFileSize)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, int, MaxFileCount)
-Q_PROPERTY_CREATE_CPP(NXUploadArea, bool, IsMultiple)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_SCREF_PAEMIT(QString), SubTitle)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_SCREF_PAEMIT(QString), DialogTitle)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_SCREF_PAEMIT(QStringList), AcceptedSuffixes)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_PAEMIT(qint64), MaxFileSize)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_PAEMIT(int), MaxFileCount)
+Q_PROPERTY_CREATE_CPP(NXUploadArea, QPS_PAEMIT(bool), IsMultiple)
 
 NXUploadArea::NXUploadArea(QWidget *parent)
     : QWidget(parent)
@@ -27,13 +27,13 @@ NXUploadArea::NXUploadArea(QWidget *parent)
 {
   Q_D(NXUploadArea);
   d->q_ptr          = this;
-  d->_pBorderRadius = 8;
-  d->_pTitle        = QStringLiteral("拖拽文件到此处");
-  d->_pSubTitle     = QStringLiteral("或点击选择文件");
-  d->_pMaxFileCount = 0;
-  d->_pMaxFileSize  = 0;
-  d->_pIsMultiple   = true;
-  d->_themeMode     = nxTheme->getThemeMode();
+  d->m_BorderRadius = 8;
+  d->m_Title        = QStringLiteral("拖拽文件到此处");
+  d->m_SubTitle     = QStringLiteral("或点击选择文件");
+  d->m_MaxFileCount = 0;
+  d->m_MaxFileSize  = 0;
+  d->m_IsMultiple   = true;
+  d->m_ThemeMode     = nxTheme->getThemeMode();
   setObjectName("NXUploadArea");
   setMinimumSize(260, 160);
   setAcceptDrops(true);
@@ -49,25 +49,25 @@ NXUploadArea::~NXUploadArea()
 
 QStringList NXUploadArea::getSelectedFiles() const
 {
-  return d_ptr->_filePaths;
+  return d_ptr->m_FilePaths;
 }
 
 void NXUploadArea::clearFiles()
 {
   Q_D(NXUploadArea);
-  d->_filePaths.clear();
+  d->m_FilePaths.clear();
   update();
 }
 
-void NXUploadArea::setAcceptedMimeFilter(const QString &filter)
+void NXUploadArea::setAcceptedMimeFilter(QString const &filter)
 {
   Q_D(NXUploadArea);
-  d->_mimeFilter = filter;
+  d->m_MimeFilter = filter;
 }
 
 QString NXUploadArea::getAcceptedMimeFilter() const
 {
-  return d_ptr->_mimeFilter;
+  return d_ptr->m_MimeFilter;
 }
 
 void NXUploadArea::paintEvent(QPaintEvent *event)
@@ -80,28 +80,28 @@ void NXUploadArea::paintEvent(QPaintEvent *event)
 
   QRectF bgRect(1, 1, width() - 2, height() - 2);
   QPainterPath bgPath;
-  bgPath.addRoundedRect(bgRect, d->_pBorderRadius, d->_pBorderRadius);
+  bgPath.addRoundedRect(bgRect, d->m_BorderRadius, d->m_BorderRadius);
 
-  if (d->_isDragOver) {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, PrimaryNormal), 2, Qt::DashLine));
-    painter.setBrush(NXThemeColor(d->_themeMode, BasicBaseDeepAlpha));
-  } else if (d->_isHover) {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorderHover), 2, Qt::DashLine));
-    painter.setBrush(NXThemeColor(d->_themeMode, BasicHoverAlpha));
+  if (d->m_IsDragOver) {
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, PrimaryNormal), 2, Qt::DashLine));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicBaseDeepAlpha));
+  } else if (d->m_IsHover) {
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorderHover), 2, Qt::DashLine));
+    painter.setBrush(NXThemeColor(d->m_ThemeMode, BasicHoverAlpha));
   } else {
-    painter.setPen(QPen(NXThemeColor(d->_themeMode, BasicBorder), 2, Qt::DashLine));
+    painter.setPen(QPen(NXThemeColor(d->m_ThemeMode, BasicBorder), 2, Qt::DashLine));
     painter.setBrush(Qt::NoBrush);
   }
   painter.drawPath(bgPath);
 
   int contentY  = height() / 2;
-  int fileCount = d->_filePaths.size();
+  int fileCount = d->m_FilePaths.size();
 
   if (fileCount == 0) {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(36);
     painter.setFont(iconFont);
-    painter.setPen(d->_isDragOver ? NXThemeColor(d->_themeMode, PrimaryNormal) : NXThemeColor(d->_themeMode, BasicTextNoFocus));
+    painter.setPen(d->m_IsDragOver ? NXThemeColor(d->m_ThemeMode, PrimaryNormal) : NXThemeColor(d->m_ThemeMode, BasicTextNoFocus));
     QRectF iconRect(0, contentY - 48, width(), 40);
     painter.drawText(iconRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::CloudArrowUp));
 
@@ -110,22 +110,22 @@ void NXUploadArea::paintEvent(QPaintEvent *event)
     titleFont.setPixelSize(15);
     titleFont.setBold(true);
     painter.setFont(titleFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
     QRectF titleRect(0, contentY, width(), 24);
-    painter.drawText(titleRect, Qt::AlignCenter, d->_pTitle);
+    painter.drawText(titleRect, Qt::AlignCenter, d->m_Title);
 
     QFont subFont = titleFont;
     subFont.setPixelSize(12);
     subFont.setBold(false);
     painter.setFont(subFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextNoFocus));
     QRectF subRect(0, contentY + 26, width(), 20);
-    painter.drawText(subRect, Qt::AlignCenter, d->_pSubTitle);
+    painter.drawText(subRect, Qt::AlignCenter, d->m_SubTitle);
   } else {
     QFont iconFont = QFont(QStringLiteral("NXAwesome"));
     iconFont.setPixelSize(24);
     painter.setFont(iconFont);
-    painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
+    painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextNoFocus));
     QRectF iconRect(0, 12, width(), 28);
     painter.drawText(iconRect, Qt::AlignCenter, QChar((unsigned short) NXIconType::CloudArrowUp));
 
@@ -139,10 +139,10 @@ void NXUploadArea::paintEvent(QPaintEvent *event)
     int maxDisplayCount = qMin(fileCount, (height() - startY - 10) / lineHeight);
 
     for (int i = 0; i < maxDisplayCount; ++i) {
-      QFileInfo fileInfo(d->_filePaths[i]);
+      QFileInfo fileInfo(d->m_FilePaths[i]);
       QString displayName = fileInfo.fileName();
 
-      painter.setPen(NXThemeColor(d->_themeMode, PrimaryNormal));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, PrimaryNormal));
       QFont fileIconFont(QStringLiteral("NXAwesome"));
       fileIconFont.setPixelSize(12);
       painter.setFont(fileIconFont);
@@ -150,12 +150,12 @@ void NXUploadArea::paintEvent(QPaintEvent *event)
       painter.drawText(fileIconRect, Qt::AlignVCenter | Qt::AlignCenter, QChar((unsigned short) NXIconType::File));
 
       painter.setFont(fileFont);
-      painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
       QRectF nameRect(32, startY + i * lineHeight, width() - 60, lineHeight);
       QString elidedName = painter.fontMetrics().elidedText(displayName, Qt::ElideMiddle, nameRect.width());
       painter.drawText(nameRect, Qt::AlignVCenter | Qt::AlignLeft, elidedName);
 
-      painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextNoFocus));
       QFont xFont(QStringLiteral("NXAwesome"));
       xFont.setPixelSize(10);
       painter.setFont(xFont);
@@ -165,7 +165,7 @@ void NXUploadArea::paintEvent(QPaintEvent *event)
 
     if (fileCount > maxDisplayCount) {
       painter.setFont(fileFont);
-      painter.setPen(NXThemeColor(d->_themeMode, BasicTextNoFocus));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicTextNoFocus));
       QRectF moreRect(0, startY + maxDisplayCount * lineHeight, width(), lineHeight);
       painter.drawText(moreRect, Qt::AlignCenter, QString(QStringLiteral("...还有 %1 个文件")).arg(fileCount - maxDisplayCount));
     }
@@ -180,7 +180,7 @@ void NXUploadArea::dragEnterEvent(QDragEnterEvent *event)
   if (event->mimeData()->hasUrls()) {
     event->setDropAction(Qt::CopyAction);
     event->accept();
-    d->_isDragOver = true;
+    d->m_IsDragOver = true;
     update();
   }
 }
@@ -197,7 +197,7 @@ void NXUploadArea::dragLeaveEvent(QDragLeaveEvent *event)
 {
   Q_UNUSED(event)
   Q_D(NXUploadArea);
-  d->_isDragOver = false;
+  d->m_IsDragOver = false;
   update();
 }
 
@@ -205,17 +205,17 @@ void NXUploadArea::dropEvent(QDropEvent *event)
 {
   Q_D(NXUploadArea);
   event->accept();
-  d->_isDragOver            = false;
-  const QMimeData *mimeData = event->mimeData();
+  d->m_IsDragOver            = false;
+  QMimeData const *mimeData = event->mimeData();
   if (mimeData->hasUrls()) {
     QStringList filePaths;
-    for (const QUrl &url : mimeData->urls()) {
+    for (QUrl const &url : mimeData->urls()) {
       if (url.isLocalFile()) {
         filePaths.append(url.toLocalFile());
       }
     }
     if (!filePaths.isEmpty()) {
-      if (!d->_pIsMultiple && filePaths.size() > 1) {
+      if (!d->m_IsMultiple && filePaths.size() > 1) {
         filePaths = filePaths.mid(0, 1);
       }
       d->_addFiles(filePaths);
@@ -227,12 +227,12 @@ void NXUploadArea::dropEvent(QDropEvent *event)
 void NXUploadArea::mousePressEvent(QMouseEvent *event)
 {
   Q_D(NXUploadArea);
-  d->_isPressed = true;
+  d->m_IsPressed = true;
 
-  if (!d->_filePaths.isEmpty()) {
+  if (!d->m_FilePaths.isEmpty()) {
     int startY          = 46;
     int lineHeight      = 22;
-    int maxDisplayCount = qMin(d->_filePaths.size(), (height() - startY - 10) / lineHeight);
+    int maxDisplayCount = qMin(d->m_FilePaths.size(), (height() - startY - 10) / lineHeight);
     int clickY          = event->pos().y();
     int clickX          = event->pos().x();
 
@@ -240,7 +240,7 @@ void NXUploadArea::mousePressEvent(QMouseEvent *event)
       int itemY = startY + i * lineHeight;
       if (clickY >= itemY && clickY < itemY + lineHeight && clickX >= width() - 28 && clickX <= width() - 12) {
         d->_removeFile(i);
-        d->_isPressed = false;
+        d->m_IsPressed = false;
         return;
       }
     }
@@ -253,10 +253,10 @@ void NXUploadArea::mousePressEvent(QMouseEvent *event)
 void NXUploadArea::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXUploadArea);
-  if (d->_isPressed && rect().contains(event->pos())) {
+  if (d->m_IsPressed && rect().contains(event->pos())) {
     d->_openFileDialog();
   }
-  d->_isPressed = false;
+  d->m_IsPressed = false;
   update();
   QWidget::mouseReleaseEvent(event);
 }
@@ -268,7 +268,7 @@ void NXUploadArea::enterEvent(QEvent *event)
 #endif
 {
   Q_D(NXUploadArea);
-  d->_isHover = true;
+  d->m_IsHover = true;
   update();
   QWidget::enterEvent(event);
 }
@@ -276,7 +276,7 @@ void NXUploadArea::enterEvent(QEvent *event)
 void NXUploadArea::leaveEvent(QEvent *event)
 {
   Q_D(NXUploadArea);
-  d->_isHover = false;
+  d->m_IsHover = false;
   update();
   QWidget::leaveEvent(event);
 }

@@ -9,10 +9,10 @@
 #include "NXTheme.h"
 
 NXMenuBarStyle::NXMenuBarStyle(QStyle *style)
+    : m_ThemeMode { nxTheme->getThemeMode() }
 {
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
   });
 }
 
@@ -20,7 +20,7 @@ NXMenuBarStyle::~NXMenuBarStyle()
 {
 }
 
-void NXMenuBarStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXMenuBarStyle::drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::PE_PanelButtonTool : {
@@ -33,20 +33,20 @@ void NXMenuBarStyle::drawPrimitive(PrimitiveElement element, const QStyleOption 
   QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void NXMenuBarStyle::drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const
 {
   switch (element) {
   case QStyle::CE_ToolButtonLabel : {
-    if (const QStyleOptionToolButton *topt = qstyleoption_cast<const QStyleOptionToolButton *>(option)) {
+    if (QStyleOptionToolButton const *topt = qstyleoption_cast<QStyleOptionToolButton const *>(option)) {
       painter->save();
       painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
       painter->setPen(Qt::NoPen);
       if (topt->state.testFlag(QStyle::State_Enabled) && topt->state.testFlag(QStyle::State_MouseOver)) {
-        painter->setBrush(NXThemeColor(_themeMode, BasicHoverAlpha));
+        painter->setBrush(NXThemeColor(m_ThemeMode, BasicHoverAlpha));
         painter->drawRect(topt->rect);
       }
       //展开图标
-      painter->setPen(!topt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(_themeMode, BasicText));
+      painter->setPen(!topt->state.testFlag(QStyle::State_Enabled) ? Qt::gray : NXThemeColor(m_ThemeMode, BasicText));
       QFont iconFont = QFont(QStringLiteral("NXAwesome"));
       iconFont.setPixelSize(nxApp->getFontPixelSize() + 5);
       painter->setFont(iconFont);
@@ -59,7 +59,7 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
     return;
   }
   case QStyle::CE_MenuBarItem : {
-    if (const QStyleOptionMenuItem *mopt = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+    if (QStyleOptionMenuItem const *mopt = qstyleoption_cast<QStyleOptionMenuItem const *>(option)) {
       if (mopt->menuItemType == QStyleOptionMenuItem::Separator) {
         return;
       }
@@ -71,9 +71,9 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
       painter->setPen(Qt::NoPen);
       if (mopt->state.testFlag(QStyle::State_Enabled)) {
         if (mopt->state.testFlag(QStyle::State_Sunken)) {
-          painter->setBrush(NXThemeColor(_themeMode, BasicPressAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicPressAlpha));
         } else if (mopt->state.testFlag(QStyle::State_Selected)) {
-          painter->setBrush(NXThemeColor(_themeMode, BasicSelectedAlpha));
+          painter->setBrush(NXThemeColor(m_ThemeMode, BasicSelectedAlpha));
         }
         painter->drawRoundedRect(menuItemRect, 3, 3);
       }
@@ -82,7 +82,7 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
       QString menuText = mopt->text;
       QString iconText;
       menuText                 = menuText.replace(QStringLiteral("&"), QStringLiteral(""));
-      const NXMenuBar *menuBar = dynamic_cast<const NXMenuBar *>(widget);
+      NXMenuBar const *menuBar = dynamic_cast<NXMenuBar const *>(widget);
       if (menuBar) {
         QAction *action = menuBar->actionAt(menuItemRect.center());
         if (action) {
@@ -93,7 +93,7 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
         //图标
         if (!iconText.isEmpty()) {
           painter->save();
-          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? NXThemeColor(_themeMode, BasicTextDisable) : NXThemeColor(_themeMode, BasicText));
+          painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? NXThemeColor(m_ThemeMode, BasicTextDisable) : NXThemeColor(m_ThemeMode, BasicText));
           QFont iconFont = QFont(QStringLiteral("NXAwesome"));
           iconFont.setPixelSize(menuBarHeight * 0.7);
           painter->setFont(iconFont);
@@ -105,12 +105,12 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
         }
       } else {
         //图标 + 文字
-        painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? NXThemeColor(_themeMode, BasicTextDisable) : NXThemeColor(_themeMode, BasicText));
+        painter->setPen(!mopt->state.testFlag(QStyle::State_Enabled) ? NXThemeColor(m_ThemeMode, BasicTextDisable) : NXThemeColor(m_ThemeMode, BasicText));
         if (icon.isNull() && iconText.isEmpty()) {
           painter->drawText(menuItemRect, Qt::AlignCenter, menuText);
         } else {
           if (!iconText.isEmpty()) {
-            QRectF menuIconRect(menuItemRect.x() + menuBarHeight * 0.1 + _menuBarItemMargin, menuBarHeight * 0.1, menuBarHeight * 0.8, menuBarHeight * 0.8);
+            QRectF menuIconRect(menuItemRect.x() + menuBarHeight * 0.1 + m_MenuBarItemMargin, menuBarHeight * 0.1, menuBarHeight * 0.8, menuBarHeight * 0.8);
             painter->save();
             QFont iconFont = QFont(QStringLiteral("NXAwesome"));
             iconFont.setPixelSize(menuBarHeight * 0.7);
@@ -119,7 +119,7 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
             painter->restore();
             painter->drawText(QRect(menuIconRect.right(), menuItemRect.y(), menuItemRect.width() - menuIconRect.width(), menuBarHeight), Qt::AlignCenter, menuText);
           } else {
-            QRect menuIconRect(menuItemRect.x() + menuBarHeight * 0.1 + _menuBarItemMargin, menuBarHeight * 0.1, menuBarHeight * 0.8, menuBarHeight * 0.8);
+            QRect menuIconRect(menuItemRect.x() + menuBarHeight * 0.1 + m_MenuBarItemMargin, menuBarHeight * 0.1, menuBarHeight * 0.8, menuBarHeight * 0.8);
             painter->drawPixmap(menuIconRect, icon.pixmap(menuBarHeight * 0.8, menuBarHeight * 0.8));
             painter->drawText(QRect(menuIconRect.right(), menuItemRect.y(), menuItemRect.width() - menuIconRect.width(), menuBarHeight), Qt::AlignCenter, menuText);
           }
@@ -137,7 +137,7 @@ void NXMenuBarStyle::drawControl(ControlElement element, const QStyleOption *opt
   QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-QSize NXMenuBarStyle::sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
+QSize NXMenuBarStyle::sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const
 {
   switch (type) {
   case QStyle::CT_MenuBar : {
@@ -146,11 +146,11 @@ QSize NXMenuBarStyle::sizeFromContents(ContentsType type, const QStyleOption *op
     return menuBarHeight;
   }
   case QStyle::CT_MenuBarItem : {
-    if (const QStyleOptionMenuItem *mopt = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
+    if (QStyleOptionMenuItem const *mopt = qstyleoption_cast<QStyleOptionMenuItem const *>(option)) {
       QSize menuBarItemSize = QProxyStyle::sizeFromContents(type, option, size, widget);
       menuBarItemSize.setHeight(widget->height());
       if ((!mopt->icon.isNull()) && !mopt->text.isEmpty()) {
-        menuBarItemSize.setWidth(menuBarItemSize.width() + mopt->fontMetrics.horizontalAdvance(mopt->text) + 2 * _menuBarItemMargin);
+        menuBarItemSize.setWidth(menuBarItemSize.width() + mopt->fontMetrics.horizontalAdvance(mopt->text) + 2 * m_MenuBarItemMargin);
       }
       if (!mopt->text.contains(QStringLiteral("&"))) {
         menuBarItemSize.setWidth(menuBarItemSize.width() + 5);
@@ -165,7 +165,7 @@ QSize NXMenuBarStyle::sizeFromContents(ContentsType type, const QStyleOption *op
   return QProxyStyle::sizeFromContents(type, option, size, widget);
 }
 
-int NXMenuBarStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+int NXMenuBarStyle::pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const
 {
   switch (metric) {
   case QStyle::PM_MenuBarHMargin : {

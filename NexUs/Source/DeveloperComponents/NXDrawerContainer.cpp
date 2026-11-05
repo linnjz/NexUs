@@ -6,32 +6,32 @@
 #include "NXTheme.h"
 
 NXDrawerContainer::NXDrawerContainer(QWidget *parent)
-    : QWidget(parent)
+    : QWidget { parent }
+    , m_ContainerPix {}
+    , m_Opacity { 0.0 }
+    , m_BorderRadius { 6 }
+    , m_ThemeMode { nxTheme->getThemeMode() }
+    , m_ContainerWidget { new QWidget(this) }
+    , m_MainLayout { new QVBoxLayout(this) }
+    , m_ContainerLayout { new QVBoxLayout(m_ContainerWidget) }
 {
-  _pBorderRadius = 6;
-  _pOpacity      = 0;
-  _pContainerPix = QPixmap();
   setObjectName("NXDrawerContainer");
   setStyleSheet(QStringLiteral("#NXDrawerContainer{background-color:transparent;}"));
 
-  _mainLayout = new QVBoxLayout(this);
-  _mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-  _mainLayout->setContentsMargins(0, 0, 0, 0);
+  m_MainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+  m_MainLayout->setContentsMargins(0, 0, 0, 0);
 
-  _containerWidget = new QWidget(this);
-  _containerWidget->setObjectName("NXDrawerContainerWidget");
-  _containerWidget->setStyleSheet(QStringLiteral("#NXDrawerContainerWidget{background-color:transparent;}"));
-  _containerWidget->setVisible(false);
+  m_ContainerWidget->setObjectName("NXDrawerContainerWidget");
+  m_ContainerWidget->setStyleSheet(QStringLiteral("#NXDrawerContainerWidget{background-color:transparent;}"));
+  m_ContainerWidget->setVisible(false);
 
-  _containerLayout = new QVBoxLayout(_containerWidget);
-  _containerLayout->setContentsMargins(0, 0, 0, 0);
-  _containerLayout->setSpacing(0);
+  m_ContainerLayout->setContentsMargins(0, 0, 0, 0);
+  m_ContainerLayout->setSpacing(0);
 
-  _mainLayout->addWidget(_containerWidget);
+  m_MainLayout->addWidget(m_ContainerWidget);
 
-  _themeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    _themeMode = themeMode;
+    m_ThemeMode = themeMode;
     update();
   });
 }
@@ -42,11 +42,11 @@ NXDrawerContainer::~NXDrawerContainer()
 
 void NXDrawerContainer::addWidget(QWidget *widget)
 {
-  if (!widget || _drawerWidgetList.contains(widget)) {
+  if (!widget || m_DrawerWidgetList.contains(widget)) {
     return;
   }
-  _containerLayout->addWidget(widget);
-  _drawerWidgetList.append(widget);
+  m_ContainerLayout->addWidget(widget);
+  m_DrawerWidgetList.append(widget);
 }
 
 void NXDrawerContainer::removeWidget(QWidget *widget)
@@ -54,38 +54,38 @@ void NXDrawerContainer::removeWidget(QWidget *widget)
   if (!widget) {
     return;
   }
-  _containerLayout->removeWidget(widget);
-  _drawerWidgetList.removeOne(widget);
+  m_ContainerLayout->removeWidget(widget);
+  m_DrawerWidgetList.removeOne(widget);
 }
 
 void NXDrawerContainer::doDrawerAnimation(bool isExpand)
 {
-  if (_containerLayout->count() == 0) {
+  if (m_ContainerLayout->count() == 0) {
     return;
   }
-  _containerWidget->setVisible(true);
-  _mainLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+  m_ContainerWidget->setVisible(true);
+  m_MainLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
   int expandHeight = height();
-  _isShowBorder    = true;
+  m_IsShowBorder    = true;
   setFixedHeight(expandHeight);
-  _pContainerPix                       = grab(rect());
-  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "pOpacity");
-  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+  m_ContainerPix                       = grab(rect());
+  QPropertyAnimation *opacityAnimation = new QPropertyAnimation(this, "Opacity");
+  connect(opacityAnimation, &QPropertyAnimation::valueChanged, this, [=](QVariant const &value) {
     update();
   });
   connect(opacityAnimation, &QPropertyAnimation::finished, this, [=]() {
-    _pContainerPix = QPixmap();
-    _isShowBorder  = isExpand;
-    _containerWidget->setVisible(isExpand);
-    _mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    m_ContainerPix = QPixmap();
+    m_IsShowBorder  = isExpand;
+    m_ContainerWidget->setVisible(isExpand);
+    m_MainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
   });
   opacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
   opacityAnimation->setDuration(300);
-  opacityAnimation->setStartValue(_pOpacity);
+  opacityAnimation->setStartValue(m_Opacity);
   opacityAnimation->setEndValue(isExpand ? 1 : 0);
   opacityAnimation->start(QPropertyAnimation::DeleteWhenStopped);
-  _containerWidget->setVisible(false);
-  _isShowBorder = false;
+  m_ContainerWidget->setVisible(false);
+  m_IsShowBorder = false;
 }
 
 void NXDrawerContainer::paintEvent(QPaintEvent *event)
@@ -93,23 +93,23 @@ void NXDrawerContainer::paintEvent(QPaintEvent *event)
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing);
-  if (_isShowBorder) {
+  if (m_IsShowBorder) {
     // 背景绘制
-    painter.setPen(NXThemeColor(_themeMode, BasicBorder));
-    painter.setBrush(NXThemeColor(_themeMode, BasicBaseAlpha));
-    QRect foregroundRect(1, 1 - 2 * _pBorderRadius, width() - 2, height() - 2 + 2 * _pBorderRadius);
-    painter.drawRoundedRect(foregroundRect, _pBorderRadius, _pBorderRadius);
+    painter.setPen(NXThemeColor(m_ThemeMode, BasicBorder));
+    painter.setBrush(NXThemeColor(m_ThemeMode, BasicBaseAlpha));
+    QRect foregroundRect(1, 1 - 2 * m_BorderRadius, width() - 2, height() - 2 + 2 * m_BorderRadius);
+    painter.drawRoundedRect(foregroundRect, m_BorderRadius, m_BorderRadius);
     // 分割线绘制
     int drawerHeight = 0;
-    for (int i = 0; i < _drawerWidgetList.count() - 1; i++) {
-      QWidget *drawerWidget = _drawerWidgetList[i];
+    for (int i = 0; i < m_DrawerWidgetList.count() - 1; i++) {
+      QWidget *drawerWidget = m_DrawerWidgetList[i];
       drawerHeight += drawerWidget->height();
       painter.drawLine(0, drawerHeight, width(), drawerHeight);
     }
   }
-  if (!_pContainerPix.isNull()) {
-    painter.setOpacity(_pOpacity);
-    painter.drawPixmap(QRect(0, -height() * (1 - _pOpacity), width(), height()), _pContainerPix);
+  if (!m_ContainerPix.isNull()) {
+    painter.setOpacity(m_Opacity);
+    painter.drawPixmap(QRect(0, -height() * (1 - m_Opacity), width(), height()), m_ContainerPix);
   }
   painter.restore();
 }

@@ -20,9 +20,9 @@ public:
   Q_SLOT void onDrawerHeaderClicked(bool isExpand);
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXDrawerHeader *_drawerHeader { nullptr };
-  NXDrawerContainer *_drawerContainer { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXDrawerHeader *m_DrawerHeader { nullptr };
+  NXDrawerContainer *m_DrawerContainer { nullptr };
 };
 
 #endif //NXFRAMEWORK_NEXUS_PRIVATE_NXDRAWERAREAPRIVATE_H_

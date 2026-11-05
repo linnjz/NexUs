@@ -58,13 +58,13 @@ public:
 private:
   friend class NXRouter;
 
-  NXWindow *_window = nullptr;
+  NXWindow *m_Window = nullptr;
 
-  QVector<NXRouteNode *> _rootNodes;
-  QMap<QString, NXRouteNode *> _pathIndex;
+  QVector<NXRouteNode *> m_RootNodes;
+  QMap<QString, NXRouteNode *> m_PathIndex;
 
-  QString _currentPath;
-  QVariantMap _currentParams;
+  QString m_CurrentPath;
+  QVariantMap m_CurrentParams;
 
   struct HistoryEntry
   {
@@ -72,25 +72,25 @@ private:
     QVariantMap params;
   };
 
-  QVector<HistoryEntry> _history;
-  int _historyIndex         = -1;
-  bool _isNavigatingHistory = false;
+  QVector<HistoryEntry> m_History;
+  int m_HistoryIndex         = -1;
+  bool m_IsNavigatingHistory = false;
 
-  QVector<NXGuardEntry> _beforeGuards;
-  QVector<NXAfterHookEntry> _afterHooks;
-  int _nextGuardId = 1;
+  QVector<NXGuardEntry> m_BeforeGuards;
+  QVector<NXAfterHookEntry> m_AfterHooks;
+  int m_NextGuardId = 1;
 
-  static QString normalizePath(const QString &path);
-  static QString joinPath(const QString &parent, const QString &child);
+  static QString normalizePath(QString const &path);
+  static QString joinPath(QString const &parent, QString const &child);
 
   bool _isOnRouterPage() const;
-  NXRouterType::NavigationResult addRouteToTree(const NXRouteConfig &config, const QString &parentPathPrefix = QString());
-  bool runBeforeGuards(const QString &to, const QString &from, const QVariantMap &params, NXRouteNode *toNode);
-  void runAfterHooks(const QString &to, const QString &from, const QVariantMap &params);
+  NXRouterType::NavigationResult addRouteToTree(NXRouteConfig const &config, QString const &parentPathPrefix = QString());
+  bool runBeforeGuards(QString const &to, QString const &from, QVariantMap const &params, NXRouteNode *toNode);
+  void runAfterHooks(QString const &to, QString const &from, QVariantMap const &params);
   QWidget *ensureWidget(NXRouteNode *node);
   bool registerNodeInWindow(NXRouteNode *node);
-  void installNodeTree(NXRouteNode *node, const QString &parentExpanderKey = QString());
-  NXRouterType::NavigationResult doNavigation(const QString &path, const QVariantMap &params, bool pushToHistory);
+  void installNodeTree(NXRouteNode *node, QString const &parentExpanderKey = QString());
+  NXRouterType::NavigationResult doNavigation(QString const &path, QVariantMap const &params, bool pushToHistory);
 };
 
 #endif // NXROUTERPRIVATE_H

@@ -215,9 +215,7 @@ T_CodeEditor::T_CodeEditor(QWidget *parent)
 
   // Language selector
   NXComboBox *langCombo = new NXComboBox(this);
-  langCombo->addItems({ QStringLiteral("C++"), QStringLiteral("C"), QStringLiteral("C#"), QStringLiteral("Python"),
-                        QStringLiteral("JavaScript"), QStringLiteral("Lua"), QStringLiteral("Rust"),
-                        QStringLiteral("PHP") });
+  langCombo->addItems({ QStringLiteral("C++"), QStringLiteral("C"), QStringLiteral("C#"), QStringLiteral("Python"), QStringLiteral("JavaScript"), QStringLiteral("Lua"), QStringLiteral("Rust"), QStringLiteral("PHP") });
 
   NXScrollPageArea *langArea = new NXScrollPageArea(this);
   QHBoxLayout *langLayout    = new QHBoxLayout(langArea);
@@ -230,11 +228,9 @@ T_CodeEditor::T_CodeEditor(QWidget *parent)
   _codeEditor->setIsReadOnly(true);
   _codeEditor->setCode(getCppDemo());
 
-  connect(langCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index)
-  {
+  connect(langCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index) {
     _codeEditor->setLanguage(static_cast<NXCodeEditor::Language>(index));
-    switch (index)
-    {
+    switch (index) {
     case 0 : _codeEditor->setCode(getCppDemo()); break;
     case 1 : _codeEditor->setCode(getCDemo()); break;
     case 2 : _codeEditor->setCode(getCSharpDemo()); break;

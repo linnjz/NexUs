@@ -24,8 +24,8 @@ public:
   ~NXGraphicsLineItemPrivate();
 
 private:
-  bool _isCreateWithItem { true };
-  QMap<NXGraphicsItem *, int> _linkItemMap;
+  bool m_IsCreateWithItem { true };
+  QMap<NXGraphicsItem *, int> m_LinkItemMap;
 };
 
 #endif // NXGRAPHICSLINEITEMPRIVATE_H

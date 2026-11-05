@@ -25,10 +25,10 @@ protected:
   bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-  bool _isAllowHidePopup { false };
-  bool _isKeyEvent { false };
-  NXThemeType::ThemeMode _themeMode;
-  NXComboBoxStyle *_comboBoxStyle { nullptr };
+  bool m_IsAllowHidePopup { false };
+  bool m_IsKeyEvent { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXComboBoxStyle *m_ComboBoxStyle { nullptr };
 };
 
 #endif // NXCOMBOBOXPRIVATE_H

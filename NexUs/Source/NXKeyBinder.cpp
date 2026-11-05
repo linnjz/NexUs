@@ -11,7 +11,7 @@
 #include "NXContentDialog.h"
 #include "NXTheme.h"
 #include "private/NXKeyBinderPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXKeyBinder, int, BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXKeyBinder, QPS_PAEMIT(int), BorderRadius)
 
 NXKeyBinder::NXKeyBinder(QWidget *parent)
     : QLabel(parent)
@@ -19,7 +19,7 @@ NXKeyBinder::NXKeyBinder(QWidget *parent)
 {
   Q_D(NXKeyBinder);
   d->q_ptr          = this;
-  d->_pBorderRadius = 5;
+  d->m_BorderRadius = 5;
   setFixedHeight(35);
   setMouseTracking(true);
   setStyleSheet(QStringLiteral("#NXKeyBinder{background-color:transparent;}"));
@@ -27,13 +27,13 @@ NXKeyBinder::NXKeyBinder(QWidget *parent)
   textFont.setLetterSpacing(QFont::AbsoluteSpacing, 0.5);
   textFont.setPixelSize(nxApp->getFontPixelSize() + 2);
   setFont(textFont);
-  d->_binderContainer = new NXKeyBinderContainer(this);
+  d->m_BinderContainer = new NXKeyBinderContainer(this);
   setText(QStringLiteral("  按键: 未绑定      "));
-  d->_binderDialog = new NXContentDialog(window());
-  d->_binderDialog->setCentralWidget(d->_binderContainer);
-  auto *cancelBtn  = d->_binderDialog->addButton(QStringLiteral("取消"));
-  auto *resetBtn   = d->_binderDialog->addButton(QStringLiteral("重置"));
-  auto *confirmBtn = d->_binderDialog->addButton(QStringLiteral("确认"));
+  d->m_BinderDialog = new NXContentDialog(window());
+  d->m_BinderDialog->setCentralWidget(d->m_BinderContainer);
+  auto *cancelBtn  = d->m_BinderDialog->addButton(QStringLiteral("取消"));
+  auto *resetBtn   = d->m_BinderDialog->addButton(QStringLiteral("重置"));
+  auto *confirmBtn = d->m_BinderDialog->addButton(QStringLiteral("确认"));
 
   confirmBtn->setLightDefaultColor(NXThemeColor(NXThemeType::Light, PrimaryNormal));
   confirmBtn->setLightHoverColor(NXThemeColor(NXThemeType::Light, PrimaryHover));
@@ -44,11 +44,11 @@ NXKeyBinder::NXKeyBinder(QWidget *parent)
   confirmBtn->setDarkPressColor(NXThemeColor(NXThemeType::Dark, PrimaryPress));
   confirmBtn->setDarkTextColor(Qt::black);
 
-  connect(d->_binderDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn) {
+  connect(d->m_BinderDialog, &NXContentDialog::buttonClicked, this, [=](NXPushButton *btn) {
     if (btn == resetBtn) {
-      d->_binderContainer->logOrResetHistoryData(false);
+      d->m_BinderContainer->logOrResetHistoryData(false);
     } else if (btn == confirmBtn) {
-      d->_binderContainer->saveBinderChanged();
+      d->m_BinderContainer->saveBinderChanged();
     }
   });
   d->onThemeChanged(nxTheme->getThemeMode());
@@ -59,29 +59,29 @@ NXKeyBinder::~NXKeyBinder()
 {
 }
 
-void NXKeyBinder::setBinderKeyText(const QString &binderKeyText)
+void NXKeyBinder::setBinderKeyText(QString const &binderKeyText)
 {
   Q_D(NXKeyBinder);
-  d->_binderContainer->setBinderKeyText(binderKeyText);
+  d->m_BinderContainer->setBinderKeyText(binderKeyText);
   setText(QStringLiteral("  按键: ") + binderKeyText + QStringLiteral("      "));
 }
 
-QString NXKeyBinder::getBinderKeyText() const
+QString NXKeyBinder::getBinderKeyText() const noexcept(std::is_nothrow_copy_constructible_v<QString>)
 {
-  Q_D(const NXKeyBinder);
-  return d->_binderContainer->getBinderKeyText();
+  Q_CONST_D(NXKeyBinder);
+  return d->m_BinderContainer->getBinderKeyText();
 }
 
 void NXKeyBinder::setNativeVirtualBinderKey(quint32 binderKey)
 {
   Q_D(NXKeyBinder);
-  d->_binderContainer->setNativeVirtualBinderKey(binderKey);
+  d->m_BinderContainer->setNativeVirtualBinderKey(binderKey);
 }
 
-quint32 NXKeyBinder::getNativeVirtualBinderKey() const
+quint32 NXKeyBinder::getNativeVirtualBinderKey() const noexcept(std::is_nothrow_copy_constructible_v<quint32>)
 {
-  Q_D(const NXKeyBinder);
-  return d->_binderContainer->getNativeVirtualBinderKey();
+  Q_CONST_D(NXKeyBinder);
+  return d->m_BinderContainer->getNativeVirtualBinderKey();
 }
 
 bool NXKeyBinder::event(QEvent *event)
@@ -103,9 +103,9 @@ void NXKeyBinder::mouseReleaseEvent(QMouseEvent *event)
 {
   Q_D(NXKeyBinder);
   if (event->button() == Qt::LeftButton) {
-    d->_binderDialog->show();
-    d->_binderContainer->setFocus();
-    d->_binderContainer->logOrResetHistoryData(true);
+    d->m_BinderDialog->show();
+    d->m_BinderContainer->setFocus();
+    d->m_BinderContainer->logOrResetHistoryData(true);
   }
   QLabel::mouseReleaseEvent(event);
 }
@@ -113,22 +113,22 @@ void NXKeyBinder::mouseReleaseEvent(QMouseEvent *event)
 void NXKeyBinder::paintEvent(QPaintEvent *event)
 {
   Q_D(NXKeyBinder);
-  if (palette().color(QPalette::WindowText) != NXThemeColor(d->_themeMode, BasicText)) {
-    d->onThemeChanged(d->_themeMode);
+  if (palette().color(QPalette::WindowText) != NXThemeColor(d->m_ThemeMode, BasicText)) {
+    d->onThemeChanged(d->m_ThemeMode);
   }
   QPainter painter(this);
   painter.save();
   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-  painter.setBrush(underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
+  painter.setBrush(underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase));
   QRect borderRect = rect();
   borderRect.adjust(1, 1, -1, -1);
-  painter.drawRoundedRect(borderRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.drawRoundedRect(borderRect, d->m_BorderRadius, d->m_BorderRadius);
   // 图标绘制
   QFont iconFont = QFont(QStringLiteral("NXAwesome"));
   iconFont.setPixelSize(nxApp->getFontPixelSize() + 3);
   painter.setFont(iconFont);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
   QRect iconRect = rect();
   iconRect.adjust(0, 0, -10, 0);
   painter.drawText(iconRect, Qt::AlignVCenter | Qt::AlignRight, QChar((unsigned short) NXIconType::Pencil));

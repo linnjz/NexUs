@@ -23,9 +23,9 @@ public:
   ~NXStatCardPrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  NXStatCard::TrendType _trend { NXStatCard::None };
-  QString _trendText;
+  NXThemeType::ThemeMode m_ThemeMode;
+  NXStatCard::TrendType m_Trend { NXStatCard::None };
+  QString m_TrendText;
 };
 
 #endif // NXSTATCARDPRIVATE_H

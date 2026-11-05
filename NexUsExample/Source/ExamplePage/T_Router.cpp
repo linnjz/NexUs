@@ -40,27 +40,16 @@ T_Router::T_Router(QWidget *parent)
   registerStatus->setTextPixelSize(13);
   registerStatus->setMinimumWidth(300);
 
-  connect(registerBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(registerBtn, &NXPushButton::clicked, this, [=]() {
     NXWindow *w = dynamic_cast<NXWindow *>(window());
-    if (!w)
-    {
+    if (!w) {
       return;
     }
     eRouter->bindWindow(w);
 
     NXRouterType::NavigationResult result = eRouter->addRoutes({
-        { QStringLiteral("/router-demo"),
-         QStringLiteral("路由演示"),
-         NXIconType::Route,
-         {},
-         nullptr, {
-              { QStringLiteral("/page-a"),
-                QStringLiteral("页面 A"),
-                NXIconType::FileLines,
-                { { QStringLiteral("keepAlive"), true } },
-                [=]() -> QWidget *
-    {
+        { QStringLiteral("/router-demo"), QStringLiteral("路由演示"), NXIconType::Route, {}, nullptr, {
+                                                                                                          { QStringLiteral("/page-a"), QStringLiteral("页面 A"), NXIconType::FileLines, { { QStringLiteral("keepAlive"), true } }, [=]() -> QWidget * {
       QWidget *page    = new QWidget();
       QVBoxLayout *lay = new QVBoxLayout(page);
       lay->addWidget(new NXText(QStringLiteral("这是页面 A (keepAlive: true)"), 16, page));
@@ -68,12 +57,7 @@ T_Router::T_Router(QWidget *parent)
       lay->addStretch();
       return page;
     } },
-              { QStringLiteral("/page-b"),
-                QStringLiteral("页面 B"),
-                NXIconType::FilePen,
-                { { QStringLiteral("role"), QStringLiteral("user") } },
-                [=]() -> QWidget *
-    {
+                                                                                                          { QStringLiteral("/page-b"), QStringLiteral("页面 B"), NXIconType::FilePen, { { QStringLiteral("role"), QStringLiteral("user") } }, [=]() -> QWidget * {
       QWidget *page    = new QWidget();
       QVBoxLayout *lay = new QVBoxLayout(page);
       lay->addWidget(new NXText(QStringLiteral("这是页面 B (role: user)"), 16, page));
@@ -81,12 +65,7 @@ T_Router::T_Router(QWidget *parent)
       lay->addStretch();
       return page;
     } },
-              { QStringLiteral("/page-c"),
-                QStringLiteral("页面 C"),
-                NXIconType::FileShield,
-                { { QStringLiteral("role"), QStringLiteral("admin") } },
-                [=]() -> QWidget *
-    {
+                                                                                                          { QStringLiteral("/page-c"), QStringLiteral("页面 C"), NXIconType::FileShield, { { QStringLiteral("role"), QStringLiteral("admin") } }, [=]() -> QWidget * {
       QWidget *page    = new QWidget();
       QVBoxLayout *lay = new QVBoxLayout(page);
       lay->addWidget(new NXText(QStringLiteral("这是页面 C (role: admin)"), 16, page));
@@ -94,24 +73,18 @@ T_Router::T_Router(QWidget *parent)
       lay->addStretch();
       return page;
     } },
-          } },
+                                                                                                      } },
     });
-    if (result == NXRouterType::Success)
-    {
-      registerStatus->setText(QStringLiteral("路由注册成功! 共 ") + QString::number(eRouter->getRoutePaths().size()) +
-                              QStringLiteral(" 条路由"));
+    if (result == NXRouterType::Success) {
+      registerStatus->setText(QStringLiteral("路由注册成功! 共 ") + QString::number(eRouter->getRoutePaths().size()) + QStringLiteral(" 条路由"));
       appendLog(QStringLiteral("addRoutes: 注册了 /router-demo 及 3 个子路由"));
-    }
-    else if (result == NXRouterType::RouteAlreadyExists)
-    {
+    } else if (result == NXRouterType::RouteAlreadyExists) {
       registerStatus->setText(QStringLiteral("路由已存在，无需重复注册"));
     }
   });
 
-  connect(installBtn, &NXPushButton::clicked, this, [=]()
-  {
-    if (!eRouter->getBoundWindow())
-    {
+  connect(installBtn, &NXPushButton::clicked, this, [=]() {
+    if (!eRouter->getBoundWindow()) {
       registerStatus->setText(QStringLiteral("请先注册路由"));
       return;
     }
@@ -144,41 +117,30 @@ T_Router::T_Router(QWidget *parent)
   NXPushButton *forwardBtn = new NXPushButton(QStringLiteral("forward"), this);
   forwardBtn->setFixedSize(70, 32);
 
-  connect(pushABtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(pushABtn, &NXPushButton::clicked, this, [=]() {
     auto r =
         eRouter->push(QStringLiteral("/router-demo/page-a"), {
                                                                  { QStringLiteral("from"), QStringLiteral("demo") }
     });
-    appendLog(QStringLiteral("push(/router-demo/page-a) → ") +
-              QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
+    appendLog(QStringLiteral("push(/router-demo/page-a) → ") + QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
   });
-  connect(pushBBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(pushBBtn, &NXPushButton::clicked, this, [=]() {
     auto r = eRouter->push(QStringLiteral("/router-demo/page-b"));
-    appendLog(QStringLiteral("push(/router-demo/page-b) → ") +
-              QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
+    appendLog(QStringLiteral("push(/router-demo/page-b) → ") + QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
   });
-  connect(pushCBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(pushCBtn, &NXPushButton::clicked, this, [=]() {
     auto r = eRouter->push(QStringLiteral("/router-demo/page-c"));
-    if (r == NXRouterType::GuardRejected)
-    {
+    if (r == NXRouterType::GuardRejected) {
       appendLog(QStringLiteral("push(/router-demo/page-c) → GuardRejected (需要 admin 角色)"));
-    }
-    else
-    {
-      appendLog(QStringLiteral("push(/router-demo/page-c) → ") +
-                QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
+    } else {
+      appendLog(QStringLiteral("push(/router-demo/page-c) → ") + QString(r == NXRouterType::Success ? QStringLiteral("Success") : QStringLiteral("Failed")));
     }
   });
-  connect(backBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(backBtn, &NXPushButton::clicked, this, [=]() {
     eRouter->back();
     appendLog(QStringLiteral("back()"));
   });
-  connect(forwardBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(forwardBtn, &NXPushButton::clicked, this, [=]() {
     eRouter->forward();
     appendLog(QStringLiteral("forward()"));
   });
@@ -206,33 +168,25 @@ T_Router::T_Router(QWidget *parent)
 
   int *guardId = new int(-1);
 
-  auto updateGuard = [=](bool isAdmin)
-  {
-    if (*guardId >= 0)
-    {
+  auto updateGuard = [=](bool isAdmin) {
+    if (*guardId >= 0) {
       eRouter->removeBeforeGuard(*guardId);
       *guardId = -1;
     }
-    if (!isAdmin)
-    {
-      *guardId = eRouter->beforeEach([=](const QString &to, const QString &, const QVariantMap &) -> bool
-      {
+    if (!isAdmin) {
+      *guardId = eRouter->beforeEach([=](QString const &to, QString const &, QVariantMap const &) -> bool {
         QVariantMap meta = eRouter->getRouteMeta(to);
-        if (meta.value(QStringLiteral("role")).toString() == QStringLiteral("admin"))
-        {
+        if (meta.value(QStringLiteral("role")).toString() == QStringLiteral("admin")) {
           NXToast::warning(QStringLiteral("权限不足: 需要 admin 角色"), 2000, window());
           return false;
         }
         return true;
       });
       appendLog(QStringLiteral("beforeEach: 已启用角色守卫 (拦截 admin 路由)"));
-    }
-    else
-    {
+    } else {
       appendLog(QStringLiteral("beforeEach: 已移除角色守卫 (允许所有路由)"));
     }
-    guardDesc->setText(isAdmin ? QStringLiteral("开启时：允许所有路由")
-                               : QStringLiteral("关闭时：拦截 role=admin 的路由 (页面C)"));
+    guardDesc->setText(isAdmin ? QStringLiteral("开启时：允许所有路由") : QStringLiteral("关闭时：拦截 role=admin 的路由 (页面C)"));
   };
 
   connect(guardSwitch, &NXToggleSwitch::toggled, this, updateGuard);
@@ -269,20 +223,13 @@ T_Router::T_Router(QWidget *parent)
   dynamicStatus->setTextPixelSize(13);
   dynamicStatus->setMinimumWidth(300);
 
-  connect(addDynamicBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(addDynamicBtn, &NXPushButton::clicked, this, [=]() {
     QString name = dynamicNameEdit->text().trimmed();
-    if (name.isEmpty())
-    {
+    if (name.isEmpty()) {
       name = QStringLiteral("page-d");
     }
     QString path = QStringLiteral("/") + name;
-    auto r       = eRouter->addDynamicRoute(QStringLiteral("/router-demo"), { path,
-                                                                              name,
-                                                                              NXIconType::FileDoc,
-                                                                              {},
-                                                                              [=]() -> QWidget       *
-    {
+    auto r       = eRouter->addDynamicRoute(QStringLiteral("/router-demo"), { path, name, NXIconType::FileDoc, {}, [=]() -> QWidget       *{
       QWidget *page    = new QWidget();
       QVBoxLayout *lay = new QVBoxLayout(page);
       lay->addWidget(new NXText(QStringLiteral("动态页面: ") + name, 16, page));
@@ -290,33 +237,25 @@ T_Router::T_Router(QWidget *parent)
       lay->addStretch();
       return page;
     } });
-    if (r == NXRouterType::Success)
-    {
+    if (r == NXRouterType::Success) {
       dynamicStatus->setText(QStringLiteral("已添加: /router-demo") + path);
       appendLog(QStringLiteral("addDynamicRoute: /router-demo") + path);
-    }
-    else
-    {
+    } else {
       dynamicStatus->setText(QStringLiteral("添加失败 (可能已存在或父路由不存在)"));
     }
   });
 
-  connect(removeDynamicBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(removeDynamicBtn, &NXPushButton::clicked, this, [=]() {
     QString name = dynamicNameEdit->text().trimmed();
-    if (name.isEmpty())
-    {
+    if (name.isEmpty()) {
       name = QStringLiteral("page-d");
     }
     QString fullPath = QStringLiteral("/router-demo/") + name;
     auto r           = eRouter->removeRoute(fullPath);
-    if (r == NXRouterType::Success)
-    {
+    if (r == NXRouterType::Success) {
       dynamicStatus->setText(QStringLiteral("已移除: ") + fullPath);
       appendLog(QStringLiteral("removeRoute: ") + fullPath);
-    }
-    else
-    {
+    } else {
       dynamicStatus->setText(QStringLiteral("移除失败 (路由不存在)"));
     }
   });
@@ -354,19 +293,15 @@ T_Router::T_Router(QWidget *parent)
   _logEdit->setReadOnly(true);
   logLayout->addWidget(_logEdit);
 
-  connect(clearLogBtn, &NXPushButton::clicked, this, [=]()
-  {
+  connect(clearLogBtn, &NXPushButton::clicked, this, [=]() {
     _logEdit->clear();
   });
 
-  connect(eRouter, &NXRouter::routeChanged, this, [=](const QString &path, const QVariantMap &params)
-  {
+  connect(eRouter, &NXRouter::routeChanged, this, [=](QString const &path, QVariantMap const &params) {
     QString paramStr;
-    if (!params.isEmpty())
-    {
+    if (!params.isEmpty()) {
       QStringList parts;
-      for (auto it = params.begin(); it != params.end(); ++it)
-      {
+      for (auto it = params.begin(); it != params.end(); ++it) {
         parts.append(it.key() + QStringLiteral("=") + it.value().toString());
       }
       paramStr = QStringLiteral(" {") + parts.join(QStringLiteral(", ")) + QStringLiteral("}");
@@ -374,8 +309,7 @@ T_Router::T_Router(QWidget *parent)
     currentPathText->setText(QStringLiteral("当前路由: ") + path + paramStr);
   });
 
-  connect(eRouter, &NXRouter::navigationBlocked, this, [=](const QString &path)
-  {
+  connect(eRouter, &NXRouter::navigationBlocked, this, [=](QString const &path) {
     appendLog(QStringLiteral("BLOCKED: ") + path);
   });
 
@@ -393,11 +327,9 @@ T_Router::~T_Router()
 {
 }
 
-void
-T_Router::appendLog(const QString &text)
+void T_Router::appendLog(QString const &text)
 {
-  if (!_logEdit)
-  {
+  if (!_logEdit) {
     return;
   }
   _logEdit->appendPlainText(QStringLiteral("> ") + text);

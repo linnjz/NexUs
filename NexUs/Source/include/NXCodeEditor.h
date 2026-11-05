@@ -1,4 +1,4 @@
-#ifndef NXCODEEDITOR_H
+﻿#ifndef NXCODEEDITOR_H
 #define NXCODEEDITOR_H
 
 #include <QWidget>
@@ -11,7 +11,7 @@ class NX_EXPORT NXCodeEditor : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXCodeEditor)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), Code)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), Code)
   Q_PROPERTY_CREATE_H(int, TabSize)
   Q_PROPERTY_CREATE_H(bool, IsReadOnly)
 

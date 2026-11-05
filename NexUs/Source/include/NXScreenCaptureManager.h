@@ -1,10 +1,8 @@
-#ifndef NXSCREENCAPTUREMANAGER_H
+﻿#ifndef NXSCREENCAPTUREMANAGER_H
 #define NXSCREENCAPTUREMANAGER_H
 
 #include <QWidget>
-#pragma push_macro("Q_DISABLE_COPY")
-#undef Q_DISABLE_COPY
-#define Q_DISABLE_COPY(CLASS)
+
 #ifdef Q_OS_MAC
 #  include "LinnSingleton.h"
 #  include "NXProperty.h"
@@ -15,7 +13,7 @@ class NX_EXPORT NXScreenCaptureManager : public QObject
 {
   Q_OBJECT
   Q_Q_CREATE(NXScreenCaptureManager)
-  Q_SINGLETON_CREATE(QS_S_UNIQUE(NXScreenCaptureManager))
+  Q_SINGLETON_CREATE(QSS_UNIQUE(NXScreenCaptureManager))
 
 private:
   explicit NXScreenCaptureManager(QObject *parent = nullptr);
@@ -34,7 +32,7 @@ public:
   QRect getGrabArea() const;
   void setGrabFrameRate(int frameRateValue);
   int getGrabFrameRate() const;
-  Q_SIGNAL void grabImageUpdate(const QImage &img);
+  Q_SIGNAL void grabImageUpdate(QImage const &img);
 };
 
 class NXScreenCaptureScreenPrivate;
@@ -55,5 +53,5 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 };
 #endif
-#pragma pop_macro("Q_DISABLE_COPY")
+
 #endif // NXSCREENCAPTUREMANAGER_H

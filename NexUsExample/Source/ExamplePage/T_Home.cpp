@@ -98,8 +98,7 @@ T_Home::T_Home(QWidget *parent)
   flowTextLayout->addWidget(flowText);
   // NXFlowLayout
   NXPopularCard *homeCard = new NXPopularCard(this);
-  connect(homeCard, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     QDesktopServices::openUrl(QUrl(QStringLiteral("https://github.com/RainbowCandyX/NexUs")));
   });
   homeCard->setCardPixmap(QPixmap(QStringLiteral(":/Resource/Image/Cirno.jpg")));
@@ -111,8 +110,7 @@ T_Home::T_Home(QWidget *parent)
   homeCard->setCardFloatPixmap(QPixmap(QStringLiteral(":/Resource/Image/IARC/IARC_7+.svg.png")));
 
   NXPopularCard *homeCard1 = new NXPopularCard(this);
-  connect(homeCard1, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard1, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     Q_EMIT screenNavigation();
   });
   homeCard1->setTitle(QStringLiteral("NXScreen"));
@@ -124,8 +122,7 @@ T_Home::T_Home(QWidget *parent)
   homeCard1->setCardFloatPixmap(QPixmap(QStringLiteral(":/Resource/Image/IARC/IARC_7+.svg.png")));
 
   NXPopularCard *homeCard2 = new NXPopularCard(this);
-  connect(homeCard2, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard2, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     Q_EMIT sceneNavigation();
   });
   homeCard2->setTitle(QStringLiteral("NXScene"));
@@ -137,8 +134,7 @@ T_Home::T_Home(QWidget *parent)
   homeCard2->setCardFloatPixmap(QPixmap(QStringLiteral(":/Resource/Image/IARC/IARC_7+.svg.png")));
 
   NXPopularCard *homeCard3 = new NXPopularCard(this);
-  connect(homeCard3, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard3, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     Q_EMIT baseComponentNavigation();
   });
   homeCard3->setTitle(QStringLiteral("NXBaseComponent"));
@@ -150,8 +146,7 @@ T_Home::T_Home(QWidget *parent)
   homeCard3->setCardFloatPixmap(QPixmap(QStringLiteral(":/Resource/Image/IARC/IARC_7+.svg.png")));
 
   NXPopularCard *homeCard4 = new NXPopularCard(this);
-  connect(homeCard4, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard4, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     Q_EMIT cardNavigation();
   });
   homeCard4->setTitle(QStringLiteral("NXCard"));
@@ -162,8 +157,7 @@ T_Home::T_Home(QWidget *parent)
   homeCard4->setCardFloatPixmap(QPixmap(QStringLiteral(":/Resource/Image/IARC/IARC_7+.svg.png")));
 
   NXPopularCard *homeCard5 = new NXPopularCard(this);
-  connect(homeCard5, &NXPopularCard::popularCardButtonClicked, this, [=]()
-  {
+  connect(homeCard5, &NXPopularCard::popularCardButtonClicked, this, [=]() {
     Q_EMIT iconNavigation();
   });
   homeCard5->setTitle(QStringLiteral("NXIcon"));
@@ -209,8 +203,7 @@ T_Home::T_Home(QWidget *parent)
   _homeMenu->addNXIconAction(NXIconType::BoxCheck, QStringLiteral("排序方式"), QKeySequence::Save);
   _homeMenu->addNXIconAction(NXIconType::ArrowRotateRight, QStringLiteral("刷新"));
   QAction *action = _homeMenu->addNXIconAction(NXIconType::ArrowRotateLeft, QStringLiteral("撤销"));
-  connect(action, &QAction::triggered, this, [=]()
-  {
+  connect(action, &QAction::triggered, this, [=]() {
     NXNavigationRouter::getInstance()->navigationRouteBack();
   });
 
@@ -239,13 +232,10 @@ T_Home::~T_Home()
 {
 }
 
-void
-T_Home::mouseReleaseEvent(QMouseEvent *event)
+void T_Home::mouseReleaseEvent(QMouseEvent *event)
 {
-  switch (event->button())
-  {
-  case Qt::RightButton :
-  {
+  switch (event->button()) {
+  case Qt::RightButton : {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     _homeMenu->popup(event->globalPosition().toPoint());
 #else
@@ -253,8 +243,7 @@ T_Home::mouseReleaseEvent(QMouseEvent *event)
 #endif
     break;
   }
-  default :
-  {
+  default : {
     break;
   }
   }

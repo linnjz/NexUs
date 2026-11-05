@@ -8,8 +8,8 @@
 #include "NXTheme.h"
 #include "private/NXSkeletonPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXSkeleton, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXSkeleton, bool, IsAnimated)
+Q_PROPERTY_CREATE_CPP(NXSkeleton, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXSkeleton, QPS_PAEMIT(bool), IsAnimated)
 
 NXSkeletonPrivate::NXSkeletonPrivate(QObject *parent)
     : QObject(parent)
@@ -23,31 +23,31 @@ NXSkeletonPrivate::~NXSkeletonPrivate()
 void NXSkeletonPrivate::_startShimmerAnimation()
 {
   Q_Q(NXSkeleton);
-  if (_shimmerAnimation) {
-    _shimmerAnimation->stop();
-    delete _shimmerAnimation;
-    _shimmerAnimation = nullptr;
+  if (m_ShimmerAnimation) {
+    m_ShimmerAnimation->stop();
+    delete m_ShimmerAnimation;
+    m_ShimmerAnimation = nullptr;
   }
-  _shimmerAnimation = new QVariantAnimation(this);
-  _shimmerAnimation->setStartValue(0.0);
-  _shimmerAnimation->setEndValue(1.0);
-  _shimmerAnimation->setDuration(1500);
-  _shimmerAnimation->setLoopCount(-1);
-  connect(_shimmerAnimation, &QVariantAnimation::valueChanged, this, [=](const QVariant &value) {
-    _pShimmerPosition = value.toReal();
+  m_ShimmerAnimation = new QVariantAnimation(this);
+  m_ShimmerAnimation->setStartValue(0.0);
+  m_ShimmerAnimation->setEndValue(1.0);
+  m_ShimmerAnimation->setDuration(1500);
+  m_ShimmerAnimation->setLoopCount(-1);
+  connect(m_ShimmerAnimation, &QVariantAnimation::valueChanged, this, [=](QVariant const &value) {
+    m_ShimmerPosition = value.toReal();
     q->update();
   });
-  _shimmerAnimation->start();
+  m_ShimmerAnimation->start();
 }
 
 void NXSkeletonPrivate::_stopShimmerAnimation()
 {
-  if (_shimmerAnimation) {
-    _shimmerAnimation->stop();
-    delete _shimmerAnimation;
-    _shimmerAnimation = nullptr;
+  if (m_ShimmerAnimation) {
+    m_ShimmerAnimation->stop();
+    delete m_ShimmerAnimation;
+    m_ShimmerAnimation = nullptr;
   }
-  _pShimmerPosition = 0.0;
+  m_ShimmerPosition = 0.0;
 }
 
 NXSkeleton::NXSkeleton(QWidget *parent)
@@ -56,13 +56,13 @@ NXSkeleton::NXSkeleton(QWidget *parent)
 {
   Q_D(NXSkeleton);
   d->q_ptr             = this;
-  d->_pBorderRadius    = 4;
-  d->_pIsAnimated      = true;
-  d->_pShimmerPosition = 0.0;
+  d->m_BorderRadius    = 4;
+  d->m_IsAnimated      = true;
+  d->m_ShimmerPosition = 0.0;
   setObjectName("NXSkeleton");
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
   d->_startShimmerAnimation();
@@ -77,7 +77,7 @@ NXSkeleton::~NXSkeleton()
 void NXSkeleton::setSkeletonType(SkeletonType type)
 {
   Q_D(NXSkeleton);
-  d->_skeletonType = type;
+  d->m_SkeletonType = type;
   if (type == Circle) {
     int diameter = width();
     setFixedSize(diameter, diameter);
@@ -87,7 +87,7 @@ void NXSkeleton::setSkeletonType(SkeletonType type)
 
 NXSkeleton::SkeletonType NXSkeleton::getSkeletonType() const
 {
-  return d_ptr->_skeletonType;
+  return d_ptr->m_SkeletonType;
 }
 
 void NXSkeleton::paintEvent(QPaintEvent *event)
@@ -98,12 +98,12 @@ void NXSkeleton::paintEvent(QPaintEvent *event)
   painter.setRenderHints(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
 
-  QColor baseColor = NXThemeColor(d->_themeMode, BasicDisable);
+  QColor baseColor = NXThemeColor(d->m_ThemeMode, BasicDisable);
 
-  if (d->_pIsAnimated) {
+  if (d->m_IsAnimated) {
     QLinearGradient gradient(0, 0, width(), 0);
     QColor lighterColor = baseColor.lighter(120);
-    qreal pos           = d->_pShimmerPosition;
+    qreal pos           = d->m_ShimmerPosition;
     qreal shimmerWidth  = 0.3;
     qreal start         = pos - shimmerWidth;
     qreal end           = pos + shimmerWidth;
@@ -130,7 +130,7 @@ void NXSkeleton::paintEvent(QPaintEvent *event)
     painter.setBrush(baseColor);
   }
 
-  switch (d->_skeletonType) {
+  switch (d->m_SkeletonType) {
   case Text : {
     QPainterPath path;
     path.addRoundedRect(QRectF(0, 0, width(), height()), 4, 4);
@@ -143,7 +143,7 @@ void NXSkeleton::paintEvent(QPaintEvent *event)
   }
   case Rectangle : {
     QPainterPath path;
-    path.addRoundedRect(QRectF(0, 0, width(), height()), d->_pBorderRadius, d->_pBorderRadius);
+    path.addRoundedRect(QRectF(0, 0, width(), height()), d->m_BorderRadius, d->m_BorderRadius);
     painter.drawPath(path);
     break;
   }
@@ -152,8 +152,8 @@ void NXSkeleton::paintEvent(QPaintEvent *event)
 
 QSize NXSkeleton::sizeHint() const
 {
-  Q_D(const NXSkeleton);
-  switch (d->_skeletonType) {
+  Q_CONST_D(NXSkeleton);
+  switch (d->m_SkeletonType) {
   case Text      : return QSize(200, 16);
   case Circle    : return QSize(40, 40);
   case Rectangle : return QSize(200, 100);

@@ -16,8 +16,8 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  NXTextType::TextStyle _textStyle { NXTextType::NoStyle };
-  NXThemeType::ThemeMode _themeMode;
+  NXTextType::TextStyle m_TextStyle { NXTextType::NoStyle };
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXRADIOBUTTONPRIVATE_H

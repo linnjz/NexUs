@@ -20,7 +20,7 @@ public:
   ~NXPersonPicturePrivate();
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXPERSONPICTUREPRIVATE_H

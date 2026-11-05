@@ -15,9 +15,9 @@ NXLCDNumberPrivate::~NXLCDNumberPrivate()
 void NXLCDNumberPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXLCDNumber);
-  _themeMode       = themeMode;
+  m_ThemeMode       = themeMode;
   QPalette palette = q->palette();
-  palette.setColor(QPalette::Text, NXThemeColor(_themeMode, BasicText));
+  palette.setColor(QPalette::Text, NXThemeColor(m_ThemeMode, BasicText));
   palette.setColor(QPalette::WindowText, NXThemeColor(themeMode, BasicText));
   q->setPalette(palette);
 }

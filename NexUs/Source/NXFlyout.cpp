@@ -9,10 +9,10 @@
 
 #include "NXTheme.h"
 #include "private/NXFlyoutPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXFlyout, QS_SET_CREF(QString), Title)
-Q_PROPERTY_CREATE_CPP(NXFlyout, QS_SET_CREF(QString), Content)
-Q_PROPERTY_CREATE_CPP(NXFlyout, int, BorderRadius)
-Q_PROPERTY_CREATE_CPP(NXFlyout, bool, IsLightDismiss)
+Q_PROPERTY_CREATE_CPP(NXFlyout, QPS_SCREF_PAEMIT(QString), Title)
+Q_PROPERTY_CREATE_CPP(NXFlyout, QPS_SCREF_PAEMIT(QString), Content)
+Q_PROPERTY_CREATE_CPP(NXFlyout, QPS_PAEMIT(int), BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXFlyout, QPS_PAEMIT(bool), IsLightDismiss)
 
 NXFlyout::NXFlyout(QWidget *parent)
     : QWidget { nullptr }
@@ -20,22 +20,22 @@ NXFlyout::NXFlyout(QWidget *parent)
 {
   Q_D(NXFlyout);
   d->q_ptr            = this;
-  d->_pBorderRadius   = 8;
-  d->_pIsLightDismiss = true;
+  d->m_BorderRadius   = 8;
+  d->m_IsLightDismiss = true;
   setObjectName("NXFlyout");
   setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
-  d->_mainLayout = new QVBoxLayout(this);
-  int margin     = d->_shadowBorderWidth + 8;
-  d->_mainLayout->setContentsMargins(margin, margin, margin, margin);
+  d->m_MainLayout = new QVBoxLayout(this);
+  int margin     = d->m_ShadowBorderWidth + 8;
+  d->m_MainLayout->setContentsMargins(margin, margin, margin, margin);
 
-  d->_opacityEffect = new QGraphicsOpacityEffect(this);
-  d->_opacityEffect->setOpacity(0);
-  setGraphicsEffect(d->_opacityEffect);
+  d->m_OpacityEffect = new QGraphicsOpacityEffect(this);
+  d->m_OpacityEffect->setOpacity(0);
+  setGraphicsEffect(d->m_OpacityEffect);
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
     update();
   });
   hide();
@@ -51,12 +51,12 @@ void NXFlyout::setContentWidget(QWidget *widget)
   if (!widget || widget == this) {
     return;
   }
-  if (d->_contentWidget) {
-    d->_mainLayout->removeWidget(d->_contentWidget);
-    d->_contentWidget->deleteLater();
+  if (d->m_ContentWidget) {
+    d->m_MainLayout->removeWidget(d->m_ContentWidget);
+    d->m_ContentWidget->deleteLater();
   }
-  d->_contentWidget = widget;
-  d->_mainLayout->addWidget(widget);
+  d->m_ContentWidget = widget;
+  d->m_MainLayout->addWidget(widget);
 }
 
 void NXFlyout::showFlyout(QWidget *target)
@@ -66,22 +66,22 @@ void NXFlyout::showFlyout(QWidget *target)
     return;
   }
   // Calculate size based on content
-  if (!d->_contentWidget) {
+  if (!d->m_ContentWidget) {
     setFixedWidth(280);
-    int contentHeight = d->_shadowBorderWidth * 2 + 12;
-    int textWidth     = 280 - d->_shadowBorderWidth * 2 - 30;
-    if (!d->_pTitle.isEmpty()) {
+    int contentHeight = d->m_ShadowBorderWidth * 2 + 12;
+    int textWidth     = 280 - d->m_ShadowBorderWidth * 2 - 30;
+    if (!d->m_Title.isEmpty()) {
       QFont titleFont = font();
       titleFont.setPixelSize(14);
       titleFont.setBold(true);
       QFontMetrics tfm(titleFont);
       contentHeight += tfm.height() + 6;
     }
-    if (!d->_pContent.isEmpty()) {
+    if (!d->m_Content.isEmpty()) {
       QFont contentFont = font();
       contentFont.setPixelSize(13);
       QFontMetrics cfm(contentFont);
-      QRect br = cfm.boundingRect(QRect(0, 0, textWidth, 0), Qt::TextWordWrap, d->_pContent);
+      QRect br = cfm.boundingRect(QRect(0, 0, textWidth, 0), Qt::TextWordWrap, d->m_Content);
       contentHeight += br.height() + 8;
     }
     contentHeight += 12;
@@ -116,7 +116,7 @@ void NXFlyout::showFlyout(QWidget *target)
   move(x, y);
   show();
   raise();
-  if (d->_pIsLightDismiss) {
+  if (d->m_IsLightDismiss) {
     qApp->installEventFilter(d);
   }
   d->_doShowAnimation();
@@ -137,39 +137,39 @@ void NXFlyout::paintEvent(QPaintEvent *event)
   painter.save();
   painter.setRenderHint(QPainter::Antialiasing);
   // Shadow
-  nxTheme->drawEffectShadow(&painter, rect(), d->_shadowBorderWidth, d->_pBorderRadius);
+  nxTheme->drawEffectShadow(&painter, rect(), d->m_ShadowBorderWidth, d->m_BorderRadius);
   QRect foregroundRect = rect();
-  foregroundRect.adjust(d->_shadowBorderWidth, d->_shadowBorderWidth, -d->_shadowBorderWidth, -d->_shadowBorderWidth);
-  painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));
-  painter.setBrush(NXThemeColor(d->_themeMode, PopupBase));
-  painter.drawRoundedRect(foregroundRect, d->_pBorderRadius, d->_pBorderRadius);
+  foregroundRect.adjust(d->m_ShadowBorderWidth, d->m_ShadowBorderWidth, -d->m_ShadowBorderWidth, -d->m_ShadowBorderWidth);
+  painter.setPen(NXThemeColor(d->m_ThemeMode, PopupBorder));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, PopupBase));
+  painter.drawRoundedRect(foregroundRect, d->m_BorderRadius, d->m_BorderRadius);
 
-  if (!d->_contentWidget) {
+  if (!d->m_ContentWidget) {
     int textX     = foregroundRect.x() + 12;
     int textY     = foregroundRect.y() + 12;
     int textWidth = foregroundRect.width() - 24;
 
     // Title
-    if (!d->_pTitle.isEmpty()) {
+    if (!d->m_Title.isEmpty()) {
       QFont titleFont = painter.font();
       titleFont.setPixelSize(14);
       titleFont.setBold(true);
       painter.setFont(titleFont);
-      painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
       QRect titleRect(textX, textY, textWidth, painter.fontMetrics().height());
-      painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, d->_pTitle);
+      painter.drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, d->m_Title);
       textY += titleRect.height() + 6;
     }
 
     // Content
-    if (!d->_pContent.isEmpty()) {
+    if (!d->m_Content.isEmpty()) {
       QFont contentFont = painter.font();
       contentFont.setPixelSize(13);
       contentFont.setBold(false);
       painter.setFont(contentFont);
-      painter.setPen(NXThemeColor(d->_themeMode, BasicDetailsText));
+      painter.setPen(NXThemeColor(d->m_ThemeMode, BasicDetailsText));
       QRect contentRect(textX, textY, textWidth, foregroundRect.bottom() - textY - 12);
-      painter.drawText(contentRect, Qt::AlignLeft | Qt::TextWordWrap, d->_pContent);
+      painter.drawText(contentRect, Qt::AlignLeft | Qt::TextWordWrap, d->m_Content);
     }
   }
   painter.restore();
@@ -201,7 +201,7 @@ bool NXFlyoutPrivate::eventFilter(QObject *watched, QEvent *event)
 
 void NXFlyoutPrivate::_doShowAnimation()
 {
-  QPropertyAnimation *animation = new QPropertyAnimation(_opacityEffect, "opacity");
+  QPropertyAnimation *animation = new QPropertyAnimation(m_OpacityEffect, "opacity");
   animation->setDuration(250);
   animation->setStartValue(0.0);
   animation->setEndValue(1.0);

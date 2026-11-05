@@ -13,15 +13,15 @@ public:
   explicit NXMultiSelectComboBoxDelegate(QObject *parent = nullptr);
   ~NXMultiSelectComboBoxDelegate();
 
-  void setItemSelection(const QVector<bool> &selection);
+  void setItemSelection(QVector<bool> const &selection);
 
 protected:
-  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-  QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+  void paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const override;
+  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  QVector<bool> _itemSelection;
+  NXThemeType::ThemeMode m_ThemeMode;
+  QVector<bool> m_ItemSelection;
 };
 
 #endif // NXMULTISELECTCOMBOBOXDELEGATE_H

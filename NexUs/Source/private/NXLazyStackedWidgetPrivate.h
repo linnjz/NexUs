@@ -1,4 +1,4 @@
-#ifndef NXLAZYSTACKEDWIDGETPRIVATE_H
+﻿#ifndef NXLAZYSTACKEDWIDGETPRIVATE_H
 #define NXLAZYSTACKEDWIDGETPRIVATE_H
 
 #include <QObject>
@@ -18,7 +18,7 @@ public:
   ~NXLazyStackedWidgetPrivate() override;
 
 private:
-  NXLazyStackedLayout *_layout { nullptr };
+  NXLazyStackedLayout *m_Layout { nullptr };
 };
 
 #endif // NXLAZYSTACKEDWIDGETPRIVATE_H

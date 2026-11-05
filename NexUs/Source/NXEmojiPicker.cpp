@@ -14,8 +14,8 @@
 #include "NXTheme.h"
 #include "private/NXEmojiPickerPrivate.h"
 
-Q_PROPERTY_CREATE_CPP(NXEmojiPicker, int, EmojiSize)
-Q_PROPERTY_CREATE_CPP(NXEmojiPicker, int, Columns)
+Q_PROPERTY_CREATE_CPP(NXEmojiPicker, QPS_PAEMIT(int), EmojiSize)
+Q_PROPERTY_CREATE_CPP(NXEmojiPicker, QPS_PAEMIT(int), Columns)
 
 NXEmojiPicker::NXEmojiPicker(QWidget *parent)
     : QWidget { nullptr }
@@ -23,9 +23,9 @@ NXEmojiPicker::NXEmojiPicker(QWidget *parent)
 {
   Q_D(NXEmojiPicker);
   d->q_ptr       = this;
-  d->_pEmojiSize = 36;
-  d->_pColumns   = 8;
-  d->_themeMode  = nxTheme->getThemeMode();
+  d->m_EmojiSize = 36;
+  d->m_Columns   = 8;
+  d->m_ThemeMode  = nxTheme->getThemeMode();
 
   setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
@@ -41,24 +41,24 @@ NXEmojiPicker::NXEmojiPicker(QWidget *parent)
 #endif
   mainLayout->setSpacing(4);
 
-  d->_searchEdit = new NXLineEdit(this);
-  d->_searchEdit->setPlaceholderText(QString::fromUtf8("搜索表情..."));
-  d->_searchEdit->setFixedHeight(32);
-  connect(d->_searchEdit, &NXLineEdit::textChanged, this, [d](const QString &text) {
+  d->m_SearchEdit = new NXLineEdit(this);
+  d->m_SearchEdit->setPlaceholderText(QString::fromUtf8("搜索表情..."));
+  d->m_SearchEdit->setFixedHeight(32);
+  connect(d->m_SearchEdit, &NXLineEdit::textChanged, this, [d](QString const &text) {
     d->filterEmojis(text);
   });
 
   QHBoxLayout *tabLayout = new QHBoxLayout();
   tabLayout->setSpacing(2);
-  for (int i = 0; i < d->_categories.size(); i++) {
-    QPushButton *tabBtn = new QPushButton(d->_categories[i].icon, this);
+  for (int i = 0; i < d->m_Categories.size(); i++) {
+    QPushButton *tabBtn = new QPushButton(d->m_Categories[i].icon, this);
     tabBtn->setFixedSize(32, 32);
     tabBtn->setFlat(true);
     tabBtn->setStyleSheet(QStringLiteral("QPushButton{font-size:18px;border:none;border-radius:4px;}"
                                          "QPushButton:hover{background-color:rgba(128,128,128,40);}"));
     connect(tabBtn, &QPushButton::clicked, this, [d, i]() {
-      d->_currentCategory = i;
-      d->_searchEdit->clear();
+      d->m_CurrentCategory = i;
+      d->m_SearchEdit->clear();
       d->buildGrid(i);
     });
     tabLayout->addWidget(tabBtn);
@@ -70,22 +70,22 @@ NXEmojiPicker::NXEmojiPicker(QWidget *parent)
   scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   scrollArea->setStyleSheet(QStringLiteral("QScrollArea{background:transparent;border:none;}"));
 
-  d->_gridContainer = new QWidget();
-  d->_gridContainer->setStyleSheet(QStringLiteral("background:transparent;"));
-  d->_gridLayout = new QGridLayout(d->_gridContainer);
-  d->_gridLayout->setSpacing(2);
-  d->_gridLayout->setContentsMargins(0, 0, 0, 0);
-  scrollArea->setWidget(d->_gridContainer);
+  d->m_GridContainer = new QWidget();
+  d->m_GridContainer->setStyleSheet(QStringLiteral("background:transparent;"));
+  d->m_GridLayout = new QGridLayout(d->m_GridContainer);
+  d->m_GridLayout->setSpacing(2);
+  d->m_GridLayout->setContentsMargins(0, 0, 0, 0);
+  scrollArea->setWidget(d->m_GridContainer);
 
-  mainLayout->addWidget(d->_searchEdit);
+  mainLayout->addWidget(d->m_SearchEdit);
   mainLayout->addLayout(tabLayout);
   mainLayout->addWidget(scrollArea);
 
-  d->buildGrid(d->_recentEmojis.isEmpty() ? 1 : 0);
+  d->buildGrid(d->m_RecentEmojis.isEmpty() ? 1 : 0);
 
   connect(nxTheme, &NXTheme::themeModeChanged, this, [this, d](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
-    d->buildGrid(d->_currentCategory);
+    d->m_ThemeMode = themeMode;
+    d->buildGrid(d->m_CurrentCategory);
     update();
   });
 }
@@ -126,8 +126,8 @@ void NXEmojiPicker::paintEvent(QPaintEvent *event)
   nxTheme->drawEffectShadow(&painter, rect(), 6, 8);
   QRect fg = rect().adjusted(6, 6, -6, -6);
 #endif
-  painter.setPen(NXThemeColor(d->_themeMode, PopupBorder));
-  painter.setBrush(NXThemeColor(d->_themeMode, PopupBase));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, PopupBorder));
+  painter.setBrush(NXThemeColor(d->m_ThemeMode, PopupBase));
   painter.drawRoundedRect(fg, 8, 8);
 }
 
@@ -142,7 +142,7 @@ NXEmojiPickerPrivate::~NXEmojiPickerPrivate()
 
 void NXEmojiPickerPrivate::initEmojis()
 {
-  _categories = {
+  m_Categories = {
     { QString::fromUtf8("最近"), QString::fromUtf8("🕐"), {} },
     { QString::fromUtf8("表情"),
      QString::fromUtf8("😀"),
@@ -563,85 +563,85 @@ void NXEmojiPickerPrivate::buildGrid(int categoryIndex)
 {
   Q_Q(NXEmojiPicker);
   QLayoutItem *item;
-  while ((item = _gridLayout->takeAt(0)) != nullptr) {
+  while ((item = m_GridLayout->takeAt(0)) != nullptr) {
     delete item->widget();
     delete item;
   }
 
-  const QStringList &emojis = (categoryIndex == 0) ? _recentEmojis : _categories[categoryIndex].emojis;
+  QStringList const &emojis = (categoryIndex == 0) ? m_RecentEmojis : m_Categories[categoryIndex].emojis;
   if (emojis.isEmpty() && categoryIndex == 0) {
-    QLabel *hint = new QLabel(QString::fromUtf8("暂无最近使用"), _gridContainer);
+    QLabel *hint = new QLabel(QString::fromUtf8("暂无最近使用"), m_GridContainer);
     hint->setAlignment(Qt::AlignCenter);
     hint->setStyleSheet(QStringLiteral("color:gray;padding:20px;"));
-    _gridLayout->addWidget(hint, 0, 0, 1, _pColumns);
+    m_GridLayout->addWidget(hint, 0, 0, 1, m_Columns);
     return;
   }
 
   int row = 0, col = 0;
-  for (const QString &emoji : emojis) {
-    QPushButton *btn = new QPushButton(emoji, _gridContainer);
-    btn->setFixedSize(_pEmojiSize, _pEmojiSize);
+  for (QString const &emoji : emojis) {
+    QPushButton *btn = new QPushButton(emoji, m_GridContainer);
+    btn->setFixedSize(m_EmojiSize, m_EmojiSize);
     btn->setFlat(true);
     btn->setStyleSheet(QString(QStringLiteral("QPushButton{font-size:%1px;border:none;border-radius:4px;}"
                                               "QPushButton:hover{background-color:rgba(128,128,128,40);}"))
-                           .arg(_pEmojiSize - 10));
+                           .arg(m_EmojiSize - 10));
     QObject::connect(btn, &QPushButton::clicked, q, [this, q, emoji]() {
-      _recentEmojis.removeAll(emoji);
-      _recentEmojis.prepend(emoji);
-      if (_recentEmojis.size() > 32) {
-        _recentEmojis.removeLast();
+      m_RecentEmojis.removeAll(emoji);
+      m_RecentEmojis.prepend(emoji);
+      if (m_RecentEmojis.size() > 32) {
+        m_RecentEmojis.removeLast();
       }
       Q_EMIT q->emojiSelected(emoji);
       q->hide();
     });
-    _gridLayout->addWidget(btn, row, col);
+    m_GridLayout->addWidget(btn, row, col);
     col++;
-    if (col >= _pColumns) {
+    if (col >= m_Columns) {
       col = 0;
       row++;
     }
   }
 }
 
-void NXEmojiPickerPrivate::filterEmojis(const QString &text)
+void NXEmojiPickerPrivate::filterEmojis(QString const &text)
 {
   Q_Q(NXEmojiPicker);
   if (text.isEmpty()) {
-    buildGrid(_currentCategory);
+    buildGrid(m_CurrentCategory);
     return;
   }
 
   QLayoutItem *item;
-  while ((item = _gridLayout->takeAt(0)) != nullptr) {
+  while ((item = m_GridLayout->takeAt(0)) != nullptr) {
     delete item->widget();
     delete item;
   }
 
   QStringList all;
-  for (int i = 1; i < _categories.size(); i++) {
-    all.append(_categories[i].emojis);
+  for (int i = 1; i < m_Categories.size(); i++) {
+    all.append(m_Categories[i].emojis);
   }
 
   int row = 0, col = 0;
-  for (const QString &emoji : all) {
-    QPushButton *btn = new QPushButton(emoji, _gridContainer);
-    btn->setFixedSize(_pEmojiSize, _pEmojiSize);
+  for (QString const &emoji : all) {
+    QPushButton *btn = new QPushButton(emoji, m_GridContainer);
+    btn->setFixedSize(m_EmojiSize, m_EmojiSize);
     btn->setFlat(true);
     btn->setStyleSheet(QString(QStringLiteral("QPushButton{font-size:%1px;border:none;border-radius:4px;}"
                                               "QPushButton:hover{background-color:rgba(128,128,128,40);}"))
-                           .arg(_pEmojiSize - 10));
+                           .arg(m_EmojiSize - 10));
     QObject::connect(btn, &QPushButton::clicked, q, [this, q, emoji]() {
-      _recentEmojis.removeAll(emoji);
-      _recentEmojis.prepend(emoji);
-      if (_recentEmojis.size() > 32) {
-        _recentEmojis.removeLast();
+      m_RecentEmojis.removeAll(emoji);
+      m_RecentEmojis.prepend(emoji);
+      if (m_RecentEmojis.size() > 32) {
+        m_RecentEmojis.removeLast();
       }
       Q_EMIT q->emojiSelected(emoji);
       q->hide();
     });
-    _gridLayout->addWidget(btn, row, col);
+    m_GridLayout->addWidget(btn, row, col);
     col++;
-    if (col >= _pColumns) {
+    if (col >= m_Columns) {
       col = 0;
       row++;
     }

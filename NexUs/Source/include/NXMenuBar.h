@@ -17,12 +17,12 @@ public:
   ~NXMenuBar();
 
   QAction *addMenu(QMenu *menu);
-  NXMenu *addMenu(const QString &title);
-  NXMenu *addMenu(const QIcon &icon, const QString &title);
-  NXMenu *addMenu(NXIconType::IconName, const QString &title);
+  NXMenu *addMenu(QString const &title);
+  NXMenu *addMenu(QIcon const &icon, QString const &title);
+  NXMenu *addMenu(NXIconType::IconName, QString const &title);
 
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text);
-  QAction *addNXIconAction(NXIconType::IconName icon, const QString &text, const QKeySequence &shortcut);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text);
+  QAction *addNXIconAction(NXIconType::IconName icon, QString const &text, QKeySequence const &shortcut);
 };
 
 #endif // NXMENUBAR_H

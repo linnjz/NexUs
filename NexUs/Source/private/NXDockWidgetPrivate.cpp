@@ -18,5 +18,5 @@ void NXDockWidgetPrivate::onThemeModeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXDockWidget);
   q->update();
-  _themeMode = themeMode;
+  m_ThemeMode = themeMode;
 }

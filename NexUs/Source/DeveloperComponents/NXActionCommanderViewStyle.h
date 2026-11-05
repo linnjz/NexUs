@@ -8,24 +8,24 @@
 class NXActionCommanderViewStyle : public QProxyStyle
 {
   Q_OBJECT
-  Q_PROPERTY_CREATE(int, ItemHeight)
-  Q_PROPERTY_CREATE(int, HeaderMargin)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), ItemHeight)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(int), HeaderMargin)
 
 public:
   explicit NXActionCommanderViewStyle(QStyle *style = nullptr);
   ~NXActionCommanderViewStyle() override;
 
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
-  void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
-  QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const override;
-  QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const override;
+  void drawControl(ControlElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget) const override;
+  QSize sizeFromContents(ContentsType type, QStyleOption const *option, QSize const &size, QWidget const *widget) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option, QWidget const *widget) const override;
+  QRect subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const override;
 
   NXThemeType::ThemeMode getThemeMode() const;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _leftPadding { 11 };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_LeftPadding { 11 };
 };
 
 #endif //NXACTIONCOMMANDERVIEWSTYLE_H

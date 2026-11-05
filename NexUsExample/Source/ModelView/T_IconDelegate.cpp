@@ -9,8 +9,7 @@ T_IconDelegate::T_IconDelegate(QObject *parent)
     : QStyledItemDelegate { parent }
 {
   _themeMode = nxTheme->getThemeMode();
-  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode)
-  {
+  connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
     _themeMode = themeMode;
   });
 }
@@ -19,20 +18,17 @@ T_IconDelegate::~T_IconDelegate()
 {
 }
 
-void
-T_IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void T_IconDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   QStyleOptionViewItem viewOption(option);
   initStyleOption(&viewOption, index);
 
-  if (option.state.testFlag(QStyle::State_HasFocus))
-  {
+  if (option.state.testFlag(QStyle::State_HasFocus)) {
     viewOption.state &= ~QStyle::State_HasFocus;
   }
   QStyledItemDelegate::paint(painter, viewOption, index);
   QStringList iconList = index.data(Qt::UserRole).toStringList();
-  if (iconList.count() != 2)
-  {
+  if (iconList.count() != 2) {
     return;
   }
   QString iconName  = iconList.at(0);
@@ -44,8 +40,7 @@ T_IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, con
   iconFont.setPixelSize(22);
   painter->setFont(iconFont);
   painter->setPen(NXThemeColor(_themeMode, BasicText));
-  painter->drawText(option.rect.x() + option.rect.width() / 2 - 11, option.rect.y() + option.rect.height() / 2 - 11,
-                    iconValue);
+  painter->drawText(option.rect.x() + option.rect.width() / 2 - 11, option.rect.y() + option.rect.height() / 2 - 11, iconValue);
   painter->restore();
   // 文字绘制
   painter->setPen(NXThemeColor(_themeMode, BasicText));
@@ -54,32 +49,23 @@ T_IconDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, con
   painter->setFont(titlefont);
   qreal rowTextWidth = option.rect.width() * 0.8;
   int subTitleRow    = painter->fontMetrics().horizontalAdvance(iconName) / rowTextWidth;
-  if (subTitleRow > 0)
-  {
+  if (subTitleRow > 0) {
     QString subTitleText = iconName;
-    for (int i = 0; i < subTitleRow + 1; i++)
-    {
+    for (int i = 0; i < subTitleRow + 1; i++) {
       QString text = painter->fontMetrics().elidedText(subTitleText, Qt::ElideRight, rowTextWidth);
-      if (text.right(3).contains(QStringLiteral("…")))
-      {
+      if (text.right(3).contains(QStringLiteral("…"))) {
         text = text.replace(QStringLiteral("…"), subTitleText.mid(text.length() - 1, 1));
       }
       subTitleText.remove(0, text.length());
-      painter->drawText(option.rect.x() + option.rect.width() / 2 - painter->fontMetrics().horizontalAdvance(text) / 2,
-                        option.rect.y() + option.rect.height() - 10 * (subTitleRow + 1 - i), text);
+      painter->drawText(option.rect.x() + option.rect.width() / 2 - painter->fontMetrics().horizontalAdvance(text) / 2, option.rect.y() + option.rect.height() - 10 * (subTitleRow + 1 - i), text);
     }
-  }
-  else
-  {
-    painter->drawText(option.rect.x() + option.rect.width() / 2 -
-                          painter->fontMetrics().horizontalAdvance(iconName) / 2,
-                      option.rect.y() + option.rect.height() - 20, iconName);
+  } else {
+    painter->drawText(option.rect.x() + option.rect.width() / 2 - painter->fontMetrics().horizontalAdvance(iconName) / 2, option.rect.y() + option.rect.height() - 20, iconName);
   }
   painter->restore();
 }
 
-QSize
-T_IconDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize T_IconDelegate::sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const
 {
   return QSize(100, 100);
 }

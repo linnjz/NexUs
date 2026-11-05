@@ -27,7 +27,7 @@ public:
   int count() const override;
   QLayoutItem *itemAt(int index) const override;
   QSize minimumSize() const override;
-  void setGeometry(const QRect &rect) override;
+  void setGeometry(QRect const &rect) override;
   QSize sizeHint() const override;
   QLayoutItem *takeAt(int index) override;
 

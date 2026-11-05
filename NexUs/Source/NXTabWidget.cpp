@@ -8,9 +8,9 @@
 
 #include "NXTabBar.h"
 #include "private/NXTabWidgetPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXTabWidget, bool, IsTabTransparent)
-Q_PROPERTY_CREATE_CPP(NXTabWidget, bool, IsContainerAcceptDrops)
-Q_PROPERTY_CREATE_CPP(NXTabWidget, QSize, FloatWidgetSize)
+Q_PROPERTY_CREATE_CPP(NXTabWidget, QPS_PAEMIT(bool), IsTabTransparent)
+Q_PROPERTY_CREATE_CPP(NXTabWidget, QPS_PAEMIT(bool), IsContainerAcceptDrops)
+Q_PROPERTY_CREATE_CPP(NXTabWidget, QPS_PAEMIT(QSize), FloatWidgetSize)
 
 NXTabWidget::NXTabWidget(QWidget *parent)
     : QTabWidget(parent)
@@ -18,19 +18,19 @@ NXTabWidget::NXTabWidget(QWidget *parent)
 {
   Q_D(NXTabWidget);
   d->q_ptr                    = this;
-  d->_pIsContainerAcceptDrops = false;
-  d->_pIsTabTransparent       = false;
-  d->_pFloatWidgetSize        = QSize(700, 500);
+  d->m_IsContainerAcceptDrops = false;
+  d->m_IsTabTransparent       = false;
+  d->m_FloatWidgetSize        = QSize(700, 500);
   setObjectName("NXTabWidget");
   setAcceptDrops(true);
-  d->_tabBar = new NXTabBar(this);
-  setTabBar(d->_tabBar);
-  connect(d->_tabBar, &NXTabBar::tabDragCreate, d, &NXTabWidgetPrivate::onTabDragCreate);
-  connect(d->_tabBar, &NXTabBar::tabDragEnter, d, &NXTabWidgetPrivate::onTabDragEnter);
-  connect(d->_tabBar, &NXTabBar::tabDragLeave, d, &NXTabWidgetPrivate::onTabDragLeave);
-  connect(d->_tabBar, &NXTabBar::tabDragDrop, d, &NXTabWidgetPrivate::onTabDragDrop);
-  connect(d->_tabBar, &NXTabBar::tabCloseRequested, d, &NXTabWidgetPrivate::onTabCloseRequested);
-  connect(d->_tabBar, &NXTabBar::currentChanged, this, [=](int index) {
+  d->m_TabBar = new NXTabBar(this);
+  setTabBar(d->m_TabBar);
+  connect(d->m_TabBar, &NXTabBar::tabDragCreate, d, &NXTabWidgetPrivate::onTabDragCreate);
+  connect(d->m_TabBar, &NXTabBar::tabDragEnter, d, &NXTabWidgetPrivate::onTabDragEnter);
+  connect(d->m_TabBar, &NXTabBar::tabDragLeave, d, &NXTabWidgetPrivate::onTabDragLeave);
+  connect(d->m_TabBar, &NXTabBar::tabDragDrop, d, &NXTabWidgetPrivate::onTabDragDrop);
+  connect(d->m_TabBar, &NXTabBar::tabCloseRequested, d, &NXTabWidgetPrivate::onTabCloseRequested);
+  connect(d->m_TabBar, &NXTabBar::currentChanged, this, [=](int index) {
     if (index < 0) {
       return;
     }
@@ -47,70 +47,70 @@ NXTabWidget::~NXTabWidget()
 void NXTabWidget::locateCurrentTab()
 {
   Q_D(NXTabWidget);
-  d->_tabBar->locateCurrentTab();
+  d->m_TabBar->locateCurrentTab();
 }
 
 void NXTabWidget::setTabBarStyle(NXTabBarType::TabBarStyle style)
 {
   Q_D(NXTabWidget);
-  if (d->_tabBar) {
-    d->_tabBar->setTabBarStyle(style);
+  if (d->m_TabBar) {
+    d->m_TabBar->setTabBarStyle(style);
   }
-  if (d->_customTabBar) {
-    d->_customTabBar->setTabBarStyle(style);
+  if (d->m_CustomTabBar) {
+    d->m_CustomTabBar->setTabBarStyle(style);
   }
 }
 
-NXTabBarType::TabBarStyle NXTabWidget::getTabBarStyle() const
+NXTabBarType::TabBarStyle NXTabWidget::getTabBarStyle() const noexcept(std::is_nothrow_copy_constructible_v<NXTabBarType::TabBarStyle>)
 {
-  Q_D(const NXTabWidget);
-  return d->_tabBar->getTabBarStyle();
+  Q_CONST_D(NXTabWidget);
+  return d->m_TabBar->getTabBarStyle();
 }
 
 void NXTabWidget::setTabCornerRadius(int radius)
 {
   Q_D(NXTabWidget);
-  if (d->_tabBar) {
-    d->_tabBar->setTabCornerRadius(radius);
+  if (d->m_TabBar) {
+    d->m_TabBar->setTabCornerRadius(radius);
   }
-  if (d->_customTabBar) {
-    d->_customTabBar->setTabCornerRadius(radius);
+  if (d->m_CustomTabBar) {
+    d->m_CustomTabBar->setTabCornerRadius(radius);
   }
 }
 
-int NXTabWidget::getTabCornerRadius() const
+int NXTabWidget::getTabCornerRadius() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTabWidget);
-  return d->_tabBar->getTabCornerRadius();
+  Q_CONST_D(NXTabWidget);
+  return d->m_TabBar->getTabCornerRadius();
 }
 
 void NXTabWidget::setIsSelectedIndicatorVisible(bool isVisible)
 {
   Q_D(NXTabWidget);
-  if (d->_tabBar) {
-    d->_tabBar->setIsSelectedIndicatorVisible(isVisible);
+  if (d->m_TabBar) {
+    d->m_TabBar->setIsSelectedIndicatorVisible(isVisible);
   }
-  if (d->_customTabBar) {
-    d->_customTabBar->setIsSelectedIndicatorVisible(isVisible);
+  if (d->m_CustomTabBar) {
+    d->m_CustomTabBar->setIsSelectedIndicatorVisible(isVisible);
   }
 }
 
-bool NXTabWidget::getIsSelectedIndicatorVisible() const
+bool NXTabWidget::getIsSelectedIndicatorVisible() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXTabWidget);
-  return d->_tabBar->getIsSelectedIndicatorVisible();
+  Q_CONST_D(NXTabWidget);
+  return d->m_TabBar->getIsSelectedIndicatorVisible();
 }
 
 void NXTabWidget::setTabSize(QSize tabSize)
 {
   Q_D(NXTabWidget);
-  d->_tabBar->setTabSize(tabSize);
+  d->m_TabBar->setTabSize(tabSize);
 }
 
-QSize NXTabWidget::getTabSize() const
+QSize NXTabWidget::getTabSize() const noexcept(std::is_nothrow_copy_constructible_v<QSize>)
 {
-  Q_D(const NXTabWidget);
-  return d->_tabBar->getTabSize();
+  Q_CONST_D(NXTabWidget);
+  return d->m_TabBar->getTabSize();
 }
 
 void NXTabWidget::setTabPosition(TabPosition position)
@@ -123,7 +123,7 @@ void NXTabWidget::setTabPosition(TabPosition position)
 void NXTabWidget::paintEvent(QPaintEvent *event)
 {
   Q_D(NXTabWidget);
-  if (!d->_pIsTabTransparent) {
+  if (!d->m_IsTabTransparent) {
     QTabWidget::paintEvent(event);
   }
 }
@@ -139,7 +139,7 @@ void NXTabWidget::dragEnterEvent(QDragEnterEvent *event)
 void NXTabWidget::dropEvent(QDropEvent *event)
 {
   Q_D(NXTabWidget);
-  if (d->_pIsContainerAcceptDrops && event->mimeData()->property("NXTabWidgetObject").value<NXTabWidget *>() != this) {
+  if (d->m_IsContainerAcceptDrops && event->mimeData()->property("NXTabWidgetObject").value<NXTabWidget *>() != this) {
     QMimeData *data = const_cast<QMimeData *>(event->mimeData());
     data->setProperty("TabDropIndex", count());
     d->onTabDragDrop(data);

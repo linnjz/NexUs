@@ -9,9 +9,9 @@
 class NXNavigationNode : public QObject
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QList<NXNavigationNode *>), ChildrenNodes)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QModelIndex), ModelIndex)
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), NodeTitle)
+  Q_PRIVATE_CREATE(QPS_SCREF(QList<NXNavigationNode *>), ChildrenNodes)
+  Q_PRIVATE_CREATE(QPS_SCREF(QModelIndex), ModelIndex)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), NodeTitle)
   Q_PRIVATE_CREATE(NXNavigationNode *, ParentNode)
   Q_PRIVATE_CREATE(NXIconType::IconName, Awesome)
   Q_PRIVATE_CREATE(int, KeyPoints)
@@ -24,7 +24,7 @@ class NXNavigationNode : public QObject
   Q_PRIVATE_CREATE(bool, IsVisible)
 
 public:
-  explicit NXNavigationNode(const QString &nodeTitle, NXNavigationNode *parent = nullptr);
+  explicit NXNavigationNode(QString const &nodeTitle, NXNavigationNode *parent = nullptr);
   ~NXNavigationNode();
 
   QString getNodeKey() const;
@@ -51,8 +51,8 @@ public:
   QList<NXNavigationNode *> getExceptCategoryNodes();
 
 private:
-  bool _isExpanded { false };
-  QString _nodeKey = QStringLiteral("");
+  bool m_IsExpanded { false };
+  QString m_NodeKey = QStringLiteral("");
 };
 
 #endif // NXNAVIGATIONNODE_H

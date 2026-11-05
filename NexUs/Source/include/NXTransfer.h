@@ -1,4 +1,4 @@
-#ifndef NXTRANSFER_H
+﻿#ifndef NXTRANSFER_H
 #define NXTRANSFER_H
 
 #include <QWidget>
@@ -12,8 +12,8 @@ class NX_EXPORT NXTransfer : public QWidget
 {
   Q_OBJECT
   Q_Q_CREATE(NXTransfer)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), SourceTitle)
-  Q_PROPERTY_CREATE_H(QS_SET_CREF(QString), TargetTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), SourceTitle)
+  Q_PROPERTY_CREATE_H(QPS_SCREF(QString), TargetTitle)
   Q_PROPERTY_CREATE_H(int, BorderRadius)
   Q_PROPERTY_CREATE_H(int, ItemHeight)
   Q_PROPERTY_CREATE_H(bool, IsSearchVisible)
@@ -22,9 +22,9 @@ public:
   explicit NXTransfer(QWidget *parent = nullptr);
   ~NXTransfer();
 
-  void setSourceItems(const QStringList &items);
-  void addSourceItem(const QString &text);
-  void addSourceItems(const QStringList &items);
+  void setSourceItems(QStringList const &items);
+  void addSourceItem(QString const &text);
+  void addSourceItems(QStringList const &items);
 
   QStringList getSourceItems() const;
   QStringList getTargetItems() const;
@@ -33,7 +33,7 @@ public:
   void moveToSource();
   void moveAllToTarget();
   void moveAllToSource();
-  Q_SIGNAL void transferChanged(const QStringList &sourceItems, const QStringList &targetItems);
+  Q_SIGNAL void transferChanged(QStringList const &sourceItems, QStringList const &targetItems);
 
 protected:
   void paintEvent(QPaintEvent *event) override;

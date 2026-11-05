@@ -19,15 +19,15 @@ public:
   ~NXCommandBarPrivate();
 
   QList<QRect> _getVisibleItemRects() const;
-  int _getItemWidth(const NXCommandBar::CommandItem &item) const;
+  int _getItemWidth(NXCommandBar::CommandItem const &item) const;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
-  int _hoveredIndex { -1 };
-  int _pressedIndex { -1 };
-  int _visibleCount { 0 };
-  QList<NXCommandBar::CommandItem> _items;
-  NXMenu *_overflowMenu { nullptr };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_HoveredIndex { -1 };
+  int m_PressedIndex { -1 };
+  int m_VisibleCount { 0 };
+  QList<NXCommandBar::CommandItem> m_Items;
+  NXMenu *m_OverflowMenu { nullptr };
 };
 
 #endif // NXCOMMANDBARPRIVATE_H

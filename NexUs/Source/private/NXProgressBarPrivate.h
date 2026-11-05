@@ -19,9 +19,9 @@ public:
   ~NXProgressBarPrivate();
 
 private:
-  bool _isBusyAnimation { false };
-  NXProgressBarStyle *_style { nullptr };
-  QPropertyAnimation *_busyAnimation { nullptr };
+  bool m_IsBusyAnimation { false };
+  NXProgressBarStyle *m_Style { nullptr };
+  QPropertyAnimation *m_BusyAnimation { nullptr };
 };
 
 #endif // NXPROGRESSBARPRIVATE_H

@@ -16,8 +16,8 @@ class NXMessageBarPrivate : public QObject
 {
   Q_OBJECT
   Q_D_CREATE(NXMessageBar)
-  Q_PROPERTY_CREATE(qreal, Opacity)
-  Q_PROPERTY_CREATE(qreal, TimePercent)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), Opacity)
+  Q_PROPERTY_CREATE(QPS_PAEMIT(qreal), TimePercent)
 
 public:
   explicit NXMessageBarPrivate(QObject *parent = nullptr);
@@ -27,31 +27,31 @@ public:
   Q_SLOT void onThemeChanged(NXThemeType::ThemeMode themeMode);
 
 private:
-  inline static std::atomic<quint64> _nextCreateSerial { 0 };
+  inline static std::atomic<quint64> m_NextCreateSerial { 0 };
 
-  bool _isClosing { false };
-  bool _isNormalDisplay { false };
-  bool _isOtherMessageBarEnd { false };
-  NXThemeType::ThemeMode _themeMode;
-  int _borderRadius { 6 };
-  NXMessageBarType::PositionPolicy _policy;
-  NXMessageBarType::MessageMode _messageMode;
-  int _leftPadding { 20 };                // 左边框到图标中心
-  int _titleLeftSpacing { 30 };           // 图标中心到Title左侧
-  int _textLeftSpacing { 15 };            // Title右侧到Text左侧
-  int _closeButtonLeftRightMargin { 20 }; // closeButton左右总Margin
-  int _closeButtonWidth { 30 };
-  int _messageBarHorizontalMargin { 20 };
-  int _messageBarVerticalBottomMargin { 20 };
-  int _messageBarVerticalTopMargin { 25 };
-  int _messageBarSpacing { 15 };
-  int _shadowBorderWidth { 6 };
-  quint64 _createSerial { 0 };
-  qreal _timePercentHeight { 2 };
-  QString _title { QStringLiteral("") };
-  QString _text { QStringLiteral("") };
-  NXIconButton *_closeButton { nullptr };
-  static QMap<QObject *, QMap<NXMessageBarType::PositionPolicy, QList<NXMessageBar *> *>> _messageBarActiveMap;
+  bool m_IsClosing { false };
+  bool m_IsNormalDisplay { false };
+  bool m_IsOtherMessageBarEnd { false };
+  NXThemeType::ThemeMode m_ThemeMode;
+  int m_BorderRadius { 6 };
+  NXMessageBarType::PositionPolicy m_Policy;
+  NXMessageBarType::MessageMode m_MessageMode;
+  int m_LeftPadding { 20 };                // 左边框到图标中心
+  int m_TitleLeftSpacing { 30 };           // 图标中心到Title左侧
+  int m_TextLeftSpacing { 15 };            // Title右侧到Text左侧
+  int m_CloseButtonLeftRightMargin { 20 }; // closeButton左右总Margin
+  int m_CloseButtonWidth { 30 };
+  int m_MessageBarHorizontalMargin { 20 };
+  int m_MessageBarVerticalBottomMargin { 20 };
+  int m_MessageBarVerticalTopMargin { 25 };
+  int m_MessageBarSpacing { 15 };
+  int m_ShadowBorderWidth { 6 };
+  quint64 m_CreateSerial { 0 };
+  qreal m_TimePercentHeight { 2 };
+  QString m_Title { QStringLiteral("") };
+  QString m_Text { QStringLiteral("") };
+  NXIconButton *m_CloseButton { nullptr };
+  static QMap<QObject *, QMap<NXMessageBarType::PositionPolicy, QList<NXMessageBar *> *>> m_MessageBarActiveMap;
 
   // 位置数据
 

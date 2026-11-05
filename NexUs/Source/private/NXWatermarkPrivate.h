@@ -29,9 +29,9 @@ public:
   void rebuildPattern();
 
 private:
-  bool _patternDirty { true };
-  NXThemeType::ThemeMode _themeMode;
-  QPixmap _patternPixmap;
+  bool m_PatternDirty { true };
+  NXThemeType::ThemeMode m_ThemeMode;
+  QPixmap m_PatternPixmap;
 };
 
 #endif // NXWATERMARKPRIVATE_H

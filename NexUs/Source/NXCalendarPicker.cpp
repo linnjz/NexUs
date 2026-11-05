@@ -10,7 +10,7 @@
 #include "NXCalendar.h"
 #include "NXTheme.h"
 #include "private/NXCalendarPickerPrivate.h"
-Q_PROPERTY_CREATE_CPP(NXCalendarPicker, int, BorderRadius)
+Q_PROPERTY_CREATE_CPP(NXCalendarPicker, QPS_PAEMIT(int), BorderRadius)
 
 NXCalendarPicker::NXCalendarPicker(QWidget *parent)
     : QPushButton { parent }
@@ -18,33 +18,33 @@ NXCalendarPicker::NXCalendarPicker(QWidget *parent)
 {
   Q_D(NXCalendarPicker);
   d->q_ptr          = this;
-  d->_pBorderRadius = 3;
+  d->m_BorderRadius = 3;
   setFixedSize(120, 30);
   setObjectName("NXCalendarPicker");
   setMouseTracking(true);
-  d->_calendarPickerContainer = new NXCalendarPickerContainer(this);
+  d->m_CalendarPickerContainer = new NXCalendarPickerContainer(this);
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
-  d->_calendarPickerContainer->resize(305, 340);
+  d->m_CalendarPickerContainer->resize(305, 340);
 #else
-  d->_calendarPickerContainer->resize(317, 352);
+  d->m_CalendarPickerContainer->resize(317, 352);
 #endif
-  d->_calendar                 = new NXCalendar(d->_calendarPickerContainer);
-  QVBoxLayout *containerLayout = new QVBoxLayout(d->_calendarPickerContainer);
+  d->m_Calendar                 = new NXCalendar(d->m_CalendarPickerContainer);
+  QVBoxLayout *containerLayout = new QVBoxLayout(d->m_CalendarPickerContainer);
 #if defined(Q_OS_WIN) && QT_VERSION == QT_VERSION_CHECK(6, 11, 0)
   containerLayout->setContentsMargins(0, 0, 0, 0);
 #else
   containerLayout->setContentsMargins(6, 6, 6, 6);
 #endif
-  containerLayout->addWidget(d->_calendar);
-  d->_calendarPickerContainer->hide();
+  containerLayout->addWidget(d->m_Calendar);
+  d->m_CalendarPickerContainer->hide();
   connect(this, &QPushButton::clicked, d, &NXCalendarPickerPrivate::onCalendarPickerClicked);
 
-  connect(d->_calendar, &NXCalendar::pSelectedDateChanged, d, &NXCalendarPickerPrivate::onCalendarSelectedDateChanged);
+  connect(d->m_Calendar, &NXCalendar::signalSelectedDateChanged, d, &NXCalendarPickerPrivate::onCalendarSelectedDateChanged);
   setSelectedDate(QDate::currentDate());
 
-  d->_themeMode = nxTheme->getThemeMode();
+  d->m_ThemeMode = nxTheme->getThemeMode();
   connect(nxTheme, &NXTheme::themeModeChanged, this, [=](NXThemeType::ThemeMode themeMode) {
-    d->_themeMode = themeMode;
+    d->m_ThemeMode = themeMode;
   });
 }
 
@@ -55,14 +55,14 @@ NXCalendarPicker::~NXCalendarPicker()
 void NXCalendarPicker::setSelectedDate(QDate selectedDate)
 {
   Q_D(NXCalendarPicker);
-  d->_calendar->setSelectedDate(selectedDate);
+  d->m_Calendar->setSelectedDate(selectedDate);
   Q_EMIT selectedDateChanged(selectedDate);
 }
 
-QDate NXCalendarPicker::getSelectedDate() const
+QDate NXCalendarPicker::getSelectedDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  Q_D(const NXCalendarPicker);
-  return d->_calendar->getSelectedDate();
+  Q_CONST_D(NXCalendarPicker);
+  return d->m_Calendar->getSelectedDate();
 }
 
 void NXCalendarPicker::paintEvent(QPaintEvent *event)
@@ -74,15 +74,15 @@ void NXCalendarPicker::paintEvent(QPaintEvent *event)
   // 边框和背景绘制
   QRect baseRect = rect();
   baseRect.adjust(1, 1, -1, -1);
-  painter.setPen(NXThemeColor(d->_themeMode, BasicBorder));
-  painter.setBrush(underMouse() ? NXThemeColor(d->_themeMode, BasicHover) : NXThemeColor(d->_themeMode, BasicBase));
-  painter.drawRoundedRect(baseRect, d->_pBorderRadius, d->_pBorderRadius);
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicBorder));
+  painter.setBrush(underMouse() ? NXThemeColor(d->m_ThemeMode, BasicHover) : NXThemeColor(d->m_ThemeMode, BasicBase));
+  painter.drawRoundedRect(baseRect, d->m_BorderRadius, d->m_BorderRadius);
 
   // 日期绘制
   QDate selectedDate = getSelectedDate();
   QString date =
       QString(QStringLiteral("%1/%2/%3")).arg(selectedDate.year()).arg(selectedDate.month()).arg(selectedDate.day());
-  painter.setPen(NXThemeColor(d->_themeMode, BasicText));
+  painter.setPen(NXThemeColor(d->m_ThemeMode, BasicText));
   QRect textRect = baseRect;
   textRect.adjust(10, 0, 0, 0);
   painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, date);

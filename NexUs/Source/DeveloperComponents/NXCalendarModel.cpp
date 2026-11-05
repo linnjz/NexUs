@@ -3,8 +3,8 @@
 NXCalendarModel::NXCalendarModel(QObject *parent)
     : QAbstractListModel { parent }
 {
-  _pMinimumDate.setDate(1924, 1, 1);
-  _pMaximumDate.setDate(2124, 12, 31);
+  m_MinimumDate.setDate(1924, 1, 1);
+  m_MaximumDate.setDate(2124, 12, 31);
   _initRowCount();
 }
 
@@ -14,81 +14,81 @@ NXCalendarModel::~NXCalendarModel()
 
 void NXCalendarModel::setMinimumDate(QDate minimudate)
 {
-  _pMinimumDate = minimudate;
+  m_MinimumDate = minimudate;
   _initRowCount();
 }
 
-QDate NXCalendarModel::getMinimumDate() const
+QDate NXCalendarModel::getMinimumDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  return _pMinimumDate;
+  return m_MinimumDate;
 }
 
 void NXCalendarModel::setMaximumDate(QDate maximumDate)
 {
-  _pMaximumDate = maximumDate;
+  m_MaximumDate = maximumDate;
   _initRowCount();
 }
 
-QDate NXCalendarModel::getMaximumDate() const
+QDate NXCalendarModel::getMaximumDate() const noexcept(std::is_nothrow_copy_constructible_v<QDate>)
 {
-  return _pMaximumDate;
+  return m_MaximumDate;
 }
 
 void NXCalendarModel::setDisplayMode(NXCalendarType displayMode)
 {
   beginResetModel();
-  _displayMode = displayMode;
+  m_DisplayMode = displayMode;
   endResetModel();
   Q_EMIT displayModeChanged();
 }
 
 NXCalendarType NXCalendarModel::getDisplayMode() const
 {
-  return _displayMode;
+  return m_DisplayMode;
 }
 
 QModelIndex NXCalendarModel::getIndexFromDate(QDate date)
 {
-  switch (_displayMode) {
+  switch (m_DisplayMode) {
   case YearMode : {
-    return this->index(date.year() - _pMinimumDate.year());
+    return this->index(date.year() - m_MinimumDate.year());
   }
   case MonthMode : {
-    return this->index((date.year() - _pMinimumDate.year()) * 12 + date.month() - 1);
+    return this->index((date.year() - m_MinimumDate.year()) * 12 + date.month() - 1);
   }
   case DayMode : {
-    return this->index(_pMinimumDate.daysTo(date) + _offset);
+    return this->index(m_MinimumDate.daysTo(date) + m_Offset);
   }
   }
   return QModelIndex();
 }
 
-QDate NXCalendarModel::getDateFromIndex(const QModelIndex &index) const
+QDate NXCalendarModel::getDateFromIndex(QModelIndex const &index) const
 {
-  if (!index.isValid() || index.row() < _offset) {
+  if (!index.isValid() || index.row() < m_Offset) {
     return QDate();
   }
-  return _pMinimumDate.addDays(index.row() - _offset);
+  return m_MinimumDate.addDays(index.row() - m_Offset);
 }
 
-QVariant NXCalendarModel::data(const QModelIndex &index, int role) const
+QVariant NXCalendarModel::data(QModelIndex const &index, int role) const
 {
   if (role == Qt::UserRole) {
-    switch (_displayMode) {
+    switch (m_DisplayMode) {
     case YearMode : {
-      return QVariant::fromValue<NXCalendarData>(NXCalendarData(_pMinimumDate.year() + index.row(), 1, 1));
+      return QVariant::fromValue<NXCalendarData>(NXCalendarData(m_MinimumDate.year() + index.row(), 1, 1));
     }
     case MonthMode : {
-      int year  = _pMinimumDate.year() + index.row() / 12;
+      int year  = m_MinimumDate.year() + index.row() / 12;
       int month = index.row() % 12 + 1;
       if (month == 1) {
         return QVariant::fromValue<NXCalendarData>(NXCalendarData(year, month, 1, QString::number(year)));
       } else {
-        return QVariant::fromValue<NXCalendarData>(NXCalendarData(_pMinimumDate.year() + index.row() / 12, month, 1));
+        return QVariant::fromValue<NXCalendarData>(NXCalendarData(m_MinimumDate.year() + index.row() / 12, month, 1));
       }
     }
     case DayMode : {
-      if (index.row() >= _offset) {
+      if (index.row() >= m_Offset) {
         QDate date = getDateFromIndex(index);
         if (date.day() == 1) {
           return QVariant::fromValue<NXCalendarData>(
@@ -103,17 +103,17 @@ QVariant NXCalendarModel::data(const QModelIndex &index, int role) const
   return QVariant();
 }
 
-int NXCalendarModel::rowCount(const QModelIndex &parent) const
+int NXCalendarModel::rowCount(QModelIndex const &parent) const
 {
-  switch (_displayMode) {
+  switch (m_DisplayMode) {
   case YearMode : {
-    return _pMaximumDate.year() - _pMinimumDate.year() + 1;
+    return m_MaximumDate.year() - m_MinimumDate.year() + 1;
   }
   case MonthMode : {
-    return (_pMaximumDate.year() - _pMinimumDate.year() + 1) * 12;
+    return (m_MaximumDate.year() - m_MinimumDate.year() + 1) * 12;
   }
   case DayMode : {
-    return _dayRowCount;
+    return m_DayRowCount;
   }
   }
   return 0;
@@ -121,12 +121,12 @@ int NXCalendarModel::rowCount(const QModelIndex &parent) const
 
 void NXCalendarModel::_initRowCount()
 {
-  _dayRowCount = _pMinimumDate.daysTo(_pMaximumDate);
-  _offset      = _pMinimumDate.dayOfWeek();
-  _dayRowCount += _offset + 1;
+  m_DayRowCount = m_MinimumDate.daysTo(m_MaximumDate);
+  m_Offset      = m_MinimumDate.dayOfWeek();
+  m_DayRowCount += m_Offset + 1;
 }
 
 int NXCalendarModel::_getCurrentDay(int row) const
 {
-  return _pMinimumDate.addDays(row - _offset).day();
+  return m_MinimumDate.addDays(row - m_Offset).day();
 }

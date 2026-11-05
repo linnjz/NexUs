@@ -42,9 +42,9 @@ NXNavigationView::NXNavigationView(QWidget *parent)
   floatVScrollBar->setIsAnimation(true);
   floatVScrollBar->installEventFilter(this);
 
-  _navigationStyle = new NXNavigationStyle(this->style());
-  _navigationStyle->setNavigationView(this);
-  setStyle(_navigationStyle);
+  m_NavigationStyle = new NXNavigationStyle(this->style());
+  m_NavigationStyle->setNavigationView(this);
+  setStyle(m_NavigationStyle);
 
   QScroller::grabGesture(this->viewport(), QScroller::LeftMouseButtonGesture);
   QScroller *scroller            = QScroller::scroller(this->viewport());
@@ -59,10 +59,10 @@ NXNavigationView::NXNavigationView(QWidget *parent)
 
   connect(scroller, &QScroller::stateChanged, this, [=](QScroller::State newstate) {
     if (newstate == QScroller::Pressed) {
-      _navigationStyle->setPressIndex(indexAt(mapFromGlobal(QCursor::pos())));
+      m_NavigationStyle->setPressIndex(indexAt(mapFromGlobal(QCursor::pos())));
       viewport()->update();
     } else if (newstate == QScroller::Scrolling || newstate == QScroller::Inactive) {
-      _navigationStyle->setPressIndex(QModelIndex());
+      m_NavigationStyle->setPressIndex(QModelIndex());
     }
   });
 
@@ -74,9 +74,9 @@ NXNavigationView::~NXNavigationView()
 {
 }
 
-NXToolTip * NXNavigationView::getCompactToolTip() const
+NXToolTip *NXNavigationView::getCompactToolTip() const
 {
-  return _compactToolTip;
+  return m_CompactToolTip;
 }
 
 void NXNavigationView::setIsDragDropEnable(bool enable)
@@ -87,14 +87,14 @@ void NXNavigationView::setIsDragDropEnable(bool enable)
   setDragDropMode(enable ? QAbstractItemView::InternalMove : QAbstractItemView::NoDragDrop);
 }
 
-void NXNavigationView::navigationNodeStateChange(const QVariantMap &data)
+void NXNavigationView::navigationNodeStateChange(QVariantMap const &data)
 {
-  this->_navigationStyle->navigationNodeStateChange(data);
+  this->m_NavigationStyle->navigationNodeStateChange(data);
 }
 
 void NXNavigationView::onCustomContextMenuRequested(QPoint pos)
 {
-  if (!_pNavigationBarPrivate->_pIsAllowPageOpenInNewWindow) {
+  if (!m_NavigationBarPrivate->m_IsAllowPageOpenInNewWindow) {
     return;
   }
   QModelIndex posIndex = indexAt(pos);
@@ -125,7 +125,7 @@ void NXNavigationView::mouseMoveEvent(QMouseEvent *event)
 
 void NXNavigationView::mouseDoubleClickEvent(QMouseEvent *event)
 {
-  _navigationStyle->setPressIndex(indexAt(event->pos()));
+  m_NavigationStyle->setPressIndex(indexAt(event->pos()));
   viewport()->update();
   QTreeView::mouseDoubleClickEvent(event);
 }
@@ -138,7 +138,7 @@ void NXNavigationView::mouseReleaseEvent(QMouseEvent *event)
     if (index.isValid()) {
       Q_EMIT navigationClicked(index);
     }
-    _navigationStyle->setPressIndex(QModelIndex());
+    m_NavigationStyle->setPressIndex(QModelIndex());
   }
 }
 
@@ -159,24 +159,24 @@ bool NXNavigationView::eventFilter(QObject *watched, QEvent *event)
 
 void NXNavigationView::_doCompactToolTip()
 {
-  if (_pNavigationBarPrivate->_currentDisplayMode == NXNavigationType::NavigationDisplayMode::Compact) {
-    if (!_compactToolTip) {
-      _compactToolTip = new NXToolTip(this);
+  if (m_NavigationBarPrivate->m_CurrentDisplayMode == NXNavigationType::NavigationDisplayMode::Compact) {
+    if (!m_CompactToolTip) {
+      m_CompactToolTip = new NXToolTip(this);
     }
     QModelIndex posIndex = indexAt(mapFromGlobal(QCursor::pos()));
     if (!posIndex.isValid()) {
-      _compactToolTip->hide();
+      m_CompactToolTip->hide();
       return;
     }
     NXNavigationNode *posNode = static_cast<NXNavigationNode *>(posIndex.internalPointer());
-    _compactToolTip->setToolTip(posNode->getNodeTitle());
-    _compactToolTip->setOffSetX(10);
-    _compactToolTip->updatePos();
-    _compactToolTip->show();
+    m_CompactToolTip->setToolTip(posNode->getNodeTitle());
+    m_CompactToolTip->setOffSetX(10);
+    m_CompactToolTip->updatePos();
+    m_CompactToolTip->show();
   } else {
-    if (_compactToolTip) {
-      _compactToolTip->deleteLater();
-      _compactToolTip = nullptr;
+    if (m_CompactToolTip) {
+      m_CompactToolTip->deleteLater();
+      m_CompactToolTip = nullptr;
     }
   }
 }

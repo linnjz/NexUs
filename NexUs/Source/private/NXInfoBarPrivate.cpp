@@ -16,21 +16,21 @@ NXInfoBarPrivate::~NXInfoBarPrivate()
 
 QColor NXInfoBarPrivate::_getSeverityColor() const
 {
-  switch (_pSeverity) {
+  switch (m_Severity) {
   case NXInfoBarType::Success       : return QColor(0x0F, 0x7B, 0x0F);
   case NXInfoBarType::Warning       : return QColor(0x9D, 0x5D, 0x00);
   case NXInfoBarType::Error         : return QColor(0xC4, 0x2B, 0x1C);
   case NXInfoBarType::Informational :
-  default                           : return NXThemeColor(_themeMode, PrimaryNormal);
+  default                           : return NXThemeColor(m_ThemeMode, PrimaryNormal);
   }
 }
 
 NXIconType::IconName NXInfoBarPrivate::_getSeverityIcon() const
 {
-  if (_pInfoBarIcon != NXIconType::None) {
-    return _pInfoBarIcon;
+  if (m_InfoBarIcon != NXIconType::None) {
+    return m_InfoBarIcon;
   }
-  switch (_pSeverity) {
+  switch (m_Severity) {
   case NXInfoBarType::Success       : return NXIconType::CircleCheck;
   case NXInfoBarType::Warning       : return NXIconType::TriangleExclamation;
   case NXInfoBarType::Error         : return NXIconType::CircleXmark;
@@ -42,10 +42,10 @@ NXIconType::IconName NXInfoBarPrivate::_getSeverityIcon() const
 void NXInfoBarPrivate::_doCloseAnimation()
 {
   Q_Q(NXInfoBar);
-  if (_isClosing) {
+  if (m_IsClosing) {
     return;
   }
-  _isClosing = true;
+  m_IsClosing = true;
 
   QPropertyAnimation *heightAnimation = new QPropertyAnimation(q, "maximumHeight", q);
   heightAnimation->setDuration(250);

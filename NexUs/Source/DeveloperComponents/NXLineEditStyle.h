@@ -15,13 +15,13 @@ class NXLineEditStyle : public QProxyStyle
 public:
   explicit NXLineEditStyle(QStyle *style = nullptr);
   ~NXLineEditStyle();
-  void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+  void drawPrimitive(PrimitiveElement element, QStyleOption const *option, QPainter *painter, QWidget const *widget = nullptr) const override;
   QRect
-  subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const override;
-  int pixelMetric(PixelMetric metric, const QStyleOption *option = nullptr, const QWidget *widget = nullptr) const override;
+  subElementRect(SubElement element, QStyleOption const *option, QWidget const *widget) const override;
+  int pixelMetric(PixelMetric metric, QStyleOption const *option = nullptr, QWidget const *widget = nullptr) const override;
 
 private:
-  NXThemeType::ThemeMode _themeMode;
+  NXThemeType::ThemeMode m_ThemeMode;
 };
 
 #endif // NXLINEEDITSTYLE_H

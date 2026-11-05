@@ -18,7 +18,7 @@ public:
   ~NXTableViewPrivate();
 
 private:
-  NXTableViewStyle *_tableViewStyle { nullptr };
+  NXTableViewStyle *m_TableViewStyle { nullptr };
 };
 
 #endif // NXTABLEVIEWPRIVATE_H

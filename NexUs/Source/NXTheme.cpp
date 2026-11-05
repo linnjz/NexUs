@@ -24,29 +24,29 @@ NXTheme::~NXTheme()
 void NXTheme::setThemeMode(NXThemeType::ThemeMode themeMode)
 {
   Q_D(NXTheme);
-  d->_themeMode = themeMode;
-  Q_EMIT themeModeChanged(d->_themeMode);
+  d->m_ThemeMode = themeMode;
+  Q_EMIT themeModeChanged(d->m_ThemeMode);
 }
 
 NXThemeType::ThemeMode NXTheme::getThemeMode() const
 {
-  Q_D(const NXTheme);
-  return d->_themeMode;
+  Q_CONST_D(NXTheme);
+  return d->m_ThemeMode;
 }
 
 void NXTheme::setIsFollowSystemTheme(bool isFollow)
 {
   Q_D(NXTheme);
-  if (d->_pIsFollowSystemTheme == isFollow) {
+  if (d->m_IsFollowSystemTheme == isFollow) {
     return;
   }
-  d->_pIsFollowSystemTheme = isFollow;
+  d->m_IsFollowSystemTheme = isFollow;
   if (isFollow) {
     if (QCoreApplication::instance()) {
       QCoreApplication::instance()->installEventFilter(d);
     }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-    d->_colorSchemeConnection =
+    d->m_ColorSchemeConnection =
         connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, d, [d](Qt::ColorScheme) {
       d->_applySystemTheme();
     });
@@ -57,28 +57,28 @@ void NXTheme::setIsFollowSystemTheme(bool isFollow)
       QCoreApplication::instance()->removeEventFilter(d);
     }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-    if (d->_colorSchemeConnection) {
-      disconnect(d->_colorSchemeConnection);
-      d->_colorSchemeConnection = {};
+    if (d->m_ColorSchemeConnection) {
+      disconnect(d->m_ColorSchemeConnection);
+      d->m_ColorSchemeConnection = {};
     }
 #endif
   }
-  Q_EMIT pIsFollowSystemThemeChanged(isFollow);
+  Q_EMIT signalIsFollowSystemThemeChanged();
 }
 
-bool NXTheme::getIsFollowSystemTheme() const
+bool NXTheme::getIsFollowSystemTheme() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXTheme);
-  return d->_pIsFollowSystemTheme;
+  Q_CONST_D(NXTheme);
+  return d->m_IsFollowSystemTheme;
 }
 
-void NXTheme::setThemeColor(NXThemeType::ThemeMode themeMode, NXThemeType::ThemeColor themeColor, const QColor &newColor)
+void NXTheme::setThemeColor(NXThemeType::ThemeMode themeMode, NXThemeType::ThemeColor themeColor, QColor const &newColor)
 {
   Q_D(NXTheme);
   if (themeMode == NXThemeType::Light) {
-    d->_lightThemeColorList[themeColor] = newColor;
+    d->m_LightThemeColorList[themeColor] = newColor;
   } else {
-    d->_darkThemeColorList[themeColor] = newColor;
+    d->m_DarkThemeColorList[themeColor] = newColor;
   }
 }
 
@@ -86,20 +86,20 @@ QColor NXTheme::getThemeColor(NXThemeType::ThemeMode themeMode, NXThemeType::The
 {
   Q_D(NXTheme);
   if (themeMode == NXThemeType::Light) {
-    return d->_lightThemeColorList[themeColor];
+    return d->m_LightThemeColorList[themeColor];
   } else {
-    return d->_darkThemeColorList[themeColor];
+    return d->m_DarkThemeColorList[themeColor];
   }
 }
 
-void NXTheme::drawEffectShadow(QPainter *painter, QRect widgetRect, int shadowBorderWidth, int borderRadius, int maxAlpha, int extendPixels, const QColor &lightColor, const QColor &darkColor)
+void NXTheme::drawEffectShadow(QPainter *painter, QRect widgetRect, int shadowBorderWidth, int borderRadius, int maxAlpha, int extendPixels, QColor const &lightColor, QColor const &darkColor)
 {
   Q_D(NXTheme);
   painter->save();
   painter->setRenderHints(QPainter::Antialiasing);
   painter->setPen(Qt::NoPen);
 
-  QColor color = d->_themeMode == NXThemeType::Light ? lightColor : darkColor;
+  QColor color = d->m_ThemeMode == NXThemeType::Light ? lightColor : darkColor;
 
   QPainterPath path;
   path.setFillRule(Qt::WindingFill);

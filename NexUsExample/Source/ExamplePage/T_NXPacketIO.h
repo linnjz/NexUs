@@ -16,7 +16,7 @@ class NXXIO_Connection;
 class T_NXPacketIO : public QObject
 {
   Q_OBJECT
-  Q_PRIVATE_CREATE(QS_SET_CREF(QString), InterfaceIP)
+  Q_PRIVATE_CREATE(QPS_SCREF(QString), InterfaceIP)
   Q_PRIVATE_CREATE(bool, IsActive)
 
 public:
@@ -26,7 +26,7 @@ public:
   Q_SLOT void handleGrabImage();
   Q_SLOT void handleImagePacket();
 
-  Q_SIGNAL void sendHandleResult(const QPixmap &map);
+  Q_SIGNAL void sendHandleResult(QPixmap const &map);
 
 private:
   int _lastImageIndex { 0 };

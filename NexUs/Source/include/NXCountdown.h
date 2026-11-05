@@ -26,7 +26,7 @@ public:
   explicit NXCountdown(QWidget *parent = nullptr);
   ~NXCountdown();
 
-  void setTargetDateTime(const QDateTime &dateTime);
+  void setTargetDateTime(QDateTime const &dateTime);
   QDateTime getTargetDateTime() const;
 
   void setRemainingSeconds(qint64 seconds);

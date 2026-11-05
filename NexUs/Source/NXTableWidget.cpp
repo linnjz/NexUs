@@ -24,14 +24,14 @@ NXTableWidget::NXTableWidget(QWidget *parent)
   this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
   setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
   setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-  d->_tableWidgetStyle = new NXTableWidgetStyle(style());
-  setStyle(d->_tableWidgetStyle);
+  d->m_TableWidgetStyle = new NXTableWidgetStyle(style());
+  setStyle(d->m_TableWidgetStyle);
 }
 
 NXTableWidget::~NXTableWidget()
 {
   Q_D(NXTableWidget);
-  delete d->_tableWidgetStyle;
+  delete d->m_TableWidgetStyle;
 }
 
 void NXTableWidget::insertRows(int row, int count)
@@ -82,7 +82,7 @@ void NXTableWidget::removeColumns(int column, int count)
   }
 }
 
-void NXTableWidget::setItemText(int row, int column, const QString &text)
+void NXTableWidget::setItemText(int row, int column, QString const &text)
 {
   if (row < 0 || row >= rowCount() || column < 0 || column >= columnCount()) {
     return;
@@ -107,7 +107,7 @@ QString NXTableWidget::getItemText(int row, int column) const
   return currentItem ? currentItem->text() : QString();
 }
 
-void NXTableWidget::setRowData(int row, const QStringList &data)
+void NXTableWidget::setRowData(int row, QStringList const &data)
 {
   if (row < 0 || row >= rowCount()) {
     return;
@@ -136,43 +136,43 @@ void NXTableWidget::setItemHeight(int itemHeight)
 {
   Q_D(NXTableWidget);
   if (itemHeight > 0) {
-    d->_tableWidgetStyle->setItemHeight(itemHeight);
+    d->m_TableWidgetStyle->setItemHeight(itemHeight);
     doItemsLayout();
   }
 }
 
-int NXTableWidget::getItemHeight() const
+int NXTableWidget::getItemHeight() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTableWidget);
-  return d->_tableWidgetStyle->getItemHeight();
+  Q_CONST_D(NXTableWidget);
+  return d->m_TableWidgetStyle->getItemHeight();
 }
 
 void NXTableWidget::setHeaderMargin(int headerMargin)
 {
   Q_D(NXTableWidget);
   if (headerMargin >= 0) {
-    d->_tableWidgetStyle->setHeaderMargin(headerMargin);
+    d->m_TableWidgetStyle->setHeaderMargin(headerMargin);
     doItemsLayout();
   }
 }
 
-int NXTableWidget::getHeaderMargin() const
+int NXTableWidget::getHeaderMargin() const noexcept(std::is_nothrow_copy_constructible_v<int>)
 {
-  Q_D(const NXTableWidget);
-  return d->_tableWidgetStyle->getHeaderMargin();
+  Q_CONST_D(NXTableWidget);
+  return d->m_TableWidgetStyle->getHeaderMargin();
 }
 
 void NXTableWidget::setIsTransparent(bool isTransparent)
 {
   Q_D(NXTableWidget);
-  d->_tableWidgetStyle->setIsTransparent(isTransparent);
+  d->m_TableWidgetStyle->setIsTransparent(isTransparent);
   update();
 }
 
-bool NXTableWidget::getIsTransparent() const
+bool NXTableWidget::getIsTransparent() const noexcept(std::is_nothrow_copy_constructible_v<bool>)
 {
-  Q_D(const NXTableWidget);
-  return d->_tableWidgetStyle->getIsTransparent();
+  Q_CONST_D(NXTableWidget);
+  return d->m_TableWidgetStyle->getIsTransparent();
 }
 
 void NXTableWidget::showEvent(QShowEvent *event)
@@ -192,9 +192,9 @@ void NXTableWidget::mouseMoveEvent(QMouseEvent *event)
   Q_D(NXTableWidget);
   if (selectionBehavior() == QAbstractItemView::SelectRows) {
     int newHoverRow = rowAt(event->pos().y());
-    int oldHoverRow = d->_tableWidgetStyle->getCurrentHoverRow();
+    int oldHoverRow = d->m_TableWidgetStyle->getCurrentHoverRow();
     if (newHoverRow != oldHoverRow) {
-      d->_tableWidgetStyle->setCurrentHoverRow(newHoverRow);
+      d->m_TableWidgetStyle->setCurrentHoverRow(newHoverRow);
       if (oldHoverRow >= 0) {
         for (int col = 0; col < columnCount(); ++col) {
           QModelIndex index = model()->index(oldHoverRow, col);
@@ -216,7 +216,7 @@ void NXTableWidget::leaveEvent(QEvent *event)
 {
   Q_D(NXTableWidget);
   if (selectionBehavior() == QAbstractItemView::SelectRows) {
-    d->_tableWidgetStyle->setCurrentHoverRow(-1);
+    d->m_TableWidgetStyle->setCurrentHoverRow(-1);
     update();
   }
   QTableWidget::leaveEvent(event);

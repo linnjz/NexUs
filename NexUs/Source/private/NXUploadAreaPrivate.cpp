@@ -18,28 +18,28 @@ NXUploadAreaPrivate::~NXUploadAreaPrivate()
 void NXUploadAreaPrivate::onThemeChanged(NXThemeType::ThemeMode themeMode)
 {
   Q_Q(NXUploadArea);
-  _themeMode = themeMode;
+  m_ThemeMode = themeMode;
   q->update();
 }
 
 void NXUploadAreaPrivate::_openFileDialog()
 {
   Q_Q(NXUploadArea);
-  QString dialogTitle = _pDialogTitle.isEmpty() ? QStringLiteral("选择文件") : _pDialogTitle;
+  QString dialogTitle = m_DialogTitle.isEmpty() ? QStringLiteral("选择文件") : m_DialogTitle;
   QString filter;
-  if (!_pAcceptedSuffixes.isEmpty()) {
+  if (!m_AcceptedSuffixes.isEmpty()) {
     QStringList patterns;
-    for (const QString &suffix : _pAcceptedSuffixes) {
+    for (QString const &suffix : m_AcceptedSuffixes) {
       patterns.append(QStringLiteral("*.") + suffix);
     }
     filter = QString(QStringLiteral("允许的文件")) + QStringLiteral(" (") + patterns.join(QStringLiteral(" ")) +
              QStringLiteral(")");
-  } else if (!_mimeFilter.isEmpty()) {
-    filter = _mimeFilter;
+  } else if (!m_MimeFilter.isEmpty()) {
+    filter = m_MimeFilter;
   }
 
   QStringList files;
-  if (_pIsMultiple) {
+  if (m_IsMultiple) {
     files = QFileDialog::getOpenFileNames(q, dialogTitle, QString(), filter);
   } else {
     QString file = QFileDialog::getOpenFileName(q, dialogTitle, QString(), filter);
@@ -52,17 +52,17 @@ void NXUploadAreaPrivate::_openFileDialog()
   }
 }
 
-bool NXUploadAreaPrivate::_validateFile(const QString &filePath, QString &reason) const
+bool NXUploadAreaPrivate::_validateFile(QString const &filePath, QString &reason) const
 {
   QFileInfo fileInfo(filePath);
   if (!fileInfo.exists()) {
     reason = QStringLiteral("文件不存在");
     return false;
   }
-  if (!_pAcceptedSuffixes.isEmpty()) {
+  if (!m_AcceptedSuffixes.isEmpty()) {
     QString suffix = fileInfo.suffix().toLower();
     bool accepted  = false;
-    for (const QString &s : _pAcceptedSuffixes) {
+    for (QString const &s : m_AcceptedSuffixes) {
       if (s.toLower() == suffix) {
         accepted = true;
         break;
@@ -73,29 +73,29 @@ bool NXUploadAreaPrivate::_validateFile(const QString &filePath, QString &reason
       return false;
     }
   }
-  if (_pMaxFileSize > 0 && fileInfo.size() > _pMaxFileSize) {
+  if (m_MaxFileSize > 0 && fileInfo.size() > m_MaxFileSize) {
     reason = QStringLiteral("文件过大");
     return false;
   }
-  if (_pMaxFileCount > 0 && _filePaths.size() >= _pMaxFileCount) {
+  if (m_MaxFileCount > 0 && m_FilePaths.size() >= m_MaxFileCount) {
     reason = QStringLiteral("已达到最大文件数量");
     return false;
   }
-  if (_filePaths.contains(filePath)) {
+  if (m_FilePaths.contains(filePath)) {
     reason = QStringLiteral("文件已存在");
     return false;
   }
   return true;
 }
 
-void NXUploadAreaPrivate::_addFiles(const QStringList &filePaths)
+void NXUploadAreaPrivate::_addFiles(QStringList const &filePaths)
 {
   Q_Q(NXUploadArea);
   QStringList addedFiles;
-  for (const QString &filePath : filePaths) {
+  for (QString const &filePath : filePaths) {
     QString reason;
     if (_validateFile(filePath, reason)) {
-      _filePaths.append(filePath);
+      m_FilePaths.append(filePath);
       addedFiles.append(filePath);
       Q_EMIT q->fileAdded(filePath);
     } else {
@@ -103,7 +103,7 @@ void NXUploadAreaPrivate::_addFiles(const QStringList &filePaths)
     }
   }
   if (!addedFiles.isEmpty()) {
-    Q_EMIT q->filesSelected(_filePaths);
+    Q_EMIT q->filesSelected(m_FilePaths);
     q->update();
   }
 }
@@ -111,10 +111,10 @@ void NXUploadAreaPrivate::_addFiles(const QStringList &filePaths)
 void NXUploadAreaPrivate::_removeFile(int index)
 {
   Q_Q(NXUploadArea);
-  if (index >= 0 && index < _filePaths.size()) {
-    QString removedPath = _filePaths.takeAt(index);
+  if (index >= 0 && index < m_FilePaths.size()) {
+    QString removedPath = m_FilePaths.takeAt(index);
     Q_EMIT q->fileRemoved(removedPath);
-    Q_EMIT q->filesSelected(_filePaths);
+    Q_EMIT q->filesSelected(m_FilePaths);
     q->update();
   }
 }

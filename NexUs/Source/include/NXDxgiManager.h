@@ -2,9 +2,7 @@
 #define NXDXGIMANAGER_H
 
 #include <QWidget>
-#pragma push_macro("Q_DISABLE_COPY")
-#undef Q_DISABLE_COPY
-#define Q_DISABLE_COPY(CLASS)
+
 #ifdef Q_OS_WIN
 #  include "LinnSingleton.h"
 #  include "NXProperty.h"
@@ -15,7 +13,7 @@ class NX_EXPORT NXDxgiManager : public QObject
 {
   Q_OBJECT
   Q_Q_CREATE(NXDxgiManager)
-  Q_SINGLETON_CREATE(QS_S_UNIQUE(NXDxgiManager))
+  Q_SINGLETON_CREATE(QSS_UNIQUE(NXDxgiManager))
 
 private:
   explicit NXDxgiManager(QObject *parent = nullptr);
@@ -39,9 +37,8 @@ public:
   int getGrabFrameRate() const;
   void setTimeoutMsValue(int timeoutValue);
   int getTimeoutMsValue() const;
-  Q_SIGNAL void grabImageUpdate(const QImage &img);
+  Q_SIGNAL void grabImageUpdate(QImage const &img);
 };
 
-#  pragma pop_macro("Q_DISABLE_COPY")
 #endif // Q_OS_WIN
 #endif // NXDXGIMANAGER_H

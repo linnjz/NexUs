@@ -19,8 +19,8 @@ public:
   explicit NXSelectorBar(QWidget *parent = nullptr);
   ~NXSelectorBar();
 
-  void addItem(const QString &text);
-  void addItem(NXIconType::IconName icon, const QString &text);
+  void addItem(QString const &text);
+  void addItem(NXIconType::IconName icon, QString const &text);
   void clearItems();
   int getItemCount() const;
 
